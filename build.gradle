@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'idea'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/']
+            include "com/"
+        }
+        resources {
+            srcDirs = ['src/']
+            exclude "com/"
+        }
+    }
+}
+
+repositories {
+    jcenter()
+    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+    maven { url "http://maven.sk89q.com/repo/" }
+    maven { url "http://nexus.hc.to/content/repositories/pub_releases" }
+    maven { url "https://oss.sonatype.org/content/groups/public/" }
+}
+
+dependencies {
+    compile 'org.spigotmc:spigot-api:1.11-R0.1-SNAPSHOT'
+    compile 'net.milkbowl.vault:Vault:1.6.6'
+    compile 'com.sk89q.worldedit:worldedit-bukkit:6.1.2'
+    compile 'com.sk89q.worldguard:worldguard-legacy:6.1.2'
+    compile fileTree(dir: 'lib', include: '*.jar')
+
+    compile group: 'org.spigotmc', name: 'spigot', version: '1.11-R0.1-SNAPSHOT'
+}

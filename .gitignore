@@ -11,6 +11,8 @@
 /bin
 /lib
 /manifest.mf
+/.gradle
+/build
 
 #Repo
 README
