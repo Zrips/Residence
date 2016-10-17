@@ -121,9 +121,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.OfflinePlayer;
 
 /**
- * 
+ *
  * @author Gary Smoak - bekvon
- * 
+ *
  */
 public class Residence extends JavaPlugin {
 
@@ -494,26 +494,7 @@ public class Residence extends JavaPlugin {
 		return;
 	    }
 
-	    ABManager = new ActionBar();
-	    version = packageSplit[packageSplit.length - 1];
-	    try {
-		Class<?> nmsClass;
-
-		nmsClass = Class.forName("com.bekvon.bukkit.residence.actionBarNMS." + version);
-
-		if (ABInterface.class.isAssignableFrom(nmsClass)) {
-		    ab = (ABInterface) nmsClass.getConstructor().newInstance();
-		} else {
-		    System.out.println("Something went wrong, please note down version and contact author v:" + version);
-		    this.setEnabled(false);
-		    Bukkit.shutdown();
-		}
-	    } catch (SecurityException | NoSuchMethodException | InvocationTargetException | IllegalArgumentException | IllegalAccessException | InstantiationException
-		| ClassNotFoundException e) {
-		ab = ABManager;
-		return;
-	    }
-
+	    ab = new ActionBar();
 	    gmanager = new PermissionManager(this);
 	    imanager = new WorldItemManager(this);
 	    wmanager = new WorldFlagManager(this);
@@ -1751,7 +1732,7 @@ public class Residence extends JavaPlugin {
 		if (message != null)
 		    outMsg = message;
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + sender.getName() + " {\"text\":\"\",\"extra\":[{\"text\":\"" + outMsg
-		    + "\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"§2" + permision + "\"}}]}");
+		    + "\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"ï¿½2" + permision + "\"}}]}");
 		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 		console.sendMessage(ChatColor.RED + sender.getName() + " No permission -> " + permision);
 	    }
