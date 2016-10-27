@@ -1,0 +1,36 @@
+<project name="Residence" default="downloadLibs" basedir=".">
+	<!-- Download and unzip libraries -->
+	<target name="downloadLibs" description="Install third-party support libraries and plugins">
+		<mkdir dir="lib" />
+		<get src="http://repo.mikeprimm.com/org/getspout/spoutpluginapi/dev-SNAPSHOT/spoutpluginapi-dev-SNAPSHOT.jar" dest="lib/SpoutpluginAPI.jar" />
+		<get src="http://dev.bukkit.org/media/files/658/548/Essentials.zip" dest="lib/Essentials.zip" />
+		<!--essentials core -->
+		<get src="http://cloud.github.com/downloads/essentials/Essentials/Essentials-gm-2.9.5.zip" dest="lib/GroupManager.zip" />
+		<!-- essentials group manager and bridge-->
+		<get src="http://towny.palmergames.com/file-repo/iConomy/5.0.1/iConomy.jar" dest="lib/iConomy5.jar" />
+		<get src="http://dev.bukkit.org/media/files/575/485/iConomy.jar" dest="lib/iConomy6.jar" />
+		<!-- <get src="http://www.whiskeycraft.net/repo/com/nijikokun/bukkit/permissions/Permissions.jar" dest="lib/Permissions.jar" /> -->
+		<get src="https://dev.bukkit.org/media/files/911/279/PermissionsBukkit-2.5.jar" dest="lib/PermissionsBukkit.jar" />
+		<get src="http://dev.bukkit.org/media/files/577/409/BOSEcon0731.zip" dest="lib/BOSEconomy.zip" />
+		<get src="http://dev.bukkit.org/media/files/644/317/RealPlugin.jar" dest="lib/RealPlugin.jar" />
+		<get src="http://dev.bukkit.org/media/files/610/407/bpermissions.jar" dest="lib/bPermissions.jar" />
+		<unzip src="lib/BOSEconomy.zip" dest="lib/">
+		</unzip>
+		<delete file="lib/BOSEconomy.zip" />
+		<unzip src="lib\Essentials.zip" dest="lib\">
+			<patternset>
+				<include name="Essentials.jar" />
+			</patternset>
+		</unzip>
+		<unzip src="lib\GroupManager.zip" dest="lib\">
+			<patternset>
+				<include name="*.jar" />
+			</patternset>
+		</unzip>
+
+		<!-- new ones I added -->
+		<get src="https://dev.bukkit.org/media/files/838/390/LWC.jar" dest="lib/LWC.jar" />
+		<get src="http://dynmap.us/builds/dynmap-api/dynmap-api-2.2.jar" dest="lib/dynmap-api.jar" />
+		<get src="https://dev.bukkit.org/media/files/885/752/CrackShot.jar" dest="lib/CrackShot.jar" />
+	</target>
+</project>

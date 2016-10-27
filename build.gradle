@@ -4,6 +4,9 @@ plugins {
     id 'idea'
 }
 
+ant.importBuild 'build.xml'
+compileJava.dependsOn("downloadLibs")
+
 sourceSets {
     main {
         java {
@@ -31,6 +34,4 @@ dependencies {
     compile 'com.sk89q.worldedit:worldedit-bukkit:6.1.2'
     compile 'com.sk89q.worldguard:worldguard-legacy:6.1.2'
     compile fileTree(dir: 'lib', include: '*.jar')
-
-    compile group: 'org.spigotmc', name: 'spigot', version: '1.11-R0.1-SNAPSHOT'
 }
