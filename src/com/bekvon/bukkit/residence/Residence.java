@@ -46,12 +46,7 @@ import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.dynmap.DynMapListeners;
 import com.bekvon.bukkit.residence.dynmap.DynMapManager;
-import com.bekvon.bukkit.residence.economy.BOSEAdapter;
 import com.bekvon.bukkit.residence.economy.EconomyInterface;
-import com.bekvon.bukkit.residence.economy.EssentialsEcoAdapter;
-import com.bekvon.bukkit.residence.economy.IConomy5Adapter;
-import com.bekvon.bukkit.residence.economy.IConomy6Adapter;
-import com.bekvon.bukkit.residence.economy.RealShopEconomy;
 import com.bekvon.bukkit.residence.economy.TransactionManager;
 import com.bekvon.bukkit.residence.economy.rent.RentManager;
 import com.bekvon.bukkit.residence.gui.FlagUtil;
@@ -103,17 +98,12 @@ import com.bekvon.bukkit.residence.utils.VersionChecker;
 import com.bekvon.bukkit.residence.utils.YmlMaker;
 import com.bekvon.bukkit.residence.vaultinterface.ResidenceVaultAdapter;
 import com.bekvon.bukkit.residence.text.help.InformationPager;
-import com.earth2me.essentials.Essentials;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.lwc.LWCPlugin;
 import com.residence.mcstats.Metrics;
 import com.residence.zip.ZipLibrary;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-
-import cosine.boseconomy.BOSEconomy;
-import fr.crafter.tickleman.realeconomy.RealEconomy;
-import fr.crafter.tickleman.realplugin.RealPlugin;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -589,6 +579,7 @@ public class Residence extends JavaPlugin {
 		    this.loadVaultEconomy();
 		}
 		if (economy == null) {
+<<<<<<< HEAD
 		    this.loadBOSEconomy();
 		}
 		if (economy == null) {
@@ -602,6 +593,9 @@ public class Residence extends JavaPlugin {
 		}
 		if (economy == null) {
 		    Bukkit.getConsoleSender().sendMessage(getPrefix() + " Unable to find an economy system...");
+=======
+		    Bukkit.getConsoleSender().sendMessage(Residence.prefix + " Unable to find an economy system...");
+>>>>>>> Vault is a thing ...
 		}
 	    }
 
@@ -1019,53 +1013,6 @@ public class Residence extends JavaPlugin {
 	    return wmanager.getPerms(player);
 
 	return wmanager.getPerms(loc.getWorld().getName());
-    }
-
-    private void loadIConomy() {
-	Plugin p = getServer().getPluginManager().getPlugin("iConomy");
-	if (p != null) {
-	    if (p.getDescription().getVersion().startsWith("6")) {
-		economy = new IConomy6Adapter((com.iCo6.iConomy) p);
-	    } else if (p.getDescription().getVersion().startsWith("5")) {
-		economy = new IConomy5Adapter();
-	    } else {
-		Bukkit.getConsoleSender().sendMessage(getPrefix() + " UNKNOWN iConomy version!");
-		return;
-	    }
-	    Bukkit.getConsoleSender().sendMessage(getPrefix() + " Successfully linked with iConomy! Version: " + p.getDescription().getVersion());
-	} else {
-	    Bukkit.getConsoleSender().sendMessage(getPrefix() + " iConomy NOT found!");
-	}
-    }
-
-    private void loadBOSEconomy() {
-	Plugin p = getServer().getPluginManager().getPlugin("BOSEconomy");
-	if (p != null) {
-	    economy = new BOSEAdapter((BOSEconomy) p);
-	    Bukkit.getConsoleSender().sendMessage(getPrefix() + " Successfully linked with BOSEconomy!");
-	} else {
-	    Bukkit.getConsoleSender().sendMessage(getPrefix() + " BOSEconomy NOT found!");
-	}
-    }
-
-    private void loadEssentialsEconomy() {
-	Plugin p = getServer().getPluginManager().getPlugin("Essentials");
-	if (p != null) {
-	    economy = new EssentialsEcoAdapter((Essentials) p);
-	    Bukkit.getConsoleSender().sendMessage(getPrefix() + " Successfully linked with Essentials Economy!");
-	} else {
-	    Bukkit.getConsoleSender().sendMessage(getPrefix() + " Essentials Economy NOT found!");
-	}
-    }
-
-    private void loadRealEconomy() {
-	Plugin p = getServer().getPluginManager().getPlugin("RealPlugin");
-	if (p != null) {
-	    economy = new RealShopEconomy(new RealEconomy((RealPlugin) p));
-	    Bukkit.getConsoleSender().sendMessage(getPrefix() + " Successfully linked with RealShop Economy!");
-	} else {
-	    Bukkit.getConsoleSender().sendMessage(getPrefix() + " RealShop Economy NOT found!");
-	}
     }
 
     private void loadVaultEconomy() {
