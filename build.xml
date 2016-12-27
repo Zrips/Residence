@@ -1,0 +1,12 @@
+<project name="Residence" default="downloadLibs" basedir=".">
+	<!-- Download and unzip libraries -->
+	<target name="downloadLibs" description="Install third-party support libraries and plugins">
+		<mkdir dir="lib" />
+		<get src="http://repo.mikeprimm.com/org/getspout/spoutpluginapi/dev-SNAPSHOT/spoutpluginapi-dev-SNAPSHOT.jar" dest="lib/SpoutpluginAPI.jar" />
+
+		<!-- new ones I added -->
+		<get src="https://addons-origin.cursecdn.com/files/838/390/LWC.jar" dest="lib/LWC.jar" />
+		<get src="http://dynmap.us/builds/dynmap-api/dynmap-api-2.2.jar" dest="lib/dynmap-api.jar" />
+		<get src="https://addons-origin.cursecdn.com/files/885/752/CrackShot.jar" dest="lib/CrackShot.jar" />
+	</target>
+</project>

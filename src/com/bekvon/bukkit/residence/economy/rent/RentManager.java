@@ -845,7 +845,7 @@ public class RentManager implements MarketRentInterface {
 
 	    if (!hover.equalsIgnoreCase(""))
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " {\"text\":\"\",\"extra\":[{\"text\":\"" + msg
-		    + "\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"ง2" + hover + "\"}}]}");
+		    + "\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"ยง2" + hover + "\"}}]}");
 	    else
 		player.sendMessage(msg);
 
