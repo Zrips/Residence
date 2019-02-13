@@ -39,15 +39,15 @@ public class subzone implements cmd {
 	    return true;
 	}
 	if (plugin.getWorldEdit() != null) {
-	    if (plugin.getWorldEdit().getConfig().getInt("wand-item") == plugin.getConfigManager().getSelectionTooldID()) {
+	    if (plugin.getWorldEdit().getConfig().getInt("wand-item") == plugin.getConfigManager().getSelectionTool().getLegacyId()) {
 		plugin.getSelectionManager().worldEdit(player);
 	    }
 	}
-	if (plugin.getSelectionManager().hasPlacedBoth(player.getName())) {
+	if (plugin.getSelectionManager().hasPlacedBoth(player)) {
 	    if (!resadmin && !plugin.hasPermission(player, "residence.create.subzone", lm.Subzone_CantCreate))
 		return true;
 
-	    res.addSubzone(player, plugin.getSelectionManager().getPlayerLoc1(player.getName()), plugin.getSelectionManager().getPlayerLoc2(player.getName()),
+	    res.addSubzone(player, plugin.getSelectionManager().getPlayerLoc1(player), plugin.getSelectionManager().getPlayerLoc2(player),
 		zname, resadmin);
 	} else {
 	    plugin.msg(player, lm.Select_Points);

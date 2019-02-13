@@ -41,11 +41,11 @@ public class area implements cmd {
 		return true;
 	    } else if (args[1].equals("add")) {
 		if (plugin.getWorldEdit() != null) {
-		    if (plugin.getWorldEdit().getConfig().getInt("wand-item") == plugin.getConfigManager().getSelectionTooldID()) {
+		    if (plugin.getWorldEdit().getConfig().getInt("wand-item") == plugin.getConfigManager().getSelectionTool().getLegacyId()) {
 			plugin.getSelectionManager().worldEdit(player);
 		    }
 		}
-		if (plugin.getSelectionManager().hasPlacedBoth(player.getName())) {
+		if (plugin.getSelectionManager().hasPlacedBoth(player)) {
 		    ClaimedResidence res = plugin.getResidenceManager().getByName(args[2]);
 		    if (res != null) {
 			if (res.addArea(player, plugin.getSelectionManager().getSelectionCuboid(player), args[3], resadmin))
@@ -59,11 +59,11 @@ public class area implements cmd {
 		return true;
 	    } else if (args[1].equals("replace")) {
 		if (plugin.getWorldEdit() != null) {
-		    if (plugin.getWorldEdit().getConfig().getInt("wand-item") == plugin.getConfigManager().getSelectionTooldID()) {
+		    if (plugin.getWorldEdit().getConfig().getInt("wand-item") == plugin.getConfigManager().getSelectionTool().getLegacyId()) {
 			plugin.getSelectionManager().worldEdit(player);
 		    }
 		}
-		if (plugin.getSelectionManager().hasPlacedBoth(player.getName())) {
+		if (plugin.getSelectionManager().hasPlacedBoth(player)) {
 		    ClaimedResidence res = plugin.getResidenceManager().getByName(args[2]);
 		    if (res != null) {
 			res.replaceArea(player, plugin.getSelectionManager().getSelectionCuboid(player), args[3], resadmin);
