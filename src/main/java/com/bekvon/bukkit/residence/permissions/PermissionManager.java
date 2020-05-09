@@ -7,8 +7,6 @@ import com.bekvon.bukkit.residence.containers.PlayerGroup;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.vaultinterface.ResidenceVaultAdapter;
-import com.nijikokun.bukkit.Permissions.Permissions;
-import com.platymuus.bukkit.permissions.PermissionsPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -126,49 +124,8 @@ public class PermissionManager {
                 return;
             }
             Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Found Vault, but Vault reported no usable permissions system...");
+            throw new IllegalStateException("Found Vault, but Vault reported no usable permissions system");
         }
-        p = server.getPluginManager().getPlugin("PermissionsBukkit");
-        if (p != null) {
-            perms = new PermissionsBukkitAdapter((PermissionsPlugin) p);
-            Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Found PermissionsBukkit Plugin!");
-            return;
-        }
-
-        PluginManager pluginManager = plugin.getServer().getPluginManager();
-        Plugin pl = pluginManager.getPlugin("LuckPerms");
-        if (pl != null && pl.isEnabled()) {
-            Integer ver = plugin.getVersionChecker().convertVersion(pl.getDescription().getVersion());
-            if (ver >= 40000 && ver < 50000) {
-                perms = new LuckPerms4Adapter();
-                Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Found LuckPerms4 Plugin!");
-                return;
-            } else if (ver > 50000) {
-                perms = new LuckPerms5Adapter();
-                Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Found LuckPerms5 Plugin!");
-                return;
-            }
-            plugin.consoleMessage("&cLuckPerms plugin was found but its outdated");
-        }
-
-        p = server.getPluginManager().getPlugin("bPermissions");
-        if (p != null) {
-            perms = new BPermissionsAdapter();
-            Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Found bPermissions Plugin!");
-            return;
-        }
-        p = server.getPluginManager().getPlugin("Permissions");
-        if (p != null) {
-            if (plugin.getConfigManager().useLegacyPermissions()) {
-                perms = new LegacyPermissions(((Permissions) p).getHandler());
-                Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Found Permissions Plugin!");
-                Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + "Permissions running in Legacy mode!");
-            } else {
-                perms = new OriginalPermissions(((Permissions) p).getHandler());
-                Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Found Permissions Plugin!");
-            }
-            return;
-        }
-        Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Permissions plugin NOT FOUND!");
     }
 
     private void readConfig() {

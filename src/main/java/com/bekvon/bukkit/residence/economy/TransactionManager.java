@@ -234,9 +234,6 @@ public class TransactionManager implements MarketBuyInterface {
             res.getPermissions().applyDefaultFlags();
             removeFromSale(res);
 
-            if (plugin.getConfigManager().isRemoveLwcOnBuy())
-                plugin.getResidenceManager().removeLwcFromResidence(player, res);
-
             plugin.getSignUtil().CheckSign(res);
 
             Visualizer v = new Visualizer(player);

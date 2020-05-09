@@ -7,10 +7,8 @@ import com.bekvon.bukkit.cmiLib.VersionChecker.Version;
 import com.bekvon.bukkit.residence.BossBar.BossBarManager;
 import com.bekvon.bukkit.residence.Placeholders.Placeholder;
 import com.bekvon.bukkit.residence.Placeholders.PlaceholderAPIHook;
-import com.bekvon.bukkit.residence.allNms.v1_10Events;
+import com.bekvon.bukkit.residence.allNms.CommonNMS;
 import com.bekvon.bukkit.residence.allNms.v1_13Events;
-import com.bekvon.bukkit.residence.allNms.v1_8Events;
-import com.bekvon.bukkit.residence.allNms.v1_9Events;
 import com.bekvon.bukkit.residence.api.*;
 import com.bekvon.bukkit.residence.chat.ChatManager;
 import com.bekvon.bukkit.residence.containers.*;
@@ -35,14 +33,8 @@ import com.bekvon.bukkit.residence.text.help.HelpEntry;
 import com.bekvon.bukkit.residence.text.help.InformationPager;
 import com.bekvon.bukkit.residence.utils.*;
 import com.bekvon.bukkit.residence.vaultinterface.ResidenceVaultAdapter;
-import com.earth2me.essentials.Essentials;
-import com.griefcraft.lwc.LWC;
-import com.griefcraft.lwc.LWCPlugin;
 import com.residence.mcstats.Metrics;
 import com.residence.zip.ZipLibrary;
-import cosine.boseconomy.BOSEconomy;
-import fr.crafter.tickleman.realeconomy.RealEconomy;
-import fr.crafter.tickleman.realplugin.RealPlugin;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -52,8 +44,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.DynmapAPI;
-import org.kingdoms.main.Kingdoms;
-import org.kingdoms.manager.game.GameManagement;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -134,7 +124,6 @@ public class Residence extends JavaPlugin {
     private InformationPager InformationPagerManager;
     private WorldGuardInterface worldGuardUtil;
     private int wepVersion = 6;
-    private KingdomsUtil kingdomsUtil;
     private int saveVersion = 1;
     private ConcurrentHashMap<String, OfflinePlayer> OfflinePlayerList = new ConcurrentHashMap<String, OfflinePlayer>();
     private Map<UUID, OfflinePlayer> cachedPlayerNameUUIDs = new HashMap<UUID, OfflinePlayer>();
@@ -145,7 +134,6 @@ public class Residence extends JavaPlugin {
     private String ServerLandUUID = "00000000-0000-0000-0000-000000000000";
     private String TempUserUUID = "ffffffff-ffff-ffff-ffff-ffffffffffff";
     private NMS nms;
-    private LWC lwc;
     private Placeholder Placeholder;
     private boolean PlaceholderAPIEnabled = false;
 
@@ -215,7 +203,6 @@ public class Residence extends JavaPlugin {
             }
         }
     };
-    private GameManagement kingdomsmanager = null;
 
     private static void remove(File newGroups, List<String> list) throws IOException {
 
@@ -457,27 +444,7 @@ public class Residence extends JavaPlugin {
             } catch (Exception e) {
             }
 
-            String version = versionChecker.getVersion().getShortVersion();
-            try {
-                Class<?> nmsClass;
-                if (getConfigManager().CouldronCompatibility())
-                    nmsClass = Class.forName("com.bekvon.bukkit.residence.allNms.v1_7_Couldron");
-                else
-                    nmsClass = Class.forName("com.bekvon.bukkit.residence.allNms." + versionChecker.getVersion());
-                if (NMS.class.isAssignableFrom(nmsClass)) {
-                    nms = (NMS) nmsClass.getConstructor().newInstance();
-                } else {
-                    System.out.println("Something went wrong, please note down version and contact author v:" + versionChecker.getVersion());
-                    this.setEnabled(false);
-                    Bukkit.shutdown();
-                }
-            } catch (SecurityException | NoSuchMethodException | InvocationTargetException | IllegalArgumentException | IllegalAccessException | InstantiationException
-                    | ClassNotFoundException e) {
-                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Your server version is not compatible with this plugins version! Plugin will be disabled: " + version + " and server will shutdown");
-                this.setEnabled(false);
-                Bukkit.shutdown();
-                return;
-            }
+            nms = new CommonNMS();
 
             gmanager = new PermissionManager(this);
             this.getPermissionManager().startCacheClearScheduler();
@@ -498,17 +465,6 @@ public class Residence extends JavaPlugin {
             InformationPagerManager = new InformationPager(this);
 
             zip = new ZipLibrary(this);
-
-            Plugin lwcp = Bukkit.getPluginManager().getPlugin("LWC");
-            try {
-                if (lwcp != null) {
-                    lwc = ((LWCPlugin) lwcp).getLWC();
-                    Bukkit.getConsoleSender().sendMessage(this.getPrefix() + " LWC hooked.");
-
-                }
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
 
             this.getConfigManager().copyOverTranslations();
 
@@ -563,17 +519,6 @@ public class Residence extends JavaPlugin {
             if (this.getConfig().getBoolean("Global.EnableEconomy", false)) {
                 Bukkit.getConsoleSender().sendMessage(getPrefix() + " Scanning for economy systems...");
                 switch (this.getConfigManager().getEconomyType()) {
-                    case BOSEconomy:
-                        this.loadBOSEconomy();
-                        break;
-                    case CMIEconomy:
-                        this.loadCMIEconomy();
-                        break;
-                    case Essentials:
-                        this.loadEssentialsEconomy();
-                        break;
-                    case MineConomy:
-                        break;
                     case None:
                         if (gmanager.getPermissionsPlugin() instanceof ResidenceVaultAdapter) {
                             ResidenceVaultAdapter vault = (ResidenceVaultAdapter) gmanager.getPermissionsPlugin();
@@ -585,25 +530,8 @@ public class Residence extends JavaPlugin {
                         if (economy == null) {
                             this.loadVaultEconomy();
                         }
-                        if (economy == null) {
-                            this.loadCMIEconomy();
-                        }
-                        if (economy == null) {
-                            this.loadBOSEconomy();
-                        }
-                        if (economy == null) {
-                            this.loadEssentialsEconomy();
-                        }
-                        if (economy == null) {
-                            this.loadRealEconomy();
-                        }
-                        if (economy == null) {
-                            this.loadIConomy();
-                        }
                         break;
-                    case RealEconomy:
-                        this.loadRealEconomy();
-                        break;
+
                     case Vault:
                         if (gmanager.getPermissionsPlugin() instanceof ResidenceVaultAdapter) {
                             ResidenceVaultAdapter vault = (ResidenceVaultAdapter) gmanager.getPermissionsPlugin();
@@ -615,9 +543,6 @@ public class Residence extends JavaPlugin {
                         if (economy == null) {
                             this.loadVaultEconomy();
                         }
-                        break;
-                    case iConomy:
-                        this.loadIConomy();
                         break;
                     default:
                         break;
@@ -692,8 +617,6 @@ public class Residence extends JavaPlugin {
                     setWorldEdit();
                 setWorldGuard();
 
-                setKingdoms();
-
                 blistener = new ResidenceBlockListener(this);
                 plistener = new ResidencePlayerListener(this);
                 elistener = new ResidenceEntityListener(this);
@@ -710,18 +633,6 @@ public class Residence extends JavaPlugin {
                 pm.registerEvents(flistener, this);
                 pm.registerEvents(shlistener, this);
                 pm.registerEvents(slistener, this);
-
-                // 1.8 event
-                if (Version.isCurrentEqualOrHigher(Version.v1_8_R1))
-                    pm.registerEvents(new v1_8Events(), this);
-
-                // 1.9 event
-                if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
-                    pm.registerEvents(new v1_9Events(), this);
-
-                // 1.10 event
-                if (Version.isCurrentEqualOrHigher(Version.v1_10_R1))
-                    pm.registerEvents(new v1_10Events(), this);
 
                 // 1.13 event
                 if (Version.isCurrentEqualOrHigher(Version.v1_13_R1))
@@ -745,8 +656,9 @@ public class Residence extends JavaPlugin {
                 PlaceholderAPIEnabled = true;
             }
 
-            if (getServer().getPluginManager().getPlugin("CrackShot") != null)
-                getServer().getPluginManager().registerEvents(new CrackShot(this), this);
+            // TODO completely remove crackshot if not going to be fixed
+//            if (getServer().getPluginManager().getPlugin("CrackShot") != null)
+//                getServer().getPluginManager().registerEvents(new CrackShot(this), this);
 
             // DynMap
             Plugin dynmap = Bukkit.getPluginManager().getPlugin("dynmap");
@@ -851,8 +763,8 @@ public class Residence extends JavaPlugin {
                 try {
                     Class.forName("com.sk89q.worldedit.bukkit.selections.Selection");
                     smanager = new WorldEditSelectionManager(server, this);
-                    if (wep != null)
-                        SchematicManager = new SchematicsManager(this);
+//                    if (wep != null)
+//                        SchematicManager = new SchematicsManager(this);
                 } catch (ClassNotFoundException e) {
                     smanager = new WorldEdit7SelectionManager(server, this);
                     if (wep != null)
@@ -875,19 +787,6 @@ public class Residence extends JavaPlugin {
         }
     }
 
-    private void setKingdoms() {
-        if (Bukkit.getPluginManager().getPlugin("Kingdoms") != null) {
-            try {
-                kingdomsmanager = Kingdoms.getManagers();
-            } catch (NoClassDefFoundError | Exception e) {
-
-            }
-        }
-    }
-
-    public GameManagement getKingdomsManager() {
-        return kingdomsmanager;
-    }
 
     private void setWorldGuard() {
         Plugin wgplugin = server.getPluginManager().getPlugin("WorldGuard");
@@ -903,10 +802,6 @@ public class Residence extends JavaPlugin {
 
     public VersionChecker getVersionChecker() {
         return versionChecker;
-    }
-
-    public LWC getLwc() {
-        return lwc;
     }
 
     public File getDataLocation() {
@@ -1072,64 +967,6 @@ public class Residence extends JavaPlugin {
             return wmanager.getPerms(player);
 
         return wmanager.getPerms(loc.getWorld().getName());
-    }
-
-    private void loadIConomy() {
-        Plugin p = getServer().getPluginManager().getPlugin("iConomy");
-        if (p != null) {
-            if (p.getDescription().getVersion().startsWith("6")) {
-                economy = new IConomy6Adapter((com.iCo6.iConomy) p);
-            } else if (p.getDescription().getVersion().startsWith("5")) {
-                economy = new IConomy5Adapter();
-            } else {
-                consoleMessage("UNKNOWN iConomy version!");
-                return;
-            }
-            consoleMessage("Successfully linked with &5iConomy");
-            consoleMessage("Version: " + p.getDescription().getVersion());
-        } else {
-            consoleMessage("iConomy NOT found!");
-        }
-    }
-
-    private void loadBOSEconomy() {
-        Plugin p = getServer().getPluginManager().getPlugin("BOSEconomy");
-        if (p != null) {
-            economy = new BOSEAdapter((BOSEconomy) p);
-            consoleMessage("Successfully linked with &5BOSEconomy");
-        } else {
-            consoleMessage("BOSEconomy NOT found!");
-        }
-    }
-
-    private void loadEssentialsEconomy() {
-        Plugin p = getServer().getPluginManager().getPlugin("Essentials");
-        if (p != null) {
-            economy = new EssentialsEcoAdapter((Essentials) p);
-            consoleMessage("Successfully linked with &5Essentials Economy");
-        } else {
-            consoleMessage("Essentials Economy NOT found!");
-        }
-    }
-
-    private void loadCMIEconomy() {
-        Plugin p = getServer().getPluginManager().getPlugin("CMI");
-        if (p != null) {
-            economy = new CMIEconomy();
-            consoleMessage("Successfully linked with &5CMIEconomy");
-        } else {
-            consoleMessage("CMIEconomy NOT found!");
-        }
-    }
-
-    private void loadRealEconomy() {
-        Plugin p = getServer().getPluginManager().getPlugin("RealPlugin");
-        if (p != null) {
-            economy = new RealShopEconomy(new RealEconomy((RealPlugin) p));
-            consoleMessage("Successfully linked with &5RealShop Economy");
-        } else {
-            consoleMessage("RealShop Economy NOT found!");
-        }
     }
 
     private void loadVaultEconomy() {
@@ -1875,12 +1712,6 @@ public class Residence extends JavaPlugin {
 //	}
 //	return false;
 //    }
-
-    public KingdomsUtil getKingdomsUtil() {
-        if (kingdomsUtil == null)
-            kingdomsUtil = new KingdomsUtil(this);
-        return kingdomsUtil;
-    }
 
     public String getPrefix() {
         return prefix;

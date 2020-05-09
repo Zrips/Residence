@@ -600,9 +600,9 @@ public class ClaimedResidence {
             if (!resadmin) {
                 if (plugin.getWorldGuard() != null && plugin.getWorldGuardUtil().isSelectionInArea(player))
                     return false;
-
-                if (plugin.getKingdomsManager() != null && plugin.getKingdomsUtil().isSelectionInArea(player))
-                    return false;
+//   TODO completely remove Kingdoms if not going to be fixed, plugin seems abandoned
+//                if (plugin.getKingdomsManager() != null && plugin.getKingdomsUtil().isSelectionInArea(player))
+//                    return false;
             }
 
             if (chargeMoney && parent == null && plugin.getConfigManager().enableEconomy() && !resadmin) {
@@ -743,8 +743,8 @@ public class ClaimedResidence {
             if (!resadmin) {
                 if (plugin.getWorldGuard() != null && plugin.getWorldGuardUtil().isSelectionInArea(player))
                     return false;
-                if (plugin.getKingdomsManager() != null && plugin.getKingdomsUtil().isSelectionInArea(player))
-                    return false;
+//                if (plugin.getKingdomsManager() != null && plugin.getKingdomsUtil().isSelectionInArea(player))
+//                    return false;
             }
 
             if (parent == null && plugin.getConfigManager().enableEconomy() && !resadmin) {

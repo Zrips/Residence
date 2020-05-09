@@ -5,7 +5,8 @@ website: https://www.spigotmc.org/resources/residence.11480/
 description: Cuboid Residence Plugin
 api-version: 1.13
 authors: [bekvon,nate302,t00thpick1]
-softdepend: [Vault,Essentials,RealPlugin,BOSEconomy,iConomy,bPermissions,PermissionsBukkit,Permissions,WorldEdit,WorldGuard,CrackShot,Multiverse-Core,MultiWorld,My_Worlds,TheWorld,dynmap,LWC,Kingdoms,PlaceholderAPI,CMI,ServerControlReloaded]
+depend: [Vault]
+softdepend: [Essentials,WorldEdit,WorldGuard,CrackShot,Multiverse-Core,My_Worlds,dynmap,Kingdoms,PlaceholderAPI,CMI,ServerControlReloaded]
 contributors: [lemon42,smbarbour,inorixu,Shayana_fr,Zrips]
 commands:
   res:

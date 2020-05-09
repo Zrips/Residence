@@ -586,7 +586,8 @@ public class SelectionManager {
 
             CMIEffect ef = new CMIEffect(effect);
 
-            Residence.getInstance().getNms().playEffect(player, l, ef);
+            // TODO fix effects when selecting an area
+            //Residence.getInstance().getNms().playEffect(player, l, ef);
         }
     }
 

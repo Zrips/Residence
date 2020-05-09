@@ -466,9 +466,6 @@ public class RentManager implements MarketRentInterface {
 
             boolean backup = res.getPermissions().has("backup", false);
 
-            if (plugin.getConfigManager().isRemoveLwcOnUnrent())
-                plugin.getResidenceManager().removeLwcFromResidence(player, res);
-
             res.getPermissions().applyDefaultFlags();
 
             if (plugin.getSchematicManager() != null && plugin.getConfigManager().RestoreAfterRentEnds && backup) {

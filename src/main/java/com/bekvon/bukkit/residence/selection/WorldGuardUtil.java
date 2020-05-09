@@ -3,17 +3,10 @@ package com.bekvon.bukkit.residence.selection;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Visualizer;
 import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-
-import java.lang.reflect.Method;
 
 public class WorldGuardUtil implements WorldGuardInterface {
     private Residence plugin;
@@ -24,38 +17,39 @@ public class WorldGuardUtil implements WorldGuardInterface {
 
     @Override
     public ProtectedRegion getRegion(Player player, CuboidArea area) {
-
-        if (area == null)
-            return null;
-
-        if (plugin.getWorldGuard() == null)
-            return null;
-
-        if (plugin.getWorldEdit() == null)
-            return null;
-
-        Location loc1 = area.getLowLoc();
-        Location loc2 = area.getHighLoc();
-
-        String id = "icp__tempregion";
-        try {
-
-            BlockVector min = new BlockVector(loc1.getX(), loc1.getY(), loc1.getZ());
-            BlockVector max = new BlockVector(loc2.getX(), loc2.getY(), loc2.getZ());
-            ProtectedRegion region = ProtectedCuboidRegion.class.getConstructor(String.class, BlockVector.class, BlockVector.class).newInstance(id, min, max);
-
-            Method methd = plugin.getWorldGuard().getClass().getMethod("getRegionManager", loc1.getWorld().getClass());
-
-            RegionManager mgr = (RegionManager) methd.invoke(plugin.getWorldGuard(), loc1.getWorld());
-
-            ApplicableRegionSet regions = mgr.getApplicableRegions(region);
-
-            for (ProtectedRegion one : regions.getRegions()) {
-                if (!ResPerm.worldguard_$1.hasPermission(player, one.getId()))
-                    return one;
-            }
-        } catch (Exception | IncompatibleClassChangeError e) {
-        }
+        // TODO world guard has an API do not use Reflection
+//
+//        if (area == null)
+//            return null;
+//
+//        if (plugin.getWorldGuard() == null)
+//            return null;
+//
+//        if (plugin.getWorldEdit() == null)
+//            return null;
+//
+//        Location loc1 = area.getLowLoc();
+//        Location loc2 = area.getHighLoc();
+//
+//        String id = "icp__tempregion";
+//        try {
+//
+//            BlockVector min = new BlockVector(loc1.getX(), loc1.getY(), loc1.getZ());
+//            BlockVector max = new BlockVector(loc2.getX(), loc2.getY(), loc2.getZ());
+//            //ProtectedRegion region = ProtectedCuboidRegion.class.getConstructor(String.class, BlockVector.class, BlockVector.class).newInstance(id, min, max);
+//
+//            Method methd = plugin.getWorldGuard().getClass().getMethod("getRegionManager", loc1.getWorld().getClass());
+//
+//            RegionManager mgr = (RegionManager) methd.invoke(plugin.getWorldGuard(), loc1.getWorld());
+//
+//            ApplicableRegionSet regions = mgr.getApplicableRegions(region);
+//
+//            for (ProtectedRegion one : regions.getRegions()) {
+//                if (!ResPerm.worldguard_$1.hasPermission(player, one.getId()))
+//                    return one;
+//            }
+//        } catch (Exception | IncompatibleClassChangeError e) {
+//        }
         return null;
     }
 

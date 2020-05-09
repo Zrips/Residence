@@ -78,10 +78,6 @@ public class ConfigManager {
     protected boolean NoWaterPlace;
     protected boolean AutoCleanUp;
     protected boolean SellSubzone;
-    protected boolean LwcOnDelete;
-    protected boolean LwcOnBuy;
-    protected boolean LwcOnUnrent;
-    protected List<Material> LwcMatList = new ArrayList<Material>();
     protected boolean UseClean;
     protected boolean PvPFlagPrevent;
     protected boolean OverridePvp;
@@ -185,7 +181,6 @@ public class ConfigManager {
     protected boolean useFlagGUI;
     protected int AutoMobRemovalInterval;
     protected boolean enableLeaseMoneyAccount;
-    protected boolean Couldroncompatibility;
     protected boolean enableDebug = false;
     protected boolean versionCheck = true;
     protected boolean UUIDConvertion = true;
@@ -783,22 +778,6 @@ public class ConfigManager {
         c.addComment("Global.AutoCleanUp.Worlds", "Worlds to be included in check list");
         AutoCleanUpWorlds = c.get("Global.AutoCleanUp.Worlds", Arrays.asList(defaultWorldName));
 
-        c.addComment("Global.Lwc.OnDelete", "Removes lwc protection from all defined objects when removing residence");
-        LwcOnDelete = c.get("Global.Lwc.OnDelete", true);
-        c.addComment("Global.Lwc.OnBuy", "Removes lwc protection from all defined objects when buying residence");
-        LwcOnBuy = c.get("Global.Lwc.OnBuy", true);
-        c.addComment("Global.Lwc.OnUnrent", "Removes lwc protection from all defined objects when unrenting residence");
-        LwcOnUnrent = c.get("Global.Lwc.OnUnrent", true);
-
-        c.addComment("Global.Lwc.MaterialList", "List of blocks you want to remove protection from");
-        for (String oneName : c.get("Global.Lwc.MaterialList", Arrays.asList("CHEST", "TRAPPED_CHEST", "furnace", "dispenser"))) {
-            Material mat = Material.getMaterial(oneName.toUpperCase());
-            if (mat != null)
-                LwcMatList.add(mat);
-            else
-                Bukkit.getConsoleSender().sendMessage("Incorrect Lwc material name for " + oneName);
-        }
-
         // TNT explosions below 63
         c.addComment("Global.AntiGreef.TNT.ExplodeBelow",
                 "When set to true will allow tnt and minecart with tnt to explode below 62 (default) level outside of residence",
@@ -1176,15 +1155,6 @@ public class ConfigManager {
         spoutEnable = c.get("Global.EnableSpout", false);
         enableLeaseMoneyAccount = c.get("Global.EnableLeaseMoneyAccount", true);
 
-        c.addComment("Global.Couldroncompatibility",
-                "By setting this to true, partial compatibility for kCouldron servers will be enabled. Action bar messages and selection visualizer will be disabled automatically as off incorrect compatibility");
-        Couldroncompatibility = c.get("Global.Couldroncompatibility", false);
-        if (Couldroncompatibility) {
-            useVisualizer = false;
-            EnterLeaveMessageType = ELMessageType.ChatBox;
-            ActionBarOnSelection = false;
-        }
-
         c.addComment("DynMap.Use", "Enables or disable DynMap Support");
         DynMapUse = c.get("DynMap.Use", false);
         c.addComment("DynMap.ShowFlags", "Shows or hides residence flags");
@@ -1501,22 +1471,6 @@ public class ConfigManager {
         return NoWaterPlace;
     }
 
-    public List<Material> getLwcMatList() {
-        return LwcMatList;
-    }
-
-    public boolean isRemoveLwcOnUnrent() {
-        return LwcOnUnrent;
-    }
-
-    public boolean isRemoveLwcOnBuy() {
-        return LwcOnBuy;
-    }
-
-    public boolean isRemoveLwcOnDelete() {
-        return LwcOnDelete;
-    }
-
     public boolean isUseResidenceFileClean() {
         return AutoCleanUp;
     }
@@ -1799,10 +1753,6 @@ public class ConfigManager {
 
     public boolean enableLeaseMoneyAccount() {
         return enableLeaseMoneyAccount;
-    }
-
-    public boolean CouldronCompatibility() {
-        return Couldroncompatibility;
     }
 
     public boolean debugEnabled() {
