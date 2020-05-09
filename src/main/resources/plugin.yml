@@ -1,0 +1,306 @@
+name: Residence
+main: com.bekvon.bukkit.residence.Residence
+version: 4.9.0.5
+website: https://www.spigotmc.org/resources/residence.11480/
+description: Cuboid Residence Plugin
+api-version: 1.13
+authors: [bekvon,nate302,t00thpick1]
+softdepend: [Vault,Essentials,RealPlugin,BOSEconomy,iConomy,bPermissions,PermissionsBukkit,Permissions,WorldEdit,WorldGuard,CrackShot,Multiverse-Core,MultiWorld,My_Worlds,TheWorld,dynmap,LWC,Kingdoms,PlaceholderAPI,CMI,ServerControlReloaded]
+contributors: [lemon42,smbarbour,inorixu,Shayana_fr,Zrips]
+commands:
+  res:
+    description: Manage Residences
+  residence:
+    description: Manage Residences
+  resadmin:
+    description: Residence admin functions.
+    usage: §c/res ? or /resadmin ? for more info
+  resreload:
+    description: Reload the entire residence plugin.
+    usage: §c/resreload
+  resload:
+    description: Load the save file again after you have made modifications.
+    usage: §c/resload
+  rc:
+    description: §cChat in current residence channel.
+    usage: §c/rc §eto toggle, §c/rc l §eto leave, §c/rc setprefix §eto set prefix, §c/rc setcolor §eto set color or §c/rc kick §eto kick player
+permissions:
+  residence.admin:
+    description: Gives you access to /resadmin
+    default: op
+  residence.topadmin:
+    description: Gives you access to /resreload and /resload commands
+    default: op
+  residence.admin.tp:
+    description: Allows to override tp flag
+    default: op
+  residence.admin.move:
+    description: Allows to override move flag
+    default: op
+  residence.rename:
+    description: Allows you to rename residences
+    default: true
+  residence.create:
+    description: Allows you to create residences
+    default: true
+  residence.delete:
+    description: Allows you to delete residences
+    default: true
+  residence.create.subzone:
+    description: Allows you to create residences subzone
+    default: true
+  residence.delete.subzone:
+    description: Allows you to delete residences subzone
+    default: true
+  residence.expand:
+    description: Allows you to expand residence
+    default: true
+  residence.expand.subzone:
+    description: Allows you to expand residences subzone
+    default: true
+  residence.contract:
+    description: Allows you to contract residence
+    default: true
+  residence.contract.subzone:
+    description: Allows you to contract residences subzone
+    default: true
+  residence.select:
+    description: Allows you to select an area to make residences
+    default: true
+  residence.resize:
+    description: Allows you to resize an area
+    default: true
+  residence.versioncheck:
+    description: Notice to new version after connect
+    default: op
+  residence.bypass.nofly:
+    description: Bypasses nofly flag in residence
+    default: op
+  residence.bypass.command:
+    description: Bypasses command flag in residence
+    default: op
+  residence.select.auto.others:
+    description: Allows to turn on auto selection for other players
+    default: op
+  residence.chatcolor:
+    description: Allows to change residence chat color
+    default: true
+  residence.chatprefix:
+    description: Allows to change residence chat prefix
+    default: op
+  residence.chatkick:
+    description: Allows to kick players from residence chat
+    default: true
+  residence.compass:
+    description: Allows to set compass pointer to residence
+    default: true
+  residence.randomtp:
+    description: Allows to use /res rt command
+    default: true
+  residence.command.show:
+    description: Allows to access particular command
+    default: true
+  residence.command.area:
+    description: Allows to access particular command
+    default: true
+  residence.command.bank:
+    description: Allows to access particular command
+    default: true
+  residence.command.check:
+    description: Allows to access particular command
+    default: true
+  residence.command.clearflags:
+    description: Allows to access particular command
+    default: op
+  residence.command.command:
+    description: Allows to access particular command
+    default: true
+  residence.command.compass:
+    description: Allows to access particular command
+    default: true
+  residence.command.confirm:
+    description: Allows to access particular command
+    default: true
+  residence.command.contract:
+    description: Allows to access particular command
+    default: true
+  residence.command.create:
+    description: Allows to access particular command
+    default: true
+  residence.command.auto:
+    description: Allows to create max residence
+    default: true
+  residence.command.current:
+    description: Allows to access particular command
+    default: true
+  residence.command.expand:
+    description: Allows to access particular command
+    default: true
+  residence.command.flags:
+    description: Allows to access particular command
+    default: true
+  residence.command.give:
+    description: Allows to access particular command
+    default: true
+  residence.command.gset:
+    description: Allows to access particular command
+    default: true
+  residence.command.gui:
+    description: Allows to access particular command
+    default: true
+  residence.command.info:
+    description: Allows to access particular command
+    default: true
+  residence.command.kick:
+    description: Allows to access particular command
+    default: true
+  residence.command.lease:
+    description: Allows to access particular command
+    default: true
+  residence.command.limits:
+    description: Allows to access particular command
+    default: true
+  residence.command.list:
+    description: Allows to access particular command
+    default: true
+  residence.command.list.others:
+    description: Allows to access particular command
+    default: true
+  residence.command.listall:
+    description: Allows to access particular command
+    default: true
+  residence.command.setdefaultflags:
+    description: Allows to access particular command
+    default: true
+  residence.command.listallhidden:
+    description: Allows to access particular command
+    default: op
+  residence.command.listhidden:
+    description: Allows to access particular command
+    default: op
+  residence.command.lists:
+    description: Allows to access particular command
+    default: true
+  residence.command.lset:
+    description: Allows to access particular command
+    default: true
+  residence.command.market:
+    description: Allows to access particular command
+    default: true
+  residence.command.material:
+    description: Allows to access particular command
+    default: true
+  residence.command.message:
+    description: Allows to access particular command
+    default: true
+  residence.command.message.enter:
+    description: Allows to access particular command
+    default: true
+  residence.command.message.enter.remove:
+    description: Allows to access particular command
+    default: true
+  residence.command.message.leave:
+    description: Allows to access particular command
+    default: true
+  residence.command.message.leave.remove:
+    description: Allows to access particular command
+    default: true
+  residence.newguyresidence:
+    description: Allows for auto residence creation on chest place
+    default: true
+  residence.command.mirror:
+    description: Allows to access particular command
+    default: true
+  residence.command.padd:
+    description: Allows to access particular command
+    default: true
+  residence.command.pdel:
+    description: Allows to access particular command
+    default: true
+  residence.command.pset:
+    description: Allows to access particular command
+    default: true
+  residence.command.rc:
+    description: Allows to access particular command
+    default: true
+  residence.command.reload:
+    description: Allows to access particular command
+    default: op
+  residence.command.remove:
+    description: Allows to access particular command
+    default: true
+  residence.command.removeall:
+    description: Allows to access particular command
+    default: op
+  residence.command.removeworld:
+    description: Allows to access particular command
+    default: op
+  residence.command.rename:
+    description: Allows to access particular command
+    default: true
+  residence.command.renamearea:
+    description: Allows to access particular command
+    default: true
+  residence.command.resadmin:
+    description: Allows to access particular command
+    default: op
+  residence.command.resbank:
+    description: Allows to access particular command
+    default: true
+  residence.command.reset:
+    description: Allows to access particular command
+    default: true
+  residence.command.rt:
+    description: Allows to access particular command
+    default: true
+  residence.command.select:
+    description: Allows to access particular command
+    default: true
+  residence.command.server:
+    description: Allows to access particular command
+    default: op
+  residence.command.set:
+    description: Allows to access particular command
+    default: true
+  residence.command.setmain:
+    description: Allows to access particular command
+    default: true
+  residence.command.setowner:
+    description: Allows to access particular command
+    default: op
+  residence.command.shop:
+    description: Allows to access particular command
+    default: true
+  residence.command.signconvert:
+    description: Allows to access particular command
+    default: op
+  residence.command.signupdate:
+    description: Allows to access particular command
+    default: op
+  residence.command.sublist:
+    description: Allows to access particular command
+    default: true
+  residence.command.subzone:
+    description: Allows to access particular command
+    default: true
+  residence.command.tool:
+    description: Allows to access particular command
+    default: true
+  residence.command.tp:
+    description: Allows to access particular command
+    default: true
+  residence.command.tpconfirm:
+    description: Allows to access particular command
+    default: true
+  residence.command.tpset:
+    description: Allows to access particular command
+    default: true
+  residence.command.unstuck:
+    description: Allows to access particular command
+    default: true
+  residence.command.version:
+    description: Allows to access particular command
+    default: true
+  residence.command.siege:
+    description: Allows to access particular command
+    default: true

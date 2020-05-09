@@ -1,0 +1,1492 @@
+# NOTE If you want to modify this file, it is HIGHLY recommended that you make a copy
+# of this file and modify that instead. This file will be updated automatically by Residence
+# when a newer version is detected, and your changes will be overwritten.  Once you 
+# have a copy of this file, change the Language: option under the Residence config.yml
+# to whatever you named your copy.
+
+Language:
+  Invalid:
+    Player: '&cNom du joueur incorrect'
+    World: '&cInvalid world...'
+    Residence: '&cResidence incorrecte'
+    Subzone: '&cSous-zone incorrecte'
+    Direction: '&cDirection incorrecte'
+    Amount: '&cMontant incorrect'
+    Cost: '&cCout incorrect'
+    Days: '&cNombre de jours incorrect'
+    Material: '&cMateriau incorrect'
+    Boolean: '&cValeur incorrecte. Elle doit etre "true" ou "false"'
+    Area: '&cZone incorrecte'
+    Group: '&cGroupe incorrect'
+    MessageType: '&cLe message doit etre enter ou remove'
+    Flag: '&cFlag incorrect'
+    FlagState: '&cEtat du flag incorrect. Il doit etre &2true(t)&c, &cfalse(f)&c, ou &6remove(r)'
+    List: '&eListe inconnue. Elle doit etre &6interdite &eou &6ignoree.'
+    Page: '&ePage incorrecte'
+    Help: '&cPage d''aide incorrecte'
+    NameCharacters: '&cLe nom contient des caracteres interdits.'
+  Area:
+    Exists: '&cCette zone existe deja'
+    Create: '&eResidence creee avec succes, ID %1'
+    DiffWorld: '&cLa zone est dans un monde different du lieu de residence'
+    Collision: '&cLa zone entre en collision avec la residence %1'
+    SubzoneCollision: '&cLa zone entre en collision avec la sous-zone %1'
+    NonExist: '&cCette zone n''existe pas'
+    InvalidName: '&cNom de zone invalide...'
+    ToSmallX: '&cVotre &cselection en X longueur (&6%1&c) est trop petite. &eAutorise: &6%2
+      &eet plus'
+    ToSmallY: '&cVotre &cselection en y hauteur et profondeur (&6%1&c) est trop petite. &eAutorise: &6%2
+      &eet plus'
+    ToSmallZ: '&cVotre &cselection en Z largeur (&6%1&c) est trop petite. &eAutorise: &6%2
+      &eet plus'
+    ToBigX: '&cVotre &cselection en X longueur (&6%1&c) est trop grande. &eAutorise: &6%2
+      &eet plus'
+    ToBigY: '&cVotre &cselection en y hauteur et profondeur (&6%1&c) est trop grande. &eAutorise: &6%2
+      &eet plus'
+    ToBigZ: '&cVotre &cselection en Z largeur (&6%1&c) est trop grande. &eAutorise: &6%2
+      &eet plus'
+    Rename: 'Zone %1 renommee en %2'
+    Remove: 'Zone %1 supprimee...'
+    Name: '&eNom: &2%1'
+    RemoveLast: '&cImpossible de supprimer la derniere zone de la residence'
+    NotWithinParent: '&cLa zone n''est pas dans la zone mere'
+    Update: '&eZone mise à jour...'
+    MaxPhysical: '&eVous avez atteint le maximum de zones physiques autorise de cette residence'
+    SizeLimit: '&cLa taille de la zone depasse vos limites autorisees'
+    HighLimit: '&cVous ne pouvez pas proteger a cette hauteur, votre limite est %1'
+    LowLimit: 'Vous ne pouvez pas proteger a cette profondeur, votre limite est %1'
+  Select:
+    Points: '&eSelectionnez 2 points avant d''utiliser cette commande!'
+    Overlap: '&cLes points selectionnes chevauchent la region &6%1!'
+    WorldGuardOverlap: '&cLes points selectionnes chevauchent la region WorldGuard &6%1'
+    Success: '&eSelection reussie'
+    Fail: '&cLa selection est incorrecte.'
+    Bedrock: '&eSelection elargie jusqu''a votre limite inferieure autorisee'
+    Sky: '&eSelection elargie jusqu''a votre limite superieure autorisee'
+    Area: '&eZone %1 selectionnee de la residence %2'
+    Tool: '&e- Outil pour selectionner: &6%1'
+    PrimaryPoint: '&6Premier point de &eSelection : &5%1'
+    SecondaryPoint: '&6Second point de &eSelection : &5%1'
+    Primary: '&ePremière selection: &6%1'
+    Secondary: '&eSeconde selection: &6%1'
+    TooHigh: '&cAttention , la selection arrive au limite de hauteur.'
+    TooLow: '&cAttention , la selection arrive au limite de profondeur.'
+    TotalSize: '&eTaille totale de la selection: &6%1'
+    AutoEnabled: '&eMode auto selection &6ON&e. Pour desactiver, tapez &6/res
+      select auto'
+    AutoDisabled: '&eMode auto selection &6OFF&e. Pour reactiver, tapez
+      &6/res select auto'
+    Disabled: '&cVous n''avez pas acces aux commandes de selection'
+  Sign:
+    Updated: '&6%1 &epanneaux mis à jour!!'
+    TopLine: '[market]'
+    DateFormat: YY/MM/dd HH:mm
+    ForRentTopLine: '&8A Louer'
+    ForRentPriceLine: '&8%1&f/&8%2&f/&8%3'
+    ForRentResName: '&8%1'
+    ForRentBottomLine: '&9Disponible'
+    RentedAutorenewTrue: '&2%1'
+    RentedAutorenewFalse: '&c%1'
+    RentedTopLine: '%1'
+    RentedPriceLine: '&8%1&f/&8%2&f/&8%3'
+    RentedResName: '&8%1'
+    RentedBottomLine: '&1%1'
+    ForSaleTopLine: '&8A Vendre'
+    ForSalePriceLine: '&8%1'
+    ForSaleResName: '&8%1'
+    ForSaleBottomLine: '&5Disponible'
+    LookAt: '&cVous ne regardez pas le panneau'
+  Flag:
+    Set: '&eStatut du Flag (&6%1&e) defini de &6%2 &ea &6%3. (true = autorise,false = interdit)'
+    SetFailed: '&cVous n''avez pas acces au flag &6%1 &'
+    CheckTrue: '&eFlag &6%1 &eapplique pour le joueur &6%2 &edans la residence &6%3&e, valeur
+      = &6%4'
+    CheckFalse: '&eFlag &6%1 &enon applique pour le joueur &6%2 &edans la residence.'
+    Cleared: '&eFlags supprimes.'
+    RemovedAll: '&eTous les flags sont supprimes pour &6%1 &edans la residence &6%2.'
+    RemovedGroup: '&eTous les flags sont supprimes pour le groupe &6%1 dans la residence &6%2.'
+    Default: '&eFlags mis par defaut.'
+    Deny: '&cVous n''avez pas la &6%1 &cpermission<s> ici.'
+    SetDeny: '&cLe proprietaire n''a pas acces au flag &6%1'
+    ChangeDeny: '&cVous ne pouvez pas changer le flag &6%1 tant que le joueur &6%2 &cplayer(s)
+      est dedans'
+  Bank:
+    NoAccess: '&cVous n''avez pas acces a la banque'
+    Name: ' &eBanque: &6%1'
+    NoMoney: '&cPas assez d''argent en banque'
+    Deposit: '&eVous venez de deposer &6%1 &edans votre banque de residence'
+    Withdraw: '&eVous venez de retirer &6%1 &ede votre banque de residence'
+  Subzone:
+    Rename: '&eSous-zone &6%1 renomee en &6%2'
+    Remove: '&eSous-zone &6%1 &esupprimee.'
+    Create: '&eSous-zone &6%1 &ecreee avec succes'
+    CreateFail: '&cImpossible de creer la Sous-zone &6%1'
+    Exists: '&cUne sous-zone &6%1 &cexiste deja.'
+    Collide: '&cSous-zone collides with subzone &6%1'
+    MaxAmount: '&cVous avez atteint votre limite maximum de sous zones pour cette residence'
+    MaxDepth: '&cVous avez atteint votre limite maximum de sous zones en profondeur.'
+    SelectInside: '&eVos points de selections doivent se trouver dans la residence.'
+    CantCreate: '&cVous n''avez pas la permission de creer de sous zones.'
+    CantDelete: '&cVous n''avez pas la permission de supprimer une sous zone.'
+    CantDeleteNotOwnerOfParent: '&cVous n''etes pas le proprietaire de la zone mere pour pouvoir supprimer cette sous zone.'
+    CantContract: '&cVous n''avez pas la permission de reduire la taille de la sous zone.'
+    CantExpand: '&cVous n''avez pas la permission d''etendre la taille de la sous zone.'
+    DeleteConfirm: '&eEtes vous certain de vouloir supprimer la sous zone &6%1&e, si oui utilisez &6/res confirm'
+    OwnerChange: '&6%2 est desormais le nouveau proprietaire de &6%1'
+  Residence:
+    Hidden: ' &e(&6Cachee&e)'
+    Bought: '&eVous venez d''acheter la residence &6%1'
+    Buy: '&6%1 &ea achete votre residence &6%2.'
+    BuyTooBig: '&cCette residence a des zones qui depassent vos limites autorisees.'
+    NotForSale: '&cCette residence n''est pas a vendre.'
+    ForSale: '&eLa residence &6%1 &eest maintenant en vente pour &6%2 $'
+    StopSelling: '&cLa Residence n''est plus en vente.'
+    TooMany: '&cVous avez deja atteint votre limite de residences autorisees.'
+    MaxRent: '&cVous avez deja atteint votre limite de residence en location.'
+    AlreadyRent: '&cResidence deja en location...'
+    NotForRent: '&cResidence n''est pas en vente...'
+    NotForRentOrSell: '&cResidence n''est pas en vente ou en location...'
+    NotRented: '&cResidence pas louee.'
+    Unrent: '&eResidence &6%1 &en''est plus a louer.'
+    RemoveRentable: '&eResidence &6%1 &en''est plus a louer desormais.'
+    ForRentSuccess: '&eResidence &6%1 &eest maintenant en location pour &6%2 &etous les &6%3 &ejours.'
+    RentSuccess: '&eVous avez mis en location la residence &6%1 &epour &6%2 &ejours.'
+    EndingRent: '&eLa location de &6%1 &ese termine &6%2'
+    AlreadyRented: '&eResidence &6%1 &eest deja en location pour &6%2'
+    CantAutoPay: '&eResidence n''accepte pas le paiement automatique!'
+    AlreadyExists: '&cUne residence existe deja sous le nom de &6%1'
+    Create: '&eVous venez de creer une zone protegee sous le nom &6%1&e!'
+    Rename: '&eResidence renomee de &6%1 &een &6%2'
+    Remove: '&eResidence &6%1 &esupprimee...'
+    CantRemove: '&cResidence &6%1 &cne peut pas etre supprimee tant que la sous zone &6%2 &csubzone est toujours loue par &6%3'
+    MoveDeny: '&cVous n''avez pas la permission de bouger dans la residence &6%1'
+    TeleportNoFlag: '&cVous n''avez pas la permission de vous teleporter dans la residence'
+    FlagDeny: '&cVous n''avez pas le flag &6%1 &cdans la Residence &6%2'
+    GiveLimits: '&cImpossible de donner la residence au joueur car il est en dehors des limites'
+    Give: '&eVous venez de nommer &6%2 en tant que nouveau proprietaire de la residence &6%1'
+    Recieve: '&eVous venez de recevoir la residence &6%1 &ede la part de &6%2'
+    ResList: ' &a%1. &e%2 &e- &6%3 %4&6%5'
+    List: ' &a%1%2 &e- &6Monde&e: &6%3'
+    TeleportNear: '&eTeleportation aupres de la residence la plus proche.'
+    SetTeleportLocation: '&ePoint de teleportation defini a cet endroit...'
+    PermissionsApply: '&ePermissions appliquees a cette residence.'
+    NotOwner: '&cVous n''etes pas le proprietaire'
+    RemovePlayersResidences: '&eSuppressions des permissions de toutes les residences pour le joueur &6%1'
+    NotIn: '&cVous n''etes pas dans une zone protegee par Residence'
+    PlayerNotIn: '&cLe joueur ne se situe pas dans une residence'
+    Kicked: '&eVous venez d''etre expulse de la residence.'
+    In: '&eVous vous situez dans la residence &6%1'
+    OwnerChange: '&eLe proprietaire de la residence &6%1 &eest maintenant &6%2'
+    NonAdmin: '&cVous n''etes pas admin d''une residence'
+    Line: '&eResidence: &6%1 '
+    RentedBy: '&eLoue par: &6%1'
+    MessageChange: '&eMessage defini comme ...'
+    CantDeleteResidence: '&cVous n''avez pas la permission de supprimer la residence.'
+    CantExpandResidence: '&cVous n''avez pas la permission d''elargir la taille de la residence.'
+    CantContractResidence: '&cVous n''avez pas la permission de reduire la taille de la residence.'
+    NoResHere: '&cIl n''y a pas de residence ici.'
+    OwnerNoPermission: '&cLe proprietaire n''a pas la permission de faire ca.'
+    ParentNoPermission: '&cVous n''avez pas la permission de changer quoi que ce soit dans la zone mere.'
+    ChatDisabled: '&eChat de la Residence desactive..'
+    DeleteConfirm: '&eEtes vous certain de vouloir supprimer la residence &6%1&e, si oui utilisez &6/res confirm'
+    ChangedMain: '&eResidence principale definie &6%1'
+    LwcRemoved: '&eRemoved &6%1 &eLwc protections in &6%2ms'
+    CanBeRented: '&6%1&e peut etre loue pour &6%2 &eet &6%3 &ejours. &6/res market rent'
+    CanBeBought: '&6%1&e peut etre achete pour &6%2&e. &6/res market buy'
+    IsForRent: '&6(A louer)'
+    IsForSale: '&6(A vendre)'
+    IsRented: '&6(En location)'
+  Rent:
+    Disabled: '&cRent is disabled...'
+    DisableRenew: '&eResidence &6%1 &ewill now no longer re-rent upon expire.'
+    EnableRenew: '&eResidence &6%1 &ewill now automatically re-rent upon expire.'
+    NotByYou: '&cResidence is rented not by you.'
+    isForRent: '&2Residence available for renting.'
+    MaxRentDays: '&cYou cant rent for more than &6%1 &cdays at once.'
+    OneTime: '&cCan''t extend rent time for this residence.'
+    Extended: '&eRent extended for aditional &6%1 &edays for &6%2 &eresidence'
+    Expire: '&eRent Expire Time: &6%1'
+    AutoPayTurnedOn: '&eAutoPay is turned &2ON'
+    AutoPayTurnedOff: '&eAutoPay is turned &cOFF'
+    ModifyDeny: '&cCannot modify a rented residence.'
+    Days: '&eRent days: &6%1'
+    Rented: ' &6(Rented)'
+    RentList: ' &6%1&e. &6%2 &e(&6%3&e/&6%4&e/&6%5&e) - &6%6 &6%7'
+    EvictConfirm: '&eWrite &6/res market confirm &eto evict renter from &6%1 &eresidence'
+    UnrentConfirm: '&eWrite &6/res market confirm &eto unrent &6%1 &eresidence'
+    ReleaseConfirm: '&eWrite &6/res market confirm &eto remove &6%1 &eresidence from
+      market'
+  command:
+    addedAllow: '&eAdded new allowed command for &6%1 &eresidence'
+    removedAllow: '&eRemoved allowed command for &6%1 &eresidence'
+    addedBlock: '&eAdded new blocked command for &6%1 &eresidence'
+    removedBlock: '&eRemoved blocked command for &6%1 &eresidence'
+    Blocked: '&eBlocked commands: &6%1'
+    Allowed: '&eAllowed commands: &6%1'
+  Rentable:
+    Land: '&eRentable Land: &6'
+    AllowRenewing: '&eCan Renew: &6%1'
+    StayInMarket: '&eRentable stay in market: &6%1'
+    AllowAutoPay: '&eRentable allows auto pay: &6%1'
+    DisableRenew: '&6%1 &ewill no longer renew rentable status upon expire.'
+    EnableRenew: '&6%1 &ewill now automatically renew rentable status upon expire.'
+  Economy:
+    LandForSale: '&eLand For Sale:'
+    NotEnoughMoney: '&cYou dont have enough money.'
+    MoneyCharged: '&eCharged &6%1 &eto your &6%2 &eaccount.'
+    MoneyAdded: '&eGot &6%1 &eto your &6%2 &eaccount.'
+    MoneyCredit: '&eCredited &6%1 &eto your &6%2 &eaccount.'
+    RentReleaseInvalid: '&eResidence &6%1 &eis not rented or for rent.'
+    RentSellFail: '&cCannot sell a Residence if it is for rent.'
+    SubzoneRentSellFail: '&cCannot sell a Residence if its subzone set for rent.'
+    ParentRentSellFail: '&cCannot sell a Residence if its parent zone is for rent.'
+    SubzoneSellFail: '&cCannot sell a subzone.'
+    SellRentFail: '&cCannot rent a Residence if it is for sale.'
+    ParentSellRentFail: '&cCannot rent a Residence if its parent zone is for sale.'
+    OwnerBuyFail: '&cCannot buy your own land!'
+    OwnerRentFail: '&cCannot rent your own land!'
+    AlreadySellFail: '&eResidence already for sale!'
+    LeaseRenew: '&eLease valid until &6%1'
+    LeaseRenewMax: '&eLease renewed to maximum allowed'
+    LeaseNotExpire: '&eNo such lease, or lease does not expire.'
+    LeaseRenewalCost: '&eRenewal cost for area &6%1 &eis &6%2'
+    LeaseInfinite: '&eLease time set to infinite...'
+    MarketDisabled: '&cEconomy Disabled!'
+    SellAmount: '&eSell Amount: &2%1'
+    SellList: ' &6%1&e. &6%2 &e(&6%3&e) - &6%4'
+    LeaseExpire: '&eLease Expire Time: &2%1'
+  Expanding:
+    North: '&eExpanding North &6%1 &eblocks'
+    West: '&eExpanding West &6%1 &eblocks'
+    South: '&eExpanding South &6%1 &eblocks'
+    East: '&eExpanding East &6%1 &eblocks'
+    Up: '&eExpanding Up &6%1 &eblocks'
+    Down: '&eExpanding Down &6%1 &eblocks'
+  Contracting:
+    North: '&eContracting North &6%1 &eblocks'
+    West: '&eContracting West &6%1 &eblocks'
+    South: '&eContracting South &6%1 &eblocks'
+    East: '&eContracting East &6%1 &eblocks'
+    Up: '&eContracting Up &6%1 &eblocks'
+    Down: '&eContracting Down &6%1 &eblocks'
+  Shifting:
+    North: '&eShifting North &6%1 &eblocks'
+    West: '&eShifting West &6%1 &eblocks'
+    South: '&eShifting South &6%1 &eblocks'
+    East: '&eShifting East &6%1 &eblocks'
+    Up: '&eShifting Up &6%1 &eblocks'
+    Down: '&eShifting Down &6%1 &eblocks'
+  Limits:
+    PGroup: '&7- &ePermissions Group:&3 %1'
+    RGroup: '&7- &eResidence Group:&3 %1'
+    Admin: '&7- &eResidence Admin:&3 %1'
+    CanCreate: '&7- &eCan Create Residences:&3 %1'
+    MaxRes: '&7- &eMax Residences:&3 %1'
+    MaxEW: '&7- &eMax East/West Size:&3 %1'
+    MaxNS: '&7- &eMax North/South Size:&3 %1'
+    MaxUD: '&7- &eMax Up/Down Size:&3 %1'
+    MinMax: '&7- &eMin/Max Protection Height:&3 %1 to %2'
+    MaxSubzones: '&7- &eMax Subzones:&3 %1'
+    MaxSubDepth: '&7- &eMax Subzone Depth:&3 %1'
+    MaxRents: '&7- &eMax Rents:&3 %1'
+    MaxRentDays: ' &eMax Rent days:&3 %1'
+    EnterLeave: '&7- &eCan Set Enter/Leave Messages:&3 %1'
+    NumberOwn: '&7- &eNumber of Residences you own:&3 %1'
+    Cost: '&7- &eResidence Cost Per Block:&3 %1'
+    Sell: '&7- &eResidence Sell Cost Per Block:&3 %1'
+    Flag: '&7- &eFlag Permissions:&3 %1'
+    MaxDays: '&7- &eMax Lease Days:&3 %1'
+    LeaseTime: '&7- &eLease Time Given on Renew:&3 %1'
+    RenewCost: '&7- &eRenew Cost Per Block:&3 %1'
+  Gui:
+    Set:
+      Title: '&6%1% flags'
+    Pset:
+      Title: '&6%1% %2% flags'
+    Actions:
+    - '&2Clic gauche pour activer'
+    - '&cClic droit pour desactiver'
+    - '&eShift + clic gauche pour supprimer'
+  InformationPage:
+    TopLine: '&e---< &a %1 &e >---'
+    Page: '&e-----< %1 >-----'
+    NextPage: '&e-----< %1 >-----'
+    NoNextPage: '&e-----------------------'
+    GeneralList: '&2 %1 &6- &e%2'
+    FlagsList: '&2 %1 &6- &e%2'
+    Separator: '&6▬▬▬▬▬▬▬▬▬▬'
+  Chat:
+    ChatChannelChange: Changed residence chat channel to %1
+    ChatChannelLeave: Left residence chat
+    JoinFirst: '&4Join residence chat channel first...'
+    InvalidChannel: '&4Invalid Channel...'
+    InvalidColor: '&4Incorrect color code'
+    NotInChannel: '&4Player is not in channel'
+    Kicked: '&6%1 &ewas kicked from &6%2 &echannel'
+    InvalidPrefixLength: '&4Prefix is to long. Allowed length: %1'
+    ChangedColor: '&eResidence chat channel color changed to %1'
+    ChangedPrefix: '&eResidence chat channel prefix changed to %1'
+  Shop:
+    ListTopLine: '&6%1 &eListe des Shops - Page &6%2 &eof &6%3 %4'
+    List: ' &e%1. &6%2 &e(&6%3&e) %4'
+    ListVoted: '&e%1 (&6%2&e)'
+    ListLiked: '&eLikes: &0%1'
+    VotesTopLine: '&6%1 &e%2 Liste des meilleurs votes &6- &ePage &6%3 &eof &6%4 %5'
+    VotesList: ' &e%1. &6%2 &e%3 &7%4'
+    NoDesc: '&6Aucune description de shop'
+    Desc: |-
+      &6Description:
+      %1
+    DescChange: '&6Description changee : %1'
+    NewBoard: '&6Successfully added new shop sign board'
+    BoardExist: '&cShop board already exists in this location'
+    DeleteBoard: '&6Right click sign of board you want to delete'
+    DeletedBoard: '&6Sign board removed'
+    IncorrectBoard: '&cThis is not sign board, try performing command again and clicking
+      correct sign'
+    InvalidSelection: '&cLeft click with selection tool top left sign and then right
+      click bottom right'
+    ToBigSelection: '&cYour selection is too big, max allowed is 16 blocks'
+    ToDeapSelection: '&cYour selection is too deap, max allowed is 16x16x1 blocks'
+    VoteChanged: '&6Vote changed from &e%1 &6to &e%2 &6for &e%3 &6residence'
+    Voted: '&6You voted, and gave &e%1 &6votes to &e%2 &6residence'
+    Liked: '&6You liked &e%1 &6residence'
+    AlreadyLiked: '&6You already liked &e%1 &6residence'
+    NoVotes: '&cThere is no registered votes for this residence'
+    CantVote: '&cResidence don''t have shop flag set to true'
+    VotedRange: '&6Vote range is from &e%1 &6to &e%2'
+    SignLines:
+      '1': '&e--== &8%1 &e==--'
+      '2': '&9%1'
+      '3': '&4%1'
+      '4': '&8%1&e (&8%2&e)'
+      Likes4: '&9Likes: &8%2'
+  RandomTeleport:
+    TpLimit: '&eYou can''t teleport so fast, please wait &6%1 &esec and try again'
+    TeleportSuccess: '&eTeleported to X:&6%1&e, Y:&6%2&e, Z:&6%3 &elocation'
+    IncorrectLocation: '&6Could not find correct teleport location, please wait &e%1
+      &6sec and try again.'
+    TeleportStarted: '&eTeleportation started, don''t move for next &6%4 &esec.'
+    WorldList: '&ePossible worlds: &6%1'
+  General:
+    DisabledWorld: '&cResidence plugin is disabled in this world'
+    UseNumbers: '&cPlease use numbers...'
+    # Replace all text with '' to disable this message
+    CantPlaceLava: '&cYou can''t place lava outside residence and higher than &6%1
+      &cblock level'
+    # Replace all text with '' to disable this message
+    CantPlaceWater: '&cYou can''t place Water outside residence and higher than &6%1
+      &cblock level'
+    NoPermission: '&cVous n''avez pas la permission. (residence)'
+    NoCmdPermission: '&cVous n''avez pas la permission de faire cette commande.'
+    DefaultUsage: '&eType &6/%1 ? &epour plus d''informations.'
+    MaterialGet: '&eThe material name for ID &6%1 &eis &6%2'
+    MarketList: '&e---- &6Market List &e----'
+    Separator: '&e----------------------------------------------------'
+    AdminOnly: '&cOnly admins have access to this command.'
+    InfoTool: '&e- Info Tool: &6%1'
+    ListMaterialAdd: '&6%1 &eadded to the residence &6%2'
+    ListMaterialRemove: '&6%1 &eremoved from the residence &6%2'
+    ItemBlacklisted: '&cYou are blacklisted from using this item here.'
+    WorldPVPDisabled: '&cWorld PVP is disabled.'
+    NoPVPZone: '&cNo PVP zone.'
+    InvalidHelp: '&cInvalid help page.'
+    TeleportDeny: '&cVous n''avez pas acces a la teleportation.'
+    TeleportSuccess: '&eTeleportation reussie!'
+    TeleportConfirm: '&cLa teleportation n''est pas securisee, vous allez tomber de &6%1 &cblocs.
+      Utilisez &6/res tpconfirm &cpour confirmer tout de meme la teleportation a vos risques.'
+    TeleportStarted: '&eTeleportation to &6%1 &estarted, don''t move for next &6%2
+      &esec.'
+    TeleportTitle: '&eTeleportation !'
+    TeleportTitleTime: '&6%1'
+    TeleportCanceled: '&eTeleportation canceled!'
+    NoTeleportConfirm: '&eThere is no teleports waiting for confirmation!'
+    HelpPageHeader: '&eHelp Pages - &6%1 &e- Page <&6%2 &eof &6%3&e>'
+    ListExists: '&cList already exists...'
+    ListRemoved: '&eList removed...'
+    ListCreate: '&eCreated list &6%1'
+    PhysicalAreas: '&eZone physique'
+    CurrentArea: '&eZone actuelle: &6%1'
+    TotalResSize: '&eTaille Totale: &6%1m³ (%2m²)'
+    TotalWorth: '&eValeur totale de la zone: &6%1 &e(&6%2&e)'
+    NotOnline: '&eTarget player must be online.'
+    NextPage: '&ePage suivante'
+    NextInfoPage: '&2| &ePage suivante &2>>>'
+    PrevInfoPage: '&2<<< &ePage precedente &2|'
+    GenericPages: '&ePage &6%1 &esur &6%2 &e(&6%3&e)'
+    WorldEditNotFound: '&cWorldEdit was not detected.'
+    CoordsTop: '&eX:&6%1 &eY:&6%2 &eZ:&6%3'
+    CoordsBottom: '&eX:&6%1 &eY:&6%2 &eZ:&6%3'
+    AdminToggleTurnOn: '&eAutomatic resadmin toggle turned &6On'
+    AdminToggleTurnOff: '&eAutomatic resadmin toggle turned &6Off'
+    NoSpawn: '&eYou do not have &6move &epermissions at your spawn point. Relocating'
+    CompassTargetReset: '&eYour compass has been reset'
+    CompassTargetSet: '&eYour compass now points to &6%1'
+    Ignorelist: '&2Ignorelist:&6'
+    Blacklist: '&cBlacklist:&6'
+    LandCost: '&eLand cost: &6%1'
+    'True': '&2Active (true)'
+    'False': '&cDesactive (false)'
+    Removed: '&6Supprime (remove)'
+    FlagState: '&eEtat du flag: %1'
+    Land: '&eTerre: &6%1'
+    Cost: '&eCout: &6%1 &epour &6%2 &ejours'
+    Status: '&eStatut: %1'
+    Available: '&2Disponible'
+    Size: ' &eTaille: &6%1'
+    ResidenceFlags: '&eFlags actuels: &6%1'
+    PlayersFlags: '&ePermissions de joueurs: &6%1'
+    GroupFlags: '&eGroupes: &6%1'
+    OthersFlags: '&eAutres permissions: &6%1'
+    Moved: '&eMoved...'
+    Name: '&eNom: &6%1'
+    Lists: '&eListes: &6'
+    Residences: '&eResidences&6'
+    CreatedOn: '&eCreation le: &6%1'
+    Owner: '&eProprietaire: &6%1'
+    World: '&eMonde: &6%1'
+    Subzones: '&eSous-zones:'
+    # The below lines represent various messages residence sends to the players.
+    # Note that some messages have variables such as %1 that are inserted at runtime.
+    NewPlayerInfo: '&eIf you want to create protected area for your house, please
+      use wooden axe to select opposite sides of your home and execute command &2/res
+      create YourResidenceName'
+CommandHelp:
+  Description: Contains Help for Residence
+  SubCommands:
+    res:
+      Description: Main Residence Command
+      Info:
+      - See the residence wiki for more help.
+      - 'Wiki: residencebukkitmod.wikispaces.com'
+      - Use /[command] ? <page> to view more help information.
+      SubCommands:
+        auto:
+          Description: Create maximum allowed residence around you
+          Info:
+          - '&eUsage: &6/res auto (residence name) (radius)'
+        select:
+          Description: Selection Commands
+          Info:
+          - This command selects areas for usage with residence.
+          - /res select [x] [y] [z] - selects a radius of blocks, with you in the middle.
+          SubCommands:
+            coords:
+              Description: Display selected coordinates
+              Info:
+              - 'Usage: /res select coords'
+            size:
+              Description: Display selected size
+              Info:
+              - 'Usage: /res select size'
+            auto:
+              Description: Turns on auto selection tool
+              Info:
+              - 'Usage: /res select auto [playername]'
+            cost:
+              Description: Display selection cost
+              Info:
+              - 'Usage: /res select cost'
+            vert:
+              Description: Expand Selection Vertically
+              Info:
+              - 'Usage: /res select vert'
+              - Will expand selection as high and as low as allowed.
+            sky:
+              Description: Expand Selection to Sky
+              Info:
+              - 'Usage: /res select sky'
+              - Expands as high as your allowed to go.
+            bedrock:
+              Description: Expand Selection to Bedrock
+              Info:
+              - 'Usage: /res select bedrock'
+              - Expands as low as your allowed to go.
+            expand:
+              Description: Expand selection in a direction.
+              Info:
+              - 'Usage: /res select expand <amount>'
+              - Expands <amount> in the direction your looking.
+            shift:
+              Description: Shift selection in a direction
+              Info:
+              - 'Usage: /res select shift <amount>'
+              - Pushes your selection by <amount> in the direction your looking.
+            chunk:
+              Description: Select the chunk your currently in.
+              Info:
+              - 'Usage: /res select chunk'
+              - Selects the chunk your currently standing in.
+            residence:
+              Description: Select a existing area in a residence.
+              Info:
+              - Usage /res select <Residence> <AreaID>
+              - Selects a existing area in a residence.
+            worldedit:
+              Description: Set selection using the current WorldEdit selection.
+              Info:
+              - Usage /res select worldedit
+              - Sets selection area using the current WorldEdit selection.
+        padd:
+          Description: Add player to residence.
+          Info:
+          - 'Usage: /res padd <residence name> [player]'
+          - Adds essential flags for player
+        signconvert:
+          Description: Converts signs from ResidenceSign plugin
+          Info:
+          - '&eUsage: &6/res signconvert'
+          - Will try to convert saved sign data from 3rd party plugin
+        listallhidden:
+          Description: List All Hidden Residences (ADMIN ONLY)
+          Info:
+          - 'Usage: /res listhidden <page>'
+          - Lists all hidden residences on the server.
+        bank:
+          Description: Manage money in a Residence
+          Info:
+          - 'Usage: /res bank [deposit/withdraw] [amount]'
+          - You must be standing in a Residence
+          - You must have the +bank flag.
+        create:
+          Description: Create Residences
+          Info:
+          - 'Usage: /res create <residence name>'
+        listall:
+          Description: List All Residences
+          Info:
+          - 'Usage: /res listall <page>'
+          - Lists all residences on the server. (except hidden ones that you dont own)
+        info:
+          Description: Show info on a residence.
+          Info:
+          - 'Usage: /res info <residence>'
+          - Leave off <residence> to display info for the residence your currently in.
+        area:
+          Description: Manage physical areas for a residence.
+          SubCommands:
+            list:
+              Description: List physical areas in a residence
+              Info:
+              - 'Usage: /res area list [residence] <page>'
+            listall:
+              Description: List coordinates and other info for areas
+              Info:
+              - 'Usage: /res area listall [residence] <page>'
+            add:
+              Description: Add physical areas to a residence
+              Info:
+              - 'Usage: /res area add [residence] [areaID]'
+              - You must first select two points first.
+            remove:
+              Description: Remove physical areas from a residence
+              Info:
+              - 'Usage: /res area remove [residence] [areaID]'
+            replace:
+              Description: Replace physical areas in a residence
+              Info:
+              - 'Usage: /res area replace [residence] [areaID]'
+              - You must first select two points first.
+              - Replacing a area will charge the difference in size if the new area is bigger.
+        give:
+          Description: Give residence to player.
+          Info:
+          - '&eUsage: &6/res give <residence name> [player]'
+          - Gives your owned residence to target player
+        renamearea:
+          Description: Rename area name for residence
+          Info:
+          - '&eUsage: &6/res removeworld [residence] [oldAreaName] [newAreaName]'
+        contract:
+          Description: Contracts residence in direction you looking
+          Info:
+          - 'Usage: /res contract (residence [amount])'
+          - Contracts residence in direction you looking.
+          - Residence name is optional
+        check:
+          Description: Check flag state for you
+          Info:
+          - '&eUsage: &6/res check [residence] [flag] (playername)'
+        gset:
+          Description: Set flags on a specific group for a Residence.
+          Info:
+          - 'Usage: /res gset <residence> [group] [flag] [true/false/remove]'
+          - To see a list of flags, use /res flags ?
+        list:
+          Description: List Residences
+          Info:
+          - 'Usage: /res list <player> <page>'
+          - Lists all the residences a player owns (except hidden ones).
+          - If listing your own residences, shows hidden ones as well.
+          - To list everyones residences, use /res listall.
+        version:
+          Description: Show residence version
+          Info:
+          - 'Usage: /res version'
+        tool:
+          Description: Shows residence selection and info tool names
+          Info:
+          - '&eUsage: &6/res tool'
+        pdel:
+          Description: Remove player from residence.
+          Info:
+          - 'Usage: /res pdel <residence name> [player]'
+          - Removes essential flags from player
+        market:
+          Description: Buy, Sell, or Rent Residences
+          Info:
+          - '&eUsage: &6/res market ? for more Info'
+          SubCommands:
+            Info:
+              Description: Get economy Info on residence
+              Info:
+              - 'Usage: /res market Info [residence]'
+              - Shows if the Residence is for sale or for rent, and the cost.
+            list:
+              Description: Lists rentable and for sale residences.
+              Info:
+              - 'Usage: /res market list'
+              SubCommands:
+                rent:
+                  Description: Lists rentable residences.
+                  Info:
+                  - '&eUsage: &6/res market list rent'
+                sell:
+                  Description: Lists for sale residences.
+                  Info:
+                  - '&eUsage: &6/res market list sell'
+            sell:
+              Description: Sell a residence
+              Info:
+              - 'Usage: /res market sell [residence] [amount]'
+              - Puts a residence for sale for [amount] of money.
+              - Another player can buy the residence with /res market buy
+            sign:
+              Description: Set market sign
+              Info:
+              - 'Usage: /res market sign [residence]'
+              - Sets market sign you are looking at.
+            buy:
+              Description: Buy a residence
+              Info:
+              - 'Usage: /res market buy [residence]'
+              - Buys a Residence if its for sale.
+            unsell:
+              Description: Stops selling a residence
+              Info:
+              - 'Usage: /res market unsell [residence]'
+            rent:
+              Description: Rent a residence
+              Info:
+              - 'Usage: /res market rent [residence] <autorenew>'
+              - Rents a residence.  Autorenew can be either true or false.  If true, the residence will be automatically re-rented upon expire if the residence owner has allowed it.
+            rentable:
+              Description: Make a residence rentable.
+              Info:
+              - 'Usage: /res market rentable [residence] [cost] [days] <repeat>'
+              - Makes a residence rentable for [cost] money for every [days] number of days.  If <repeat> is true, the residence will automatically be able to be rented again after the current rent expires.
+            autopay:
+              Description: Sets residence AutoPay to given value
+              Info:
+              - '&eUsage: &6/res market autopay <residence> [true/false]'
+            payrent:
+              Description: Pays rent for defined residence
+              Info:
+              - '&eUsage: &6/res market payrent <residence>'
+            confirm:
+              Description: Confirms residence unrent/release action
+              Info:
+              - '&eUsage: &6/res market confirm'
+            release:
+              Description: Remove a residence from rent or rentable.
+              Info:
+              - 'Usage: /res market release [residence]'
+              - If you are the renter, this command releases the rent on the house for you.
+              - If you are the owner, this command makes the residence not for rent anymore.
+        rc:
+          Description: Joins current or defined residence chat chanel
+          Info:
+          - '&eUsage: &6/res rc (residence)'
+          - Teleports you to random location in defined world.
+          SubCommands:
+            leave:
+              Description: Leaves current residence chat chanel
+              Info:
+              - '&eUsage: &6/res rc leave'
+              - If you are in residence chat cnahel then you will leave it
+            setcolor:
+              Description: Sets residence chat chanel text color
+              Info:
+              - '&eUsage: &6/res rc setcolor [colorCode]'
+              - Sets residence chat chanel text color
+            setprefix:
+              Description: Sets residence chat chanel prefix
+              Info:
+              - '&eUsage: &6/res rc setprefix [newName]'
+              - Sets residence chat chanel prefix
+            kick:
+              Description: Kicks player from chanel
+              Info:
+              - '&eUsage: &6/res rc kick [player]'
+              - Kicks player from chanel
+        expand:
+          Description: Expands residence in direction you looking
+          Info:
+          - 'Usage: /res expand (residence) [amount]'
+          - Expands residence in direction you looking.
+          - Residence name is optional
+        compass:
+          Description: Set compass ponter to residence location
+          Info:
+          - '&eUsage: &6/res compass <residence>'
+        lists:
+          Description: Predefined permission lists
+          Info:
+          - Predefined permissions that can be applied to a residence.
+          SubCommands:
+            add:
+              Description: Add a list
+              Info:
+              - 'Usage: /res lists add <listname>'
+            remove:
+              Description: Remove a list
+              Info:
+              - 'Usage: /res lists remove <listname>'
+            apply:
+              Description: Apply a list to a residence
+              Info:
+              - 'Usage: /res lists apply <listname> <residence>'
+            set:
+              Description: Set a flag
+              Info:
+              - 'Usage: /res lists set <listname> <flag> <value>'
+            pset:
+              Description: Set a player flag
+              Info:
+              - 'Usage: /res lists pset <listname> <player> <flag> <value>'
+            gset:
+              Description: Set a group flag
+              Info:
+              - 'Usage: /res lists gset <listname> <group> <flag> <value>'
+            view:
+              Description: View a list.
+              Info:
+              - '&eUsage: &6/res lists view <listname>'
+        reset:
+          Description: Reset residence to default flags.
+          Info:
+          - '&eUsage: &6/res reset <residence>'
+          - Resets the flags on a residence to their default.  You must be the owner or an admin to do this.
+        gui:
+          Description: Opens gui (Spout only)
+          Info:
+          - '&eUsage: &6/res gui <residence>'
+        listhidden:
+          Description: List Hidden Residences (ADMIN ONLY)
+          Info:
+          - 'Usage: /res listhidden <player> <page>'
+          - Lists hidden residences for a player.
+        resbank:
+          Description: Deposit or widraw money from residence bank
+          Info:
+          - '&eUsage: &6/res resbank [deposit/withdraw] [amount]'
+        setmain:
+          Description: Sets defined residence as main to show up in chat as prefix
+          Info:
+          - '&eUsage: &6/res setmain (residence)'
+          - Set defined residence as main.
+        server:
+          Description: Make land server owned (admin only).
+          Info:
+          - 'Usage: /resadmin server [residence]'
+          - Make a residence server owned.
+        rt:
+          Description: Teleports to random location in world
+          Info:
+          - 'Usage: /res rt'
+          - Teleports you to random location in defined world.
+        mirror:
+          Description: Mirrors Flags
+          Info:
+          - 'Usage: /res mirror [Source Residence] [Target Residence]'
+          - Mirrors flags from one residence to another.  You must be owner of both or a admin to do this.
+        shop:
+          Description: Manage residence shop
+          Info:
+          - Manages residence shop feature
+          SubCommands:
+            list:
+              Description: Shows list of res shops
+              Info:
+              - 'Usage: /res shop list'
+              - Shows full list of all residences with shop flag
+            vote:
+              Description: Vote for residence shop
+              Info:
+              - 'Usage: /res shop vote <residence> [amount]'
+              - Votes for current or defined residence
+            like:
+              Description: Give like for residence shop
+              Info:
+              - 'Usage: /res shop like <residence>'
+              - Gives like for residence shop
+            votes:
+              Description: Shows res shop votes
+              Info:
+              - 'Usage: /res shop votes <residence> <page>'
+              - Shows full vote list of current or defined residence shop
+            likes:
+              Description: Shows res shop likes
+              Info:
+              - 'Usage: /res shop likes <residence> <page>'
+              - Shows full like list of current or defined residence shop
+            setdesc:
+              Description: Sets residence shop description
+              Info:
+              - 'Usage: /res shop setdesc [text]'
+              - Sets residence shop description. Color code supported. For new line use /n
+            createboard:
+              Description: Create res shop board
+              Info:
+              - 'Usage: /res shop createboard [place]'
+              - Creates res shop board from selected area. Place - position from which to start filling board
+            deleteboard:
+              Description: Deletes res shop board
+              Info:
+              - 'Usage: /res shop deleteboard'
+              - Deletes res shop board bi right clicking on one of signs
+        lset:
+          Description: Change blacklist and ignorelist options
+          Info:
+          - 'Usage: /res lset <residence> [blacklist/ignorelist] [material]'
+          - 'Usage: /res lset <residence> info'
+          - Blacklisting a material prevents it from being placed in the residence.
+          - Ignorelist causes a specific material to not be protected by Residence.
+        pset:
+          Description: Set flags on a specific player for a Residence.
+          Info:
+          - 'Usage: /res pset <residence> [player] [flag] [true/false/remove]'
+          - 'Usage: /res pset <residence> [player] removeall'
+          - To see a list of flags, use /res flags ?
+        flags:
+          Description: List of flags
+          Info:
+          - '&aPour activer un flag : &2TRUE&r ; &cPour désactiver un falg : &4FALSE'
+          - '        '
+          - '&ctrusted - &dDonne la permission de construire, utiliser, bouger, stocker et se teleporter a un joueur.'
+          - '&abuild - &7Autorise ou non la construction'
+          - '&ause - &7Autorise ou non l utilisation de portes, boutons, leviers etc...'
+          - '&amove - &7Autorise ou non le mouvement dans la residence.'
+          - '&acontainer - &7Autorise ou non l utilisation de fours, coffres, dispensers, etc...'
+          - '&aplace - &7Autorise ou non le placement de blocs. Ce flag prime sur le flag build.'
+          - '&adestroy - &7Autorise ou non la destruction de blocs. Ce flag prime sur le flag build.'
+          - '&apvp - &7Autorise ou non le pvp.'
+          - '&atp - &7Autorise ou non la teleportation a votre residence.'
+          - '&aadmin - &7Autorise ou non la possibilite de changer les flags de la residence  NE PAS DONNER A N IMPORTE QUI.'
+          - '&asubzone - &7Autorise ou non un joueur a faire des sous zones.'
+          - '&amonsters - &7Autorise ou non le spawn de mobs.'
+          - '&aanimals - &7Autorise ou non le spawn d animaux.'
+          - '&ahealing - &7Si active, les joueurs seront soignes dans la residence.'
+          - '&atnt - &7Autorise ou non l explosion de TNT'
+          - '&acreeper - &7Autorise ou non l explosion de creeper'
+          - '&aignite - &7Autorise ou non la possibilite de mettre le feu.'
+          - '&afirespread - &7Autorise ou non la propagation du feu.'
+          - '&abucket - &7Autorise ou non l utilisation de seau.'
+          - '&aflow - &7Autorise ou non l ecoulement d eau ou de lave.'
+          - '&alavaflow - &7Autorise ou non l ecoulement de lave.'
+          - '&awaterflow - &7Autorise ou non l ecoulement d eau.'
+          - '&adamage - &7Autorise ou non les degats.'
+          - '&apiston - &7Autorise ou non l activation des pistons.'
+          - '&ahidden - &7Permet de cacher votre residence de la /res list.'
+          - '&acake - &7Autorise ou non un joueur a manger un gateau.'
+          - '&alever - &7Autorise ou non l utilisation de levier.'
+          - '&abutton - &7Autorise ou non l utilisation de bouttons.'
+          - '&adiode - &7Autorise ou non l utilisation de redstone repeaters.'
+          - '&adoor - &7Autorise ou non l utilisation de portes et trappes.'
+          - '&atable - &7Autorise ou non l utilisation de table de craft.'
+          - '&aenchant - &7Autorise ou non l utilisation de table d enchantement.'
+          - '&abrew - &7Autorise ou non l utilisation d alambic.'
+          - '&abed - &7Autorise ou non l utilisation d un lit.'
+          - '&apressure - &7Autorise ou non l utilisation de plaques de pressions.'
+          - '&anote - &7Autorise ou non l utilisation de blocs de musique.'
+          - '&aredstone - &7Donne les permissions d utilisation des leviers, diodes, bouttons, plaques et blocs de musiques.'
+          - '&acraft - &7Donne les permissions d utilisation des tables de craft, enchant et alambic.'
+          - '&aburn - &7allows or denys Mob combustion in residences'
+          SubCommands:
+            anvil:
+              Description: Autorise ou non l utilisation d une enclume.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> anvil true/false/remove'
+            admin:
+              Description: Autorise ou non la possibilite de changer les flags de la residence  NE PAS DONNER A N IMPORTE QUI.
+              Info:
+              - '&eUsage: &6/res pset <residence> [flag] true/false/remove'
+            animalkilling:
+              Description: Autorise ou non le meurtre d animaux.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            animals:
+              Description: Autorise ou non le spawn d animaux.
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            backup:
+              Description: Prevent riding a horse
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            bank:
+              Description: Autorise ou non le depot ou retrait d argent en banque.
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            bed:
+              Description: Autorise ou non l utilisation des lits.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            beacon:
+              Description: Autorise ou non l interaction avec une balise.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> beacon true/false/remove'
+            brew:
+              Description: Autorise ou non l utilisation d un alambic
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            build:
+              Description: Autorise ou non la construction dans la residence.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            burn:
+              Description: allows or denys Mob combustion in residences
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            button:
+              Description: Autorise ou non l utilisation des bouttons.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            cake:
+              Description: Autorise ou non de manger un gateau
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            canimals:
+              Description: allows or denys custom animal spawns
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            chorustp:
+              Description: Autorise ou non la teleportation avec un fruit de l end.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            chat:
+              Description: Autorise a rejoindre le chat
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            cmonsters:
+              Description: allows or denys custom monster spawns
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            commandblock:
+              Description: Autorise ou non l interaction avec les commands blocks.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> commandblock true/false/remove'
+            command:
+              Description: Autorise ou non l utilisation de commandes.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            container:
+              Description: &7Autorise ou non l utilisation de fours, coffres, dispensers, etc...
+              Info:
+              - '&eUsage: &6/res set/pset  <residence> [flag] true/false/remove'
+            coords:
+              Description: Hides residence coordinates
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            craft:
+              Description: Donne les permissions d utilisation des tables de craft, enchant et alambic.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            creeper:
+              Description: Autorise ou non les explosions de creeper.
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            dragongrief:
+              Description: Prevents ender dragon block griefing
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            day:
+              Description: sets day time in residence
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            dye:
+              Description: Autorise ou non la tonte des moutons.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            damage:
+              Description: Autorise ou non les degats.
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            decay:
+              Description: Autorise ou non la chute de pousses d arbres.
+              Info:
+              - '&eUsage: &6/res set <residence> decay true/false/remove'
+            destroy:
+              Description: Autorise ou non la destruction de blocs.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            dryup:
+              Description: Prevents land from drying up
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            diode:
+              Description: allows or denys players to use redstone repeaters
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            door:
+              Description: allows or denys players to use doors and trapdoors
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            egg:
+              Description: Allows or denys interaction with dragon egg
+              Info:
+              - '&eUsage: &6/res set/pset <residence> egg true/false/remove'
+            enchant:
+              Description: allows or denys players to use enchanting tables
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            explode:
+              Description: Allows or denys explosions in residences
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            enderpearl:
+              Description: allow or disallow teleporting to the residence with enderpearl
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            fallinprotection:
+              Description: Protects from blocks falling into residence
+              Info:
+              - '&eUsage: &6/res set <residence> fallinprotection true/false/remove'
+            falldamage:
+              Description: Protects players from fall damage
+              Info:
+              - '&eUsage: &6/res set <residence> falldamage true/false/remove'
+            feed:
+              Description: setting to true makes the residence feed its occupants
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            fireball:
+              Description: Allows or denys fire balls in residences
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            firespread:
+              Description: allows or denys fire spread
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            flowinprotection:
+              Description: Allows or denys liquid flow into residence
+              Info:
+              - '&eUsage: &6/res set <residence> flowinprotection true/false/remove'
+            flow:
+              Description: allows or denys liquid flow
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            flowerpot:
+              Description: Allows or denys interaction with flower pot
+              Info:
+              - '&eUsage: &6/res set/pset <residence> flowerpot true/false/remove'
+            grow:
+              Description: Allows or denys plant growing
+              Info:
+              - '&eUsage: &6/res set <residence> grow true/false/remove'
+            glow:
+              Description: Players will start glowing when entering residence
+              Info:
+              - '&eUsage: &6/res set <residence> glow true/false/remove'
+            hotfloor:
+              Description: Prevent damage from magma blocks
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            hidden:
+              Description: Permet de cacher votre residence de la /res list
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            hook:
+              Description: allows or denys fishing rod hooking entities
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            healing:
+              Description: setting to true makes the residence heal its occupants
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            iceform:
+              Description: Prevents from ice forming
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            icemelt:
+              Description: Prevents ice from melting
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            ignite:
+              Description: allows or denys fire ignition
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            jump2:
+              Description: Allows to jump 2 blocks high
+              Info:
+              - '&eUsage: &6/res set <residence> jump2 true/false/remove'
+            jump3:
+              Description: Allows to jump 3 blocks high
+              Info:
+              - '&eUsage: &6/res set <residence> jump3 true/false/remove'
+            keepinv:
+              Description: Players keeps inventory after death
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            keepexp:
+              Description: Players keeps exp after death
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            lavaflow:
+              Description: allows or denys lava flow, overrides flow
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            leash:
+              Description: allows or denys aninal leash
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            lever:
+              Description: allows or denys players to use levers
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            mobexpdrop:
+              Description: Prevents mob droping exp on death
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            mobitemdrop:
+              Description: Prevents mob droping items on death
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            mobkilling:
+              Description: Autorise ou non le meurtre de mobs.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            monsters:
+              Description: Autorise ou non le spawn de monstres.
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            move:
+              Description: Autorise ou non le mouvement dans votre residence.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            nanimals:
+              Description: allows or denys natural animal spawns
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            nmonsters:
+              Description: allows or denys natural monster spawns
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            night:
+              Description: sets night time in residence
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            nofly:
+              Description: Autorise ou non le fly dans votre residence.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            nomobs:
+              Description: Prevents monsters from entering residence residence
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            note:
+              Description: allows or denys players to use note blocks
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            nodurability:
+              Description: Prevents item durability loss
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            overridepvp:
+              Description: Overrides any plugin pvp protection
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            pressure:
+              Description: allows or denys players to use pressure plates
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            piston:
+              Description: allow or deny pistons from pushing or pulling blocks in the residence
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            pistonprotection:
+              Description: Enables or disabled piston block move in or out of residence
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            place:
+              Description: Autorise ou non le placement de blocs.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            pvp:
+              Description: Autorise ou non le pvp. 
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            rain:
+              Description: Sets weather to rainny in residence
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            redstone:
+              Description: Gives lever, diode, button, pressure, note flags
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            respawn:
+              Description: Automaticaly respawns player
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            riding:
+              Description: Prevent riding a horse
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            sun:
+              Description: Sets weather to sunny in residence
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            shop:
+              Description: Ajoute votre residence a la liste des shops joueurs.
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            snowtrail:
+              Description: Prevents snowman snow trails
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            spread:
+              Description: Prevents block spreading
+              Info:
+              - '&eUsage: &6/res set <residence> spread true/false/remove'
+            snowball:
+              Description: Prevents snowball knockback
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            sanimals:
+              Description: allows or denys spawner or spawn egg animal spawns
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            shear:
+              Description: allows or denys sheep shear
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            smonsters:
+              Description: allows or denys spawner or spawn egg monster spawns
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            subzone:
+              Description: allow a player to make subzones in the residence
+              Info:
+              - '&eUsage: &6/res pset <residence> [flag] true/false/remove'
+            table:
+              Description: allows or denys players to use workbenches
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            tnt:
+              Description: allow or deny tnt explosions
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            tp:
+              Description: Autorise ou non la teleportation a votre residence.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            trade:
+              Description: Allows or denys villager trading in residence
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            trample:
+              Description: Allows or denys crop trampling in residence
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            trusted:
+              Description: Donne la permission de construire, bouger, utiliser, se téléporter, stocker a un joueur
+              Info:
+              - '&eUsage: &6/res pset <residence> [flag] true/false/remove'
+            use:
+              Description: Autorise ou non l utilisation de portes, leviers, boutons etc...
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            vehicledestroy:
+              Description: Autorise ou non la destruction de vehicules comme le bateau.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            witherspawn:
+              Description: Autorise ou non le spawn de wither.
+              Info:
+              - '&eUsage: &6/res set <residence> witherspawn true/false/remove'
+            witherdamage:
+              Description: Autorise ou non les degats infliges par le wither
+              Info:
+              - '&eUsage: &6/res set <residence> witherdamage true/false/remove'
+            witherdestruction:
+              Description: Autorise ou non la destruction inflige par le wither.
+              Info:
+              - '&eUsage: &6/res set <residence> witherdestruction true/false/remove'
+            waterflow:
+              Description: Autorise ou non l ecoulement de l eau.
+              Info:
+              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+            wspeed1:
+              Description: Change players walk speed in residence to %1
+              Info:
+              - '&eUsage: &6/res set <residence> wspeed1 true/false/remove'
+            wspeed2:
+              Description: Change players walk speed in residence to %1
+              Info:
+              - '&eUsage: &6/res set <residence> wspeed2 true/false/remove'
+        show:
+          Description: Show residence boundaries
+          Info:
+          - '&eUsage: &6/res show <residence>'
+        remove:
+          Description: Remove residences.
+          Info:
+          - 'Usage: /res remove <residence name>'
+        signupdate:
+          Description: Updated residence signs (Admin only)
+          Info:
+          - 'Usage: /res signupdate'
+        current:
+          Description: Show residence your currently in.
+          Info:
+          - 'Usage: /res current'
+        reload:
+          Description: reload lanf or config files
+          Info:
+          - '&eUsage: &6/res reload [config/lang]'
+        setowner:
+          Description: Change owner of a residence (admin only).
+          Info:
+          - 'Usage: /resadmin setowner [residence] [player]'
+        unstuck:
+          Description: Teleports outside of residence
+          Info:
+          - '&eUsage: &6/res unstuck'
+        subzone:
+          Description: Create subzones in residences.
+          Info:
+          - 'Usage: /res subzone <residence name> [subzone name]'
+          - If residence name is left off, will attempt to use residence your standing in.
+        removeworld:
+          Description: Remove all residences from world
+          Info:
+          - '&eUsage: &6/res removeworld [worldname]'
+          - Can only be used from console
+        limits:
+          Description: Show your limits.
+          Info:
+          - 'Usage: /res limits'
+          - Shows the limitations you have on creating and managing residences.
+        set:
+          Description: Set general flags on a Residence
+          Info:
+          - 'Usage: /res set <residence> [flag] [true/false/remove]'
+          - To see a list of flags, use /res flags ?
+          - These flags apply to any players who do not have the flag applied specifically to them. (see /res pset ?)
+        clearflags:
+          Description: Remove all flags from residence
+          Info:
+          - '&eUsage: &6/res clearflags <residence>'
+        message:
+          Description: Manage residence enter / leave messages
+          Info:
+          - 'Usage: /res message <residence> [enter/leave] [message]'
+          - Set the enter or leave message of a residence.
+          - 'Usage: /res message <residence> remove [enter/leave]'
+          - Removes a enter or leave message.
+        command:
+          Description: Manages allowed or blocked commands in residence
+          Info:
+          - '&eUsage: &6/res command <residence> <allow/block/list> <command>'
+          - Shows list, adds or removes allowed or disabled commands in residence
+          - Use _ to include command with multiple variables
+        confirm:
+          Description: Confirms removal of a residence.
+          Info:
+          - 'Usage: /res confirm'
+          - Confirms removal of a residence.
+        resadmin:
+          Description: Enabled or disable residence admin
+          Info:
+          - '&eUsage: &6/res resadmin [on/off]'
+        tpset:
+          Description: Set the teleport location of a Residence
+          Info:
+          - 'Usage: /res tpset'
+          - This will set the teleport location for a residence to where your standing.
+          - You must be standing in the residence to use this command.
+          - You must also be the owner or have the +admin flag for the residence.
+        removeall:
+          Description: Remove all residences owned by a player.
+          Info:
+          - 'Usage: /res removeall [owner]'
+          - Removes all residences owned by a specific player.
+          - Requires /resadmin if you use it on anyone besides yourself.
+        tpconfirm:
+          Description: Ignore unsafe teleportation warning
+          Info:
+          - 'Usage: /res tpconfirm'
+          - Teleports you to a residence, when teleportation is unsafe.
+        material:
+          Description: Check if material exists by its id
+          Info:
+          - '&eUsage: &6/res material [material]'
+        kick:
+          Description: Kicks player from residence.
+          Info:
+          - 'Usage: /res kick <player>'
+          - You must be the owner or an admin to do this.
+          - Player should be online.
+        rename:
+          Description: Renames a residence.
+          Info:
+          - 'Usage: /res rename [OldName] [NewName]'
+          - You must be the owner or an admin to do this.
+          - The name must not already be taken by another residence.
+        sublist:
+          Description: List Residence Subzones
+          Info:
+          - 'Usage: /res sublist <residence> <page>'
+          - List subzones within a residence.
+        lease:
+          Description: Manage residence leases
+          Info:
+          - 'Usage: /res lease [renew/cost] [residence]'
+          - /res lease cost will show the cost of renewing a residence lease.
+          - /res lease renew will renew the residence provided you have enough money.
+          SubCommands:
+            set:
+              Description: Set the lease time (admin only)
+              Info:
+              - 'Usage: /resadmin lease set [residence] [#days/infinite]'
+              - Sets the lease time to a specified number of days, or infinite.
+            renew:
+              Description: Renew the lease time
+              Info:
+              - 'Usage: /resadmin lease renew <residence>'
+              - Renews the lease time for current or specified residence.
+            expires:
+              Description: Lease end date
+              Info:
+              - 'Usage: /resadmin lease expires <residence>'
+              - Shows when expires residence lease time.
+            cost:
+              Description: Shows renew cost
+              Info:
+              - 'Usage: /resadmin lease cost <residence>'
+              - Shows how much money you need to renew residence lease.
+        tp:
+          Description: Teleport to a residence
+          Info:
+          - 'Usage: /res tp [residence]'
+          - Teleports you to a residence, you must have +tp flag access or be the owner.
+          - Your permission group must also be allowed to teleport by the server admin.
+        resreload:
+          Description: Reload residence (admin only).
+          Info:
+          - 'Usage: /resreload'
+        resload:
+          Description: Load residence save file (UNSAFE, admin only).
+          Info:
+          - 'Usage: /resload'
+          - UNSAFE command, does not save residences first.
+          - Loads the residence save file after you have made changes.

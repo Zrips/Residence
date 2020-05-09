@@ -1,0 +1,277 @@
+#These are Global Settings for Residence.
+Global:
+    # These are world flags that are applied when the player is NOT within a residence.
+    Flags:
+        Global: #these are default for all worlds unless specified below, they can be overridden per group
+            use: true
+            build: true
+            ignite: true
+            firespread: true
+            damage: true
+            creeper: true
+            tnt: true
+            pvp: true
+        WorldNameHere: #here you can set flags for individual worlds, these override Global
+            #build: true
+    # This gives permission to change certain flags to all groups, unless specifically denied to the group.
+    FlagPermission:
+        move: true
+        build: true
+        place: true
+        destroy: true
+        use: true
+        container: true
+        pvp: true
+        tp: true
+        ignite: true
+        firespread: true
+        flow: true
+        lavaflow: true
+        waterflow: true
+        creeper: true
+        tnt: true
+        monsters: true
+        animals: true
+        animalkilling: true
+        mobkilling: true
+        vehicledestroy: true
+        trade: true
+        shear: true
+        leash: true
+        nofly: false
+        subzone: true
+        healing: true
+        piston: true
+        diode: true
+        lever: true
+        button: true
+        door: true
+        table: true
+        enchant: true
+        brew: true
+        bed: true
+        cake: true
+        note: true
+        trample: true
+        burn: true
+        explode: true
+        fireball: true
+        command: false
+        day: true
+        night: true
+        chat: true
+        hidden: false
+        overridepvp: false
+        keepinv: false
+        keepexp: false
+        shop: true
+        bank: false
+    # This sets GUI items to represent each flag, if not given, then gray wool will be used
+    FlagGui:
+        animalkilling: CHICKEN
+        animals: PIG_SPAWN_EGG
+        bed: WHITE_BED
+        brew: BREWING_STAND
+        build: BRICKS
+        burn: TORCH
+        button: OAK_BUTTON
+        cake: CAKE
+        canimals: SHEEP_SPAWN_EGG
+        chat: WRITABLE_BOOK
+        cmonsters: CREEPER_SPAWN_EGG
+        command: COMMAND_BLOCK
+        container: CHEST_MINECART
+        creeper: CREEPER_SPAWN_EGG
+        destroy: END_STONE
+        diode: REPEATER
+        door: OAK_DOOR
+        enchant: ENCHANTING_TABLE
+        explode: TNT_MINECART
+        fireball: FIRE_CHARGE
+        firespread: BLAZE_POWDER
+        flow: LILY_PAD
+        healing: POTION
+        ignite: FLINT_AND_STEEL
+        lavaflow: LAVA_BUCKET
+        leash: LEAD
+        lever: LEVER
+        mobkilling: ROTTEN_FLESH
+        monsters: SPAWNER
+        move: LEATHER_BOOTS
+        nanimals: COW_SPAWN_EGG
+        nmonsters: SKELETON_SPAWN_EGG
+        nofly: ORANGE_CARPET
+        nomobs: BARRIER
+        note: NOTE_BLOCK
+        piston: PISTON
+        place: SEA_LANTERN
+        pvp: WOODEN_SWORD
+        sanimals: RABBIT_SPAWN_EGG
+        shear: SHEARS
+        smonsters: ZOMBIE_SPAWN_EGG
+        subzone: GRAY_STAINED_GLASS_PANE
+        table: CRAFTING_TABLE
+        tnt: TNT
+        tp: END_PORTAL_FRAME
+        trade: EMERALD
+        trample: DIRT
+        use: STONE_PRESSURE_PLATE
+        vehicledestroy: MINECART
+        waterflow: WATER_BUCKET
+        anvil: ANVIL
+        admin: BEDROCK
+        anvilbreak: ANVIL
+        backup: BOOKSHELF
+        bank: ENDER_CHEST
+        beacon: BEACON
+        chorustp: CHORUS_FRUIT
+        commandblock: COMMAND_BLOCK
+        coords: COMPASS
+        craft: STONE
+        dragongrief: DIRT
+        day: DANDELION
+        dye: ORANGE_DYE
+        damage: GOLDEN_SWORD
+        decay: OAK_LEAVES
+        dryup: BLUE_STAINED_GLASS_PANE
+        egg: EGG
+        enderpearl: ENDER_PEARL
+        fallinprotection: SAND
+        falldamage: LEATHER_BOOTS
+        feed: COOKED_BEEF
+        friendlyfire: SUNFLOWER
+        flowinprotection: OAK_BOAT
+        flowerpot: FLOWER_POT
+        grow: WHEAT_SEEDS
+        glow: SEA_LANTERN
+        hotfloor: MAGMA_BLOCK
+        hidden: GLASS_PANE
+        hook: FISHING_ROD
+        iceform: ICE
+        icemelt: ICE
+        itemdrop: FEATHER
+        itempickup: GUNPOWDER
+        jump2: SLIME_BLOCK
+        jump3: SLIME_BLOCK
+        keepinv: LEATHER_HELMET
+        keepexp: GOLDEN_APPLE
+        mobexpdrop: MELON_SEEDS
+        mobitemdrop: COCOA_BEANS
+        night: BLACK_WOOL
+        fly: ORANGE_CARPET
+        nodurability: ANVIL
+        overridepvp: IRON_SWORD
+        pressure: LIGHT_WEIGHTED_PRESSURE_PLATE
+        pistonprotection: STICKY_PISTON
+        rain: BLUE_ORCHID
+        redstone: SUNFLOWER
+        respawn: SUNFLOWER
+        riding: SADDLE
+        shoot: ARROW
+        sun: SUNFLOWER
+        shop: ITEM_FRAME
+        snowtrail: SNOW
+        spread: SNOWBALL
+        snowball: SNOWBALL
+        trusted: STONE
+        witherspawn: WITHER_SKELETON_SKULL
+        witherdamage: WITHER_SKELETON_SKULL
+        witherdestruction: WITHER_SKELETON_SKULL
+        wspeed1: POTION
+        wspeed2: POTION
+        testing: WHITE_WOOL
+        phantomspawn: BROWN_WOOL
+    # These are default flags applied to all residences from any user group.
+    ResidenceDefault:
+        build: false
+        destroy: false
+        use: false
+        container: false
+        pvp: false
+        tnt: false
+        creeper: false
+        ignite: false
+        firespread: false
+        vehicledestroy: false
+        animalkilling: false
+        hook: false
+        shear: false
+        leash: false
+        pistonprotection: true
+        tp: true
+        explode: false
+    # These are default flags applied to the residence creator of any group.
+    CreatorDefault:
+        build: true
+        destroy: true
+        move: true
+        use: true
+        ignite: true
+        container: true
+        animalkilling: true
+        mobkilling: true
+        vehicledestroy: true
+        trade: true
+        shear: true
+        leash: true
+    # These are default flags applied to the residence renter of any group.        
+    RentedDefault:
+        container: true
+        ignite: true
+        move: true
+        trade: true
+        mobkilling: true
+        shear: true
+        build: true
+        use: true
+        destroy: true
+        vehicledestroy: true
+        leash: true
+        animalkilling: true
+        admin: true
+     # These are grouped flags, so when using /res pset nickname redstone true, player will get all flags in list, same when setting to false or removing them.
+    GroupedFlags:
+      redstone:
+      - note
+      - pressure
+      - lever
+      - button
+      - diode
+      craft:
+      - brew
+      - table
+      - enchant
+      trusted:
+      - use
+      - tp
+      - build
+      - destroy
+      - container
+      - move
+      - leash
+      - animalkilling
+      - mobkilling
+      - shear
+      - chat
+      - beacon
+      fire:
+      - ignite
+      - firespread
+ItemList: #this is where you can create blacklists / whitelists
+     DefaultList: #list name is not important, as long as it is unique. Its good to use a descripive name. 
+        #type of the list, can be blacklist, whitelist, or ignorelist
+        Type: blacklist
+        #If you want, you can have this list only apply to one world, otherwise it applies to all worlds
+        #World: world
+        #You can also have the list apply only to one group, otherwise it applies for all groups
+        #Group: default
+        #this is the actual list of material names that this list allows or disallows
+        #You can look up the material name by item ID in game by typing /res material <id>
+        #Alternativly, you can simply use the item ID in the list, but its less descriptive and harder to see what the list allows or dissallows at a glance
+        Items: 
+           - 'BEDROCK'
+           - 'LAVA'
+           - 'WATER'
+           - 'STATIONARY_LAVA'
+           - 'STATIONARY_WATER'
+           - 'MOB_SPAWNER'

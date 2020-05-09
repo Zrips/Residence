@@ -5,13 +5,10 @@
 /nbproject
 
 #build
-/pom.xml
 /dist
 /build
 /bin
 /lib
-/manifest.mf
 
-#Repo
-README
-LICENSE.txt
+target/
+.idea/
