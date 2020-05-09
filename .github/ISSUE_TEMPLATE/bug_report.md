@@ -23,10 +23,12 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
+**Environment (Issues without enough info will be closed!):**
  - Java version: [e.g. 11]
  - Minecraft Version [e.g. 1.15.2]
  - Spigot/paper build: 
+ - Vault: [e.g. 1.7.2]
+ - Residence: [e.g. 5.0-SNAPSHOT]
 
 **Additional context**
 Add any other context about the problem here.
