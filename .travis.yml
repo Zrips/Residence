@@ -1,1 +1,8 @@
 language: java
+addons:
+  sonarcloud:
+    organization: "pintapepo"
+
+script:
+  # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=PintaPepo_Residence
