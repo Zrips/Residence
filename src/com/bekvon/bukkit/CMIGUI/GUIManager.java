@@ -35,6 +35,7 @@ public class GUIManager {
 
     public enum GUIButtonLocation {
 	topLeft(0, 0), topRight(0, 1), bottomLeft(1, 0), bottomRight(1, 1);
+
 	private Integer row;
 	private Integer collumn;
 
@@ -55,6 +56,7 @@ public class GUIManager {
 
     public enum GUIRows {
 	r1(1), r2(2), r3(3), r4(4), r5(5), r6(6);
+
 	private int rows;
 
 	GUIRows(int rows) {
@@ -124,7 +126,7 @@ public class GUIManager {
 	}
     }
 
-    public static boolean processClick(final Player player, List<Integer> buttons, final GUIClickType clickType) { 
+    public static boolean processClick(final Player player, List<Integer> buttons, final GUIClickType clickType) {
 	CMIGui gui = map.get(player.getUniqueId());
 	if (gui == null)
 	    return false;
@@ -320,7 +322,8 @@ public class GUIManager {
     public static void openGui(CMIGui gui) {
 
 	Player player = gui.getPlayer();
-
+	if (player.isSleeping())
+	    return;
 	CMIGui oldGui = null;
 	if (isOpenedGui(player)) {
 	    oldGui = getGui(player);
