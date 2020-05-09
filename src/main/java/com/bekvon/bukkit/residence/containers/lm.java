@@ -3,8 +3,6 @@ package com.bekvon.bukkit.residence.containers;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.bukkit.ChatColor;
-
 public enum lm {
     Invalid_Player("&cInvalid player name..."),
     Invalid_PlayerOffline("&cPlayer is offline"),
@@ -27,9 +25,9 @@ public enum lm {
     Invalid_Help("&cInvalid Help Page..."),
     Invalid_NameCharacters("&cName contained unallowed characters..."),
 
-     Invalid_FromConsole("&cYou can only use this in the console!"),
+    Invalid_FromConsole("&cYou can only use this in the console!"),
     Invalid_Ingame("&cYou can only use this in game!"),
-    
+
     Area_Exists("&cArea name already exists."),
     Area_Create("&eResidence Area created, ID &6%1"),
     Area_DiffWorld("&cArea is in a different world from residence."),
@@ -37,7 +35,7 @@ public enum lm {
     Area_SubzoneCollision("&cArea collides with subzone &6%1"),
     Area_NonExist("&cNo such area exists."),
     Area_InvalidName("&cInvalid Area Name..."),
-//    Area_ToSmallTotal("&cSelected area smaller than allowed minimal (&6%1&c)"),
+    //    Area_ToSmallTotal("&cSelected area smaller than allowed minimal (&6%1&c)"),
     Area_ToSmallX("&cYour &6X &cselection length (&6%1&c) is too small. &eAllowed &6%2 &eand more."),
     Area_ToSmallY("&cYour selection height (&6%1&c) is too small. &eAllowed &6%2 &eand more."),
     Area_ToSmallZ("&cYour &6Z &cselection length (&6%1&c) is too small. &eAllowed &6%2 &eand more."),
@@ -115,7 +113,7 @@ public enum lm {
     Raid_noRemoval("&cCan't remove residence during raid"),
     Raid_immune("&eImmune for next %1"),
     Raid_notImmune("&eNo longer immune"),
-    
+
     Raid_notInRaid("&ePlayer isn't in raid"),
 
     Raid_attack_Joined("&7Joined &2%1 &7raid!"),
@@ -531,30 +529,30 @@ public enum lm {
     General_World("&eWorld: &6%1"),
     General_Subzones("&eSubzones"),
     General_NewPlayerInfo(
-	"&eIf you want to create protected area for your house, please use wooden axe to select opposite sides of your home and execute command &2/res create YourResidenceName",
-	"The below lines represent various messages residence sends to the players.",
-	"Note that some messages have variables such as %1 that are inserted at runtime.");
+            "&eIf you want to create protected area for your house, please use wooden axe to select opposite sides of your home and execute command &2/res create YourResidenceName",
+            "The below lines represent various messages residence sends to the players.",
+            "Note that some messages have variables such as %1 that are inserted at runtime.");
 
     private Object text;
     private String[] comments;
 
     private lm(Object text, String... comments) {
-	this.text = text;
-	this.comments = comments;
+        this.text = text;
+        this.comments = comments;
     }
 
     public Object getText() {
-	return text;
+        return text;
     }
 
     public String[] getComments() {
-	return comments;
+        return comments;
     }
 
     public String getPath() {
-	String path = this.name();
-	if (!this.name().contains("Language.") && !this.name().contains("CommandHelp."))
-	    path = "Language." + this.name();
-	return path.replace("_", ".");
+        String path = this.name();
+        if (!this.name().contains("Language.") && !this.name().contains("CommandHelp."))
+            path = "Language." + this.name();
+        return path.replace("_", ".");
     }
 }

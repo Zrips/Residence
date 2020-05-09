@@ -8,25 +8,24 @@ import org.bukkit.event.HandlerList;
 public class ResidenceAreaDeleteEvent extends CancellableResidencePlayerEvent {
 
     private static final HandlerList handlers = new HandlerList();
-
-    @Override
-    public HandlerList getHandlers() {
-	return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-	return handlers;
-    }
-
     DeleteCause cause;
 
     public ResidenceAreaDeleteEvent(Player player, ClaimedResidence resref, DeleteCause delcause) {
-	super("RESIDENCE_AREA_DELETE", resref, player);
-	cause = delcause;
+        super("RESIDENCE_AREA_DELETE", resref, player);
+        cause = delcause;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
     public DeleteCause getCause() {
-	return cause;
+        return cause;
     }
 
 }

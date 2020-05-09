@@ -1,8 +1,7 @@
 package com.bekvon.bukkit.residence.signsStuff;
 
-import org.bukkit.Location;
-
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import org.bukkit.Location;
 
 public class Signs {
 
@@ -12,32 +11,32 @@ public class Signs {
     public Signs() {
     }
 
-    public void setLocation(Location loc) {
-	this.loc = loc;
-    }
-
     @Deprecated
     public Location GetLocation() {
-	return this.loc;
+        return this.loc;
     }
 
     public Location getLocation() {
-	return this.loc;
+        return this.loc;
     }
 
-    public void setResidence(ClaimedResidence Residence) {
-	this.Residence = Residence;
-	if (Residence != null)
-	    Residence.getSignsInResidence().add(this);
+    public void setLocation(Location loc) {
+        this.loc = loc;
     }
 
     public ClaimedResidence getResidence() {
-	return this.Residence;
+        return this.Residence;
+    }
+
+    public void setResidence(ClaimedResidence Residence) {
+        this.Residence = Residence;
+        if (Residence != null)
+            Residence.getSignsInResidence().add(this);
     }
 
     @Deprecated
     public ClaimedResidence GetResidence() {
-	return this.Residence;
+        return this.Residence;
     }
 
 }

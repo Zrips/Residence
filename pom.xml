@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-	<!-- ATTRIBUTION -->
+    <!-- ATTRIBUTION -->
     <!-- Original Author https://github.com/bekvon/Residence -->
-	<!-- Forked by https://github.com/Zrips/Residence -->
-	<!-- Last modifications by PintaPepo https://github.com/PintaPepo/Residence/ -->
-	
+    <!-- Forked by https://github.com/Zrips/Residence -->
+    <!-- Last modifications by PintaPepo https://github.com/PintaPepo/Residence/ -->
+
     <groupId>com.pintapepo.spigot</groupId>
     <artifactId>Residence</artifactId>
     <version>5.0-SNAPSHOT</version>

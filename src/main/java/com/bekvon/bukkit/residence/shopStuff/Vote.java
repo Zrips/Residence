@@ -5,17 +5,17 @@ public class Vote {
     int amount;
 
     public Vote(double vote, int amount) {
-	this.vote = vote;
-	this.amount = amount;
+        this.vote = vote;
+        this.amount = amount;
 
     }
 
     public int getAmount() {
-	return this.amount;
+        return this.amount;
     }
 
     public double getVote() {
-	return this.vote;
+        return this.vote;
     }
 
 }

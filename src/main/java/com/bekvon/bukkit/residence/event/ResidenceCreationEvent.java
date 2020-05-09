@@ -8,27 +8,26 @@ import org.bukkit.event.HandlerList;
 public class ResidenceCreationEvent extends CancellableResidencePlayerEvent {
 
     private static final HandlerList handlers = new HandlerList();
-
-    @Override
-    public HandlerList getHandlers() {
-	return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-	return handlers;
-    }
-
     protected String resname;
     CuboidArea area;
 
     public ResidenceCreationEvent(Player player, String newname, ClaimedResidence resref, CuboidArea resarea) {
-	super("RESIDENCE_CREATE", resref, player);
-	resname = newname;
-	area = resarea;
+        super("RESIDENCE_CREATE", resref, player);
+        resname = newname;
+        area = resarea;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
     public String getResidenceName() {
-	return resname;
+        return resname;
     }
 
 //    public void setResidenceName(String name) {
@@ -36,7 +35,7 @@ public class ResidenceCreationEvent extends CancellableResidencePlayerEvent {
 //    }
 
     public CuboidArea getPhysicalArea() {
-	return area;
+        return area;
     }
 
 //    public void setPhysicalArea(CuboidArea newarea) {

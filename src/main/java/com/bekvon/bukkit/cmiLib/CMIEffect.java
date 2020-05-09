@@ -3,10 +3,9 @@
  */
 package com.bekvon.bukkit.cmiLib;
 
+import com.bekvon.bukkit.cmiLib.CMIEffectManager.CMIParticle;
 import org.bukkit.Color;
 import org.bukkit.util.Vector;
-
-import com.bekvon.bukkit.cmiLib.CMIEffectManager.CMIParticle;
 
 public class CMIEffect {
 
@@ -18,57 +17,57 @@ public class CMIEffect {
     private float speed = 0;
 
     public CMIEffect(CMIParticle particle) {
-	this.particle = particle;
+        this.particle = particle;
     }
 
     public CMIParticle getParticle() {
-	if (particle == null)
-	    particle = CMIParticle.COLOURED_DUST;
-	return particle;
+        if (particle == null)
+            particle = CMIParticle.COLOURED_DUST;
+        return particle;
     }
 
     public void setParticle(CMIParticle particle) {
-	this.particle = particle;
+        this.particle = particle;
     }
 
     public Color getColor() {
-	return color;
+        return color;
     }
 
     public void setColor(Color color) {
-	this.color = color;
+        this.color = color;
     }
 
     public Vector getOffset() {
-	return offset;
+        return offset;
     }
 
     public void setOffset(Vector offset) {
-	this.offset = offset;
+        this.offset = offset;
     }
 
     public int getAmount() {
-	return amount;
+        return amount;
     }
 
     public void setAmount(int amount) {
-	this.amount = amount;
+        this.amount = amount;
     }
 
     public float getSpeed() {
-	return speed;
+        return speed;
     }
 
     public void setSpeed(float speed) {
-	this.speed = speed;
+        this.speed = speed;
     }
 
     public int getSize() {
-	return size;
+        return size;
     }
 
     public void setSize(int size) {
-	this.size = size;
+        this.size = size;
     }
 
 }

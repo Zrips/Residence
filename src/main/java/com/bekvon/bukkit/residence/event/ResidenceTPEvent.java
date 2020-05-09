@@ -8,30 +8,29 @@ import org.bukkit.event.HandlerList;
 public class ResidenceTPEvent extends CancellableResidencePlayerEvent {
 
     private static final HandlerList handlers = new HandlerList();
-
-    @Override
-    public HandlerList getHandlers() {
-	return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-	return handlers;
-    }
-
     Player reqPlayer;
     Location loc;
 
     public ResidenceTPEvent(ClaimedResidence resref, Location teleloc, Player player, Player reqplayer) {
-	super("RESIDENCE_TP", resref, player);
-	reqPlayer = reqplayer;
-	loc = teleloc;
+        super("RESIDENCE_TP", resref, player);
+        reqPlayer = reqplayer;
+        loc = teleloc;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
     public Player getRequestingPlayer() {
-	return reqPlayer;
+        return reqPlayer;
     }
 
     public Location getTeleportLocation() {
-	return loc;
+        return loc;
     }
 }

@@ -7,29 +7,28 @@ import org.bukkit.event.HandlerList;
 public class ResidenceDeleteEvent extends CancellableResidencePlayerEvent {
 
     private static final HandlerList handlers = new HandlerList();
-
-    @Override
-    public HandlerList getHandlers() {
-	return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-	return handlers;
-    }
-
-    public enum DeleteCause {
-	LEASE_EXPIRE, PLAYER_DELETE, OTHER
-    }
-
     DeleteCause cause;
 
     public ResidenceDeleteEvent(Player player, ClaimedResidence resref, DeleteCause delcause) {
-	super("RESIDENCE_DELETE", resref, player);
-	cause = delcause;
+        super("RESIDENCE_DELETE", resref, player);
+        cause = delcause;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
     public DeleteCause getCause() {
-	return cause;
+        return cause;
+    }
+
+    public enum DeleteCause {
+        LEASE_EXPIRE, PLAYER_DELETE, OTHER
     }
 
 }

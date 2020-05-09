@@ -8,17 +8,17 @@ public class CancellableResidenceEvent extends ResidenceEvent implements Cancell
     protected boolean cancelled;
 
     public CancellableResidenceEvent(String eventName, ClaimedResidence resref) {
-	super(eventName, resref);
+        super(eventName, resref);
     }
 
     @Override
     public boolean isCancelled() {
-	return cancelled;
+        return cancelled;
     }
 
     @Override
     public void setCancelled(boolean bln) {
-	cancelled = bln;
+        cancelled = bln;
     }
 
 }

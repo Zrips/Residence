@@ -5,40 +5,38 @@ import org.bukkit.event.HandlerList;
 
 public class ResidenceFlagCheckEvent extends ResidenceFlagEvent {
     private static final HandlerList handlers = new HandlerList();
-
-    @Override
-    public HandlerList getHandlers() {
-	return handlers;
+    boolean defaultvalue;
+    private boolean override;
+    private boolean overridevalue;
+    public ResidenceFlagCheckEvent(ClaimedResidence resref, String flag, FlagType type, String target, boolean defaultValue) {
+        super("RESIDENCE_FLAG_CHECK", resref, flag, type, target);
+        defaultvalue = defaultValue;
+        override = false;
     }
 
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
-    private boolean override;
-    private boolean overridevalue;
-    boolean defaultvalue;
-
-    public ResidenceFlagCheckEvent(ClaimedResidence resref, String flag, FlagType type, String target, boolean defaultValue) {
-	super("RESIDENCE_FLAG_CHECK", resref, flag, type, target);
-	defaultvalue = defaultValue;
-	override = false;
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
     public boolean isOverriden() {
-	return override;
+        return override;
     }
 
     public void overrideCheck(boolean flagval) {
-	overridevalue = flagval;
-	override = true;
+        overridevalue = flagval;
+        override = true;
     }
 
     public boolean getOverrideValue() {
-	return overridevalue;
+        return overridevalue;
     }
 
     public boolean getDefaultValue() {
-	return defaultvalue;
+        return defaultvalue;
     }
 }

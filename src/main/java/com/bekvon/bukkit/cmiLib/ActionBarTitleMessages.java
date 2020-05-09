@@ -1,18 +1,17 @@
 package com.bekvon.bukkit.cmiLib;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.logging.Level;
-
+import com.bekvon.bukkit.cmiLib.VersionChecker.Version;
+import com.bekvon.bukkit.residence.Residence;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.bekvon.bukkit.cmiLib.VersionChecker.Version;
-import com.bekvon.bukkit.residence.Residence;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
 
 public class ActionBarTitleMessages {
     private static Object packet;
@@ -33,236 +32,236 @@ public class ActionBarTitleMessages {
     private static Object[] consts;
 
     static {
-	    try {
-		packetType = Class.forName(getPacketPlayOutChat());
-		Class<?> typeCraftPlayer = Class.forName(getCraftPlayerClasspath());
-		Class<?> typeNMSPlayer = Class.forName(getNMSPlayerClasspath());
-		Class<?> typePlayerConnection = Class.forName(getPlayerConnectionClasspath());
-		nmsChatSerializer = Class.forName(getChatSerializerClasspath());
-		nmsIChatBaseComponent = Class.forName(getIChatBaseComponentClasspath());
-		getHandle = typeCraftPlayer.getMethod("getHandle");
-		playerConnection = typeNMSPlayer.getField("playerConnection");
-		sendPacket = typePlayerConnection.getMethod("sendPacket", Class.forName(getPacketClasspath()));
+        try {
+            packetType = Class.forName(getPacketPlayOutChat());
+            Class<?> typeCraftPlayer = Class.forName(getCraftPlayerClasspath());
+            Class<?> typeNMSPlayer = Class.forName(getNMSPlayerClasspath());
+            Class<?> typePlayerConnection = Class.forName(getPlayerConnectionClasspath());
+            nmsChatSerializer = Class.forName(getChatSerializerClasspath());
+            nmsIChatBaseComponent = Class.forName(getIChatBaseComponentClasspath());
+            getHandle = typeCraftPlayer.getMethod("getHandle");
+            playerConnection = typeNMSPlayer.getField("playerConnection");
+            sendPacket = typePlayerConnection.getMethod("sendPacket", Class.forName(getPacketClasspath()));
 
-		if (Version.isCurrentHigher(Version.v1_11_R1)) {
-		    ChatMessageclz = Class.forName(getChatMessageTypeClasspath());
-		    consts = ChatMessageclz.getEnumConstants();
-		    sub = consts[2].getClass();
-		}
+            if (Version.isCurrentHigher(Version.v1_11_R1)) {
+                ChatMessageclz = Class.forName(getChatMessageTypeClasspath());
+                consts = ChatMessageclz.getEnumConstants();
+                sub = consts[2].getClass();
+            }
 
-	    } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | NoSuchFieldException ex) {
-		Bukkit.getLogger().log(Level.SEVERE, "Error {0}", ex);
-	    }
-	    // Title
-	    try {
-		Class<?> typePacketPlayOutTitle = Class.forName(getPacketPlayOutTitleClasspath());
-		enumTitleAction = Class.forName(getEnumTitleActionClasspath());
-		nmsPacketPlayOutTitle = typePacketPlayOutTitle.getConstructor(enumTitleAction, nmsIChatBaseComponent);
-		fromString = Class.forName(getClassMessageClasspath()).getMethod("fromString", String.class);
-	    } catch (ClassNotFoundException | NoSuchMethodException | SecurityException ex) {
-		simpleTitleMessages = true;
-	    }
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | NoSuchFieldException ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Error {0}", ex);
+        }
+        // Title
+        try {
+            Class<?> typePacketPlayOutTitle = Class.forName(getPacketPlayOutTitleClasspath());
+            enumTitleAction = Class.forName(getEnumTitleActionClasspath());
+            nmsPacketPlayOutTitle = typePacketPlayOutTitle.getConstructor(enumTitleAction, nmsIChatBaseComponent);
+            fromString = Class.forName(getClassMessageClasspath()).getMethod("fromString", String.class);
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException ex) {
+            simpleTitleMessages = true;
+        }
     }
 
     public static void send(CommandSender receivingPacket, String msg) {
-	if (receivingPacket instanceof Player)
-	    send((Player) receivingPacket, msg);
-	else
-	    receivingPacket.sendMessage(msg);
+        if (receivingPacket instanceof Player)
+            send((Player) receivingPacket, msg);
+        else
+            receivingPacket.sendMessage(msg);
     }
 
     public static void send(Player receivingPacket, String msg) {
-	if (receivingPacket == null)
-	    return;
-	if (!receivingPacket.isOnline())
-	    return;
-	if (msg == null)
-	    return;
-	try {
-	    if (!Version.getCurrent().isHigher(Version.v1_7_R4) || nmsChatSerializer == null) {
-		receivingPacket.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
-		return;
-	    }
+        if (receivingPacket == null)
+            return;
+        if (!receivingPacket.isOnline())
+            return;
+        if (msg == null)
+            return;
+        try {
+            if (!Version.getCurrent().isHigher(Version.v1_7_R4) || nmsChatSerializer == null) {
+                receivingPacket.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+                return;
+            }
 
-	    Object serialized = nmsChatSerializer.getMethod("a", String.class).invoke(null, "{\"text\": \"" + ChatColor.translateAlternateColorCodes('&', msg) + "\"}");
-	    if (Version.isCurrentHigher(Version.v1_11_R1))
-		packet = packetType.getConstructor(nmsIChatBaseComponent, sub).newInstance(serialized, consts[2]);
-	    else if (Version.isCurrentHigher(Version.v1_7_R4)) {
-		packet = packetType.getConstructor(nmsIChatBaseComponent, byte.class).newInstance(serialized, (byte) 2);
-	    } else {
-		packet = packetType.getConstructor(nmsIChatBaseComponent, int.class).newInstance(serialized, 2);
-	    }
-	    Object player = getHandle.invoke(receivingPacket);
-	    Object connection = playerConnection.get(player);
-	    sendPacket.invoke(connection, packet);
-	} catch (Exception ex) {
+            Object serialized = nmsChatSerializer.getMethod("a", String.class).invoke(null, "{\"text\": \"" + ChatColor.translateAlternateColorCodes('&', msg) + "\"}");
+            if (Version.isCurrentHigher(Version.v1_11_R1))
+                packet = packetType.getConstructor(nmsIChatBaseComponent, sub).newInstance(serialized, consts[2]);
+            else if (Version.isCurrentHigher(Version.v1_7_R4)) {
+                packet = packetType.getConstructor(nmsIChatBaseComponent, byte.class).newInstance(serialized, (byte) 2);
+            } else {
+                packet = packetType.getConstructor(nmsIChatBaseComponent, int.class).newInstance(serialized, 2);
+            }
+            Object player = getHandle.invoke(receivingPacket);
+            Object connection = playerConnection.get(player);
+            sendPacket.invoke(connection, packet);
+        } catch (Exception ex) {
 //	    Bukkit.getLogger().log(Level.SEVERE, "Error {0}", ex);
-	}
+        }
 
-	try {
-	    Object player = getHandle.invoke(receivingPacket);
-	    Object connection = playerConnection.get(player);
-	    sendPacket.invoke(connection, packet);
-	} catch (Exception ex) {
+        try {
+            Object player = getHandle.invoke(receivingPacket);
+            Object connection = playerConnection.get(player);
+            sendPacket.invoke(connection, packet);
+        } catch (Exception ex) {
 //	    Bukkit.getLogger().log(Level.SEVERE, "Error {0}", ex);
-	}
+        }
     }
 
     public static void sendRaw(Player receivingPacket, String msg) {
-	if (receivingPacket == null)
-	    return;
-	if (!receivingPacket.isOnline())
-	    return;
-	if (msg == null)
-	    return;
-	try {
-	    Method meth = nmsChatSerializer.getMethod("a", String.class);
-	    Object serialized = meth.invoke(null, ChatColor.translateAlternateColorCodes('&', msg));
-	    if (Version.isCurrentHigher(Version.v1_11_R1))
-		packet = packetType.getConstructor(nmsIChatBaseComponent, sub).newInstance(serialized, consts[1]);
-	    else if (Version.isCurrentHigher(Version.v1_7_R4)) {
-		packet = packetType.getConstructor(nmsIChatBaseComponent, byte.class).newInstance(serialized, (byte) 1);
-	    } else {
-		packet = packetType.getConstructor(nmsIChatBaseComponent, boolean.class).newInstance(serialized, true);
-	    }
-	    Object player = getHandle.invoke(receivingPacket);
-	    Object connection = playerConnection.get(player);
-	    sendPacket.invoke(connection, packet);
-	} catch (Exception ex) {
-	    Bukkit.getLogger().log(Level.SEVERE, "Error {0}", ex);
-	}
+        if (receivingPacket == null)
+            return;
+        if (!receivingPacket.isOnline())
+            return;
+        if (msg == null)
+            return;
+        try {
+            Method meth = nmsChatSerializer.getMethod("a", String.class);
+            Object serialized = meth.invoke(null, ChatColor.translateAlternateColorCodes('&', msg));
+            if (Version.isCurrentHigher(Version.v1_11_R1))
+                packet = packetType.getConstructor(nmsIChatBaseComponent, sub).newInstance(serialized, consts[1]);
+            else if (Version.isCurrentHigher(Version.v1_7_R4)) {
+                packet = packetType.getConstructor(nmsIChatBaseComponent, byte.class).newInstance(serialized, (byte) 1);
+            } else {
+                packet = packetType.getConstructor(nmsIChatBaseComponent, boolean.class).newInstance(serialized, true);
+            }
+            Object player = getHandle.invoke(receivingPacket);
+            Object connection = playerConnection.get(player);
+            sendPacket.invoke(connection, packet);
+        } catch (Exception ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Error {0}", ex);
+        }
     }
 
     public static void sendTitle(final Player receivingPacket, final Object title) {
-	sendTitle(receivingPacket, title, null, 0, 20, 20);
+        sendTitle(receivingPacket, title, null, 0, 20, 20);
     }
 
     public static void sendTitle(final Player receivingPacket, final Object title, final Object subtitle) {
-	sendTitle(receivingPacket, title, subtitle, 0, 20, 20);
+        sendTitle(receivingPacket, title, subtitle, 0, 20, 20);
     }
 
     public static void sendTitle(final Player receivingPacket, final Object title, final Object subtitle, final int fadeIn, final int keep, final int fadeOut) {
-	Bukkit.getScheduler().runTaskAsynchronously(Residence.getInstance(), new Runnable() {
-	    @Override
-	    public void run() {
+        Bukkit.getScheduler().runTaskAsynchronously(Residence.getInstance(), new Runnable() {
+            @Override
+            public void run() {
 
-		String t = title == null ? null : CMIChatColor.translateAlternateColorCodes((String) title);
-		String s = subtitle == null ? null : CMIChatColor.translateAlternateColorCodes((String) subtitle);
+                String t = title == null ? null : CMIChatColor.translateAlternateColorCodes((String) title);
+                String s = subtitle == null ? null : CMIChatColor.translateAlternateColorCodes((String) subtitle);
 
-		if (t != null && s == null && t.contains("%subtitle%")) {
-		    s = t.split("%subtitle%")[1];
-		    t = t.split("%subtitle%")[0];
-		    t = t == null ? null : CMIChatColor.translateAlternateColorCodes(t);
-		    s = s == null ? null : CMIChatColor.translateAlternateColorCodes(s);
-		}
+                if (t != null && s == null && t.contains("%subtitle%")) {
+                    s = t.split("%subtitle%")[1];
+                    t = t.split("%subtitle%")[0];
+                    t = t == null ? null : CMIChatColor.translateAlternateColorCodes(t);
+                    s = s == null ? null : CMIChatColor.translateAlternateColorCodes(s);
+                }
 
-		if (simpleTitleMessages) {
-		    receivingPacket.sendMessage(t);
-		    receivingPacket.sendMessage(s);
-		    return;
-		}
-		try {
-		    switch (Version.getCurrent()) {
-		    case v1_9_R1:
-		    case v1_9_R2:
-		    case v1_10_R1:
-		    case v1_11_R1:
-			receivingPacket.sendTitle(t, s);
-			break;
-		    case v1_12_R1:
-		    case v1_13_R1:
-		    case v1_13_R2:
-		    case v1_14_R1:
-		    case v1_14_R2:
-		    case v1_15_R1:
-		    case v1_15_R2:
-			receivingPacket.sendTitle(t, s, fadeIn, keep, fadeOut);
-			break;
-		    case v1_7_R1:
-		    case v1_7_R2:
-		    case v1_7_R3:
-		    case v1_7_R4:
-		    case v1_8_R1:
-		    case v1_8_R2:
-		    case v1_8_R3:
-			if (title != null) {
-			    Object packetTitle = nmsPacketPlayOutTitle.newInstance(enumTitleAction.getField("TITLE").get(null),
-				((Object[]) fromString.invoke(null, t))[0]);
-			    sendPacket(receivingPacket, packetTitle);
-			}
-			if (subtitle != null) {
-			    if (title == null) {
-				Object packetTitle = nmsPacketPlayOutTitle.newInstance(enumTitleAction.getField("TITLE").get(null), ((Object[]) fromString.invoke(null, ""))[0]);
-				sendPacket(receivingPacket, packetTitle);
-			    }
-			    Object packetSubtitle = nmsPacketPlayOutTitle.newInstance(enumTitleAction.getField("SUBTITLE").get(null),
-				((Object[]) fromString.invoke(null, s))[0]);
-			    sendPacket(receivingPacket, packetSubtitle);
-			}
+                if (simpleTitleMessages) {
+                    receivingPacket.sendMessage(t);
+                    receivingPacket.sendMessage(s);
+                    return;
+                }
+                try {
+                    switch (Version.getCurrent()) {
+                        case v1_9_R1:
+                        case v1_9_R2:
+                        case v1_10_R1:
+                        case v1_11_R1:
+                            receivingPacket.sendTitle(t, s);
+                            break;
+                        case v1_12_R1:
+                        case v1_13_R1:
+                        case v1_13_R2:
+                        case v1_14_R1:
+                        case v1_14_R2:
+                        case v1_15_R1:
+                        case v1_15_R2:
+                            receivingPacket.sendTitle(t, s, fadeIn, keep, fadeOut);
+                            break;
+                        case v1_7_R1:
+                        case v1_7_R2:
+                        case v1_7_R3:
+                        case v1_7_R4:
+                        case v1_8_R1:
+                        case v1_8_R2:
+                        case v1_8_R3:
+                            if (title != null) {
+                                Object packetTitle = nmsPacketPlayOutTitle.newInstance(enumTitleAction.getField("TITLE").get(null),
+                                        ((Object[]) fromString.invoke(null, t))[0]);
+                                sendPacket(receivingPacket, packetTitle);
+                            }
+                            if (subtitle != null) {
+                                if (title == null) {
+                                    Object packetTitle = nmsPacketPlayOutTitle.newInstance(enumTitleAction.getField("TITLE").get(null), ((Object[]) fromString.invoke(null, ""))[0]);
+                                    sendPacket(receivingPacket, packetTitle);
+                                }
+                                Object packetSubtitle = nmsPacketPlayOutTitle.newInstance(enumTitleAction.getField("SUBTITLE").get(null),
+                                        ((Object[]) fromString.invoke(null, s))[0]);
+                                sendPacket(receivingPacket, packetSubtitle);
+                            }
 
-			break;
-		    default:
-			break;
-		    }
+                            break;
+                        default:
+                            break;
+                    }
 
-		} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchFieldException ex) {
-		    simpleTitleMessages = true;
-		    Bukkit.getLogger().log(Level.SEVERE, "Your server can't fully support title messages. They will be shown in chat instead.");
-		}
-		return;
-	    }
-	});
+                } catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchFieldException ex) {
+                    simpleTitleMessages = true;
+                    Bukkit.getLogger().log(Level.SEVERE, "Your server can't fully support title messages. They will be shown in chat instead.");
+                }
+                return;
+            }
+        });
     }
 
     private static void sendPacket(Player player, Object packet) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-	Object handle = getHandle.invoke(player);
-	Object connection = playerConnection.get(handle);
-	sendPacket.invoke(connection, packet);
+        Object handle = getHandle.invoke(player);
+        Object connection = playerConnection.get(handle);
+        sendPacket.invoke(connection, packet);
     }
 
     private static String getCraftPlayerClasspath() {
-	return "org.bukkit.craftbukkit." + Version.getCurrent() + ".entity.CraftPlayer";
+        return "org.bukkit.craftbukkit." + Version.getCurrent() + ".entity.CraftPlayer";
     }
 
     private static String getPlayerConnectionClasspath() {
-	return "net.minecraft.server." + Version.getCurrent() + ".PlayerConnection";
+        return "net.minecraft.server." + Version.getCurrent() + ".PlayerConnection";
     }
 
     private static String getNMSPlayerClasspath() {
-	return "net.minecraft.server." + Version.getCurrent() + ".EntityPlayer";
+        return "net.minecraft.server." + Version.getCurrent() + ".EntityPlayer";
     }
 
     private static String getPacketClasspath() {
-	return "net.minecraft.server." + Version.getCurrent() + ".Packet";
+        return "net.minecraft.server." + Version.getCurrent() + ".Packet";
     }
 
     private static String getIChatBaseComponentClasspath() {
-	return "net.minecraft.server." + Version.getCurrent() + ".IChatBaseComponent";
+        return "net.minecraft.server." + Version.getCurrent() + ".IChatBaseComponent";
     }
 
     private static String getChatSerializerClasspath() {
-	if (!Version.isCurrentHigher(Version.v1_8_R2))
-	    return "net.minecraft.server." + Version.getCurrent() + ".ChatSerializer";
-	return "net.minecraft.server." + Version.getCurrent() + ".IChatBaseComponent$ChatSerializer";// 1_8_R2 moved to IChatBaseComponent
+        if (!Version.isCurrentHigher(Version.v1_8_R2))
+            return "net.minecraft.server." + Version.getCurrent() + ".ChatSerializer";
+        return "net.minecraft.server." + Version.getCurrent() + ".IChatBaseComponent$ChatSerializer";// 1_8_R2 moved to IChatBaseComponent
     }
 
     private static String getPacketPlayOutChat() {
-	return "net.minecraft.server." + Version.getCurrent() + ".PacketPlayOutChat";
+        return "net.minecraft.server." + Version.getCurrent() + ".PacketPlayOutChat";
     }
 
     private static String getPacketPlayOutTitleClasspath() {
-	return "net.minecraft.server." + Version.getCurrent() + ".PacketPlayOutTitle";
+        return "net.minecraft.server." + Version.getCurrent() + ".PacketPlayOutTitle";
     }
 
     private static String getEnumTitleActionClasspath() {
-	return getPacketPlayOutTitleClasspath() + "$EnumTitleAction";
+        return getPacketPlayOutTitleClasspath() + "$EnumTitleAction";
     }
 
     private static String getClassMessageClasspath() {
-	return "org.bukkit.craftbukkit." + Version.getCurrent() + ".util.CraftChatMessage";
+        return "org.bukkit.craftbukkit." + Version.getCurrent() + ".util.CraftChatMessage";
     }
 
     private static String getChatMessageTypeClasspath() {
-	return "net.minecraft.server." + Version.getCurrent() + ".ChatMessageType";
+        return "net.minecraft.server." + Version.getCurrent() + ".ChatMessageType";
     }
 }

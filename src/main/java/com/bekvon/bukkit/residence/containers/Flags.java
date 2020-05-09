@@ -124,87 +124,87 @@ public enum Flags {
     private boolean enabled;
     private boolean globalyEnabled = true;
 
-    public static enum FlagMode {
-	Player, Residence, Both, Group
-    }
-
     @Deprecated
     private Flags(int id, int data, FlagMode flagMode, String desc, boolean enabled) {
-	this(CMIMaterial.get(id, data), flagMode, desc, enabled);
+        this(CMIMaterial.get(id, data), flagMode, desc, enabled);
     }
 
     private Flags(CMIMaterial icon, FlagMode flagMode, String desc, boolean enabled) {
-	this.icon = icon;
-	this.flagMode = flagMode;
-	this.desc = desc;
-	this.enabled = enabled;
+        this.icon = icon;
+        this.flagMode = flagMode;
+        this.desc = desc;
+        this.enabled = enabled;
+    }
+
+    public static Flags getFlag(String flag) {
+        for (Flags f : Flags.values()) {
+            if (f.toString().equalsIgnoreCase(flag))
+                return f;
+            if (f.getTranslated() != null && f.getTranslated().equalsIgnoreCase(flag))
+                return f;
+        }
+        return null;
     }
 
     @Deprecated
     public int getId() {
-	return icon.getId();
+        return icon.getId();
     }
 
     @Deprecated
     public int getData() {
-	return icon.getData();
+        return icon.getData();
     }
 
     public String getName() {
-	return getTranslated() == null ? this.name() : getTranslated();
+        return getTranslated() == null ? this.name() : getTranslated();
     }
 
     public FlagMode getFlagMode() {
-	return flagMode;
+        return flagMode;
     }
 
     public String getDesc() {
-	return desc;
+        return desc;
     }
 
     public void setDesc(String desc) {
-	this.desc = desc;
+        this.desc = desc;
     }
 
     public boolean isEnabled() {
-	return globalyEnabled ? enabled : false;
+        return globalyEnabled ? enabled : false;
     }
 
     public void setEnabled(boolean enabled) {
-	this.enabled = enabled;
-    }
-
-    public static Flags getFlag(String flag) {
-	for (Flags f : Flags.values()) {
-	    if (f.toString().equalsIgnoreCase(flag))
-		return f;
-	    if (f.getTranslated() != null && f.getTranslated().equalsIgnoreCase(flag))
-		return f;
-	}
-	return null;
+        this.enabled = enabled;
     }
 
     public boolean isGlobalyEnabled() {
-	return globalyEnabled;
+        return globalyEnabled;
     }
 
     public void setGlobalyEnabled(boolean globalyEnabled) {
-	this.globalyEnabled = globalyEnabled;
+        this.globalyEnabled = globalyEnabled;
     }
 
     public String getTranslated() {
-	return translated;
+        return translated;
     }
 
     public void setTranslated(String translated) {
-	this.translated = translated == null ? null : translated.replace(" ", "");
+        this.translated = translated == null ? null : translated.replace(" ", "");
     }
 
     public CMIMaterial getIcon() {
-	return icon;
+        return icon;
     }
 
     public void setIcon(CMIMaterial icon) {
-	this.icon = icon;
+        this.icon = icon;
+    }
+
+    public static enum FlagMode {
+        Player, Residence, Both, Group
     }
 }

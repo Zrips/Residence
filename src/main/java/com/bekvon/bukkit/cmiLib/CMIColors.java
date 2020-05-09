@@ -1,6 +1,6 @@
 package com.bekvon.bukkit.cmiLib;
 
-import java.awt.Color;
+import java.awt.*;
 
 public enum CMIColors {
     White(0, "White", CMIMaterial.BONE_MEAL, new Color(249, 255, 254)),
@@ -26,58 +26,42 @@ public enum CMIColors {
     private Color color;
 
     CMIColors(int id, String name, CMIMaterial mat, Color color) {
-	this.id = id;
-	this.name = name;
-	this.mat = mat;
-	this.color = color;
+        this.id = id;
+        this.name = name;
+        this.mat = mat;
+        this.color = color;
     }
 
     CMIColors(int id, String name, CMIMaterial mat) {
-	this.id = id;
-	this.name = name;
-	this.mat = mat;
-    }
-
-    public int getId() {
-	return id;
-    }
-
-    public String getName() {
-	return name;
+        this.id = id;
+        this.name = name;
+        this.mat = mat;
     }
 
     public static CMIColors getById(int id) {
-	for (CMIColors one : CMIColors.values()) {
-	    if (one.getId() == id)
-		return one;
-	}
-	return CMIColors.White;
-    }
-
-    public CMIMaterial getMat() {
-	return mat;
-    }
-
-    public void setMat(CMIMaterial mat) {
-	this.mat = mat;
+        for (CMIColors one : CMIColors.values()) {
+            if (one.getId() == id)
+                return one;
+        }
+        return CMIColors.White;
     }
 
     public static CMIMaterial getColorMaterial(CMIMaterial mat) {
-	String name = mat.getName().replace(" ", "").replace("_", "").toLowerCase();
-	for (CMIColors one : values()) {
-	    if (name.contains(one.getName().replace("_", "").toLowerCase()))
-		return one.getMat();
-	}
+        String name = mat.getName().replace(" ", "").replace("_", "").toLowerCase();
+        for (CMIColors one : values()) {
+            if (name.contains(one.getName().replace("_", "").toLowerCase()))
+                return one.getMat();
+        }
 
-	return null;
+        return null;
     }
 
     public static CMIColors getColor(CMIMaterial mat) {
-	String name = mat.getName().replace(" ", "").replace("_", "").toLowerCase();
-	for (CMIColors one : values()) {
-	    if (name.contains(one.getName().replace("_", "").toLowerCase()))
-		return one;
-	}
+        String name = mat.getName().replace(" ", "").replace("_", "").toLowerCase();
+        for (CMIColors one : values()) {
+            if (name.contains(one.getName().replace("_", "").toLowerCase()))
+                return one;
+        }
 
 //		if (c == null) {
 //	    try {
@@ -90,10 +74,26 @@ public enum CMIColors {
 //	    }
 //	}
 
-	return null;
+        return null;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public CMIMaterial getMat() {
+        return mat;
+    }
+
+    public void setMat(CMIMaterial mat) {
+        this.mat = mat;
     }
 
     public Color getColor() {
-	return color;
+        return color;
     }
 }

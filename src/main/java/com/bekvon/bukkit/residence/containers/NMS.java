@@ -1,7 +1,6 @@
 package com.bekvon.bukkit.residence.containers;
 
-import java.util.List;
-
+import com.bekvon.bukkit.cmiLib.CMIEffect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -13,7 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 
-import com.bekvon.bukkit.cmiLib.CMIEffect;
+import java.util.List;
 
 public interface NMS {
 

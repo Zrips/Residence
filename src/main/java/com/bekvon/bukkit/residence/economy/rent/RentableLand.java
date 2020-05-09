@@ -1,9 +1,9 @@
 package com.bekvon.bukkit.residence.economy.rent;
 
+import com.bekvon.bukkit.residence.Residence;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.bekvon.bukkit.residence.Residence;
 
 public class RentableLand {
 
@@ -17,12 +17,12 @@ public class RentableLand {
     }
 
     public Map<String, Object> save() {
-	Map<String, Object> rented = new HashMap<>();
-	rented.put("Days", days);
-	rented.put("Cost", cost);
-	rented.put("Repeatable", AllowRenewing);
-	rented.put("StayInMarket", StayInMarket);
-	rented.put("AllowAutoPay", AllowAutoPay);
-	return rented;
+        Map<String, Object> rented = new HashMap<>();
+        rented.put("Days", days);
+        rented.put("Cost", cost);
+        rented.put("Repeatable", AllowRenewing);
+        rented.put("StayInMarket", StayInMarket);
+        rented.put("AllowAutoPay", AllowAutoPay);
+        return rented;
     }
 }

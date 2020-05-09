@@ -1,11 +1,10 @@
 package com.bekvon.bukkit.residence.api;
 
-import java.util.List;
-
+import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import java.util.List;
 
 public interface ResidenceInterface {
     public ClaimedResidence getByLoc(Location loc);

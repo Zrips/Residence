@@ -11,11 +11,11 @@ public class RentedLand {
     public boolean AutoPay = true;
 
     public Map<String, Object> save() {
-	Map<String, Object> rentables = new HashMap<>();
-	rentables.put("Player", player);
-	rentables.put("StartTime", startTime);
-	rentables.put("EndTime", endTime);
-	rentables.put("AutoRefresh", AutoPay);
-	return rentables;
+        Map<String, Object> rentables = new HashMap<>();
+        rentables.put("Player", player);
+        rentables.put("StartTime", startTime);
+        rentables.put("EndTime", endTime);
+        rentables.put("AutoRefresh", AutoPay);
+        return rentables;
     }
 }

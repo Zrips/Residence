@@ -9,33 +9,33 @@ public class StuckInfo {
     private Long lastTp = 0L;
 
     public StuckInfo(Player player) {
-	this.player = player;
-	times++;
-	lastTp = System.currentTimeMillis();
+        this.player = player;
+        times++;
+        lastTp = System.currentTimeMillis();
     }
 
     public Player getPlayer() {
-	return player;
+        return player;
     }
 
     public int getTimesTeleported() {
-	return times;
+        return times;
     }
 
     public void addTimeTeleported() {
-	this.times++;
+        this.times++;
     }
 
     public Long getLastTp() {
-	return lastTp;
+        return lastTp;
     }
 
     public void updateLastTp() {
-	if (System.currentTimeMillis() - this.lastTp > 1000) {
-	    this.times = 0;
-	}
-	addTimeTeleported();
-	this.lastTp = System.currentTimeMillis();
+        if (System.currentTimeMillis() - this.lastTp > 1000) {
+            this.times = 0;
+        }
+        addTimeTeleported();
+        this.lastTp = System.currentTimeMillis();
     }
 
 }

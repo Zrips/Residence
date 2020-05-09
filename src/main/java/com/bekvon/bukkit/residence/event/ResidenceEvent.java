@@ -7,29 +7,28 @@ import org.bukkit.event.HandlerList;
 public class ResidenceEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
+    ClaimedResidence res;
     private String message;
 
-    @Override
-    public HandlerList getHandlers() {
-	return handlers;
+    public ResidenceEvent(String eventName, ClaimedResidence resref) {
+        message = eventName;
+        res = resref;
     }
 
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
-    ClaimedResidence res;
-
-    public ResidenceEvent(String eventName, ClaimedResidence resref) {
-	message = eventName;
-	res = resref;
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
     public String getMessage() {
-	return message;
+        return message;
     }
 
     public ClaimedResidence getResidence() {
-	return res;
+        return res;
     }
 }

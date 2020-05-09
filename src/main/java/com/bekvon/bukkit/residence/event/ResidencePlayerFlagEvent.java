@@ -8,25 +8,25 @@ public class ResidencePlayerFlagEvent extends ResidenceFlagEvent implements Resi
     Player p;
 
     public ResidencePlayerFlagEvent(String eventName, ClaimedResidence resref, Player player, String flag, FlagType type, String target) {
-	super(eventName, resref, flag, type, target);
-	p = player;
+        super(eventName, resref, flag, type, target);
+        p = player;
     }
 
     @Override
     public boolean isPlayer() {
-	return p != null;
+        return p != null;
     }
 
     @Override
     public boolean isAdmin() {
-	if (isPlayer()) {
-	    return Residence.getInstance().getPermissionManager().isResidenceAdmin(p);
-	}
-	return true;
+        if (isPlayer()) {
+            return Residence.getInstance().getPermissionManager().isResidenceAdmin(p);
+        }
+        return true;
     }
 
     @Override
     public Player getPlayer() {
-	return p;
+        return p;
     }
 }

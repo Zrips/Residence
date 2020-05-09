@@ -9,20 +9,20 @@ public class RandomTeleport {
     Location loc;
 
     public RandomTeleport(World world, int MaxCord, int MinCord, int centerX, int centerZ) {
-	this.loc = new Location(world, centerX, world.getMaxHeight() / 2, centerZ);
-	this.MaxCord = MaxCord;
-	this.MinCord = MinCord;
+        this.loc = new Location(world, centerX, world.getMaxHeight() / 2, centerZ);
+        this.MaxCord = MaxCord;
+        this.MinCord = MinCord;
     }
 
     public Location getCenter() {
-	return this.loc;
+        return this.loc;
     }
 
     public int getMaxCord() {
-	return this.MaxCord;
+        return this.MaxCord;
     }
 
     public int getMinCord() {
-	return this.MinCord;
+        return this.MinCord;
     }
 }

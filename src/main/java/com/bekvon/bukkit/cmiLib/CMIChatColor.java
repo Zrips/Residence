@@ -1,11 +1,11 @@
 package com.bekvon.bukkit.cmiLib;
 
+import org.bukkit.ChatColor;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import org.bukkit.ChatColor;
 
 public enum CMIChatColor {
     BLACK('0'),
@@ -37,118 +37,118 @@ public enum CMIChatColor {
     private Pattern pattern = null;
 
     CMIChatColor(char c) {
-	this(c, true);
+        this(c, true);
     }
 
     CMIChatColor(char c, Boolean color) {
-	this(c, color, false);
+        this(c, color, false);
     }
 
     CMIChatColor(char c, Boolean color, Boolean reset) {
-	this.c = c;
-	this.color = color;
-	this.reset = reset;
-	this.pattern = Pattern.compile("(?i)(&[" + c + "])");
+        this.c = c;
+        this.color = color;
+        this.reset = reset;
+        this.pattern = Pattern.compile("(?i)(&[" + c + "])");
     }
 
     public static String translateAlternateColorCodes(String text) {
-	return ChatColor.translateAlternateColorCodes('&', text);
+        return ChatColor.translateAlternateColorCodes('&', text);
     }
 
     public static String colorize(String text) {
-	if (text == null)
-	    return null;
-	return ChatColor.translateAlternateColorCodes('&', text);
+        if (text == null)
+            return null;
+        return ChatColor.translateAlternateColorCodes('&', text);
     }
 
     public static String deColorize(String text) {
-	if (text == null)
-	    return null;
-	return text.replace("§", "&");
+        if (text == null)
+            return null;
+        return text.replace("§", "&");
     }
 
     public static String stripColor(String text) {
-	if (text == null)
-	    return null;
-	text = ChatColor.translateAlternateColorCodes('&', text);
-	return ChatColor.stripColor(text);
+        if (text == null)
+            return null;
+        text = ChatColor.translateAlternateColorCodes('&', text);
+        return ChatColor.stripColor(text);
     }
 
     public static String getLastColors(String text) {
-	if (text == null)
-	    return null;
-	text = CMIChatColor.translateAlternateColorCodes(text);
-	return ChatColor.getLastColors(text);
-    }
-
-    public String getColorCode() {
-	return "&" + c;
-    }
-
-    public String getBukkitColorCode() {
-	return "§" + c;
-    }
-
-    public char getChar() {
-	return c;
-    }
-
-    public void setChar(char c) {
-	this.c = c;
-    }
-
-    public Boolean isColor() {
-	return color;
-    }
-
-    public Boolean isFormat() {
-	return !color && !reset;
-    }
-
-    public Boolean isReset() {
-	return reset;
-    }
-
-    public ChatColor getColor() {
-	return ChatColor.getByChar(this.getChar());
+        if (text == null)
+            return null;
+        text = CMIChatColor.translateAlternateColorCodes(text);
+        return ChatColor.getLastColors(text);
     }
 
     public static CMIChatColor getColor(String text) {
-	String or = CMIChatColor.deColorize(text);
-	text = CMIChatColor.deColorize(text).replace("&", "");
+        String or = CMIChatColor.deColorize(text);
+        text = CMIChatColor.deColorize(text).replace("&", "");
 
-	if (text.length() > 1) {
-	    String formated = text.toLowerCase().replace("_", "");
-	    for (CMIChatColor one : CMIChatColor.values()) {
-		if (one.name().replace("_", "").equalsIgnoreCase(formated))
-		    return one;
-	    }
-	}
+        if (text.length() > 1) {
+            String formated = text.toLowerCase().replace("_", "");
+            for (CMIChatColor one : CMIChatColor.values()) {
+                if (one.name().replace("_", "").equalsIgnoreCase(formated))
+                    return one;
+            }
+        }
 
-	if (or.length() > 1 && String.valueOf(or.charAt(or.length() - 2)).equalsIgnoreCase("&")) {
-	    text = text.substring(text.length() - 1, text.length());
+        if (or.length() > 1 && String.valueOf(or.charAt(or.length() - 2)).equalsIgnoreCase("&")) {
+            text = text.substring(text.length() - 1, text.length());
 
-	    for (CMIChatColor one : CMIChatColor.values()) {
-		if (String.valueOf(one.getChar()).equalsIgnoreCase(text))
-		    return one;
-	    }
-	}
+            for (CMIChatColor one : CMIChatColor.values()) {
+                if (String.valueOf(one.getChar()).equalsIgnoreCase(text))
+                    return one;
+            }
+        }
 
-	return null;
+        return null;
     }
 
     public static CMIChatColor getRandomColor() {
-	List<CMIChatColor> ls = new ArrayList<CMIChatColor>();
-	for (CMIChatColor one : CMIChatColor.values()) {
-	    if (!one.isColor())
-		continue;
-	    ls.add(one);
-	}
-	Collections.shuffle(ls);
-	return ls.get(0);
+        List<CMIChatColor> ls = new ArrayList<CMIChatColor>();
+        for (CMIChatColor one : CMIChatColor.values()) {
+            if (!one.isColor())
+                continue;
+            ls.add(one);
+        }
+        Collections.shuffle(ls);
+        return ls.get(0);
+    }
+
+    public String getColorCode() {
+        return "&" + c;
+    }
+
+    public String getBukkitColorCode() {
+        return "§" + c;
+    }
+
+    public char getChar() {
+        return c;
+    }
+
+    public void setChar(char c) {
+        this.c = c;
+    }
+
+    public Boolean isColor() {
+        return color;
+    }
+
+    public Boolean isFormat() {
+        return !color && !reset;
+    }
+
+    public Boolean isReset() {
+        return reset;
+    }
+
+    public ChatColor getColor() {
+        return ChatColor.getByChar(this.getChar());
     }
 
     public Pattern getPattern() {
-	return pattern;
+        return pattern;
     }
 }

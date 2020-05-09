@@ -1,16 +1,16 @@
 package com.bekvon.bukkit.residence.selection;
 
-import java.io.File;
-
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+
+import java.io.File;
 
 @SuppressWarnings("deprecation")
 public class Schematics7Manager implements WESchematicManager {
     private Residence plugin;
 
     public Schematics7Manager(Residence residence) {
-	this.plugin = residence;
+        this.plugin = residence;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class Schematics7Manager implements WESchematicManager {
 //	}
 //
 //	editSession.flushQueue();
-	return true;
+        return true;
     }
 
     @Override
@@ -109,36 +109,36 @@ public class Schematics7Manager implements WESchematicManager {
 //	    e.printStackTrace();
 //	    return false;
 //	}
-	return true;
+        return true;
     }
 
     @Override
     public boolean delete(ClaimedResidence res) {
-	if (plugin.getWorldEdit() == null)
-	    return false;
-	if (res == null)
-	    return false;
+        if (plugin.getWorldEdit() == null)
+            return false;
+        if (res == null)
+            return false;
 
-	File file = new File(plugin.getDataLocation(), "Schematics" + File.separator + res.getWorld() + File.separator + res.getName() + ".schematic");
-	if (!file.exists())
-	    return false;
+        File file = new File(plugin.getDataLocation(), "Schematics" + File.separator + res.getWorld() + File.separator + res.getName() + ".schematic");
+        if (!file.exists())
+            return false;
 
-	return file.delete();
+        return file.delete();
     }
 
     @Override
     public boolean rename(ClaimedResidence res, String newName) {
-	if (plugin.getWorldEdit() == null)
-	    return false;
-	if (res == null)
-	    return false;
+        if (plugin.getWorldEdit() == null)
+            return false;
+        if (res == null)
+            return false;
 
-	File oldFile = new File(plugin.getDataLocation(), "Schematics" + File.separator + res.getWorld() + File.separator + res.getName() + ".schematic");
+        File oldFile = new File(plugin.getDataLocation(), "Schematics" + File.separator + res.getWorld() + File.separator + res.getName() + ".schematic");
 
-	if (!oldFile.exists())
-	    return false;
+        if (!oldFile.exists())
+            return false;
 
-	File newFile = new File(plugin.getDataLocation(), "Schematics" + File.separator + res.getWorld() + File.separator + newName + ".schematic");
-	return oldFile.renameTo(newFile);
+        File newFile = new File(plugin.getDataLocation(), "Schematics" + File.separator + res.getWorld() + File.separator + newName + ".schematic");
+        return oldFile.renameTo(newFile);
     }
 }

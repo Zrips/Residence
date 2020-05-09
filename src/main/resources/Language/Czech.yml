@@ -345,9 +345,9 @@ Language:
     Pset:
       Title: '&6%1 %2 vlajky'
     Actions:
-    - '&2Levým klikem povolíš'
-    - '&cPravým klikem zakážeš'
-    - '&eShift + levým klikem odstraníš'
+      - '&2Levým klikem povolíš'
+      - '&cPravým klikem zakážeš'
+      - '&eShift + levým klikem odstraníš'
   InformationPage:
     TopLine: '&e---< &a %1 &e >---'
     Page: '&e-----< &6%1 &e>-----'
@@ -505,1174 +505,1174 @@ CommandHelp:
     res:
       Description: Hlavní příkaz residence
       Info:
-      - '&2Použij &6/res [příkaz] ? <strana> &2pro zobrazení další nápovědy.'
+        - '&2Použij &6/res [příkaz] ? <strana> &2pro zobrazení další nápovědy.'
       SubCommands:
         auto:
           Description: Vytvořit maximální počet residencí kolem tebe
           Info:
-          - '&ePoužití: &6/res auto (jméno residence) (rádius)'
+            - '&ePoužití: &6/res auto (jméno residence) (rádius)'
         select:
           Description: Výběrové příkazy
           Info:
-          - Tímto příkazem vybíráš oblasti pro použití s residencemi.
-          - /res select [x] [y] [z] - vybere rádius bloků okolo tebe.
+            - Tímto příkazem vybíráš oblasti pro použití s residencemi.
+            - /res select [x] [y] [z] - vybere rádius bloků okolo tebe.
           SubCommands:
             coords:
               Description: Zobrazit vybrané souřadnice
               Info:
-              - '&ePoužití: &6/res select coords'
+                - '&ePoužití: &6/res select coords'
             size:
               Description: Zobrazit vybranou velikost
               Info:
-              - '&ePoužití: &6/res select size'
+                - '&ePoužití: &6/res select size'
             auto:
               Description: Zapne automatický výběrový režim
               Info:
-              - '&ePoužití: &6/res select auto [jméno hráče]'
+                - '&ePoužití: &6/res select auto [jméno hráče]'
             cost:
               Description: Zobrazit cenu výběru
               Info:
-              - '&ePoužití: &6/res select cost'
+                - '&ePoužití: &6/res select cost'
             vert:
               Description: Rozšířit výběr vertikálně
               Info:
-              - '&ePoužití: &6/res select vert'
-              - Rozšířit výběr od spoda až nahoru
+                - '&ePoužití: &6/res select vert'
+                - Rozšířit výběr od spoda až nahoru
             sky:
               Description: Rozšířit výběr nahoru
               Info:
-              - '&ePoužití: &6/res select sky'
-              - Rozšířit výběr co nejvýš
+                - '&ePoužití: &6/res select sky'
+                - Rozšířit výběr co nejvýš
             bedrock:
               Description: Rozšířit výběr nahoru
               Info:
-              - '&ePoužití: &6/res select bedrock'
-              - Rozšířit výběr co nejníž
+                - '&ePoužití: &6/res select bedrock'
+                - Rozšířit výběr co nejníž
             expand:
               Description: Rozšířit výběr určitým směrem
               Info:
-              - '&ePoužití: &6/res select expand <počet>'
-              - Rozšířit výběr o <počet> bloků ve směru tvého pohledu.
+                - '&ePoužití: &6/res select expand <počet>'
+                - Rozšířit výběr o <počet> bloků ve směru tvého pohledu.
             shift:
               Description: Posunout výběr po směru.
               Info:
-              - '&ePoužití: &6/res select shift <počet>'
-              - Posune tvůj výběr o <počet> bloků ve směru tvého pohledu.
+                - '&ePoužití: &6/res select shift <počet>'
+                - Posune tvůj výběr o <počet> bloků ve směru tvého pohledu.
             chunk:
               Description: Vybere chunk, ve kterém právě stojíš.
               Info:
-              - '&ePoužití: &6/res select chunk'
-              - Vybere chunk, ve kterém právě stojíš.
+                - '&ePoužití: &6/res select chunk'
+                - Vybere chunk, ve kterém právě stojíš.
             residence:
               Description: Vybere existující oblast v residenci.
               Info:
-              - '&ePoužití: &6/res select residence <název residence>'
-              - Vybere existující oblast v residenci.
+                - '&ePoužití: &6/res select residence <název residence>'
+                - Vybere existující oblast v residenci.
             worldedit:
               Description: Nastavit výběr pomocí WorldEditu.
               Info:
-              - '&ePoužití: &6/res select worldedit'
-              - Nastaví oblast z WorldEdit nástroje.
+                - '&ePoužití: &6/res select worldedit'
+                - Nastaví oblast z WorldEdit nástroje.
         padd:
           Description: Přidat hráče do residence.
           Info:
-          - '&ePoužití: &6/res padd <název residence> [jméno hráče]'
-          - Přidá hráče a dá mu základní práva/vlajky v residenci
+            - '&ePoužití: &6/res padd <název residence> [jméno hráče]'
+            - Přidá hráče a dá mu základní práva/vlajky v residenci
         signconvert:
           Description: Převést značku z ResidenceSign pluginu
           Info:
-          - '&ePoužití: &6/res signconvert'
-          - Pokusí se převést uložená data značek z externího pluginu
+            - '&ePoužití: &6/res signconvert'
+            - Pokusí se převést uložená data značek z externího pluginu
         listallhidden:
           Description: Zobrazit všechny skryté residence
           Info:
-          - '&ePoužití: &6/res listhidden <strana>'
-          - Zobrazit všechny skryté residence
+            - '&ePoužití: &6/res listhidden <strana>'
+            - Zobrazit všechny skryté residence
         bank:
           Description: Manipulovat s penězi v residenci
           Info:
-          - '&ePoužití: &6/res bank [deposit/withdraw] <název residence> [počet]'
-          - Musíš stát v residenci nebo použít název residence
-          - Musíš mít vlajku +bank.
+            - '&ePoužití: &6/res bank [deposit/withdraw] <název residence> [počet]'
+            - Musíš stát v residenci nebo použít název residence
+            - Musíš mít vlajku +bank.
         create:
           Description: Vytvořit residenci.
           Info:
-          - '&ePoužití: &6/res create <název residence>'
+            - '&ePoužití: &6/res create <název residence>'
         listall:
           Description: Zobrazit všechny residence
           Info:
-          - '&ePoužití: &6/res listall <strana>'
-          - Zobrazit všechny residence
+            - '&ePoužití: &6/res listall <strana>'
+            - Zobrazit všechny residence
         info:
           Description: Zobrazit info o residenci.
           Info:
-          - '&ePoužití: &6/res info <název residence>'
-          - Vynech <název residence> aby si zobrazil informace o oblasti, ve které
-            právě stojíš.
+            - '&ePoužití: &6/res info <název residence>'
+            - Vynech <název residence> aby si zobrazil informace o oblasti, ve které
+              právě stojíš.
         area:
           Description: Spravovat oblasti residence.
           SubCommands:
             list:
               Description: Zobrazit všechny oblasti residence.
               Info:
-              - '&ePoužití: &6/res area list [název residence] <strana>'
+                - '&ePoužití: &6/res area list [název residence] <strana>'
             listall:
               Description: Zobrazit souřadnice a další informace o oblastech.
               Info:
-              - '&ePoužití: &6/res area listall [název residence] <strana>'
+                - '&ePoužití: &6/res area listall [název residence] <strana>'
             add:
               Description: Přidat oblasti residence.
               Info:
-              - '&ePoužití: &6/res area add [název residence] [areaID]'
-              - Nejprve musíš vybrat 2 body.
+                - '&ePoužití: &6/res area add [název residence] [areaID]'
+                - Nejprve musíš vybrat 2 body.
             remove:
               Description: Odstranit oblasti residence.
               Info:
-              - '&ePoužití: &6/res area remove [název residence] [areaID]'
+                - '&ePoužití: &6/res area remove [název residence] [areaID]'
             replace:
               Description: Vyměnit oblasti residence.
               Info:
-              - '&ePoužití: &6/res area replace [název residence] [areaID]'
-              - Nejprve musíš vybrat 2 body.
-              - Vyměnění oblasti residence tě může stát peníze, pokud je cílová oblast
-                větší.
+                - '&ePoužití: &6/res area replace [název residence] [areaID]'
+                - Nejprve musíš vybrat 2 body.
+                - Vyměnění oblasti residence tě může stát peníze, pokud je cílová oblast
+                  větší.
         give:
           Description: Dá hráči residenci.
           Info:
-          - '&ePoužití: &6/res give <název residence> [jméno hráče]'
-          - Dá tvoji residenci určenému hráči
+            - '&ePoužití: &6/res give <název residence> [jméno hráče]'
+            - Dá tvoji residenci určenému hráči
         renamearea:
           Description: Přejmenovat oblast residence
           Info:
-          - '&ePoužití: &6/res removeworld [název residence] [starý název oblasti]
+            - '&ePoužití: &6/res removeworld [název residence] [starý název oblasti]
             [nový název oblasti]'
         contract:
           Description: Zmenšit residenci ve směru, kam koukáš
           Info:
-          - '&ePoužití: &6/res contract (název residence [počet])'
-          - Zmenší residenci ve směru, kam se koukáš
-          - Zadání jména residence je volitelné
+            - '&ePoužití: &6/res contract (název residence [počet])'
+            - Zmenší residenci ve směru, kam se koukáš
+            - Zadání jména residence je volitelné
         check:
           Description: Kontrola stavu tvé vlajky
           Info:
-          - '&ePoužití: &6/res check [název residence] [vlajka] (jméno hráče)'
+            - '&ePoužití: &6/res check [název residence] [vlajka] (jméno hráče)'
         gset:
           Description: Nastavit vlajky pro specifickou skupinu.
           Info:
-          - '&ePoužití: &6/res gset <název residence> [skupina] [vlajka] [true/false/remove]'
-          - Pro zobrazení seznamu vlajek napiš /res flags ?
+            - '&ePoužití: &6/res gset <název residence> [skupina] [vlajka] [true/false/remove]'
+            - Pro zobrazení seznamu vlajek napiš /res flags ?
         list:
           Description: Zobrazit seznam residencí
           Info:
-          - '&ePoužití: &6/res list <jméno hráče> <strana>'
-          - Zobrazit všechny residence, které hráč vlastní (krome skrytych).
-          - Pro zobrazení residenci všech hráčů použij /res listall.
+            - '&ePoužití: &6/res list <jméno hráče> <strana>'
+            - Zobrazit všechny residence, které hráč vlastní (krome skrytych).
+            - Pro zobrazení residenci všech hráčů použij /res listall.
         version:
           Description: Verze residence
           Info:
-          - '&ePoužití: &6/res version'
+            - '&ePoužití: &6/res version'
         tool:
           Description: Zvýraznit residenci a informaci jména nástroje
           Info:
-          - '&ePoužití: &6/res tool'
+            - '&ePoužití: &6/res tool'
         pdel:
           Description: Odebrat hráče z residence.
           Info:
-          - '&ePoužití: &6/res pdel <název residence> [jméno hráče]'
-          - Odebere práva hráče residence
+            - '&ePoužití: &6/res pdel <název residence> [jméno hráče]'
+            - Odebere práva hráče residence
         market:
           Description: Koupit, prodat nebo pronajmout residenci.
           Info:
-          - '&ePoužití: &6/res market ? pro více informací'
+            - '&ePoužití: &6/res market ? pro více informací'
           SubCommands:
             Info:
               Description: Zobrazit informace o ekonomii residence
               Info:
-              - '&ePoužití: &6/res market Info [název residence]'
-              - Zobrazit, jestli je residence na prodej nebo k pronájmu, popř. její
-                cenu
+                - '&ePoužití: &6/res market Info [název residence]'
+                - Zobrazit, jestli je residence na prodej nebo k pronájmu, popř. její
+                  cenu
             list:
               Description: Zobrazit seznam residencí na prodej a k pronájmu
               Info:
-              - '&ePoužití: &6/res market list'
+                - '&ePoužití: &6/res market list'
               SubCommands:
                 rent:
                   Description: Seznam residencí k pronájmu.
                   Info:
-                  - '&ePoužití: &6/res market list rent'
+                    - '&ePoužití: &6/res market list rent'
                 sell:
                   Description: Seznam residencí k prodeji.
                   Info:
-                  - '&ePoužití: &6/res market list sell'
+                    - '&ePoužití: &6/res market list sell'
             sell:
               Description: Prodat residenci
               Info:
-              - '&ePoužití: &6/res market sell [název residence] [částka]'
-              - Nastaví residenci k prodeji za [částka] peněz.
-              - Jiný hráč může koupit residenci pomocí /res market buy [název residence]
+                - '&ePoužití: &6/res market sell [název residence] [částka]'
+                - Nastaví residenci k prodeji za [částka] peněz.
+                - Jiný hráč může koupit residenci pomocí /res market buy [název residence]
             sign:
               Description: Nastavit obchodní ceduli
               Info:
-              - '&ePoužití: &6/res market sign [název residence]'
-              - Nastaví ceduli na kterou koukáš, jako obchodní
+                - '&ePoužití: &6/res market sign [název residence]'
+                - Nastaví ceduli na kterou koukáš, jako obchodní
             buy:
               Description: Koupit residenci
               Info:
-              - '&ePoužití: &6/res market buy [název residence]'
-              - Koupí residenci, pokud je na prodej
+                - '&ePoužití: &6/res market buy [název residence]'
+                - Koupí residenci, pokud je na prodej
             unsell:
               Description: Stáhnout residenci z prodeje
               Info:
-              - '&ePoužití: &6/res market unsell [název residence]'
+                - '&ePoužití: &6/res market unsell [název residence]'
             rent:
               Description: Pronajmout si cizí residenci
               Info:
-              - '&ePoužití: &6/res market rent [název residence] <autoProdloužení>'
-              - Pronajmout si residenci. autoProdloužení může být true(ano)/false(ne).
-                Pokud true, bude docházet k automatickému prodlužování nájmu pokud
-                to vlastník schválil a to do doby ukončení.
+                - '&ePoužití: &6/res market rent [název residence] <autoProdloužení>'
+                - Pronajmout si residenci. autoProdloužení může být true(ano)/false(ne).
+                  Pokud true, bude docházet k automatickému prodlužování nájmu pokud
+                  to vlastník schválil a to do doby ukončení.
             rentable:
               Description: Pronajmout vlastní residenci
               Info:
-              - '&ePoužití: &6/res market rentable [název residence] [cena] [dní]
+                - '&ePoužití: &6/res market rentable [název residence] [cena] [dní]
                 <autoProdloužení>'
-              - Pronajme vlastní residenci za [cena] na [dní]. Pokud je <autoProdloužení>
-                true, pronájem bude automaticky prodlužován.
+                - Pronajme vlastní residenci za [cena] na [dní]. Pokud je <autoProdloužení>
+                  true, pronájem bude automaticky prodlužován.
             autopay:
               Description: Nastavit residenci Autoplatbu
               Info:
-              - '&ePoužití: &6/res market autopay <název residence> [true/false]'
+                - '&ePoužití: &6/res market autopay <název residence> [true/false]'
             payrent:
               Description: Zaplatit nájem za residenci
               Info:
-              - '&ePoužití: &6/res market payrent <název residence>'
+                - '&ePoužití: &6/res market payrent <název residence>'
             confirm:
               Description: Potvrdit ukončení nájmu
               Info:
-              - '&ePoužití: &6/res market confirm'
+                - '&ePoužití: &6/res market confirm'
             unrent:
               Description: Ukončit nájem či pronájem residence.
               Info:
-              - '&ePoužití: &6/res market unrent [název residence]'
-              - Pokud jsi nájemce, tento příkaz zruší tvůj nájem.
-              - Pokud jsi vlastník, tento příkaz zruší pronájem nájemci.
+                - '&ePoužití: &6/res market unrent [název residence]'
+                - Pokud jsi nájemce, tento příkaz zruší tvůj nájem.
+                - Pokud jsi vlastník, tento příkaz zruší pronájem nájemci.
         rc:
           Description: Připojit se do residenčního chatu.
           Info:
-          - '&ePoužití: &6/res rc (název residence)'
+            - '&ePoužití: &6/res rc (název residence)'
           SubCommands:
             leave:
               Description: Opustit stávající residenční chat
               Info:
-              - '&ePoužití: &6/res rc leave'
-              - Pokud jsi v residenčním chatu, tímto příkazem ho opustíš.
+                - '&ePoužití: &6/res rc leave'
+                - Pokud jsi v residenčním chatu, tímto příkazem ho opustíš.
             setcolor:
               Description: Nastavit barvu residenčního chatu
               Info:
-              - '&ePoužití: &6/res rc setcolor [barevný kód]'
-              - Nastaví barvu residenčního chatu
+                - '&ePoužití: &6/res rc setcolor [barevný kód]'
+                - Nastaví barvu residenčního chatu
             setprefix:
               Description: Nastavit prefix residenčního chatu
               Info:
-              - '&ePoužití: &6/res rc setprefix [novýPrefix]'
-              - Nastaví prefix residenčního chatu
+                - '&ePoužití: &6/res rc setprefix [novýPrefix]'
+                - Nastaví prefix residenčního chatu
             kick:
               Description: Vyhodit hráče z residenčního chatu
               Info:
-              - '&ePoužití: &6/res rc kick [jméno hráče]'
-              - Vyhodí hráče z residenčního chatu
+                - '&ePoužití: &6/res rc kick [jméno hráče]'
+                - Vyhodí hráče z residenčního chatu
         expand:
           Description: Rozšířit residenci ve směru, kam koukáš
           Info:
-          - '&ePoužití: &6/res expand (název residence) [počet]'
-          - Rozšířit residenci ve směru, kam se koukáš.
-          - Zadání jména residence je volitelné
+            - '&ePoužití: &6/res expand (název residence) [počet]'
+            - Rozšířit residenci ve směru, kam se koukáš.
+            - Zadání jména residence je volitelné
         compass:
           Description: Nastavit kompas ukazující směrem k residenci
           Info:
-          - '&ePoužití: &6/res compass <název residence>'
+            - '&ePoužití: &6/res compass <název residence>'
         lists:
           Description: Přednastavena práva
           Info:
-          - Přednastavena práva residence
+            - Přednastavena práva residence
           SubCommands:
             add:
               Description: Přidat seznam
               Info:
-              - '&ePoužití: &6/res lists add <název seznamu>'
+                - '&ePoužití: &6/res lists add <název seznamu>'
             remove:
               Description: Odstranit seznam
               Info:
-              - '&ePoužití: &6/res lists remove <název seznamu>'
+                - '&ePoužití: &6/res lists remove <název seznamu>'
             apply:
               Description: Použít seznam na residenci
               Info:
-              - '&ePoužití: &6/res lists apply <název seznamu> <název residence>'
+                - '&ePoužití: &6/res lists apply <název seznamu> <název residence>'
             set:
               Description: Nastavit vlajku
               Info:
-              - '&ePoužití: &6/res lists set <název seznamu> <vlajka> <hodnota>'
+                - '&ePoužití: &6/res lists set <název seznamu> <vlajka> <hodnota>'
             pset:
               Description: Nastavit hráčskou vlajku
               Info:
-              - '&ePoužití: &6/res lists pset <název seznamu> <jméno hráče> <vlajka>
+                - '&ePoužití: &6/res lists pset <název seznamu> <jméno hráče> <vlajka>
                 <hodnota>'
             gset:
               Description: Nastavit skupinovou vlajku
               Info:
-              - '&ePoužití: &6/res lists view <název seznamu>'
+                - '&ePoužití: &6/res lists view <název seznamu>'
             view:
               Description: Zobrazit seznam.
               Info:
-              - '&ePoužití: &6/res lists view <název seznamu>'
+                - '&ePoužití: &6/res lists view <název seznamu>'
         reset:
           Description: Resetovat residenci
           Info:
-          - '&ePoužití: &6/res reset <název residence>'
-          - Resetuje vlajky residence do továrního nastavení.
+            - '&ePoužití: &6/res reset <název residence>'
+            - Resetuje vlajky residence do továrního nastavení.
         listhidden:
           Description: Zobrazit seznam skrytých residencí
           Info:
-          - '&ePoužití: &6/res listhidden <jméno hráče> <strana>'
-          - Zobrazit seznam skrytých residencí určitého hráče.
+            - '&ePoužití: &6/res listhidden <jméno hráče> <strana>'
+            - Zobrazit seznam skrytých residencí určitého hráče.
         setmain:
           Description: Nastavit definovanou rezidenci jako hlavní, aby se v chatu
             zobrazovala jako předpona
           Info:
-          - '&ePoužití: &6/res setmain (název residence)'
-          - Nastaví definovanou rezidenci jako hlavní.
+            - '&ePoužití: &6/res setmain (název residence)'
+            - Nastaví definovanou rezidenci jako hlavní.
         server:
           Description: Předat residenci serveru
           Info:
-          - '&ePoužití: &6/resadmin server [název residence]'
-          - Nastaví server jako vlastníka residence.
+            - '&ePoužití: &6/resadmin server [název residence]'
+            - Nastaví server jako vlastníka residence.
         rt:
           Description: Teleportovat se na náhodnou lokaci ve světě.
           Info:
-          - '&ePoužití: &6/res rt'
-          - Teleportuje tě na náhodnou lokaci.
+            - '&ePoužití: &6/res rt'
+            - Teleportuje tě na náhodnou lokaci.
         mirror:
           Description: Zrcadlit vlajky
           Info:
-          - '&ePoužití: &6/res mirror ?'
+            - '&ePoužití: &6/res mirror ?'
         shop:
           Description: Spravovat obchod s residencemi
           Info:
-          - Spravovat funkce obchodu
+            - Spravovat funkce obchodu
           SubCommands:
             list:
               Description: Zobrazit seznam obchodovatelných residencí
               Info:
-              - '&ePoužití: &6/res shop list'
-              - Zobrazit celý seznam obchodovatelných residencí
+                - '&ePoužití: &6/res shop list'
+                - Zobrazit celý seznam obchodovatelných residencí
             vote:
               Description: Hlasovat v residenčním obchodu
               Info:
-              - '&ePoužití: &6/res shop vote <název residence> [hodnota]'
-              - Hlasování pro aktuální nebo definovanou residenci
+                - '&ePoužití: &6/res shop vote <název residence> [hodnota]'
+                - Hlasování pro aktuální nebo definovanou residenci
             like:
               Description: Lajknout obchod residence
               Info:
-              - '&ePoužití: &6/res shop like <název residence>'
-              - Lajkne obchod residence
+                - '&ePoužití: &6/res shop like <název residence>'
+                - Lajkne obchod residence
             votes:
               Description: Zobrazit seznam hlasů obchodu
               Info:
-              - '&ePoužití: &6/res shop votes <název residence> <strana>'
+                - '&ePoužití: &6/res shop votes <název residence> <strana>'
             likes:
               Description: Zobrazit počet lajků
               Info:
-              - '&ePoužití: &6/res shop likes <název residence> <strana>'
-              - Zobrazit plný seznam lajků
+                - '&ePoužití: &6/res shop likes <název residence> <strana>'
+                - Zobrazit plný seznam lajků
             setdesc:
               Description: Nastavit popis residenčního shopu
               Info:
-              - '&ePoužití: &6/res shop setdesc [text]'
-              - Nastaví popis residenčního shopu. Barvy jsou podporovány. Pro nový
-                řádek použij /n
+                - '&ePoužití: &6/res shop setdesc [text]'
+                - Nastaví popis residenčního shopu. Barvy jsou podporovány. Pro nový
+                  řádek použij /n
             createboard:
               Description: Vytvořit novou obchodní ceduli
               Info:
-              - '&ePoužití: &6/res shop createboard [místo]'
-              - Vytvoří novou obchodní ceduli. Místo - pozice, od které se začne plnit
-                cedule
+                - '&ePoužití: &6/res shop createboard [místo]'
+                - Vytvoří novou obchodní ceduli. Místo - pozice, od které se začne plnit
+                  cedule
             deleteboard:
               Description: Smazat obchodní ceduli
               Info:
-              - '&ePoužití: &6/res shop deleteboard'
-              - Smaže ceduli kliknutím pravým tlačítkem na jednu z cedulek
+                - '&ePoužití: &6/res shop deleteboard'
+                - Smaže ceduli kliknutím pravým tlačítkem na jednu z cedulek
         lset:
           Description: Měnit možnosti černé listiny a seznamu ignorovaných
           Info:
-          - '&ePoužití: &6/res lset <název residence> [blacklist/ignorelist] [materiál]'
-          - '&ePoužití: &6/res lset <název residence> Info'
-          - Zakázání materiálu na černé listině brání jeho umístění v rezidenci.
-          - Seznam ignorovaných materiálů způsobí, že konkrétní materiál nebude v
-            residenci chráněn.
+            - '&ePoužití: &6/res lset <název residence> [blacklist/ignorelist] [materiál]'
+            - '&ePoužití: &6/res lset <název residence> Info'
+            - Zakázání materiálu na černé listině brání jeho umístění v rezidenci.
+            - Seznam ignorovaných materiálů způsobí, že konkrétní materiál nebude v
+              residenci chráněn.
         pset:
           Description: Nastavení vlajek residence na určitého hráče.
           Info:
-          - '&ePoužití: &6/res pset <název residence> [jméno hráče] [vlajka] [true/false/remove]'
-          - '&ePoužití: &6/res pset <název residence> [jméno hráče] removeall'
-          - Pro zobrazení všech vlajek, napiš /res flags ?
+            - '&ePoužití: &6/res pset <název residence> [jméno hráče] [vlajka] [true/false/remove]'
+            - '&ePoužití: &6/res pset <název residence> [jméno hráče] removeall'
+            - Pro zobrazení všech vlajek, napiš /res flags ?
         show:
           Description: Zobrazit hranice residence
           Info:
-          - '&ePoužití: &6/res show <název residence>'
+            - '&ePoužití: &6/res show <název residence>'
         flags:
           Description: Seznam všech vlajek
           Info:
-          - True vetšinou povoluje, False zakazuje
+            - True vetšinou povoluje, False zakazuje
           SubCommands:
             anvil:
               Translated: anvil
               Description: Povolit/zakázat používání kovadliny v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> anvil true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> anvil true/false/remove'
             admin:
               Translated: admin
               Description: Povolit/zakázat hráči měnit vlajky v residenci
               Info:
-              - '&ePoužití: &6/res pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res pset <název residence> [vlajka] true/false/remove'
             animalkilling:
               Translated: animalkilling
               Description: Povolit/zakázat zabíjení zvířat v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             animals:
               Translated: animals
               Description: Povolit/zakázat spawn zvířat v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             anvilbreak:
               Translated: anvilbreak
               Description: Povolit/zakázat ničení kovadliny v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> anvilbreak true/false/remove'
+                - '&ePoužití: &6/res set <název residence> anvilbreak true/false/remove'
             backup:
               Translated: backup
               Description: Pokud je true, obnoví prvotní vzhled plochy (nutný WordEdit)
               Info:
-              - '&ePoužití: &6/res set <název residence> backup true/false/remove'
+                - '&ePoužití: &6/res set <název residence> backup true/false/remove'
             bank:
               Translated: bank
               Description: Povolit/zakázat použití banky residence
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             bed:
               Translated: bed
               Description: Povolit/zakázat použití postelí v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             beacon:
               Translated: beacon
               Description: Povolit/zakázat použití majáku v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> beacon true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> beacon true/false/remove'
             brew:
               Translated: brew
               Description: Povolit/zakázat použití stojanu na vaření lektvarů v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             build:
               Translated: build
               Description: Povolit/zakázat stavění v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             burn:
               Translated: burn
               Description: Povolit/zakázat hoření mobů v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             button:
               Translated: button
               Description: Povolit/zakázat použití tlačítek v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             cake:
               Translated: cake
               Description: Povolit/zakázat hráčům jíst dort v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             canimals:
               Translated: canimals
               Description: Povolit/zakázat spawn vlastních zvířat v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             chorustp:
               Translated: chorustp
               Description: Povolit/zakázat teleportaci s plodem chorusu v residenci
                 fruit
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> chorustp true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> chorustp true/false/remove'
             chat:
               Translated: chat
               Description: Povolit připojení do chatu residence
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             cmonsters:
               Translated: cmonsters
               Description: Povolit/zakázat náhodný spawn monster v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             commandblock:
               Translated: commandblock
               Description: Povolit/zakázat používání command bloku v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> commandblock true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> commandblock true/false/remove'
             command:
               Translated: command
               Description: Povolit/zakázat použití příkazu v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             container:
               Translated: container
               Description: Povolit/zakázat přístup k truhlám, pecím, dispenserům,
                 atd ... v residenci
               Info:
-              - '&ePoužití: &6/res set/pset  <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset  <název residence> [vlajka] true/false/remove'
             coords:
               Translated: coords
               Description: Ukázat/skrýt koordináty residence
               Info:
-              - '&ePoužití: &6/res set <název residence> coords true/false/remove'
+                - '&ePoužití: &6/res set <název residence> coords true/false/remove'
             craft:
               Translated: craft
               Description: 'Dát vlajky: table, enchant, brew'
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             creeper:
               Translated: creeper
               Description: Povolit/zakázat výbuch creeperu v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             dragongrief:
               Translated: dragongrief
               Description: Zabránit ničení bloků ender drakem v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             day:
               Translated: day
               Description: Nastavit den v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             dye:
               Translated: dye
               Description: Povolit/zakázat barvení ovcí v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             damage:
               Translated: damage
               Description: Všem povolit/zakázat poškození útokem v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             decay:
               Translated: decay
               Description: Povolit/zakázat rozpad listí v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> decay true/false/remove'
+                - '&ePoužití: &6/res set <název residence> decay true/false/remove'
             destroy:
               Translated: destroy
               Description: Povolit/zakázat ničení bloků v residenci, ignoruje vlajku
                 build
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             dryup:
               Translated: dryup
               Description: Povolit/zakázat vysychání např houbou v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> dryup true/false/remove'
+                - '&ePoužití: &6/res set <název residence> dryup true/false/remove'
             diode:
               Translated: diode
               Description: Povolit/zakázat použití ruditového zesilovače v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             door:
               Translated: door
               Description: Povolit/zakázat použití dveří v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             egg:
               Translated: egg
               Description: Povolit/zakázat použití dračího vejce v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> egg true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> egg true/false/remove'
             enchant:
               Translated: enchant
               Description: Povolit/zakázat použití čarovného stolu v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             explode:
               Translated: explode
               Description: Povolit/zakázat výbuchy v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             enderpearl:
               Translated: enderpearl
               Description: Povolit/zakázat použití enderperly v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             fallinprotection:
               Translated: fallinprotection
               Description: Povolit/zakázat ochranu před padajícím blokem v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> fallinprotection true/false/remove'
+                - '&ePoužití: &6/res set <název residence> fallinprotection true/false/remove'
             falldamage:
               Translated: falldamage
               Description: Povolit/zakázat ochranu před pádem v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> falldamage true/false/remove'
+                - '&ePoužití: &6/res set <název residence> falldamage true/false/remove'
             feed:
               Translated: feed
               Description: Povolit/zakázat ochranu před hladem v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             friendlyfire:
               Translated: friendlyfire
               Description: Povolit/zakázat střelbu do kamarádů v residenci
               Info:
-              - '&ePoužití: &6/res pset <název residence> friendlyfire true/false/remove'
+                - '&ePoužití: &6/res pset <název residence> friendlyfire true/false/remove'
             fireball:
               Translated: fireball
               Description: Povolit/zakázat ohnivou kouli v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             firespread:
               Translated: firespread
               Description: Povolit/zakázat šíření ohně v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             flowinprotection:
               Translated: flowinprotection
               Description: Povolit/zakázat tok kapalin z venčí do residence
               Info:
-              - '&ePoužití: &6/res set <název residence> flowinprotection true/false/remove'
+                - '&ePoužití: &6/res set <název residence> flowinprotection true/false/remove'
             flow:
               Translated: flow
               Description: Povolit/zakázat tok kapalin v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             flowerpot:
               Translated: flowerpot
               Description: Povolit/zakázat použití květináče v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> flowerpot true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> flowerpot true/false/remove'
             grow:
               Translated: grow
               Description: Povolit/zakázat sázení v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> grow true/false/remove'
+                - '&ePoužití: &6/res set <název residence> grow true/false/remove'
             glow:
               Translated: glow
               Description: Zapnout/vypnout záři kolem hráčů v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> glow true/false/remove'
+                - '&ePoužití: &6/res set <název residence> glow true/false/remove'
             hotfloor:
               Translated: hotfloor
               Description: Povolit/zakázat poškození od magma bloků v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> hotfloor true/false/remove'
+                - '&ePoužití: &6/res set <název residence> hotfloor true/false/remove'
             hidden:
               Translated: hidden
               Description: Povolit/zakázat zobrazení residence při použití příkazů
                 list a listall
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             hook:
               Translated: hook
               Description: Povolit/zakázat chycení prutem všech entit v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> hook true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> hook true/false/remove'
             healing:
               Translated: healing
               Description: Zapne/vypne regeneraci života v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             iceform:
               Translated: iceform
               Description: Povolit/zakázat tvorbu ledu v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> iceform true/false/remove'
+                - '&ePoužití: &6/res set <název residence> iceform true/false/remove'
             icemelt:
               Translated: icemelt
               Description: Povolit/zakázat tání ledu v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> icemelt true/false/remove'
+                - '&ePoužití: &6/res set <název residence> icemelt true/false/remove'
             ignite:
               Translated: ignite
               Description: Povolit/zakázat vzplanutí v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             itemdrop:
               Translated: itemdrop
               Description: Povolit/zakázat odhození předmětů v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> itemdrop true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> itemdrop true/false/remove'
             itempickup:
               Translated: itempickup
               Description: Povolit/zakázat sbírání předmětů ze země v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> itempickup true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> itempickup true/false/remove'
             jump2:
               Translated: jump2
               Description: Povolit/zakázat skákání nad 2 bloky v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> jump2 true/false/remove'
+                - '&ePoužití: &6/res set <název residence> jump2 true/false/remove'
             jump3:
               Translated: jump3
               Description: Povolit/zakázat skákání nad 3 bloky v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> jump3 true/false/remove'
+                - '&ePoužití: &6/res set <název residence> jump3 true/false/remove'
             keepinv:
               Translated: keepinv
               Description: Povolit/zakázat ponechání inventáře hráčům po smrti v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             keepexp:
               Translated: keepexp
               Description: Povolit/zakázat ponechání XP hráčům po smrti v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             lavaflow:
               Translated: lavaflow
               Description: Povolit/zakázat tok lávy v residenci, ignoruje flow vlajku
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             leash:
               Translated: leash
               Description: Povolit/zakázat použití vodítka v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             lever:
               Translated: lever
               Description: Povolit/zakázat použití páčky v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             mobexpdrop:
               Translated: mobexpdrop
               Description: Povolit/zakázat XP z mobů v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             mobitemdrop:
               Translated: mobitemdrop
               Description: Povolit/zakázat předměty z mobů v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             mobkilling:
               Translated: mobkilling
               Description: Povolit/zakázat zabíjení monster v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             monsters:
               Translated: monsters
               Description: Povolit/zakázat spawn monster v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             move:
               Translated: move
               Description: Povolit/zakázat pohyb v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             nanimals:
               Translated: nanimals
               Description: Povolit/zakázat přírodní spawnování zvířat v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             nmonsters:
               Translated: nmonsters
               Description: Povolit/zakázat přírodní spawnování monster v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             night:
               Translated: night
               Description: Nastaví noc v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             nofly:
               Translated: nofly
               Description: Povolit/zakázat létání při vstupu do residence
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             fly:
               Translated: fly
               Description: Zapne/vypne létání pro hráče v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> fly true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> fly true/false/remove'
             nomobs:
               Translated: nomobs
               Description: Povolit/zakázat monstrům v proniknutí do residence
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             note:
               Translated: note
               Description: Povolit/zakázat použití note bloků v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             nodurability:
               Translated: nodurability
               Description: Povolit/zakázat opotřebování nástrojů v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             overridepvp:
               Translated: overridepvp
               Description: Povolit/zakázat PVP v residenci absolutně nad ostatními
                 pluginy
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             pressure:
               Translated: pressure
               Description: Povolit/zakázat použití nášlapné desky v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             piston:
               Translated: piston
               Description: Povolit/zakázat funkci pistonu v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             pistonprotection:
               Translated: pistonprotection
               Description: Povolit/zakázat funkci pistonu do nebo z residence
               Info:
-              - '&ePoužití: &6/res set <název residence> pistonprotection true/false/remove'
+                - '&ePoužití: &6/res set <název residence> pistonprotection true/false/remove'
             place:
               Translated: place
               Description: Povolit/zakázat pouze pokládání bloků v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             pvp:
               Translated: pvp
               Description: Povolit/zakázat pvp v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             rain:
               Translated: rain
               Description: Povolit/zakázat déšť v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> rain true/false/remove'
+                - '&ePoužití: &6/res set <název residence> rain true/false/remove'
             redstone:
               Translated: redstone
               Description: 'Dát vlajky: lever, diode, button, pressure, note'
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             respawn:
               Translated: respawn
               Description: Povolit/zakázat automatický respawn hráče v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             riding:
               Translated: riding
               Description: Povolit/zakázat jezdit na koni
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> riding true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> riding true/false/remove'
             shoot:
               Translated: shoot
               Description: Povolit/zakázat střelbu projektilů v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> shoot true/false/remove'
+                - '&ePoužití: &6/res set <název residence> shoot true/false/remove'
             sun:
               Translated: sun
               Description: Zapnout/vypnout slunečné počasí v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> sun true/false/remove'
+                - '&ePoužití: &6/res set <název residence> sun true/false/remove'
             shop:
               Translated: shop
               Description: Přidat residenci do obchodního seznamu
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             snowtrail:
               Translated: snowtrail
               Description: Povolit/zakázat sněhulákům sněhovou stopu v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             spread:
               Translated: spread
               Description: Povolit/zakázat růstu bloků v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> spread true/false/remove'
+                - '&ePoužití: &6/res set <název residence> spread true/false/remove'
             snowball:
               Translated: snowball
               Description: Povolit/zakázat odhození při zásahu sněhovou koulí v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> snowball true/false/remove'
+                - '&ePoužití: &6/res set <název residence> snowball true/false/remove'
             sanimals:
               Translated: sanimals
               Description: Povolit/zakázat zvířecí spawnery a spawn vejce v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             shear:
               Translated: shear
               Description: Povolit/zakázat stříhání ovcí v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             smonsters:
               Translated: smonsters
               Description: Povolit/zakázat monster spawnery a spawn vejce v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             subzone:
               Translated: subzone
               Description: Povolit/zakázat hráči dělat subzóny v residenci
               Info:
-              - '&ePoužití: &6/res pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res pset <název residence> [vlajka] true/false/remove'
             title:
               Translated: title
               Description: Zapnout/vypnout uvítací hlášku při vstupu do/výstupu z
                 residence
               Info:
-              - '&ePoužití: &6/res set <název residence> title true/false/remove'
+                - '&ePoužití: &6/res set <název residence> title true/false/remove'
             table:
               Translated: table
               Description: Povolit/zakázat použití pracovního stolu v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             tnt:
               Translated: tnt
               Description: Povolit/zakázat tnt v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             tp:
               Translated: tp
               Description: Povolit/zakázat teleport na residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             trade:
               Translated: trade
               Description: Povolit/zakázat obchodování s vesničany v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             trample:
               Translated: trample
               Description: Povolit/zakázat pošlapání obilí v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             trusted:
               Translated: trusted
               Description: 'Nastavit vlajky: build, use, move, container a tp'
               Info:
-              - '&ePoužití: &6/res pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res pset <název residence> [vlajka] true/false/remove'
             use:
               Translated: use
               Description: Povolit/zakázat použití dveří, tlačítek, páček, atd. v
                 residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             vehicledestroy:
               Translated: vehicledestroy
               Description: Povolit/zakázat ničeni dopravních prostředků v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             witherspawn:
               Translated: witherspawn
               Description: Povolit/zakázat spawnování withera v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> witherspawn true/false/remove'
+                - '&ePoužití: &6/res set <název residence> witherspawn true/false/remove'
             phantomspawn:
               Translated: phantomspawn
               Description: Povolit/zakázat spawnování fantoma v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> phantomspawn true/false/remove'
+                - '&ePoužití: &6/res set <název residence> phantomspawn true/false/remove'
             witherdamage:
               Translated: witherdamage
               Description: Povolit/zakázat poškození witherem v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             witherdestruction:
               Translated: witherdestruction
               Description: Povolit/zakázat ničení bloků witherem v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> witherdestruction true/false/remove'
+                - '&ePoužití: &6/res set <název residence> witherdestruction true/false/remove'
             waterflow:
               Translated: waterflow
               Description: Povolit/zakázat tok vody v residenci, ignoruje flow vlajku
               Info:
-              - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set <název residence> [vlajka] true/false/remove'
             wspeed1:
               Translated: wspeed1
               Description: Povolit/zakázat hráči rychlé běhání %1 v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> wspeed1 true/false/remove'
+                - '&ePoužití: &6/res set <název residence> wspeed1 true/false/remove'
             wspeed2:
               Translated: wspeed2
               Description: Povolit/zakázat hráči rychlé běhání %1 v residenci
               Info:
-              - '&ePoužití: &6/res set <název residence> wspeed2 true/false/remove'
+                - '&ePoužití: &6/res set <název residence> wspeed2 true/false/remove'
             bucket:
               Description: Povolit/zakázat použití kýble v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             bucketfill:
               Description: Povolit/zakázat naplnění kýble v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             bucketempty:
               Description: Povolit/zakázat vyprázdnění kýble v residenci
               Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+                - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
         remove:
           Description: Odstranit residenci.
           Info:
-          - '&ePoužití: &6/res remove <název residence>'
+            - '&ePoužití: &6/res remove <název residence>'
         signupdate:
           Description: Aktualizovat cedulky residence.
           Info:
-          - '&ePoužití: &6/res signupdate'
+            - '&ePoužití: &6/res signupdate'
         current:
           Description: Zobrazit residenci, ve které se nacházíš.
           Info:
-          - '&ePoužití: &6/res current'
+            - '&ePoužití: &6/res current'
         reload:
           Description: Aktualizovat soubory config,lang,groups,flags
           Info:
-          - '&ePoužití: &6/res reload [config/lang/groups/flags]'
+            - '&ePoužití: &6/res reload [config/lang/groups/flags]'
         setowner:
           Description: Změnit vlastníka residence.
           Info:
-          - '&ePoužití: &6/resadmin setowner [název residence] [jméno hráče]'
+            - '&ePoužití: &6/resadmin setowner [název residence] [jméno hráče]'
         unstuck:
           Description: Teleportovat z residence
           Info:
-          - '&ePoužití: &6/res unstuck'
+            - '&ePoužití: &6/res unstuck'
         subzone:
           Description: Vytvořit subzóny v residenci.
           Info:
-          - '&ePoužití: &6/res subzone <jméno residence> [jméno subzony]'
-          - Pokud jméno residence není zadané, použije se jméno residence, ve které
-            se nacházíš.
+            - '&ePoužití: &6/res subzone <jméno residence> [jméno subzony]'
+            - Pokud jméno residence není zadané, použije se jméno residence, ve které
+              se nacházíš.
         removeworld:
           Description: Odstranit všechny residence světa.
           Info:
-          - '&ePoužití: &6/res removeworld [svet]'
-          - Musí být spuštěno z konzole.
+            - '&ePoužití: &6/res removeworld [svet]'
+            - Musí být spuštěno z konzole.
         limits:
           Description: Zobrazit mé limity.
           Info:
-          - '&ePoužití: &6/res limits'
-          - Zobrazí tvá omezení týkající se rezidencí.
+            - '&ePoužití: &6/res limits'
+            - Zobrazí tvá omezení týkající se rezidencí.
         set:
           Description: Nastavení vlajek residence.
           Info:
-          - '&ePoužití: &6/res set <název residence> [vlajka] [true/false/remove]'
-          - Použij &6/res flags ? &cpro zobrazení všech dostupných vlajek
-          - Tyto vlajky se vztahují na všechny hráče. (pokud chceš jenom na jednoho,
-            zkus &6/res pset ?&c)
+            - '&ePoužití: &6/res set <název residence> [vlajka] [true/false/remove]'
+            - Použij &6/res flags ? &cpro zobrazení všech dostupných vlajek
+            - Tyto vlajky se vztahují na všechny hráče. (pokud chceš jenom na jednoho,
+              zkus &6/res pset ?&c)
         clearflags:
           Description: Odstranění všech vlajek z residence
           Info:
-          - '&ePoužití: &6/res clearflags <název residence>'
+            - '&ePoužití: &6/res clearflags <název residence>'
         message:
           Description: Spravovat uvítací text při příchodu/odchodu z residence
           Info:
-          - '&ePoužití: &6/res message <název residence> [enter/leave] [zpráva]'
-          - Nastaví zprávu pro příchod (enter) nebo odchod (leave).
-          - '&ePoužití: &6/res message <název residence> remove [enter/leave]'
-          - Odstraní zprávu pro příchod (enter)/odchod (leave)
+            - '&ePoužití: &6/res message <název residence> [enter/leave] [zpráva]'
+            - Nastaví zprávu pro příchod (enter) nebo odchod (leave).
+            - '&ePoužití: &6/res message <název residence> remove [enter/leave]'
+            - Odstraní zprávu pro příchod (enter)/odchod (leave)
         command:
           Description: Povolit/zakázat příkazy v residenci
           Info:
-          - '&ePoužití: &6/res command <název residence> <allow/block/list> <command>'
-          - Zobrazí seznam, přidá nebo odebere povolení k užití příkazů v residenci
-          - Použij podtržítko _ při přidání příkazu s více/mezi proměnnými
+            - '&ePoužití: &6/res command <název residence> <allow/block/list> <command>'
+            - Zobrazí seznam, přidá nebo odebere povolení k užití příkazů v residenci
+            - Použij podtržítko _ při přidání příkazu s více/mezi proměnnými
         confirm:
           Description: Potvrdit odstranění residence.
           Info:
-          - '&ePoužití: &6/res confirm'
-          - Potvrdí odstranění residence.
+            - '&ePoužití: &6/res confirm'
+            - Potvrdí odstranění residence.
         resadmin:
           Description: Povolit/zakázat residenčního admina
           Info:
-          - '&ePoužití: &6/res resadmin [on/off]'
+            - '&ePoužití: &6/res resadmin [on/off]'
         tpset:
           Description: Nastavit pozici teleportace v residenci
           Info:
-          - '&ePoužití: &6/res tpset'
-          - Nastaví teleportační pozici residence tam, kde stojíš.
-          - Musíš být vlastník residence, nebo mít vlajku +admin.
+            - '&ePoužití: &6/res tpset'
+            - Nastaví teleportační pozici residence tam, kde stojíš.
+            - Musíš být vlastník residence, nebo mít vlajku +admin.
         tpconfirm:
           Description: Ignorovat nebezpečný teleport.
           Info:
-          - '&ePoužití: &6/res tpconfirm'
-          - Vynutí teleportaci i přes to, že může být nebezpečná.
+            - '&ePoužití: &6/res tpconfirm'
+            - Vynutí teleportaci i přes to, že může být nebezpečná.
         removeall:
           Description: Odstranit všechny residence hráče.
           Info:
-          - '&ePoužití: &6/res removeall [jméno vlastníka]'
-          - Odstraní všechny residence vlastněné určitým hráčem.'
-          - Vyžaduje /resadmin pokud to používáš na kohokoliv jiného, než sebe.
+            - '&ePoužití: &6/res removeall [jméno vlastníka]'
+            - Odstraní všechny residence vlastněné určitým hráčem.'
+            - Vyžaduje /resadmin pokud to používáš na kohokoliv jiného, než sebe.
         material:
           Description: Zkontrolovat jestli existuje materiál pomocí id
           Info:
-          - '&ePoužití: &6/res material [materiál]'
+            - '&ePoužití: &6/res material [materiál]'
         kick:
           Description: Vyhodit hráče z residence
           Info:
-          - '&ePoužití: &6/res kick <jméno hráče>'
-          - Musíš být vlastník residence.
-          - Hráč by měl být online.
+            - '&ePoužití: &6/res kick <jméno hráče>'
+            - Musíš být vlastník residence.
+            - Hráč by měl být online.
         sublist:
           Description: Zobrazit subzóny
           Info:
-          - '&ePoužití: &6/res sublist <název residence> <strana>'
-          - Zobrazí subzóny v residenci
+            - '&ePoužití: &6/res sublist <název residence> <strana>'
+            - Zobrazí subzóny v residenci
         rename:
           Description: Přejmenovat residenci.
           Info:
-          - '&ePoužití: &6/res rename [StarýNázev] [NovýNázev]'
-          - Musíš být vlastník residence.
-          - Jméno nesmí být už použité.
+            - '&ePoužití: &6/res rename [StarýNázev] [NovýNázev]'
+            - Musíš být vlastník residence.
+            - Jméno nesmí být už použité.
         setallfor:
           Description: Nastavit vlajku určitému vlastníkovi pro všechny jeho residence
           Info:
-          - '&ePoužití: &6/res setallfor [jméno hráče] [vlajka] [true/false/remove]'
+            - '&ePoužití: &6/res setallfor [jméno hráče] [vlajka] [true/false/remove]'
         lease:
           Description: Spravovat nájmy v residenci
           Info:
-          - '&ePoužití: &6/res lease [renew/cost] [název residence]'
-          - /res lease cost ukáže náklady na obnovení rezidenčního pronájmu.
-          - /res lease renew obnoví residenci za předpokladu, že máš dost peněz.
+            - '&ePoužití: &6/res lease [renew/cost] [název residence]'
+            - /res lease cost ukáže náklady na obnovení rezidenčního pronájmu.
+            - /res lease renew obnoví residenci za předpokladu, že máš dost peněz.
           SubCommands:
             set:
               Description: Nastavit dobu pronájmu
               Info:
-              - '&ePoužití: &6/resadmin lease set [název residence] [#days/infinite]'
-              - Nastaví dobu pronájmu na určitý počet dní nebo nekonečně dlouho.
+                - '&ePoužití: &6/resadmin lease set [název residence] [#days/infinite]'
+                - Nastaví dobu pronájmu na určitý počet dní nebo nekonečně dlouho.
             renew:
               Description: Obnovit dobu pronájmu
               Info:
-              - '&ePoužití: &6/resadmin lease renew <název residence>'
-              - Obnoví dobu pronájmu zadané residence.
+                - '&ePoužití: &6/resadmin lease renew <název residence>'
+                - Obnoví dobu pronájmu zadané residence.
             list:
               Description: Vypsat seznam pronájmu residence
               Info:
-              - '&ePoužití: &6/resadmin lease list <název residence> <page>'
-              - Vypíše všechny doby pronájmu subzón
+                - '&ePoužití: &6/resadmin lease list <název residence> <page>'
+                - Vypíše všechny doby pronájmu subzón
             expires:
               Description: Zobrazit koncové datum pronájmu
               Info:
-              - '&ePoužití: &6/resadmin lease expires <název residence>'
-              - Zobrazí kdy končí pronájem residence.
+                - '&ePoužití: &6/resadmin lease expires <název residence>'
+                - Zobrazí kdy končí pronájem residence.
             cost:
               Description: Zobrazit cenu za obnovení pronájmu
               Info:
-              - '&ePoužití: &6/resadmin lease cost <název residence>'
-              - Zobrazit kolik peněz potřebuješ k obnovení nájmu residence.
+                - '&ePoužití: &6/resadmin lease cost <název residence>'
+                - Zobrazit kolik peněz potřebuješ k obnovení nájmu residence.
         tp:
           Description: Teleportovat se do residence.
           Info:
-          - '&ePoužití: &6/res tp [název residence]'
-          - Teleportuje tě do residence. Ta musí mít nastavenou vlajku +tp, popr musíš
-            být vlastník.
-          - Také na to musíš mít práva.
+            - '&ePoužití: &6/res tp [název residence]'
+            - Teleportuje tě do residence. Ta musí mít nastavenou vlajku +tp, popr musíš
+              být vlastník.
+            - Také na to musíš mít práva.
         setall:
           Description: Nastavit vlajku pro všechny residence
           Info:
-          - '&ePoužití: &6/res setall [flag] [true/false/remove]'
+            - '&ePoužití: &6/res setall [flag] [true/false/remove]'
         resreload:
           Description: Obnovit residenci.
           Info:
-          - '&ePoužití: &6/resreload'
+            - '&ePoužití: &6/resreload'
         resload:
           Description: Načíst residenci z uloženého souboru.
           Info:
-          - '&ePoužití: &6/resload'
-          - Pozor příkaz před použitím neukládá residenci.
-          - Načti residenci ze souboru po provedených změnách.
+            - '&ePoužití: &6/resload'
+            - Pozor příkaz před použitím neukládá residenci.
+            - Načti residenci ze souboru po provedených změnách.

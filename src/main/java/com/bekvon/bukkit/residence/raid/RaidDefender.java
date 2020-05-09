@@ -8,26 +8,26 @@ public class RaidDefender {
     private int blocksPlaced = 0;
 
     public RaidDefender(ResidencePlayer rPlayer) {
-	this.rPlayer = rPlayer;
+        this.rPlayer = rPlayer;
     }
 
     public int getBlocksBroken() {
-	return blocksBroken;
+        return blocksBroken;
     }
 
     public void setBlocksBroken(int blocksBroken) {
-	this.blocksBroken = blocksBroken;
+        this.blocksBroken = blocksBroken;
     }
 
     public int getBlocksPlaced() {
-	return blocksPlaced;
+        return blocksPlaced;
     }
 
     public void setBlocksPlaced(int blocksPlaced) {
-	this.blocksPlaced = blocksPlaced;
+        this.blocksPlaced = blocksPlaced;
     }
 
     public ResidencePlayer getPlayer() {
-	return rPlayer;
+        return rPlayer;
     }
 }

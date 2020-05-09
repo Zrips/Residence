@@ -7,15 +7,15 @@ public class AutoSelector {
     private long time;
 
     public AutoSelector(PermissionGroup group, long time) {
-	this.group = group;
-	this.time = time;
+        this.group = group;
+        this.time = time;
     }
 
     public long getTime() {
-	return this.time;
+        return this.time;
     }
 
     public PermissionGroup getGroup() {
-	return this.group;
+        return this.group;
     }
 }

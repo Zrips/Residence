@@ -1,8 +1,8 @@
 package com.bekvon.bukkit.residence.api;
 
-import java.util.Map;
-
 import org.bukkit.entity.Player;
+
+import java.util.Map;
 
 public interface MarketBuyInterface {
 

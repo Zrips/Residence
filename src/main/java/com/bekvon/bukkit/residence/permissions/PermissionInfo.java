@@ -10,72 +10,72 @@ public class PermissionInfo {
     private Double minValue = null;
 
     public PermissionInfo(String permission, Long delay) {
-	this.permission = permission;
-	if (delay != null)
-	    this.delay = delay;
+        this.permission = permission;
+        if (delay != null)
+            this.delay = delay;
     }
 
     public boolean isTimeToRecalculate() {
 
-	return lastChecked == null || delay + lastChecked < System.currentTimeMillis();
+        return lastChecked == null || delay + lastChecked < System.currentTimeMillis();
     }
 
     public String getPermission() {
-	return permission;
+        return permission;
     }
 
     public void setPermission(String permission) {
-	this.permission = permission;
+        this.permission = permission;
     }
 
     public Long getDelay() {
-	return delay;
+        return delay;
     }
 
     public void setDelay(long delay) {
-	this.delay = delay;
+        this.delay = delay;
     }
 
     public Long getLastChecked() {
-	if (lastChecked == null)
-	    lastChecked = System.currentTimeMillis();
-	return lastChecked;
+        if (lastChecked == null)
+            lastChecked = System.currentTimeMillis();
+        return lastChecked;
     }
 
     public void setLastChecked(long lastChecked) {
-	this.lastChecked = lastChecked;
+        this.lastChecked = lastChecked;
     }
 
     public Double getMaxValue() {
-	return maxValue;
-    }
-
-    public Double getMaxValue(Double defaultV) {
-	return maxValue == null ? defaultV : maxValue;
+        return maxValue;
     }
 
     public void setMaxValue(Double maxValue) {
-	this.maxValue = maxValue;
+        this.maxValue = maxValue;
+    }
+
+    public Double getMaxValue(Double defaultV) {
+        return maxValue == null ? defaultV : maxValue;
     }
 
     public Double getMinValue() {
-	return minValue;
-    }
-
-    public Double getMinValue(Double defaultV) {
-	return minValue == null ? defaultV : minValue;
+        return minValue;
     }
 
     public void setMinValue(Double minValue) {
-	this.minValue = minValue;
+        this.minValue = minValue;
+    }
+
+    public Double getMinValue(Double defaultV) {
+        return minValue == null ? defaultV : minValue;
     }
 
     public boolean isEnabled() {
-	return enabled;
+        return enabled;
     }
 
     public void setEnabled(boolean enabled) {
-	this.enabled = enabled;
+        this.enabled = enabled;
     }
 
 }

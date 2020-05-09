@@ -1,10 +1,10 @@
 package com.bekvon.bukkit.residence.api;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 public interface ResidencePlayerInterface {
     public ArrayList<String> getResidenceList(String player);

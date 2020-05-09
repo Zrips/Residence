@@ -252,9 +252,9 @@ Language:
     Pset:
       Title: '&l%1 %2 許可權'
     Actions:
-    - '&2左鍵按一下啟用'
-    - '&c按右鍵禁用'
-    - '&eShift+左鍵按一下刪除'
+      - '&2左鍵按一下啟用'
+      - '&c按右鍵禁用'
+      - '&eShift+左鍵按一下刪除'
   InformationPage:
     TopLine: '&e---< &a %1 &e >---'
     Page: '&e-----< &6%1 &e>-----'
@@ -384,573 +384,573 @@ CommandHelp:
     res:
       Description: 領地的主命令
       Info:
-      - '&2輸入 &6/res [命令] ? <頁碼> &2查看更多資訊.'
+        - '&2輸入 &6/res [命令] ? <頁碼> &2查看更多資訊.'
       SubCommands:
         select:
           Description: 選取命令
           Info:
-          - 該命令選擇領地的範圍
-          - /res select [x] [y] [z] - 選擇以你為中心一定範圍的方塊.
+            - 該命令選擇領地的範圍
+            - /res select [x] [y] [z] - 選擇以你為中心一定範圍的方塊.
           SubCommands:
             coords:
               Description: 顯示已選擇區域的座標
               Info:
-              - '&e用法: &6/res select coords'
+                - '&e用法: &6/res select coords'
             size:
               Description: 顯示已選擇區域的大小
               Info:
-              - '&e用法: &6/res select size'
+                - '&e用法: &6/res select size'
             auto:
               Description: 打開自動選擇工具
               Info:
-              - '&e用法: &6/res select auto [玩家]'
+                - '&e用法: &6/res select auto [玩家]'
               Args: '[playername]'
             cost:
               Description: 顯示已選擇區域的價格
               Info:
-              - '&e用法: &6/res select cost'
+                - '&e用法: &6/res select cost'
             vert:
               Description: 縱向擴展選區
               Info:
-              - '&e用法: &6/res select vert'
-              - 將選區擴展到地圖頂端和底端
+                - '&e用法: &6/res select vert'
+                - 將選區擴展到地圖頂端和底端
             sky:
               Description: 擴展選區到天空
               Info:
-              - '&e用法: &6/res select sky'
-              - 將選區擴展到地圖頂端
+                - '&e用法: &6/res select sky'
+                - 將選區擴展到地圖頂端
             bedrock:
               Description: 擴展選區到基岩
               Info:
-              - '&e用法: &6/res select bedrock'
-              - 將選區擴展到地圖底端
+                - '&e用法: &6/res select bedrock'
+                - 將選區擴展到地圖底端
             expand:
               Description: 向一個方向擴展選區
               Info:
-              - '&e用法: &6/res select expand <擴展單位>'
-              - 向面對的方向擴展 <擴展單位> 個方塊
+                - '&e用法: &6/res select expand <擴展單位>'
+                - 向面對的方向擴展 <擴展單位> 個方塊
             shift:
               Description: 向一個方向平移選區
               Info:
-              - '&e用法: &6/res select shift <平移單位>'
-              - 將選區向面對的方向平移 <平移單位> 個方塊
+                - '&e用法: &6/res select shift <平移單位>'
+                - 將選區向面對的方向平移 <平移單位> 個方塊
             chunk:
               Description: 選擇你目前所在的區塊
               Info:
-              - '&e用法: &6/res select chunk'
-              - 選擇你目前所在的區塊
+                - '&e用法: &6/res select chunk'
+                - 選擇你目前所在的區塊
             residence:
               Description: 選擇領地中一個存在的區域
               Info:
-              - '&e用法: &6/res select residence <領地>'
-              - 選擇 <領地> 中一個存在的區域
+                - '&e用法: &6/res select residence <領地>'
+                - 選擇 <領地> 中一個存在的區域
               Args: '[residence]'
             worldedit:
               Description: 採用 WorldEdit 的選區
               Info:
-              - '&e用法: &6/res select worldedit'
-              - 將 WorldEdit 目前的選區作為領地選區
+                - '&e用法: &6/res select worldedit'
+                - 將 WorldEdit 目前的選區作為領地選區
         create:
           Description: 創建領地
           Info:
-          - '&e用法: &6/res create <領地名>'
+            - '&e用法: &6/res create <領地名>'
         remove:
           Description: 刪除領地
           Info:
-          - '&e用法: &6/res remove <領地名>'
+            - '&e用法: &6/res remove <領地名>'
           Args: '[residence]'
         padd:
           Description: 向領地添加玩家
           Info:
-          - '&e用法: &6/res padd <領地名> [玩家]'
-          - 為玩家添加基本許可權
+            - '&e用法: &6/res padd <領地名> [玩家]'
+            - 為玩家添加基本許可權
           Args: '[residence] [playername]'
         pdel:
           Description: 從領地刪除玩家
           Info:
-          - '&e用法: &6/res pdel <領地名> [玩家]'
-          - 刪除玩家的基本許可權
+            - '&e用法: &6/res pdel <領地名> [玩家]'
+            - 刪除玩家的基本許可權
           Args: '[residence] [playername]'
         give:
           Description: 將領地給予其他玩家
           Info:
-          - '&e用法: &6/res give <領地名> [玩家]'
-          - 將你的領地移轉給目標玩家
+            - '&e用法: &6/res give <領地名> [玩家]'
+            - 將你的領地移轉給目標玩家
           Args: '[residence] [playername]'
         info:
           Description: 顯示一個領地的資訊
           Info:
-          - '&e用法: &6/res info <領地>'
-          - 留空 <領地> 表示顯示你目前所在的領地資訊
+            - '&e用法: &6/res info <領地>'
+            - 留空 <領地> 表示顯示你目前所在的領地資訊
           Args: '[residence]'
         set:
           Description: 為領地設置默認許可權
           Info:
-          - '&e用法: &6/res set <領地> [許可權] [true/false/remove]'
-          - 輸入 /res flags ? 查看許可權列表
-          - 如果沒有為某玩家指定該領地的特定許可權, 那麼這名玩家將會擁有這些默認許可權. (參見 /res pset ?)
+            - '&e用法: &6/res set <領地> [許可權] [true/false/remove]'
+            - 輸入 /res flags ? 查看許可權列表
+            - 如果沒有為某玩家指定該領地的特定許可權, 那麼這名玩家將會擁有這些默認許可權. (參見 /res pset ?)
           Args: '[residence] [flag] [true/false/remove]'
         pset:
           Description: 為某玩家設定該領地的特定許可權
           Info:
-          - '&e用法: &6/res pset <領地> [玩家] [許可權] [true/false/remove]'
-          - '&e用法: &6/res pset <領地> [玩家] removeall'
-          - 輸入 /res flags ? 查看許可權列表
+            - '&e用法: &6/res pset <領地> [玩家] [許可權] [true/false/remove]'
+            - '&e用法: &6/res pset <領地> [玩家] removeall'
+            - 輸入 /res flags ? 查看許可權列表
           Args: '[residence] [playername] [flag] [true/false/remove]'
         flags:
           Description: 領地許可權列表
           Info:
-          - 對於大部分許可權來說, true 表示允許, false 表示禁止這一操作
+            - 對於大部分許可權來說, true 表示允許, false 表示禁止這一操作
           SubCommands:
             build:
               Description: 允許或禁止建造
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             use:
               Description: 允許或禁止使用門, 控制桿, 按鈕等...
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             move:
               Description: 允許或禁止移動
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             container:
               Description: 允許或禁止使用熔爐, 箱子, 發射器等...
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             trusted:
               Description: 給予 build, use, move, container 和 tp 許可權
               Info:
-              - '&e用法: &6/res pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res pset <領地> [許可權] true/false/remove'
             place:
               Description: 只允許或禁止放置方塊, 該許可權覆蓋 build 許可權
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             destroy:
               Description: 只允許或禁止破壞方塊, 該許可權覆蓋 build 許可權
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             pvp:
               Description: 允許或禁止領地內 PVP
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             tp:
               Description: 允許或禁止傳送至此領地
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             enderpearl:
               Description: 允許或禁止用終界之眼傳送至此領地
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             admin:
               Description: 玩家可以更改領地許可權
               Info:
-              - '&e用法: &6/res pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res pset <領地> [許可權] true/false/remove'
             subzone:
               Description: 允許玩家建立領地子區域
               Info:
-              - '&e用法: &6/res pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res pset <領地> [許可權] true/false/remove'
             monsters:
               Description: 允許或禁止怪物生成
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             cmonsters:
               Description: 允許或禁止自訂怪物生成
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             smonsters:
               Description: 允許或禁止生怪磚和生怪蛋生成怪物
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             nmonsters:
               Description: 允許或禁止自然生成怪物
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             animals:
               Description: 允許或禁止動物生成
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             canimals:
               Description: 允許或禁止自訂動物生成
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             sanimals:
               Description: 允許或禁止生怪磚和生怪蛋生成動物
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             nanimals:
               Description: 允許或禁止自然生成動物
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             animalkilling:
               Description: 允許或禁止擊殺動物
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             mobkilling:
               Description: 允許或禁止擊殺怪物
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             nofly:
               Description: 允許或禁止飛行
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             vehicledestroy:
               Description: 允許或禁止破壞載具
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             shear:
               Description: 允許或禁止剪羊毛
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             dye:
               Description: 允許或禁止為羊毛染色
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             leash:
               Description: 允許或禁止牽引動物
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             healing:
               Description: 為領地內的玩家治療
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             feed:
               Description: 為領地內的玩家恢復飽食
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             tnt:
               Description: 允許或禁止 TNT 爆炸
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             creeper:
               Description: 允許或禁止爬行者爆炸
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             ignite:
               Description: 允許或禁止點火
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             firespread:
               Description: 允許或禁止火焰蔓延
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             bucket:
               Description: 允許或禁止使用鐵桶
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             bucketfill:
               Description: 允許或禁止使用鐵桶盛裝
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             bucketempty:
               Description: 允許或禁止使用鐵桶傾倒
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             flow:
               Description: 允許或禁止液體流動
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             lavaflow:
               Description: 允許或禁止岩漿流動, 該許可權覆蓋 flow 許可權
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             waterflow:
               Description: 允許或禁止水流動, 該許可權覆蓋 flow 許可權
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             damage:
               Description: 允許或禁止所有實體傷害
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             piston:
               Description: 允許或禁止活塞推拉方塊
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             pistonprotection:
               Description: 允許或禁止活塞將方塊移出或移入領地內
               Info:
-              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+                - '&eUsage: &6/res set <residence> [flag] true/false/remove'
             hidden:
               Description: 在 list 或 listall 命令中隱藏此領地
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             cake:
               Description: 允許或禁止玩家吃蛋糕
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             lever:
               Description: 允許或禁止玩家使用控制桿
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             button:
               Description: 允許或禁止玩家使用按鈕
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             diode:
               Description: 允許或禁止玩家使用紅石中繼器
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             door:
               Description: 允許或禁止玩家開關門和地板門
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             table:
               Description: 允許或禁止玩家使用工作台
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             enchant:
               Description: 允許或禁止玩家使用附魔台
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             brew:
               Description: 允許或禁止玩家使用釀造台
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             bed:
               Description: 允許或禁止玩家使用床
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             pressure:
               Description: 允許或禁止玩家使用壓力板
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             note:
               Description: 允許或禁止玩家使用音階盒
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             redstone:
               Description: 給予 lever, diode, button, pressure 和 note 許可權
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             craft:
               Description: 給予 table, enchant 和 brew 許可權
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             trample:
               Description: 允許或禁止踩壞耕地
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             trade:
               Description: 允許或禁止村民交易
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             nomobs:
               Description: 允許或禁止怪物進入領地
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             explode:
               Description: 允許或禁止爆炸
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             fireball:
               Description: 允許或禁止火焰彈
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             command:
               Description: 允許或禁止執行命令
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             overridepvp:
               Description: 覆蓋任何外掛程式的 PVP 保護
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             keepinv:
               Description: 玩家死亡不會掉落物品
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             keepexp:
               Description: 玩家死亡不會損失經驗
               Info:
-              - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set/pset <領地> [許可權] true/false/remove'
             burn:
               Description: 允許或禁止怪物燃燒
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             bank:
               Description: 允許或禁止使用領地銀行
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             shop:
               Description: 將領地設置為商店
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             day:
               Description: 領地保持白天
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             night:
               Description: 領地保持夜間
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             chat:
               Description: 允許加入領地聊天頻道
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             nodurability:
               Description: 物品不會損失耐久
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             mobitemdrop:
               Description: 怪物死亡不會掉落物品
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             mobexpdrop:
               Description: 怪物死亡不會掉落經驗
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             dragongrief:
               Description: 防止終界龍破壞方塊
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             snowtrail:
               Description: 防止雪人留下雪
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             snowball:
               Description: 防止被雪球擊退
               Info:
-              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+                - '&eUsage: &6/res set <residence> [flag] true/false/remove'
             iceform:
               Description: 防止雪的形成
               Info:
-              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+                - '&eUsage: &6/res set <residence> [flag] true/false/remove'
             icemelt:
               Description: 防止雪融化
               Info:
-              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+                - '&eUsage: &6/res set <residence> [flag] true/false/remove'
             respawn:
               Description: 自動重生玩家
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
             riding:
               Description: 防止騎馬
               Info:
-              - '&eUsage: &6/res set <residence> [flag] true/false/remove'
+                - '&eUsage: &6/res set <residence> [flag] true/false/remove'
             witherdamage:
               Description: 禁止凋零怪造成傷害
               Info:
-              - '&e用法: &6/res set <領地> [許可權] true/false/remove'
+                - '&e用法: &6/res set <領地> [許可權] true/false/remove'
         limits:
           Description: 顯示你的領地限制
           Info:
-          - '&e用法: &6/res limits'
-          - 顯示你在創建和管理領地方面的各種限制
+            - '&e用法: &6/res limits'
+            - 顯示你在創建和管理領地方面的各種限制
         tpset:
           Description: 設定領地的傳送點
           Info:
-          - '&e用法: &6/res tpset'
-          - 該命令將會把你站的位置設置為領地的傳送點
-          - 你必須站在一個領地裡才能使用這個命令
-          - 你必須是領地的所有者或者擁有領地的 +admin 許可權
+            - '&e用法: &6/res tpset'
+            - 該命令將會把你站的位置設置為領地的傳送點
+            - 你必須站在一個領地裡才能使用這個命令
+            - 你必須是領地的所有者或者擁有領地的 +admin 許可權
         tp:
           Description: 傳送到一個領地
           Info:
-          - '&e用法: &6/res tp [residence]'
-          - 將你傳送到一個領地, 你必須是領地所有者或者擁有領地 +tp 許可權
-          - 你的許可權組也必須在伺服器中有傳送許可權
+            - '&e用法: &6/res tp [residence]'
+            - 將你傳送到一個領地, 你必須是領地所有者或者擁有領地 +tp 許可權
+            - 你的許可權組也必須在伺服器中有傳送許可權
           Args: '[residence]'
         rt:
           Description: 傳送到世界上的隨機位置
           Info:
-          - '&e用法: &6/res rt'
-          - 將你傳送到世界上的隨機位置
+            - '&e用法: &6/res rt'
+            - 將你傳送到世界上的隨機位置
         rc:
           Description: 加入當前或者指定的領地聊天頻道
           Info:
-          - '&e用法: &6/res rc (領地)'
-          - 加入當前領地或者指定領地的聊天頻道
+            - '&e用法: &6/res rc (領地)'
+            - 加入當前領地或者指定領地的聊天頻道
           SubCommands:
             leave:
               Description: 離開當前頻道
               Info:
-              - '&e用法: &6/res rc leave'
-              - 如果你在一個領地頻道內, 你將會離開此頻道
+                - '&e用法: &6/res rc leave'
+                - 如果你在一個領地頻道內, 你將會離開此頻道
             setcolor:
               Description: 設置領地頻道文字顏色
               Info:
-              - '&e用法: &6/res rc setcolor [顏色代碼]'
-              - 設置領地頻道文字顏色
+                - '&e用法: &6/res rc setcolor [顏色代碼]'
+                - 設置領地頻道文字顏色
             setprefix:
               Description: 設置領地頻道首碼
               Info:
-              - '&e用法: &6/res rc setprefix [新首碼]'
-              - 設置領地頻道首碼
+                - '&e用法: &6/res rc setprefix [新首碼]'
+                - 設置領地頻道首碼
             kick:
               Description: 從頻道中踢出玩家
               Info:
-              - '&e用法: &6/res rc kick [玩家]'
-              - 從領地頻道中踢出某玩家
+                - '&e用法: &6/res rc kick [玩家]'
+                - 從領地頻道中踢出某玩家
         expand:
           Description: 向你面對的方向擴展領地
           Info:
-          - '&e用法: &6/res expand (領地) [擴展單位]'
-          - 向你面對的方向擴展領地規模
-          - 領地名字是可選的
+            - '&e用法: &6/res expand (領地) [擴展單位]'
+            - 向你面對的方向擴展領地規模
+            - 領地名字是可選的
         contract:
           Description: 從你面對的方向縮小領地
           Info:
-          - '&e用法: &6/res contract (領地) [縮小單位]'
-          - 從你面對的方向縮小領地規模
-          - 領地名字是可選的
+            - '&e用法: &6/res contract (領地) [縮小單位]'
+            - 從你面對的方向縮小領地規模
+            - 領地名字是可選的
         shop:
           Description: 管理領地商店
           Info:
-          - 管理領地的商店功能
+            - 管理領地的商店功能
           SubCommands:
             list:
               Description: 顯示領地商店清單
               Info:
-              - '&e用法: &6/res shop list'
-              - 顯示所有作為商店的領地
+                - '&e用法: &6/res shop list'
+                - 顯示所有作為商店的領地
             vote:
               Description: 為領地商店評分
               Info:
-              - '&e用法: &6/res shop vote <領地> [分數]'
-              - 為當前或指定領地商店評分
+                - '&e用法: &6/res shop vote <領地> [分數]'
+                - 為當前或指定領地商店評分
               Args: '[residence]'
             like:
               Description: 為領地商店點贊
               Info:
-              - '&e用法: &6/res shop like <領地>'
-              - 為領地商店點一個贊
+                - '&e用法: &6/res shop like <領地>'
+                - 為領地商店點一個贊
               Args: '[residenceshop]'
             votes:
               Description: 顯示領地商店評分
               Info:
-              - '&e用法: &6/res shop votes <領地> <頁碼>'
-              - 顯示當前或指定領地商店的評分列表
+                - '&e用法: &6/res shop votes <領地> <頁碼>'
+                - 顯示當前或指定領地商店的評分列表
               Args: '[residenceshop]'
             likes:
               Description: 顯示領地商店的贊
               Info:
-              - '&e用法: &6/res shop likes <領地> <頁碼>'
-              - 顯示當前或指定領地商店的贊列表
+                - '&e用法: &6/res shop likes <領地> <頁碼>'
+                - 顯示當前或指定領地商店的贊列表
               Args: '[residenceshop]'
             setdesc:
               Description: 設置領地商店描述
               Info:
-              - '&e用法: &6/res shop setdesc [描述文字]'
-              - 設置領地商店描述, 支持顏色代碼, 用 /n 表示換行
+                - '&e用法: &6/res shop setdesc [描述文字]'
+                - 設置領地商店描述, 支持顏色代碼, 用 /n 表示換行
             createboard:
               Description: 創建商店宣傳板
               Info:
-              - '&e用法: &6/res shop createboard [位置]'
-              - 在選區位置建立商店宣傳板. [位置] 表示宣傳板的起始位置
+                - '&e用法: &6/res shop createboard [位置]'
+                - 在選區位置建立商店宣傳板. [位置] 表示宣傳板的起始位置
             deleteboard:
               Description: 刪除商店宣傳板
               Info:
-              - '&e用法: &6/res shop deleteboard'
-              - 右擊宣傳板的告示牌以刪除宣傳板
+                - '&e用法: &6/res shop deleteboard'
+                - 右擊宣傳板的告示牌以刪除宣傳板
         tpconfirm:
           Description: 忽略不安全傳送警告
           Info:
-          - '&e用法: &6/res tpconfirm'
-          - 強制傳送到領地, 忽略傳送不安全的警告
+            - '&e用法: &6/res tpconfirm'
+            - 強制傳送到領地, 忽略傳送不安全的警告
         subzone:
           Description: 在領地中創建子區域
           Info:
-          - '&e用法: &6/res subzone <領地名> [子區域名]'
-          - 如果領地名留空, 將會嘗試在玩家所處領地中建立子區域
+            - '&e用法: &6/res subzone <領地名> [子區域名]'
+            - 如果領地名留空, 將會嘗試在玩家所處領地中建立子區域
           Args: '[residence]'
         area:
           Description: 管理領地物理區域
@@ -958,157 +958,157 @@ CommandHelp:
             list:
               Description: 列出領地的物理區域
               Info:
-              - '&e用法: &6/res area list [領地] <頁碼>'
+                - '&e用法: &6/res area list [領地] <頁碼>'
               Args: '[residence]'
             listall:
               Description: 列出所有區域的座標和詳細資訊
               Info:
-              - '&e用法: &6/res area listall [領地] <頁碼>'
+                - '&e用法: &6/res area listall [領地] <頁碼>'
               Args: '[residence]'
             add:
               Description: 為領地添加物理區域
               Info:
-              - '&e用法: &6/res area add [領地] [區域ID]'
-              - 你必須先選中兩個選取點
+                - '&e用法: &6/res area add [領地] [區域ID]'
+                - 你必須先選中兩個選取點
               Args: '[residence]'
             remove:
               Description: 移除領地的物理區域
               Info:
-              - '&e用法: &6/res area remove [領地] [區域ID]'
+                - '&e用法: &6/res area remove [領地] [區域ID]'
               Args: '[residence]'
             replace:
               Description: 替換領地的物理區域
               Info:
-              - '&e用法: &6/res area replace [領地] [區域ID]'
-              - 你必須先選中兩個選取點
-              - 如果新的區域更大, 二者之間將會被充滿
+                - '&e用法: &6/res area replace [領地] [區域ID]'
+                - 你必須先選中兩個選取點
+                - 如果新的區域更大, 二者之間將會被充滿
               Args: '[residence]'
         message:
           Description: 管理領地加入 / 離開消息
           Info:
-          - '&e用法: &6/res message <領地> [enter/leave] [消息]'
-          - 設置領地加入和離開的消息文本
-          - '&e用法: &6/res message <領地> remove [enter/leave]'
-          - 移除加入或離開的消息文本
+            - '&e用法: &6/res message <領地> [enter/leave] [消息]'
+            - 設置領地加入和離開的消息文本
+            - '&e用法: &6/res message <領地> remove [enter/leave]'
+            - 移除加入或離開的消息文本
           Args: '[residence] [enter/leave]'
         lease:
           Description: 管理領地租約
           Info:
-          - '&e用法: &6/res lease [renew/cost] [領地]'
-          - /res lease cost 顯示續租領地的花費
-          - /res lease renew 將會續租指定的領地
+            - '&e用法: &6/res lease [renew/cost] [領地]'
+            - /res lease cost 顯示續租領地的花費
+            - /res lease renew 將會續租指定的領地
           Args: '[renew/cost] [residence]'
           SubCommands:
             set:
               Description: 設置租約時間
               Info:
-              - '&e用法: &6/resadmin lease set [領地] [#days/infinite]'
-              - 將租約時間設置為特定天數或者無限制
+                - '&e用法: &6/resadmin lease set [領地] [#days/infinite]'
+                - 將租約時間設置為特定天數或者無限制
               Args: '[residence]'
             renew:
               Description: 續期租約時間
               Info:
-              - '&e用法: &6/resadmin lease renew <領地>'
-              - 續期當前或指定的領地租約
+                - '&e用法: &6/resadmin lease renew <領地>'
+                - 續期當前或指定的領地租約
               Args: '[residence]'
             expires:
               Description: 租約過期時間
               Info:
-              - '&e用法: &6/resadmin lease expires <領地>'
-              - 顯示領地租約過期的時間
+                - '&e用法: &6/resadmin lease expires <領地>'
+                - 顯示領地租約過期的時間
               Args: '[residence]'
             cost:
               Description: 顯示續租花費
               Info:
-              - '&e用法: &6/resadmin lease cost <領地>'
-              - 顯示續租領地所需的花費
+                - '&e用法: &6/resadmin lease cost <領地>'
+                - 顯示續租領地所需的花費
               Args: '[residence]'
         bank:
           Description: 管理領地銀行
           Info:
-          - '&e用法: &6/res bank [deposit/withdraw] <領地> [數額]'
-          - 你必須站在領地中或者指定領地名字
-          - 你必須擁有 +bank 許可權
+            - '&e用法: &6/res bank [deposit/withdraw] <領地> [數額]'
+            - 你必須站在領地中或者指定領地名字
+            - 你必須擁有 +bank 許可權
           Args: '[deposit/withdraw] [residence]'
         confirm:
           Description: 確認刪除領地
           Info:
-          - '&e用法: &6/res confirm'
-          - 確認刪除一個領地
+            - '&e用法: &6/res confirm'
+            - 確認刪除一個領地
         gset:
           Description: 為某個組設置領地的特定許可權
           Info:
-          - '&e用法: &6/res gset <領地> [組] [許可權] [true/false/remove]'
-          - 輸入 /res flags ? 查看許可權列表
+            - '&e用法: &6/res gset <領地> [組] [許可權] [true/false/remove]'
+            - 輸入 /res flags ? 查看許可權列表
         lset:
           Description: 更改黑名單和忽略名單選項
           Info:
-          - '&e用法: &6/res lset <領地> [blacklist/ignorelist] [材料]'
-          - '&e用法: &6/res lset <領地> Info'
-          - 將某物品加入黑名單以阻止這種物品被放置在領地中
-          - 忽略名單中的物品將不會被領地保護
+            - '&e用法: &6/res lset <領地> [blacklist/ignorelist] [材料]'
+            - '&e用法: &6/res lset <領地> Info'
+            - 將某物品加入黑名單以阻止這種物品被放置在領地中
+            - 忽略名單中的物品將不會被領地保護
           Args: '[residence] [blacklist/ignorelist] [material]'
         removeall:
           Description: 移除某玩家的所有領地
           Info:
-          - '&e用法: &6/res removeall [所有者]'
-          - 移除特定玩家的所有領地
-          - 如果是移除其他玩家的領地, 你必須有 /resadmin 命令許可權
+            - '&e用法: &6/res removeall [所有者]'
+            - 移除特定玩家的所有領地
+            - 如果是移除其他玩家的領地, 你必須有 /resadmin 命令許可權
           Args: '[playername]'
         list:
           Description: 顯示領地清單
           Info:
-          - '&e用法: &6/res list <玩家> <頁碼>'
-          - 列出指定玩家擁有的所有領地 (除了隱藏領地)
-          - 如果顯示自己的領地, 隱藏領地也會被顯示
-          - 要列出所有玩家的領地, 使用 /res listall 命令
+            - '&e用法: &6/res list <玩家> <頁碼>'
+            - 列出指定玩家擁有的所有領地 (除了隱藏領地)
+            - 如果顯示自己的領地, 隱藏領地也會被顯示
+            - 要列出所有玩家的領地, 使用 /res listall 命令
           Args: '[playername]'
         listhidden:
           Description: 顯示隱藏領地清單
           Info:
-          - '&e用法: &6/res listhidden <玩家> <頁碼>'
-          - 列出指定玩家擁有的隱藏領地
+            - '&e用法: &6/res listhidden <玩家> <頁碼>'
+            - 列出指定玩家擁有的隱藏領地
           Args: '[playername]'
         listall:
           Description: 顯示所有領地
           Info:
-          - '&e用法: &6/res listall <頁碼>'
-          - 顯示所有玩家的領地
+            - '&e用法: &6/res listall <頁碼>'
+            - 顯示所有玩家的領地
         listallhidden:
           Description: 顯示所有隱藏領地
           Info:
-          - '&e用法: &6/res listhidden <頁碼>'
-          - 顯示所有玩家的隱藏領地
+            - '&e用法: &6/res listhidden <頁碼>'
+            - 顯示所有玩家的隱藏領地
         sublist:
           Description: 列出所有領地子區域
           Info:
-          - '&e用法: &6/res sublist <領地> <頁碼>'
-          - 列出所有領地子區域
+            - '&e用法: &6/res sublist <領地> <頁碼>'
+            - 列出所有領地子區域
           Args: '[residence]'
         reset:
           Description: 將領地設置還原為預設值
           Info:
-          - '&e用法: &6/res reset <領地>'
-          - 將領地的所有權限重置. 你必須是領地所有者或者管理員
+            - '&e用法: &6/res reset <領地>'
+            - 將領地的所有權限重置. 你必須是領地所有者或者管理員
           Args: '[residence]'
         rename:
           Description: 重命名領地
           Info:
-          - '&e用法: &6/res rename [領地名字] [新名字]'
-          - 你必須是領地所有者或者管理員
-          - 新領地名字不能與其他領地重複
+            - '&e用法: &6/res rename [領地名字] [新名字]'
+            - 你必須是領地所有者或者管理員
+            - 新領地名字不能與其他領地重複
           Args: '[residence]'
         kick:
           Description: 將玩家踢出領地
           Info:
-          - '&e用法: &6/res kick <玩家>'
-          - 你必須是領地所有者或者管理員
-          - 玩家必須線上
+            - '&e用法: &6/res kick <玩家>'
+            - 你必須是領地所有者或者管理員
+            - 玩家必須線上
           Args: '[playername]'
         mirror:
           Description: 複製許可權
           Info:
-          - '&e用法: &6/res mirror [領地] [複製到的領地]'
+            - '&e用法: &6/res mirror [領地] [複製到的領地]'
           Args: '[residence] [residence]'
         market:
           Description: 購買, 出售和出租領地
@@ -1116,140 +1116,140 @@ CommandHelp:
             Info:
               Description: 查看領地的經濟資訊
               Info:
-              - '&e用法: &6/res market Info [領地]'
-              - 顯示領地是否正在出租或出售, 以及領地的花費
+                - '&e用法: &6/res market Info [領地]'
+                - 顯示領地是否正在出租或出售, 以及領地的花費
               Args: '[residence]'
             list:
               Description: 顯示可出租與可出售的領地
               Info:
-              - '&e用法: &6/res market list'
+                - '&e用法: &6/res market list'
               SubCommands:
                 rent:
                   Description: 列出可以被租的領地.
                   Info:
-                  - '&e用法: &6/res market list rent'
+                    - '&e用法: &6/res market list rent'
                 sell:
                   Description: 列出可以被買的領地.
                   Info:
-                  - '&e用法: &6/res market list sell'
+                    - '&e用法: &6/res market list sell'
             sell:
               Description: 出售一個領地
               Info:
-              - '&e用法: &6/res market sell [領地] [售價]'
-              - 將領地以 [amount] 元的價格出售
-              - 其他玩家可以執行 /res market buy 命令購買
+                - '&e用法: &6/res market sell [領地] [售價]'
+                - 將領地以 [amount] 元的價格出售
+                - 其他玩家可以執行 /res market buy 命令購買
               Args: '[residence]'
             sign:
               Description: 設置市場告示牌
               Info:
-              - '&e用法: &6/res market sign [領地]'
-              - 將看向的告示牌設置為領地市場告示牌
+                - '&e用法: &6/res market sign [領地]'
+                - 將看向的告示牌設置為領地市場告示牌
               Args: '[residence]'
             buy:
               Description: 購買一個領地
               Info:
-              - '&e用法: &6/res market buy [領地]'
-              - 如果該領地正在出售, 則購買這個領地
+                - '&e用法: &6/res market buy [領地]'
+                - 如果該領地正在出售, 則購買這個領地
               Args: '[residence]'
             unsell:
               Description: 取消出售領地
               Info:
-              - '&e用法: &6/res market unsell [領地]'
+                - '&e用法: &6/res market unsell [領地]'
               Args: '[residence]'
             rent:
               Description: 租用一個領地
               Info:
-              - '&e用法: &6/res market rent [領地] <自動續租>'
-              - 租用一個領地. <自動續租> 可以是 true 或 false. 如果是 true, 並且領地所有者允許, 領地將會在租約到期之前自動續租
+                - '&e用法: &6/res market rent [領地] <自動續租>'
+                - 租用一個領地. <自動續租> 可以是 true 或 false. 如果是 true, 並且領地所有者允許, 領地將會在租約到期之前自動續租
               Args: '[cresidence] [true/false]'
             rentable:
               Description: 將領地設置為可出租
               Info:
-              - '&e用法: &6/res market rentable [領地] [價格] [天數] <週期>'
-              - 以 [價格] 出租領地 [天數] 天. 如果 <週期> 為 true, 領地將會在租約結束後自動出租.
+                - '&e用法: &6/res market rentable [領地] [價格] [天數] <週期>'
+                - 以 [價格] 出租領地 [天數] 天. 如果 <週期> 為 true, 領地將會在租約結束後自動出租.
               Args: '[residence]'
             release:
               Description: 取消領地租賃狀態
               Info:
-              - '&e用法: &6/res market release [領地]'
-              - 如果你是租用者, 該命令將會退租領地
-              - 如果你是所有者, 該命令將會收回領地
+                - '&e用法: &6/res market release [領地]'
+                - 如果你是租用者, 該命令將會退租領地
+                - 如果你是所有者, 該命令將會收回領地
               Args: '[residence]'
         current:
           Description: 顯示你目前所在的領地
           Info:
-          - '&e用法: &6/res current'
+            - '&e用法: &6/res current'
         signupdate:
           Description: 更新領地告示牌
           Info:
-          - '&e用法: &6/res signupdate'
+            - '&e用法: &6/res signupdate'
         reload:
           Description: 重新加載語言或設定檔案
           Info:
-          - '&e用法: &6/res reload [config/lang]'
+            - '&e用法: &6/res reload [config/lang]'
         lists:
           Description: 預定義許可權列表
           Info:
-          - 預定義的許可權列表可以應用到領地上
+            - 預定義的許可權列表可以應用到領地上
           SubCommands:
             add:
               Description: 添加一個列表
               Info:
-              - '&e用法: &6/res lists add <列表名>'
+                - '&e用法: &6/res lists add <列表名>'
             remove:
               Description: 刪除一個列表
               Info:
-              - '&e用法: &6/res lists remove <列表名>'
+                - '&e用法: &6/res lists remove <列表名>'
             apply:
               Description: 將列表應用於領地
               Info:
-              - '&e用法: &6/res lists apply <列表名> <領地>'
+                - '&e用法: &6/res lists apply <列表名> <領地>'
             set:
               Description: 設置列表全域許可權
               Info:
-              - '&e用法: &6/res lists set <列表名> <許可權> <值>'
+                - '&e用法: &6/res lists set <列表名> <許可權> <值>'
             pset:
               Description: 設置列表玩家許可權
               Info:
-              - '&e用法: &6/res lists pset <列表名> <玩家> <許可權> <值>'
+                - '&e用法: &6/res lists pset <列表名> <玩家> <許可權> <值>'
             gset:
               Description: 設置列表組許可權
               Info:
-              - '&e用法: &6/res lists view <列表名>'
+                - '&e用法: &6/res lists view <列表名>'
             view:
               Description: 查看列表
         server:
           Description: 創建伺服器領地
           Info:
-          - '&e用法: &6/resadmin server [領地]'
-          - 創建一個屬於伺服器所有的領地
+            - '&e用法: &6/resadmin server [領地]'
+            - 創建一個屬於伺服器所有的領地
           Args: '[cresidence]'
         setowner:
           Description: 改變領地所有者
           Info:
-          - '&e用法: &6/resadmin setowner [領地] [玩家]'
+            - '&e用法: &6/resadmin setowner [領地] [玩家]'
           Args: '[cresidence]'
         resreload:
           Description: 重載 Residence.
           Info:
-          - '&e用法: &6/resreload'
+            - '&e用法: &6/resreload'
         resload:
           Description: 載入領地存檔檔
           Info:
-          - '&e用法: &6/resload'
-          - 該命令不安全! 它不會先保存領地狀態.
-          - 對領地做出改變後重新載入存檔.
+            - '&e用法: &6/resload'
+            - 該命令不安全! 它不會先保存領地狀態.
+            - 對領地做出改變後重新載入存檔.
         removeworld:
           Description: 刪除指定世界中的所有領地
           Info:
-          - '&e用法: &6/res removeworld [世界名]'
-          - 只能在控制台執行此命令
+            - '&e用法: &6/res removeworld [世界名]'
+            - 只能在控制台執行此命令
         signconvert:
           Description: 將 ResidenceSign 的告示牌轉換為新格式
           Info:
-          - '&e用法: &6/res signconvert'
-          - 嘗試轉換已有的 ResidenceSign 告示牌
+            - '&e用法: &6/res signconvert'
+            - 嘗試轉換已有的 ResidenceSign 告示牌
         version:
           Description: 顯示領地插件的版本
           Info:
-          - '&e用法: &6/res version'
+            - '&e用法: &6/res version'

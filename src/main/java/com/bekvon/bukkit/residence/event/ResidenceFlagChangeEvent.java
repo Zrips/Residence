@@ -8,25 +8,24 @@ import org.bukkit.event.HandlerList;
 public class ResidenceFlagChangeEvent extends CancellableResidencePlayerFlagEvent {
 
     private static final HandlerList handlers = new HandlerList();
-
-    @Override
-    public HandlerList getHandlers() {
-	return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-	return handlers;
-    }
-
     FlagState newstate;
 
     public ResidenceFlagChangeEvent(ClaimedResidence resref, Player player, String flag, FlagType type, FlagState newState, String target) {
-	super("RESIDENCE_FLAG_CHANGE", resref, player, flag, type, target);
-	newstate = newState;
+        super("RESIDENCE_FLAG_CHANGE", resref, player, flag, type, target);
+        newstate = newState;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
     public FlagState getNewState() {
-	return newstate;
+        return newstate;
     }
 
 }
