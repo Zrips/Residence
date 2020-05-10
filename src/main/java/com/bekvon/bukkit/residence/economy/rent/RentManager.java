@@ -886,8 +886,6 @@ public class RentManager implements MarketRentInterface {
 
     public void printRentableResidences(Player player, int page) {
         plugin.msg(player, lm.Rentable_Land);
-        StringBuilder sbuild = new StringBuilder();
-        sbuild.append(ChatColor.GREEN);
 
         PageInfo pi = new PageInfo(10, rentableLand.size(), page);
         int position = -1;

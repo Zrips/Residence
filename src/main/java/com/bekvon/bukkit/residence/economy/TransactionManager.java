@@ -332,8 +332,6 @@ public class TransactionManager implements MarketBuyInterface {
     public void printForSaleResidences(Player player, int page) {
         List<ClaimedResidence> toRemove = new ArrayList<ClaimedResidence>();
         plugin.msg(player, lm.Economy_LandForSale);
-        StringBuilder sbuild = new StringBuilder();
-        sbuild.append(ChatColor.GREEN);
 
         PageInfo pi = new PageInfo(10, sellAmount.size(), page);
 
