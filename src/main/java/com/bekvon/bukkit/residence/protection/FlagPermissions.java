@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FlagPermissions {
 
@@ -25,19 +26,12 @@ public class FlagPermissions {
     protected static ArrayList<String> validPlayerFlags = new ArrayList<>();
     protected static ArrayList<String> validAreaFlags = new ArrayList<>();
     protected static HashMap<String, ArrayList<String>> validFlagGroups = new HashMap<>();
-    protected Map<UUID, String> cachedPlayerNameUUIDs = new HashMap<UUID, String>();
-    protected Map<String, Map<String, Boolean>> playerFlags = new HashMap<String, Map<String, Boolean>>();
-    protected Map<String, Map<String, Boolean>> groupFlags = new HashMap<String, Map<String, Boolean>>();
-    protected Map<String, Boolean> cuboidFlags = new HashMap<String, Boolean>();
+    protected Map<UUID, String> cachedPlayerNameUUIDs = new ConcurrentHashMap<>();
+    protected Map<String, Map<String, Boolean>> playerFlags = new ConcurrentHashMap<>();
+    protected Map<String, Map<String, Boolean>> groupFlags = new ConcurrentHashMap<>();
+    protected Map<String, Boolean> cuboidFlags = new ConcurrentHashMap<>();
     protected FlagPermissions parent;
-
-    public FlagPermissions() {
-        cuboidFlags = Collections.synchronizedMap(new HashMap<String, Boolean>());
-        playerFlags = Collections.synchronizedMap(new HashMap<String, Map<String, Boolean>>());
-        groupFlags = Collections.synchronizedMap(new HashMap<String, Map<String, Boolean>>());
-        cachedPlayerNameUUIDs = Collections.synchronizedMap(new HashMap<UUID, String>());
-    }
-
+    
     public static void addMaterialToUseFlag(Material mat, Flags flag) {
         if (mat == null)
             return;
