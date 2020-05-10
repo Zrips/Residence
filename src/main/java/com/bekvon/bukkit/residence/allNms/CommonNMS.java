@@ -1,11 +1,9 @@
 package com.bekvon.bukkit.residence.allNms;
 
 import com.bekvon.bukkit.cmiLib.CMIEffect;
-import com.bekvon.bukkit.cmiLib.CMIEffectManager.CMIParticle;
 import com.bekvon.bukkit.residence.containers.NMS;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Particle.DustOptions;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.block.BlockPistonRetractEvent;
@@ -13,42 +11,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Merchant;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class CommonNMS implements NMS {
-
-    Set<Class<?>> animals = Set.of(
-            Horse.class,
-            Bat.class,
-            Snowman.class,
-            IronGolem.class,
-            Ocelot.class,
-            Pig.class,
-            Sheep.class,
-            Chicken.class,
-            Wolf.class,
-            Cow.class,
-            Squid.class,
-            Villager.class,
-            Rabbit.class,
-            Llama.class,
-            PolarBear.class,
-            Parrot.class,
-            Donkey.class,
-            Cod.class,
-            Salmon.class,
-            PufferFish.class,
-            TropicalFish.class,
-            Turtle.class,
-            Dolphin.class,
-            Fox.class,
-            Panda.class,
-            Cat.class,
-            Bee.class
-    );
 
     @Override
     public List<Block> getPistonRetractBlocks(BlockPistonRetractEvent event) {
@@ -59,7 +27,7 @@ public class CommonNMS implements NMS {
 
     @Override
     public boolean isAnimal(Entity ent) {
-        return animals.contains(ent.getClass());
+        return ent instanceof Animals || ent instanceof WaterMob || ent instanceof Merchant;
     }
 
     @Override
