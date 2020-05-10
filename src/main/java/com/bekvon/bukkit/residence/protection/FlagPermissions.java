@@ -31,7 +31,7 @@ public class FlagPermissions {
     protected Map<String, Map<String, Boolean>> groupFlags = new ConcurrentHashMap<>();
     protected Map<String, Boolean> cuboidFlags = new ConcurrentHashMap<>();
     protected FlagPermissions parent;
-    
+
     public static void addMaterialToUseFlag(Material mat, Flags flag) {
         if (mat == null)
             return;

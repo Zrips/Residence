@@ -43,10 +43,14 @@ public class ResidenceEntityListener implements Listener {
     }
 
     private static boolean isTamed(Entity ent) {
-        return (ent instanceof Tameable ? ((Tameable) ent).isTamed() : false);
+        return (ent instanceof Tameable && ((Tameable) ent).isTamed());
     }
 
     private static boolean damageableProjectile(Entity ent) {
+        if(ent instanceof AbstractArrow){
+            return true;
+        }
+        // TODO improve performance use Set, or directly remove all the checks
         if (ent instanceof Projectile && ent.getType().toString().equalsIgnoreCase("Splash_potion")) {
             for (PotionEffect one : ((ThrownPotion) ent).getEffects()) {
                 for (String oneHarm : Residence.getInstance().getConfigManager().getNegativePotionEffects()) {
@@ -55,7 +59,7 @@ public class ResidenceEntityListener implements Listener {
                 }
             }
         }
-        return ent instanceof Arrow || ent instanceof Projectile && (ent.getType().toString().equalsIgnoreCase("Trident"));
+        return false;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -98,8 +102,6 @@ public class ResidenceEntityListener implements Listener {
             return;
         // disabling event on world
         Entity entity = event.getEntity();
-        if (entity == null)
-            return;
         if (plugin.isDisabledWorldListener(entity.getWorld()))
             return;
         if (!plugin.getNms().isAnimal(entity))

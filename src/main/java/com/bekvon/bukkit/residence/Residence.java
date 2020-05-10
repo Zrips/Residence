@@ -63,6 +63,8 @@ import java.util.logging.Logger;
  */
 public class Residence extends JavaPlugin {
 
+    private Logger log;
+
     private static Residence instance;
     public PermissionManager gmanager;
     public WorldItemManager imanager;
@@ -367,6 +369,8 @@ public class Residence extends JavaPlugin {
     @Override
     public void onEnable() {
         try {
+            log = getLogger();
+            log.setLevel(Level.ALL);
             instance = this;
 
             initsuccess = false;
