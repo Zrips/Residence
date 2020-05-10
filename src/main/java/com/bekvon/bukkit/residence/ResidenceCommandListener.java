@@ -126,7 +126,7 @@ public class ResidenceCommandListener implements CommandExecutor {
                     resadmin = true;
                 }
                 if (command.getName().equals("resadmin") && !plugin.getPermissionManager().isResidenceAdmin(sender)) {
-                    ((Player) sender).sendMessage(plugin.msg(lm.Residence_NonAdmin));
+                    sender.sendMessage(plugin.msg(lm.Residence_NonAdmin));
                     return true;
                 }
                 if (command.getName().equals("res") && plugin.getPermissionManager().isResidenceAdmin(sender) && plugin.getConfigManager().getAdminFullAccess()) {

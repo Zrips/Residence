@@ -52,7 +52,6 @@ public class DynMapManager {
                 schedId = -1;
 
                 handleResidenceAdd(res.getName(), res, deep);
-                return;
             }
         }, 10L);
     }

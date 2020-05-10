@@ -230,7 +230,6 @@ public class InformationPager {
             @Override
             public void run() {
                 printListWithDelay(sender, ownedResidences, start + 100, resadmin);
-                return;
             }
         }, 5L);
 
@@ -305,7 +304,6 @@ public class InformationPager {
                     e.printStackTrace();
                 }
                 Bukkit.getConsoleSender().sendMessage("Saved file to FullLists folder with " + file.getName() + " name");
-                return;
             }
         });
     }

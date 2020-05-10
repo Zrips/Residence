@@ -292,7 +292,7 @@ public class CMIReflections {
                 Object n = pre.getClass().getMethod("getName").invoke(pre);
                 Class<?> ll = Class.forName("net.minecraft.server." + Version.getCurrent() + ".LocaleLanguage");
                 Object lla = ll.getMethod("a").invoke(ll);
-                return (String) lla.getClass().getMethod("a", String.class).invoke(lla, (String) n);
+                return (String) lla.getClass().getMethod("a", String.class).invoke(lla, n);
             }
 
             Field field = Item.getField("REGISTRY");

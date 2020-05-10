@@ -94,7 +94,7 @@ public enum CMIChatColor {
         }
 
         if (or.length() > 1 && String.valueOf(or.charAt(or.length() - 2)).equalsIgnoreCase("&")) {
-            text = text.substring(text.length() - 1, text.length());
+            text = text.substring(text.length() - 1);
 
             for (CMIChatColor one : CMIChatColor.values()) {
                 if (String.valueOf(one.getChar()).equalsIgnoreCase(text))

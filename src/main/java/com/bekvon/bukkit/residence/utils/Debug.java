@@ -10,6 +10,5 @@ public class Debug {
         if (player == null)
             return;
         player.sendMessage(ChatColor.DARK_GRAY + "[Residence Debug] " + ChatColor.DARK_AQUA + ChatColor.translateAlternateColorCodes('&', message == null ? "Null" : message.toString()));
-        return;
     }
 }

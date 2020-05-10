@@ -1306,7 +1306,7 @@ public class CMIBlock {
 
             if (blockData instanceof org.bukkit.block.data.Directional) {
 
-                org.bukkit.block.data.Directional directional = blockd == null ? (org.bukkit.block.data.Directional) ((org.bukkit.block.data.Directional) blockData).clone()
+                org.bukkit.block.data.Directional directional = blockd == null ? (org.bukkit.block.data.Directional) blockData.clone()
                         : (org.bukkit.block.data.Directional) blockd;
 
 //	    if (cmat.isStairs()) {

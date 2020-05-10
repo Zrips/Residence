@@ -208,7 +208,6 @@ public class ActionBarTitleMessages {
                     simpleTitleMessages = true;
                     Bukkit.getLogger().log(Level.SEVERE, "Your server can't fully support title messages. They will be shown in chat instead.");
                 }
-                return;
             }
         });
     }

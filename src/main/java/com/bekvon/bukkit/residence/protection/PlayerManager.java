@@ -307,7 +307,6 @@ public class PlayerManager implements ResidencePlayerInterface {
         if (resPlayer != null) {
             resPlayer.addResidence(residence);
         }
-        return;
     }
 
     public void addResidence(Player player, ClaimedResidence residence) {
@@ -347,6 +346,5 @@ public class PlayerManager implements ResidencePlayerInterface {
         if (resPlayer != null) {
             resPlayer.removeResidence(residence);
         }
-        return;
     }
 }

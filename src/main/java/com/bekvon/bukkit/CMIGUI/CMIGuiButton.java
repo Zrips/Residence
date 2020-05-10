@@ -98,7 +98,7 @@ public class CMIGuiButton {
         if (this.item != null && this.item.getDurability() == 32767) {
             CMIMaterial d = CMIMaterial.getRandom(CMIMaterial.get(this.item));
             if (d != null && d.getLegacyData() != -1)
-                this.item.setDurability((short) d.getLegacyData());
+                this.item.setDurability(d.getLegacyData());
         }
     }
 

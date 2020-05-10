@@ -247,9 +247,7 @@ public class HelpEntry {
     }
 
     public void removeSubEntry(HelpEntry entry) {
-        if (subentrys.contains(entry)) {
-            subentrys.remove(entry);
-        }
+        subentrys.remove(entry);
     }
 
     public int getSubEntryCount() {

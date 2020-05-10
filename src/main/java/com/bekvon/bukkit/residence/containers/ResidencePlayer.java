@@ -254,10 +254,7 @@ public class ResidencePlayer {
     public int getMaxRes() {
         recountMaxRes();
         PermissionGroup g = getGroup();
-        if (this.maxRes < g.getMaxZones()) {
-            return g.getMaxZones();
-        }
-        return this.maxRes;
+        return Math.max(this.maxRes, g.getMaxZones());
     }
 
     public PermissionGroup forceUpdateGroup() {
@@ -328,7 +325,6 @@ public class ResidencePlayer {
         if (ofPlayer != null) {
             this.userName = ofPlayer.getName();
             this.uuid = ofPlayer.getUniqueId();
-            return;
         }
     }
 

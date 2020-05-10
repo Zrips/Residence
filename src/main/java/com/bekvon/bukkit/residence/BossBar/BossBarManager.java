@@ -136,7 +136,6 @@ public class BossBarManager {
 
                     Show(barInfo);
 
-                    return;
                 }
             }, barInfo.getAuto()));
         }
@@ -147,7 +146,6 @@ public class BossBarManager {
                 public void run() {
                     barInfo.getBar().setVisible(false);
                     barInfo.remove();
-                    return;
                 }
             }, barInfo.getKeepFor()));
         }

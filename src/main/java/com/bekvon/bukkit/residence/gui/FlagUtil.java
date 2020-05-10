@@ -69,7 +69,6 @@ public class FlagUtil {
         fillButtons(flag, pi, gui);
 
         gui.open();
-        return;
     }
 
     private void fillButtons(setFlagInfo flag, PageInfo pi, CMIGui gui) {

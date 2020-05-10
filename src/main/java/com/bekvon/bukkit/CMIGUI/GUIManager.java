@@ -97,7 +97,7 @@ public class GUIManager {
             ServerCommandEvent event = new ServerCommandEvent(sender, command.startsWith("/") ? command : "/" + command);
             Bukkit.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), event.getCommand().startsWith("/") ? event.getCommand().substring(1, event.getCommand().length()) : event.getCommand());
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), event.getCommand().startsWith("/") ? event.getCommand().substring(1) : event.getCommand());
             }
             if (!type.equals(CommandType.silent))
                 Bukkit.getLogger().log(Level.INFO, sender.getName() + " issued " + type.name() + " command: /" + command);
@@ -116,7 +116,7 @@ public class GUIManager {
         PlayerCommandPreprocessEvent event = new PlayerCommandPreprocessEvent(player, command.startsWith("/") ? command : "/" + command);
         Bukkit.getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
-            player.performCommand(event.getMessage().startsWith("/") ? event.getMessage().substring(1, event.getMessage().length()) : event.getMessage());
+            player.performCommand(event.getMessage().startsWith("/") ? event.getMessage().substring(1) : event.getMessage());
         }
         if (!type.equals(CommandType.silent))
             Bukkit.getLogger().log(Level.INFO, player.getName() + " issued " + type.name() + " command: /" + command);

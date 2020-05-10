@@ -49,7 +49,6 @@ public class v1_13Events implements Listener {
             } catch (NoClassDefFoundError e) {
             }
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -79,7 +78,6 @@ public class v1_13Events implements Listener {
                 } catch (NoClassDefFoundError e) {
                 }
                 event.setCancelled(true);
-                return;
             }
         } catch (Exception | Error e) {
 

@@ -205,7 +205,7 @@ public class ConfigReader extends YamlConfiguration {
                             }
                         }
                         if (whiteSpace / 2 > depth) {
-                            currentPath.append(".").append(line.substring(whiteSpace, index));
+                            currentPath.append(".").append(line, whiteSpace, index);
                             depth++;
                         } else if (whiteSpace / 2 < depth) {
                             int newDepth = whiteSpace / 2;
@@ -218,7 +218,7 @@ public class ConfigReader extends YamlConfiguration {
                             } else {
                                 currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
                             }
-                            currentPath.append(line.substring(whiteSpace, index));
+                            currentPath.append(line, whiteSpace, index);
                             depth = newDepth;
                         } else {
                             int lastIndex = currentPath.lastIndexOf(".");
@@ -227,7 +227,7 @@ public class ConfigReader extends YamlConfiguration {
                             } else {
                                 currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
                             }
-                            currentPath.append(line.substring(whiteSpace, index));
+                            currentPath.append(line, whiteSpace, index);
                         }
                     }
                 } else {

@@ -139,12 +139,10 @@ public class RandomTp {
             public void run() {
                 if (!plugin.getTeleportDelayMap().contains(targetPlayer.getName()) && plugin.getConfigManager().getTeleportDelay() > 0)
                     return;
-                else if (plugin.getTeleportDelayMap().contains(targetPlayer.getName()))
-                    plugin.getTeleportDelayMap().remove(targetPlayer.getName());
+                else plugin.getTeleportDelayMap().remove(targetPlayer.getName());
                 targetPlayer.closeInventory();
                 targetPlayer.teleport(loc);
                 plugin.msg(targetPlayer, lm.RandomTeleport_TeleportSuccess, loc.getX(), loc.getY(), loc.getZ());
-                return;
             }
         }, plugin.getConfigManager().getTeleportDelay() * 20L);
     }

@@ -270,7 +270,6 @@ public class SelectionManager {
                     MakeBorders(player, false);
                 if (!v.getErrorAreas().isEmpty())
                     MakeBorders(player, true);
-                return;
             }
         }).getTaskId());
     }
@@ -535,7 +534,6 @@ public class SelectionManager {
                     v.setLocations2(errorLocList);
                 }
 
-                return;
             }
         });
 
@@ -551,7 +549,6 @@ public class SelectionManager {
                 if (player.isOnline()) {
                     MakeBorders(player, error);
                 }
-                return;
             }
         }, plugin.getConfigManager().getVisualizerUpdateInterval() * 1L);
         if (!error)

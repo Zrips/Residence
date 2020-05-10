@@ -107,7 +107,7 @@ public class CommentedYamlConfiguration extends YamlConfiguration {
                         // Find out if the current depth (whitespace * 2) is greater/lesser/equal to the previous depth
                         if (whiteSpace / 2 > depth) {
                             // Path is deeper.  Add a . and the node name
-                            currentPath.append(".").append(line.substring(whiteSpace, index));
+                            currentPath.append(".").append(line, whiteSpace, index);
                             depth++;
                         } else if (whiteSpace / 2 < depth) {
                             // Path is shallower, calculate current depth from whitespace (whitespace / 2) and subtract that many levels from the currentPath
@@ -125,7 +125,7 @@ public class CommentedYamlConfiguration extends YamlConfiguration {
                                 currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
                             }
                             // Add the new node name to the path
-                            currentPath.append(line.substring(whiteSpace, index));
+                            currentPath.append(line, whiteSpace, index);
                             // Reset the depth
                             depth = newDepth;
                         } else {
@@ -139,7 +139,7 @@ public class CommentedYamlConfiguration extends YamlConfiguration {
                                 currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
                             }
                             //currentPath = currentPath.replace(currentPath.substring(currentPath.lastIndexOf(".")), "");
-                            currentPath.append(line.substring(whiteSpace, index));
+                            currentPath.append(line, whiteSpace, index);
                         }
                     }
                 } else {

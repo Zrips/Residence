@@ -204,7 +204,7 @@ public class PermissionManager {
 
     public PermissionAttachmentInfo getSetPermission(CommandSender sender, String perm) {
         if (sender instanceof Player)
-            for (PermissionAttachmentInfo permission : ((Player) sender).getEffectivePermissions()) {
+            for (PermissionAttachmentInfo permission : sender.getEffectivePermissions()) {
                 if (permission.getPermission().equalsIgnoreCase(perm)) {
                     return permission;
                 }

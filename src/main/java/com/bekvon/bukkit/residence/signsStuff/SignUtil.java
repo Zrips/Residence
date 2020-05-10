@@ -87,7 +87,6 @@ public class SignUtil {
 
             Signs.addSign(newTemp);
         }
-        return;
     }
 
     // Signs save file
@@ -118,7 +117,6 @@ public class SignUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return;
     }
 
     public Signs getSignFromLoc(Location loc) {

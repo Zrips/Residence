@@ -107,11 +107,11 @@ public class PermissionGroup {
 
         xmax = (limits.getInt("Residence.MaxEastWest", 0));
         xmin = (limits.getInt("Residence.MinEastWest", 0));
-        xmin = (getXmin() > getXmax() ? getXmax() : getXmin());
+        xmin = (Math.min(getXmin(), getXmax()));
 
         ymax = limits.getInt("Residence.MaxUpDown", 0);
         ymin = limits.getInt("Residence.MinUpDown", 0);
-        ymin = ymin > ymax ? ymax : ymin;
+        ymin = Math.min(ymin, ymax);
 
         if (Residence.getInstance().getConfigManager().isSelectionIgnoreY()) {
             ymin = 0;
@@ -120,7 +120,7 @@ public class PermissionGroup {
 
         zmax = limits.getInt("Residence.MaxNorthSouth", 0);
         zmin = limits.getInt("Residence.MinNorthSouth", 0);
-        zmin = zmin > zmax ? zmax : zmin;
+        zmin = Math.min(zmin, zmax);
 
         minHeight = limits.getInt("Residence.MinHeight", 0);
         maxHeight = limits.getInt("Residence.MaxHeight", 255);
@@ -131,19 +131,19 @@ public class PermissionGroup {
         subzonedepth = limits.getInt("Residence.SubzoneDepth", 0);
 
         Subzonexmax = limits.getInt("Residence.SubzoneMaxEastWest", getXmax());
-        Subzonexmax = getXmax() < Subzonexmax ? getXmax() : Subzonexmax;
+        Subzonexmax = Math.min(getXmax(), Subzonexmax);
         Subzonexmin = limits.getInt("Residence.SubzoneMinEastWest", 0);
-        Subzonexmin = Subzonexmin > Subzonexmax ? Subzonexmax : Subzonexmin;
+        Subzonexmin = Math.min(Subzonexmin, Subzonexmax);
 
         Subzoneymax = limits.getInt("Residence.SubzoneMaxUpDown", ymax);
-        Subzoneymax = ymax < Subzoneymax ? ymax : Subzoneymax;
+        Subzoneymax = Math.min(ymax, Subzoneymax);
         Subzoneymin = limits.getInt("Residence.SubzoneMinUpDown", 0);
-        Subzoneymin = Subzoneymin > Subzoneymax ? Subzoneymax : Subzoneymin;
+        Subzoneymin = Math.min(Subzoneymin, Subzoneymax);
 
         Subzonezmax = limits.getInt("Residence.SubzoneMaxNorthSouth", zmax);
-        Subzonezmax = zmax < Subzonezmax ? zmax : Subzonezmax;
+        Subzonezmax = Math.min(zmax, Subzonezmax);
         Subzonezmin = limits.getInt("Residence.SubzoneMinNorthSouth", 0);
-        Subzonezmin = Subzonezmin > Subzonezmax ? Subzonezmax : Subzonezmin;
+        Subzonezmin = Math.min(Subzonezmin, Subzonezmax);
 
         messageperms = limits.getBoolean("Messaging.CanChange", false);
         defaultEnterMessage = limits.getString("Messaging.DefaultEnter", null);

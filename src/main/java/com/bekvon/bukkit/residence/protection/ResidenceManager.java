@@ -558,7 +558,6 @@ public class ResidenceManager implements ResidenceInterface {
                                 });
                             }
                         }
-                        return;
                     }
                 });
             }
@@ -1258,9 +1257,7 @@ public class ResidenceManager implements ResidenceInterface {
          */
         @Override
         public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("{ x: ").append(x).append(", z: ").append(z).append(" }");
-            return sb.toString();
+            return "{ x: " + x + ", z: " + z + " }";
         }
 
         public int getZ() {

@@ -41,7 +41,7 @@ public class YMLSaveHelper {
     public void load() throws IOException {
         InputStream fis = new FileInputStream(f);
         try {
-            root = (Map<String, Object>) yml.load(fis);
+            root = yml.load(fis);
         } catch (ReaderException e) {
             System.out.println("[Residence] - Failed to load " + yml.getName() + " file!");
         }

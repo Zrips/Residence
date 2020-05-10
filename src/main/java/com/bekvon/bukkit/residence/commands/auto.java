@@ -172,18 +172,9 @@ public class auto implements cmd {
         int Z = group.getMinZ();
 
         if (lenght > 0) {
-            if (lenght > group.getMaxX())
-                X = group.getMaxX();
-            else
-                X = lenght;
-            if (lenght > group.getMaxZ())
-                Z = group.getMaxZ();
-            else
-                Z = lenght;
-            if (lenght > group.getMaxY())
-                Y = group.getMaxY();
-            else
-                Y = lenght;
+            X = Math.min(lenght, group.getMaxX());
+            Z = Math.min(lenght, group.getMaxZ());
+            Y = Math.min(lenght, group.getMaxY());
         }
 
         int rX = (X - 1) / 2;

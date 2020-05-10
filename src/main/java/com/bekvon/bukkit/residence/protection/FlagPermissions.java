@@ -63,9 +63,7 @@ public class FlagPermissions {
         if (!validFlags.contains(flag)) {
             validFlags.add(flag);
         }
-        if (validFlagGroups.containsKey(flag)) {
-            validFlagGroups.remove(flag);
-        }
+        validFlagGroups.remove(flag);
 
         // Checking custom flag
         Flags f = Flags.getFlag(flag);
@@ -83,9 +81,7 @@ public class FlagPermissions {
         if (!validPlayerFlags.contains(flag)) {
             validPlayerFlags.add(flag);
         }
-        if (validFlagGroups.containsKey(flag)) {
-            validFlagGroups.remove(flag);
-        }
+        validFlagGroups.remove(flag);
 
         // Checking custom flag
         Flags f = Flags.getFlag(flag);
@@ -103,9 +99,7 @@ public class FlagPermissions {
         if (!validAreaFlags.contains(flag)) {
             validAreaFlags.add(flag);
         }
-        if (validFlagGroups.containsKey(flag)) {
-            validFlagGroups.remove(flag);
-        }
+        validFlagGroups.remove(flag);
         // Checking custom flag
         Flags f = Flags.getFlag(flag);
         if (f == null) {
@@ -331,7 +325,6 @@ public class FlagPermissions {
                 OfflinePlayer player = Residence.getInstance().getOfflinePlayer(uuid);
                 newperms.cachedPlayerNameUUIDs.put(uuid, player.getName());
             } catch (Exception e) {
-                continue;
             }
 
         }
@@ -517,9 +510,7 @@ public class FlagPermissions {
         } else if (state == FlagState.TRUE) {
             map.put(flag, true);
         } else if (state == FlagState.NEITHER) {
-            if (map.containsKey(flag)) {
-                map.remove(flag);
-            }
+            map.remove(flag);
         }
         if (map.isEmpty())
             this.removeAllPlayerFlags(player);
@@ -562,9 +553,7 @@ public class FlagPermissions {
         } else if (state == FlagState.TRUE) {
             map.put(flag, true);
         } else if (state == FlagState.NEITHER) {
-            if (map.containsKey(flag)) {
-                map.remove(flag);
-            }
+            map.remove(flag);
         }
         if (map.isEmpty()) {
             groupFlags.remove(group);
@@ -578,9 +567,7 @@ public class FlagPermissions {
         } else if (state == FlagState.TRUE) {
             cuboidFlags.put(flag, true);
         } else if (state == FlagState.NEITHER) {
-            if (cuboidFlags.containsKey(flag)) {
-                cuboidFlags.remove(flag);
-            }
+            cuboidFlags.remove(flag);
         }
         return true;
     }
@@ -890,6 +877,7 @@ public class FlagPermissions {
     public String listFlags(Integer split, Integer totalShow) {
         StringBuilder sbuild = new StringBuilder();
         Set<Entry<String, Boolean>> set = cuboidFlags.entrySet();
+        // TODO review and fix all synchronized() on local variables, use proper data structure
         synchronized (set) {
             Iterator<Entry<String, Boolean>> it = set.iterator();
             int i = -1;

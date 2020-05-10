@@ -642,7 +642,6 @@ public class ResidenceBlockListener implements Listener {
                 ) {
                     event.setCancelled(true);
                     plugin.msg(player, lm.Flag_Deny, Flags.place);
-                    return;
                 }
             }
         }
@@ -783,7 +782,6 @@ public class ResidenceBlockListener implements Listener {
             if (!perms.has(Flags.waterflow, hasflow)) {
                 event.setCancelled(true);
             }
-            return;
         }
     }
 
@@ -812,7 +810,6 @@ public class ResidenceBlockListener implements Listener {
                 e1.printStackTrace();
             }
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -844,7 +841,6 @@ public class ResidenceBlockListener implements Listener {
                 e1.printStackTrace();
             }
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -912,7 +908,6 @@ public class ResidenceBlockListener implements Listener {
         if (plugin.getConfigManager().isNoWater())
             if (mat == Material.WATER) {
                 event.setCancelled(true);
-                return;
             }
     }
 

@@ -140,7 +140,6 @@ public class LocaleManager {
                 }
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                     | NoSuchMethodException | SecurityException e) {
-                continue;
             }
         }
         c.resetP();

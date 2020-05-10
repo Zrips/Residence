@@ -149,7 +149,6 @@ public class ShopSignUtil {
             res.clearShopVotes();
             res.addShopVote(VoteList);
         }
-        return;
     }
 
     // Signs save file
@@ -185,7 +184,6 @@ public class ShopSignUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return;
     }
 
     // Res Shop vote file
@@ -281,7 +279,6 @@ public class ShopSignUtil {
 
             addBoard(newTemp);
         }
-        return;
     }
 
     // Signs save file
@@ -316,7 +313,6 @@ public class ShopSignUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return;
     }
 
     public boolean BoardUpdateDelayed() {
@@ -324,7 +320,6 @@ public class ShopSignUtil {
             @Override
             public void run() {
                 BoardUpdate();
-                return;
             }
         }, 20L);
         return true;

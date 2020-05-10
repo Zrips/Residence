@@ -1522,15 +1522,13 @@ public class ClaimedResidence {
                 if (!plugin.getTeleportDelayMap().contains(targetPlayer.getName())
                         && plugin.getConfigManager().getTeleportDelay() > 0)
                     return;
-                else if (plugin.getTeleportDelayMap().contains(targetPlayer.getName()))
-                    plugin.getTeleportDelayMap().remove(targetPlayer.getName());
+                else plugin.getTeleportDelayMap().remove(targetPlayer.getName());
                 targetPlayer.closeInventory();
                 targetPlayer.teleport(targloc);
                 if (near)
                     plugin.msg(targetPlayer, lm.Residence_TeleportNear);
                 else
                     plugin.msg(targetPlayer, lm.General_TeleportSuccess);
-                return;
             }
         }, plugin.getConfigManager().getTeleportDelay() * 20L);
     }

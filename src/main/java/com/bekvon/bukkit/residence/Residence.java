@@ -194,7 +194,6 @@ public class Residence extends JavaPlugin {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            return;
                         }
                     });
                 }
@@ -574,7 +573,6 @@ public class Residence extends JavaPlugin {
                                 continue;
                             addOfflinePlayerToChache(player);
                         }
-                        return;
                     }
                 });
             }

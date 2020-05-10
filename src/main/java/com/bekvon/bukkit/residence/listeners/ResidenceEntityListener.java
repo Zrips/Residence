@@ -214,7 +214,6 @@ public class ResidenceEntityListener implements Listener {
         FlagPermissions world = plugin.getWorldFlags().getPerms(entity.getWorld().getName());
         if (!perms.has(Flags.animalkilling, world.has(Flags.animalkilling, true))) {
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -386,7 +385,6 @@ public class ResidenceEntityListener implements Listener {
         FlagPermissions perms = plugin.getPermsByLoc(event.getLocation());
         if (perms.has(Flags.witherspawn, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -410,7 +408,6 @@ public class ResidenceEntityListener implements Listener {
         FlagPermissions perms = plugin.getPermsByLoc(event.getLocation());
         if (perms.has(Flags.phantomspawn, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -906,7 +903,6 @@ public class ResidenceEntityListener implements Listener {
                     default:
                         if (blockperms.has(Flags.destroy, FlagCombo.OnlyFalse))
                             preserve.add(block);
-                        continue;
                 }
             } else {
                 if (!blockperms.has(Flags.destroy, world.has(Flags.destroy, true))) {
@@ -1174,7 +1170,6 @@ public class ResidenceEntityListener implements Listener {
         FlagPermissions perms = plugin.getPermsByLoc(event.getEntity().getLocation());
         if (perms.has(Flags.fireball, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -1196,7 +1191,6 @@ public class ResidenceEntityListener implements Listener {
         FlagPermissions perms = plugin.getPermsByLoc(event.getEntity().getLocation());
         if (perms.has(Flags.witherdamage, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
-            return;
         }
     }
 

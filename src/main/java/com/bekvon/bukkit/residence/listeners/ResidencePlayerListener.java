@@ -382,7 +382,6 @@ public class ResidencePlayerListener implements Listener {
                 event.setCancelled(true);
                 if (res != null)
                     plugin.msg(player, lm.Residence_FlagDeny, Flags.hook, res.getName());
-                return;
             }
         }
     }
@@ -747,7 +746,6 @@ public class ResidencePlayerListener implements Listener {
                         stage = false;
                     Bukkit.dispatchCommand(player, "res market rent " + landName + " " + stage);
                 }
-                return;
             }
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (ForRent && res.isRented() && plugin.getRentManager().getRentingPlayer(res).equals(player.getName())) {
@@ -1066,7 +1064,6 @@ public class ResidencePlayerListener implements Listener {
 
         event.setCancelled(true);
         plugin.msg(player, lm.Flag_Deny, Flags.build);
-        return;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1101,7 +1098,6 @@ public class ResidencePlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        return;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1157,7 +1153,6 @@ public class ResidencePlayerListener implements Listener {
                 plugin.getSelectionManager().updateLocations(player);
             }
         }
-        return;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1195,7 +1190,6 @@ public class ResidencePlayerListener implements Listener {
             plugin.msg(player, lm.Residence_NoResHere);
 
         event.setCancelled(true);
-        return;
 
     }
 
@@ -1375,7 +1369,6 @@ public class ResidencePlayerListener implements Listener {
                 if (!hasuse) {
                     event.setCancelled(true);
                     plugin.msg(player, lm.Flag_Deny, Flags.use);
-                    return;
                 }
             }
         }
@@ -1689,7 +1682,6 @@ public class ResidencePlayerListener implements Listener {
                 if (!plugin.msg(lm.General_CantPlaceWater).equalsIgnoreCase(""))
                     plugin.msg(player, lm.General_CantPlaceWater, level);
                 event.setCancelled(true);
-                return;
             }
     }
 
@@ -1772,7 +1764,6 @@ public class ResidencePlayerListener implements Listener {
             if (!res.isOwner(player) && res.getPermissions().playerHas(player, Flags.chorustp, FlagCombo.OnlyFalse) && !ResPerm.admin_tp.hasPermission(player)) {
                 event.setCancelled(true);
                 plugin.msg(player, lm.Residence_FlagDeny, Flags.chorustp, res.getName());
-                return;
             }
         }
 
@@ -1804,7 +1795,7 @@ public class ResidencePlayerListener implements Listener {
             event.setDroppedExp(0);
         }
 
-        if (res.getPermissions().has(Flags.respawn, false) && Bukkit.getVersion().toString().contains("Spigot"))
+        if (res.getPermissions().has(Flags.respawn, false) && Bukkit.getVersion().contains("Spigot"))
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 @Override
                 public void run() {
@@ -1812,7 +1803,6 @@ public class ResidencePlayerListener implements Listener {
                         event.getEntity().spigot().respawn();
                     } catch (Exception e) {
                     }
-                    return;
                 }
             }, 20L);
     }
@@ -2058,7 +2048,6 @@ public class ResidencePlayerListener implements Listener {
                 @Override
                 public void run() {
                     plugin.getAutoSelectionManager().UpdateSelection(player);
-                    return;
                 }
             });
         }
@@ -2284,8 +2273,7 @@ public class ResidencePlayerListener implements Listener {
                 if (res.getPermissions().has(Flags.title, FlagCombo.TrueOrNone))
                     switch (plugin.getConfigManager().getEnterLeaveMessageType()) {
                         case ActionBar:
-                            ActionBarTitleMessages.send(player, (new StringBuilder()).append(ChatColor.YELLOW).append(insertMessages(player, res, message))
-                                    .toString());
+                            ActionBarTitleMessages.send(player, ChatColor.YELLOW + insertMessages(player, res, message));
                             break;
                         case ChatBox:
                             plugin.msg(player, ChatColor.YELLOW + this.insertMessages(player, res, message));
