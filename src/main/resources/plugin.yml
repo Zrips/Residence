@@ -27,8 +27,6 @@ contributors:
   - inorixu
   - Shayana_fr
   - Zrips
-depend:
-  - Vault
 description: "Cuboid Residence Plugin"
 main: com.bekvon.bukkit.residence.Residence
 name: Residence
@@ -313,6 +311,7 @@ permissions:
     default: op
     description: "Notice to new version after connect"
 softdepend:
+  - Vault
   - Essentials
   - WorldEdit
   - WorldGuard

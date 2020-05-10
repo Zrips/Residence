@@ -9,13 +9,13 @@
     <!-- Forked by https://github.com/Zrips/Residence -->
     <!-- Last modifications by PintaPepo https://github.com/PintaPepo/Residence/ -->
 
-    <groupId>com.pintapepo.spigot</groupId>
-    <artifactId>Residence</artifactId>
+    <groupId>com.bekvon.bukkit</groupId>
+    <artifactId>residence</artifactId>
     <version>5.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.forceJavacCompilerUse>true</maven.compiler.forceJavacCompilerUse>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -86,7 +86,6 @@
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
-
     </dependencies>
 
 </project>
