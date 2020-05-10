@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class area implements cmd {
 
@@ -128,11 +129,11 @@ public class area implements cmd {
         // Sub commands
         c.setP(c.getPath() + "SubCommands.");
         c.get("list.Description", "List physical areas in a residence");
-        c.get("list.Info", Arrays.asList("&eUsage: &6/res area list [residence] <page>"));
+        c.get("list.Info", Collections.singletonList("&eUsage: &6/res area list [residence] <page>"));
         LocaleManager.addTabComplete(this, "list", "[residence]");
 
         c.get("listall.Description", "List coordinates and other Info for areas");
-        c.get("listall.Info", Arrays.asList("&eUsage: &6/res area listall [residence] <page>"));
+        c.get("listall.Info", Collections.singletonList("&eUsage: &6/res area listall [residence] <page>"));
         LocaleManager.addTabComplete(this, "listall", "[residence]");
 
         c.get("add.Description", "Add physical areas to a residence");
@@ -140,7 +141,7 @@ public class area implements cmd {
         LocaleManager.addTabComplete(this, "add", "[residence]");
 
         c.get("remove.Description", "Remove physical areas from a residence");
-        c.get("remove.Info", Arrays.asList("&eUsage: &6/res area remove [residence] [areaID]"));
+        c.get("remove.Info", Collections.singletonList("&eUsage: &6/res area remove [residence] [areaID]"));
         LocaleManager.addTabComplete(this, "remove", "[residence]");
 
         c.get("replace.Description", "Replace physical areas in a residence");

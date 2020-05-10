@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class version implements cmd {
 
@@ -39,6 +40,6 @@ public class version implements cmd {
     public void getLocale() {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "how residence version");
-        c.get("Info", Arrays.asList("&eUsage: &6/res version"));
+        c.get("Info", Collections.singletonList("&eUsage: &6/res version"));
     }
 }

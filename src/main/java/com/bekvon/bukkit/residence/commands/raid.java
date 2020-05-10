@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class raid implements cmd {
 
@@ -185,10 +186,10 @@ public class raid implements cmd {
         c.get("Description", "Manage raid in residence");
         c.get("Info", Arrays.asList("&eUsage: &6/res raid start [resname] (playerName)", "&6/res raid stop [resname]", "&6/res raid kick [playerName]",
                 "&6/res raid immunity [add/take/set/clear] [resname/currentres] [time]"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()), Arrays.asList("start%%stop%%kick%%immunity"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "start"), Arrays.asList("[residence]"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "stop"), Arrays.asList("[residence]"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "kick"), Arrays.asList("[playername]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()), Collections.singletonList("start%%stop%%kick%%immunity"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "start"), Collections.singletonList("[residence]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "stop"), Collections.singletonList("[residence]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "kick"), Collections.singletonList("[playername]"));
         Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "immunity"), Arrays.asList("add%%take%%set%%clear", "[residence]"));
     }
 

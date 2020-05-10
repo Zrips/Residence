@@ -12,6 +12,7 @@ import com.bekvon.bukkit.residence.protection.WorldFlagManager;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class reload implements cmd {
 
@@ -58,7 +59,7 @@ public class reload implements cmd {
     public void getLocale() {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "reload lanf or config files");
-        c.get("Info", Arrays.asList("&eUsage: &6/res reload [config/lang/groups/flags]"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()), Arrays.asList("config%%lang%%groups%%flags"));
+        c.get("Info", Collections.singletonList("&eUsage: &6/res reload [config/lang/groups/flags]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()), Collections.singletonList("config%%lang%%groups%%flags"));
     }
 }

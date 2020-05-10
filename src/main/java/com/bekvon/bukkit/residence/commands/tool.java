@@ -8,6 +8,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class tool implements cmd {
 
@@ -25,6 +26,6 @@ public class tool implements cmd {
     public void getLocale() {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Shows residence selection and info tool names");
-        c.get("Info", Arrays.asList("&eUsage: &6/res tool"));
+        c.get("Info", Collections.singletonList("&eUsage: &6/res tool"));
     }
 }

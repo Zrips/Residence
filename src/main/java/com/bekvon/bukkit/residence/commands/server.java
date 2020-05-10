@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class server implements cmd {
 
@@ -43,6 +44,6 @@ public class server implements cmd {
 
         c.get("Description", "Make land server owned.");
         c.get("Info", Arrays.asList("&eUsage: &6/resadmin server [residence]", "Make a residence server owned."));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()), Arrays.asList("[cresidence]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()), Collections.singletonList("[cresidence]"));
     }
 }

@@ -9,10 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Language {
     public FileConfiguration enlocale;
@@ -141,7 +138,7 @@ public class Language {
         String missing = "Missing locale for " + key;
         if (customlocale.isList(key))
             return ColorsArray(customlocale.getStringList(key));
-        return enlocale.getStringList(key).size() > 0 ? ColorsArray(enlocale.getStringList(key)) : Arrays.asList(missing);
+        return enlocale.getStringList(key).size() > 0 ? ColorsArray(enlocale.getStringList(key)) : Collections.singletonList(missing);
     }
 
     /**
@@ -157,7 +154,7 @@ public class Language {
         String missing = "Missing locale for " + key;
         if (customlocale.isList(key))
             return ColorsArray(customlocale.getStringList(key));
-        return enlocale.getStringList(key).size() > 0 ? ColorsArray(enlocale.getStringList(key)) : Arrays.asList(missing);
+        return enlocale.getStringList(key).size() > 0 ? ColorsArray(enlocale.getStringList(key)) : Collections.singletonList(missing);
     }
 
     /**

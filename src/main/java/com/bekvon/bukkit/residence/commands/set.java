@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class set implements cmd {
 
@@ -75,7 +76,7 @@ public class set implements cmd {
         c.get("Description", "Set general flags on a Residence");
         c.get("Info", Arrays.asList("&eUsage: &6/res set <residence> [flag] [true/false/remove]",
                 "To see a list of flags, use /res flags ?", "These flags apply to any players who do not have the flag applied specifically to them. (see /res pset ?)"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()), Arrays.asList("[residence]%%[flag]", "[flag]%%true%%false%%remove",
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()), Arrays.asList("[residence]%%[flag]", "[flag]%%true%%false%%remove",
                 "true%%false%%remove"));
     }
 }

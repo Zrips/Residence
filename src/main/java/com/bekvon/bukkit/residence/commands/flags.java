@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,7 +36,7 @@ public class flags implements cmd {
     public void getLocale() {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "List of flags");
-        c.get("Info", Arrays.asList("For flag values, usually true allows the action, and false denys the action."));
+        c.get("Info", Collections.singletonList("For flag values, usually true allows the action, and false denys the action."));
 
         Set<String> keys = new HashSet<String>();
         if (c.getC().isConfigurationSection(c.getPath() + "SubCommands")) {
@@ -71,7 +72,7 @@ public class flags implements cmd {
                     break;
             }
 
-            c.get(pt + ".Info", Arrays.asList("&eUsage: &6/res " + forSet + " <residence> " + fl.getName() + " true/false/remove"));
+            c.get(pt + ".Info", Collections.singletonList("&eUsage: &6/res " + forSet + " <residence> " + fl.getName() + " true/false/remove"));
             keys.remove(fl.toString());
         }
 

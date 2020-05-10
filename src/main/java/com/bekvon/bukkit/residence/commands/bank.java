@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class bank implements cmd {
 
@@ -62,6 +63,6 @@ public class bank implements cmd {
         c.get("Info", Arrays.asList("&eUsage: &6/res bank [deposit/withdraw] <residence> [amount]",
                 "You must be standing in a Residence or provide residence name",
                 "You must have the +bank flag."));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()), Arrays.asList("deposit%%withdraw", "[residence]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()), Arrays.asList("deposit%%withdraw", "[residence]"));
     }
 }

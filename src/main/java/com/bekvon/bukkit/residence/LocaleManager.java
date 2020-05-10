@@ -14,10 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 
 public class LocaleManager {
@@ -33,7 +30,7 @@ public class LocaleManager {
 
     public static void addTabComplete(Object cl, String subCmd, String... tabs) {
         if (subCmd == null || subCmd.isEmpty())
-            Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(cl.getClass().getSimpleName()), Arrays.asList(tabs));
+            Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(cl.getClass().getSimpleName()), Arrays.asList(tabs));
         else
             Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(cl.getClass().getSimpleName(), subCmd), Arrays.asList(tabs));
     }
@@ -127,7 +124,7 @@ public class LocaleManager {
 
         c.get("CommandHelp.Description", "Contains Help for Residence");
         c.get("CommandHelp.SubCommands.res.Description", "Main Residence Command");
-        c.get("CommandHelp.SubCommands.res.Info", Arrays.asList("&2Use &6/res [command] ? <page> &2to view more help Information."));
+        c.get("CommandHelp.SubCommands.res.Info", Collections.singletonList("&2Use &6/res [command] ? <page> &2to view more help Information."));
 
         for (Entry<String, CommandStatus> cmo : plugin.getCommandFiller().getCommandMap().entrySet()) {
             c.setP(plugin.getLocaleManager().path + cmo.getKey() + ".");
@@ -160,7 +157,7 @@ public class LocaleManager {
 
         c.get("CommandHelp.SubCommands.res.SubCommands.resreload.Description", "Reload residence.");
         c.get("CommandHelp.SubCommands.res.SubCommands.resreload.Info",
-                Arrays.asList("&eUsage: &6/resreload"));
+                Collections.singletonList("&eUsage: &6/resreload"));
 
         c.get("CommandHelp.SubCommands.res.SubCommands.resload.Description", "Load residence save file.");
         c.get("CommandHelp.SubCommands.res.SubCommands.resload.Info",

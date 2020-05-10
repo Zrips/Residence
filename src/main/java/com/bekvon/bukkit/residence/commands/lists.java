@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class lists implements cmd {
 
@@ -67,29 +68,29 @@ public class lists implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
 
         c.get("Description", "Predefined permission lists");
-        c.get("Info", Arrays.asList("Predefined permissions that can be applied to a residence."));
+        c.get("Info", Collections.singletonList("Predefined permissions that can be applied to a residence."));
 
         c.setP(c.getPath() + "SubCommands.");
         c.get("add.Description", "Add a list");
-        c.get("add.Info", Arrays.asList("&eUsage: &6/res lists add <listname>"));
+        c.get("add.Info", Collections.singletonList("&eUsage: &6/res lists add <listname>"));
 
         c.get("remove.Description", "Remove a list");
-        c.get("remove.Info", Arrays.asList("&eUsage: &6/res lists remove <listname>"));
+        c.get("remove.Info", Collections.singletonList("&eUsage: &6/res lists remove <listname>"));
 
         c.get("apply.Description", "Apply a list to a residence");
-        c.get("apply.Info", Arrays.asList("&eUsage: &6/res lists apply <listname> <residence>"));
+        c.get("apply.Info", Collections.singletonList("&eUsage: &6/res lists apply <listname> <residence>"));
 
         c.get("set.Description", "Set a flag");
-        c.get("set.Info", Arrays.asList("&eUsage: &6/res lists set <listname> <flag> <value>"));
+        c.get("set.Info", Collections.singletonList("&eUsage: &6/res lists set <listname> <flag> <value>"));
 
         c.get("pset.Description", "Set a player flag");
-        c.get("pset.Info", Arrays.asList("&eUsage: &6/res lists pset <listname> <player> <flag> <value>"));
+        c.get("pset.Info", Collections.singletonList("&eUsage: &6/res lists pset <listname> <player> <flag> <value>"));
 
         c.get("gset.Description", "Set a group flag");
-        c.get("gset.Info", Arrays.asList("&eUsage: &6/res lists gset <listname> <group> <flag> <value>"));
+        c.get("gset.Info", Collections.singletonList("&eUsage: &6/res lists gset <listname> <group> <flag> <value>"));
 
         c.get("view.Description", "View a list.");
-        c.get("view.Info", Arrays.asList("&eUsage: &6/res lists view <listname>"));
+        c.get("view.Info", Collections.singletonList("&eUsage: &6/res lists view <listname>"));
     }
 
 }

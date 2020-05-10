@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class lset implements cmd {
 
@@ -84,7 +85,7 @@ public class lset implements cmd {
                 "&eUsage: &6/res lset <residence> Info",
                 "Blacklisting a material prevents it from being placed in the residence.",
                 "Ignorelist causes a specific material to not be protected by Residence."));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()),
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()),
                 Arrays.asList("[residence]%%blacklist%%ignorelist", "blacklist%%ignorelist%%[material]", "[material]"));
     }
 }

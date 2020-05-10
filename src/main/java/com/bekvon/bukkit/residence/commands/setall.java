@@ -14,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class setall implements cmd {
 
@@ -60,7 +61,7 @@ public class setall implements cmd {
     public void getLocale() {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Set general flags on all residences");
-        c.get("Info", Arrays.asList("&eUsage: &6/res setall [flag] [true/false/remove]"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()), Arrays.asList("[flag]", "true%%false%%remove"));
+        c.get("Info", Collections.singletonList("&eUsage: &6/res setall [flag] [true/false/remove]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()), Arrays.asList("[flag]", "true%%false%%remove"));
     }
 }

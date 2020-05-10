@@ -5,23 +5,20 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public enum CMIEntityType {
 
     DROPPED_ITEM(1, "Item"),
     EXPERIENCE_ORB(2, "Experience Orb"),
     AREA_EFFECT_CLOUD(3, "Area Effect Cloud"),
-    ELDER_GUARDIAN(4, "Elder Guardian", Arrays.asList(
+    ELDER_GUARDIAN(4, "Elder Guardian", Collections.singletonList(
             "MWM3OTc0ODJhMTRiZmNiODc3MjU3Y2IyY2ZmMWI2ZTZhOGI4NDEzMzM2ZmZiNGMyOWE2MTM5Mjc4YjQzNmIifX19")),
     WITHER_SKELETON(5, "Wither Skeleton", Arrays.asList(
             "Nzk1M2I2YzY4NDQ4ZTdlNmI2YmY4ZmIyNzNkNzIwM2FjZDhlMWJlMTllODE0ODFlYWQ1MWY0NWRlNTlhOCJ9fX0=",
             "NDk2YmM4ZWJkNGUxM2Y0OTZkOGQ3NGM1NjVkZDU2ZTk5YTRhZjJlMmVhN2EyN2E5NmMxYWJkMjg0MTg0YiJ9fX0=",
             "ZjVlYzk2NDY0NWE4ZWZhYzc2YmUyZjE2MGQ3Yzk5NTYzNjJmMzJiNjUxNzM5MGM1OWMzMDg1MDM0ZjA1MGNmZiJ9fX0=")),
-    STRAY(6, "Stray", Arrays.asList(
+    STRAY(6, "Stray", Collections.singletonList(
             "NzhkZGY3NmU1NTVkZDVjNGFhOGEwYTVmYzU4NDUyMGNkNjNkNDg5YzI1M2RlOTY5ZjdmMjJmODVhOWEyZDU2In19fQ==")),
     EGG(7, "Thrown Egg"),
     LEASH_HITCH(8, "Leash Knot"),
@@ -39,7 +36,7 @@ public enum CMIEntityType {
     PRIMED_TNT(20, "Primed TNT"),
     FALLING_BLOCK(21, "Falling Block"),
     FIREWORK(22, "Firework Rocket"),
-    HUSK(23, "Husk", Arrays.asList(
+    HUSK(23, "Husk", Collections.singletonList(
             "Nzc3MDY4MWQxYTI1NWZiNGY3NTQ3OTNhYTA1NWIyMjA0NDFjZGFiOWUxMTQxZGZhNTIzN2I0OTkzMWQ5YjkxYyJ9fX0=")),
     SPECTRAL_ARROW(24, "Spectral Arrow"),
     SHULKER_BULLET(25, "Shulker Bullet"),
@@ -51,21 +48,21 @@ public enum CMIEntityType {
             "YTE2MTU1ZmNmMzY2Y2Y0ZTA2Y2U1ZGZmYzQ4Y2E1NGU4ZWE0OGRmZTUyNTM1OGI2MTJkYzQ0ZmQ0MzIifX19",
             "Y2ZmMDQ4MmZkMzJmYWIyY2U5ZjVmYTJlMmQ5YjRkYzc1NjFkYTQyMjE1MmM5OWZjODA0YjkxMzljYWYyNTZiIn19fQ==",
             "MzdlODM4Y2NjMjY3NzZhMjE3YzY3ODM4NmY2YTY1NzkxZmU4Y2RhYjhjZTljYTRhYzZiMjgzOTdhNGQ4MWMyMiJ9fX0=")),
-    SKELETON_HORSE(28, "Skeleton Horse", Arrays.asList(
+    SKELETON_HORSE(28, "Skeleton Horse", Collections.singletonList(
             "NDdlZmZjZTM1MTMyYzg2ZmY3MmJjYWU3N2RmYmIxZDIyNTg3ZTk0ZGYzY2JjMjU3MGVkMTdjZjg5NzNhIn19fQ==")),
-    ZOMBIE_HORSE(29, "Zombie Horse", Arrays.asList(
+    ZOMBIE_HORSE(29, "Zombie Horse", Collections.singletonList(
             "ZDIyOTUwZjJkM2VmZGRiMThkZTg2ZjhmNTVhYzUxOGRjZTczZjEyYTZlMGY4NjM2ZDU1MWQ4ZWI0ODBjZWVjIn19fQ==")),
     ARMOR_STAND(30, "Armor Stand"),
-    DONKEY(31, "Donkey", Arrays.asList(
+    DONKEY(31, "Donkey", Collections.singletonList(
             "ZGZiNmMzYzA1MmNmNzg3ZDIzNmEyOTE1ZjgwNzJiNzdjNTQ3NDk3NzE1ZDFkMmY4Y2JjOWQyNDFkODhhIn19fQ==")),
-    MULE(32, "Mule", Arrays.asList(
+    MULE(32, "Mule", Collections.singletonList(
             "YTA0ODZhNzQyZTdkZGEwYmFlNjFjZTJmNTVmYTEzNTI3ZjFjM2IzMzRjNTdjMDM0YmI0Y2YxMzJmYjVmNWYifX19")),
     EVOKER_FANGS(33, "Evoker Fangs"),
-    EVOKER(34, "Evoker", Arrays.asList(
+    EVOKER(34, "Evoker", Collections.singletonList(
             "YTAwZDNmZmYxNmMyZGNhNTliOWM1OGYwOTY1MjVjODY5NzExNjZkYmFlMTMzYjFiMDUwZTVlZTcxNjQ0MyJ9fX0=")),
-    VEX(35, "Vex", Arrays.asList(
+    VEX(35, "Vex", Collections.singletonList(
             "NWU3MzMwYzdkNWNkOGEwYTU1YWI5ZTk1MzIxNTM1YWM3YWUzMGZlODM3YzM3ZWE5ZTUzYmVhN2JhMmRlODZiIn19fQ==")),
-    VINDICATOR(36, "Vindicator", Arrays.asList(
+    VINDICATOR(36, "Vindicator", Collections.singletonList(
             "YTAwZDNmZmYxNmMyZGNhNTliOWM1OGYwOTY1MjVjODY5NzExNjZkYmFlMTMzYjFiMDUwZTVlZTcxNjQ0MyJ9fX0=")),
     ILLUSIONER(37, "Illusioner", Arrays.asList(
             "NTEyNTEyZTdkMDE2YTIzNDNhN2JmZjFhNGNkMTUzNTdhYjg1MTU3OWYxMzg5YmQ0ZTNhMjRjYmViODhiIn19fQ==",
@@ -84,27 +81,27 @@ public enum CMIEntityType {
     SKELETON(51, "Skeleton", Arrays.asList(
             "MzAxMjY4ZTljNDkyZGExZjBkODgyNzFjYjQ5MmE0YjMwMjM5NWY1MTVhN2JiZjc3ZjRhMjBiOTVmYzAyZWIyIn19fQ==",
             "Yjk1MDc4ZDNiM2IxNzAxZDQ1NzI5ZDNhMTQyMjQ2N2IyOWRiYjJlMWE5MTI4MTMzYTJmMTYzZWJlODVkMmRiOSJ9fX0=")),
-    SPIDER(52, "Spider", Arrays.asList(
+    SPIDER(52, "Spider", Collections.singletonList(
             "Y2Q1NDE1NDFkYWFmZjUwODk2Y2QyNThiZGJkZDRjZjgwYzNiYTgxNjczNTcyNjA3OGJmZTM5MzkyN2U1N2YxIn19fQ==")),
     GIANT(53, "Giant"),
     ZOMBIE(54, "Zombie", Arrays.asList(
             "NTZmYzg1NGJiODRjZjRiNzY5NzI5Nzk3M2UwMmI3OWJjMTA2OTg0NjBiNTFhNjM5YzYwZTVlNDE3NzM0ZTExIn19fQ==",
             "MzExZGQ5MWVlNGQzMWRkZDU5MWQyODMyZWExZWMwODBmMmVkZWQzM2FiODllZTFkYjhiMDRiMjZhNjhhIn19fQ==")),
-    SLIME(55, "Slime", Arrays.asList(
+    SLIME(55, "Slime", Collections.singletonList(
             "MTZhZDIwZmMyZDU3OWJlMjUwZDNkYjY1OWM4MzJkYTJiNDc4YTczYTY5OGI3ZWExMGQxOGM5MTYyZTRkOWI1In19fQ==")),
-    GHAST(56, "Ghast", Arrays.asList(
+    GHAST(56, "Ghast", Collections.singletonList(
             "OGI2YTcyMTM4ZDY5ZmJiZDJmZWEzZmEyNTFjYWJkODcxNTJlNGYxYzk3ZTVmOTg2YmY2ODU1NzFkYjNjYzAifX19")),
-    PIG_ZOMBIE(57, "Zombie Pigman", Arrays.asList(
+    PIG_ZOMBIE(57, "Zombie Pigman", Collections.singletonList(
             "NzRlOWM2ZTk4NTgyZmZkOGZmOGZlYjMzMjJjZDE4NDljNDNmYjE2YjE1OGFiYjExY2E3YjQyZWRhNzc0M2ViIn19fQ==")),
-    ENDERMAN(58, "Enderman", Arrays.asList(
+    ENDERMAN(58, "Enderman", Collections.singletonList(
             "N2E1OWJiMGE3YTMyOTY1YjNkOTBkOGVhZmE4OTlkMTgzNWY0MjQ1MDllYWRkNGU2YjcwOWFkYTUwYjljZiJ9fX0=")),
-    CAVE_SPIDER(59, "Cave Spider", Arrays.asList(
+    CAVE_SPIDER(59, "Cave Spider", Collections.singletonList(
             "NDE2NDVkZmQ3N2QwOTkyMzEwN2IzNDk2ZTk0ZWViNWMzMDMyOWY5N2VmYzk2ZWQ3NmUyMjZlOTgyMjQifX19")),
-    SILVERFISH(60, "Silverfish", Arrays.asList(
+    SILVERFISH(60, "Silverfish", Collections.singletonList(
             "ZGE5MWRhYjgzOTFhZjVmZGE1NGFjZDJjMGIxOGZiZDgxOWI4NjVlMWE4ZjFkNjIzODEzZmE3NjFlOTI0NTQwIn19fQ==")),
-    BLAZE(61, "Blaze", Arrays.asList(
+    BLAZE(61, "Blaze", Collections.singletonList(
             "Yjc4ZWYyZTRjZjJjNDFhMmQxNGJmZGU5Y2FmZjEwMjE5ZjViMWJmNWIzNWE0OWViNTFjNjQ2Nzg4MmNiNWYwIn19fQ==")),
-    MAGMA_CUBE(62, "Magma Cube", Arrays.asList(
+    MAGMA_CUBE(62, "Magma Cube", Collections.singletonList(
             "Mzg5NTdkNTAyM2M5MzdjNGM0MWFhMjQxMmQ0MzQxMGJkYTIzY2Y3OWE5ZjZhYjM2Yjc2ZmVmMmQ3YzQyOSJ9fX0=")),
     ENDER_DRAGON(63, "Ender Dragon"),
     WITHER(64, "Wither", Arrays.asList(
@@ -113,15 +110,15 @@ public enum CMIEntityType {
             "OTY0ZTFjM2UzMTVjOGQ4ZmZmYzM3OTg1YjY2ODFjNWJkMTZhNmY5N2ZmZDA3MTk5ZThhMDVlZmJlZjEwMzc5MyJ9fX0=",
             "Y2RmNzRlMzIzZWQ0MTQzNjk2NWY1YzU3ZGRmMjgxNWQ1MzMyZmU5OTllNjhmYmI5ZDZjZjVjOGJkNDEzOWYifX19",
             "YTQzNTE2NGMwNWNlYTI5OWEzZjAxNmJiYmVkMDU3MDZlYmI3MjBkYWM5MTJjZTQzNTFjMjI5NjYyNmFlY2Q5YSJ9fX0=")),
-    BAT(65, "Bat", Arrays.asList(
+    BAT(65, "Bat", Collections.singletonList(
             "NGNmMWIzYjNmNTM5ZDJmNjNjMTcyZTk0Y2FjZmFhMzkxZThiMzg1Y2RkNjMzZjNiOTkxYzc0ZTQ0YjI4In19fQ==")),
-    WITCH(66, "Witch", Arrays.asList(
+    WITCH(66, "Witch", Collections.singletonList(
             "ODllOGI1ZjE1YTliMjlhMWUzODljOTUyMThmZDM3OTVmMzI4NzJlNWFlZTk0NjRhNzY0OTVjNTI3ZDIyNDUifX19")),
-    ENDERMITE(67, "Endermite", Arrays.asList(
+    ENDERMITE(67, "Endermite", Collections.singletonList(
             "ODRhYWZmYTRjMDllMmVhZmI4NWQzNTIyMTIyZGIwYWE0NTg3NGJlYTRlM2Y1ZTc1NjZiNGQxNjZjN2RmOCJ9fX0=")),
-    GUARDIAN(68, "Guardian", Arrays.asList(
+    GUARDIAN(68, "Guardian", Collections.singletonList(
             "ZGZiNjc1Y2I1YTdlM2ZkMjVlMjlkYTgyNThmMjRmYzAyMGIzZmE5NTAzNjJiOGJjOGViMjUyZTU2ZTc0In19fQ==")),
-    SHULKER(69, "Shulker", Arrays.asList(
+    SHULKER(69, "Shulker", Collections.singletonList(
             "MWU3MzgzMmUyNzJmODg0NGM0NzY4NDZiYzQyNGEzNDMyZmI2OThjNThlNmVmMmE5ODcxYzdkMjlhZWVhNyJ9fX0=")),
     PIG(90, "Pig", Arrays.asList(
             "NjIxNjY4ZWY3Y2I3OWRkOWMyMmNlM2QxZjNmNGNiNmUyNTU5ODkzYjZkZjRhNDY5NTE0ZTY2N2MxNmFhNCJ9fX0=",
@@ -146,30 +143,30 @@ public enum CMIEntityType {
     COW(92, "Cow", Arrays.asList(
             "NWQ2YzZlZGE5NDJmN2Y1ZjcxYzMxNjFjNzMwNmY0YWVkMzA3ZDgyODk1ZjlkMmIwN2FiNDUyNTcxOGVkYzUifX19",
             "YzVhOWNkNThkNGM2N2JjY2M4ZmIxZjVmNzU2YTJkMzgxYzlmZmFjMjkyNGI3ZjRjYjcxYWE5ZmExM2ZiNWMifX19")),
-    CHICKEN(93, "Chicken", Arrays.asList(
+    CHICKEN(93, "Chicken", Collections.singletonList(
             "MTYzODQ2OWE1OTljZWVmNzIwNzUzNzYwMzI0OGE5YWIxMWZmNTkxZmQzNzhiZWE0NzM1YjM0NmE3ZmFlODkzIn19fQ==")),
-    SQUID(94, "Squid", Arrays.asList(
+    SQUID(94, "Squid", Collections.singletonList(
             "MDE0MzNiZTI0MjM2NmFmMTI2ZGE0MzRiODczNWRmMWViNWIzY2IyY2VkZTM5MTQ1OTc0ZTljNDgzNjA3YmFjIn19fQ==")),
-    WOLF(95, "Wolf", Arrays.asList(
+    WOLF(95, "Wolf", Collections.singletonList(
             "ZTk1Y2JiNGY3NWVhODc2MTdmMmY3MTNjNmQ0OWRhYzMyMDliYTFiZDRiOTM2OTY1NGIxNDU5ZWExNTMxNyJ9fX0=")),
-    MUSHROOM_COW(96, "Mushroom Cow", "Mooshroom", Arrays.asList(
+    MUSHROOM_COW(96, "Mushroom Cow", "Mooshroom", Collections.singletonList(
             "ZDBiYzYxYjk3NTdhN2I4M2UwM2NkMjUwN2EyMTU3OTEzYzJjZjAxNmU3YzA5NmE0ZDZjZjFmZTFiOGRiIn19fQ==")),
-    SNOWMAN(97, "Snowman", Arrays.asList(
+    SNOWMAN(97, "Snowman", Collections.singletonList(
             "MWZkZmQxZjc1MzhjMDQwMjU4YmU3YTkxNDQ2ZGE4OWVkODQ1Y2M1ZWY3MjhlYjVlNjkwNTQzMzc4ZmNmNCJ9fX0=")),
     OCELOT(98, "Ocelot", "Cat", Arrays.asList(
             "YWI4ODFjMzliM2FmZGNjNzlmOTFmZTVkZTNjZGQwMTViYzMzNTM4NDNmNTkxZjRkMjNjZDMwMjdkZTRlNiJ9fX0=",
             "YTc1NWU3ZGYwNGQxOGIzMWQ2M2MxN2Y0YTdiNGM3MzkyNGJkNjI2NWRhNjllMTEzZWRkZDk3NTE2ZmM3In19fQ==",
             "ZjJhNjYyZjJhZTdkZWJlZTY1MjkyYzJiZjQyZmJiMDliOTdiMmZmYmRiMjcwNTIwYzJkYjk2ZTUxZDg5NDUifX19",
             "NTY1N2NkNWMyOTg5ZmY5NzU3MGZlYzRkZGNkYzY5MjZhNjhhMzM5MzI1MGMxYmUxZjBiMTE0YTFkYjEifX19")),
-    IRON_GOLEM(99, "Iron Golem", Arrays.asList(
+    IRON_GOLEM(99, "Iron Golem", Collections.singletonList(
             "ODkwOTFkNzllYTBmNTllZjdlZjk0ZDdiYmE2ZTVmMTdmMmY3ZDQ1NzJjNDRmOTBmNzZjNDgxOWE3MTQifX19")),
-    HORSE(100, "Horse", Arrays.asList(
+    HORSE(100, "Horse", Collections.singletonList(
             "NjE5MDI4OTgzMDg3MzBjNDc0NzI5OWNiNWE1ZGE5YzI1ODM4YjFkMDU5ZmU0NmZjMzY4OTZmZWU2NjI3MjkifX19")),
     RABBIT(101, "Rabbit", Arrays.asList(
             "Y2I4Y2ZmNGIxNWI4Y2EzN2UyNTc1MGYzNDU3MThmMjg5Y2IyMmM1YjNhZDIyNjI3YTcxMjIzZmFjY2MifX19",
             "NzJjNTgxMTZhMTQ3ZDFhOWEyNjI2OTIyNGE4YmUxODRmZThlNWYzZjNkZjliNjE3NTEzNjlhZDg3MzgyZWM5In19fQ==",
             "Yzk3N2EzMjY2YmYzYjllYWYxN2U1YTAyZWE1ZmJiNDY4MDExNTk4NjNkZDI4OGI5M2U2YzEyYzljYiJ9fX0=")),
-    POLAR_BEAR(102, "Polar Bear", Arrays.asList(
+    POLAR_BEAR(102, "Polar Bear", Collections.singletonList(
             "ZDQ2ZDIzZjA0ODQ2MzY5ZmEyYTM3MDJjMTBmNzU5MTAxYWY3YmZlODQxOTk2NjQyOTUzM2NkODFhMTFkMmIifX19")),
     LLAMA(103, "Llama", Arrays.asList(
             "ODAyNzdlNmIzZDlmNzgxOWVmYzdkYTRiNDI3NDVmN2FiOWE2M2JhOGYzNmQ2Yjg0YTdhMjUwYzZkMWEzNThlYiJ9fX0=",
@@ -187,22 +184,22 @@ public enum CMIEntityType {
             "ZjBiZmE4NTBmNWRlNGIyOTgxY2NlNzhmNTJmYzJjYzdjZDdiNWM2MmNhZWZlZGRlYjljZjMxMWU4M2Q5MDk3In19fQ==",
             "ZjhhODJjOGI3NWRkMWMyY2U4MTMzYzBiYTkzOWI4YzUyZTQ3ZDNlYzM3NDk1MGY0N2RkZGJiZTM0NWUyMCJ9fX0=",
             "YWNhNTgwYjA1MWM2M2JlMjlkYTU0NWE5YWE3ZmY3ZTEzNmRmNzdhODFjNjdkYzFlZTllNjE3MGMxNGZiMzEwIn19fQ==")),
-    VILLAGER(120, "Villager", Arrays.asList(
+    VILLAGER(120, "Villager", Collections.singletonList(
             "ODIyZDhlNzUxYzhmMmZkNGM4OTQyYzQ0YmRiMmY1Y2E0ZDhhZThlNTc1ZWQzZWIzNGMxOGE4NmU5M2IifX19")),
     ENDER_CRYSTAL(200, "End Crystal"),
-    TURTLE(901, "Turtle", Arrays.asList(
+    TURTLE(901, "Turtle", Collections.singletonList(
             "MGE0MDUwZTdhYWNjNDUzOTIwMjY1OGZkYzMzOWRkMTgyZDdlMzIyZjlmYmNjNGQ1Zjk5YjU3MThhIn19fQ==")),
     PHANTOM(902, "Phantom", Arrays.asList(
             "NDExZDI1YmNkYWJhZmFkNWZkNmUwMTBjNWIxY2Y3YTAwYzljY2E0MGM1YTQ2NzQ3ZjcwNmRjOWNiM2EifX19",
             "YWQyZmE1NjE4NDQ3NzYyZTI2MTExZTA2MGRjNTkzZWE2MjJkNWRkZmMzODVkN2U0MjUzMmU0NjMyN2Y4MDdjMCJ9fX0=")),
     TRIDENT(903, "Trident"),
-    COD(904, "Cod", Arrays.asList(
+    COD(904, "Cod", Collections.singletonList(
             "NmY5OWI1ODBkNDVhNzg0ZTdhOTY0ZTdkM2IxZjk3Y2VjZTc0OTExMTczYmQyMWMxZDdjNTZhY2RjMzg1ZWQ1In19fQ==")),
-    SALMON(905, "Salmon", Arrays.asList(
+    SALMON(905, "Salmon", Collections.singletonList(
             "YWRmYzU3ZDA5MDU5ZTQ3OTlmYTkyYzE1ZTI4NTEyYmNmYWExMzE1NTc3ZmUzYTI3YWVkMzg5ZTRmNzUyMjg5YSJ9fX0=")),
-    PUFFERFISH(906, "Pufferfish", Arrays.asList(
+    PUFFERFISH(906, "Pufferfish", Collections.singletonList(
             "YTk1NTkzODg5OTNmZTc4MmY2N2JkNThkOThjNGRmNTZiY2Q0MzBlZGNiMmY2NmVmNTc3N2E3M2MyN2RlMyJ9fX0=")),
-    TROPICAL_FISH(907, "Tropical Fish", Arrays.asList(
+    TROPICAL_FISH(907, "Tropical Fish", Collections.singletonList(
             "MzZkMTQ5ZTRkNDk5OTI5NjcyZTI3Njg5NDllNjQ3Nzk1OWMyMWU2NTI1NDYxM2IzMjdiNTM4ZGYxZTRkZiJ9fX0=")),
     DROWNED(908, "Drowned", Arrays.asList(
             "YzNmN2NjZjYxZGJjM2Y5ZmU5YTYzMzNjZGUwYzBlMTQzOTllYjJlZWE3MWQzNGNmMjIzYjNhY2UyMjA1MSJ9fX0=",
@@ -211,7 +208,7 @@ public enum CMIEntityType {
             "Yzg0ZGY3OWM0OTEwNGIxOThjZGFkNmQ5OWZkMGQwYmNmMTUzMWM5MmQ0YWI2MjY5ZTQwYjdkM2NiYmI4ZTk4YyJ9fX0=",
             "ZmIxNTMxYzA0ZTI1ZDdmYTY0NTc2OTgyNjg0OTFjYjg5NmQzMzAyZDI2ODg0ZmNmZGYxYTBiMmY5MmQ3N2M4ZiJ9fX0=",
             "NTZkYWY1MGVhZjc2YzNhNmQ1YWQzOWM5NjZmMjk4NzdiOTFkOTUwZGQxZTM3MTIyZTljODE5NTg1Yzg5ZDkyZSJ9fX0=")),
-    DOLPHIN(909, "Dolphin", Arrays.asList(
+    DOLPHIN(909, "Dolphin", Collections.singletonList(
             "OGU5Njg4Yjk1MGQ4ODBiNTViN2FhMmNmY2Q3NmU1YTBmYTk0YWFjNmQxNmY3OGU4MzNmNzQ0M2VhMjlmZWQzIn19fQ==")),
     LINGERING_POTION(910, "Lingering Potion"),
     FISHING_HOOK(911, "Fishing Hook"),
@@ -221,9 +218,9 @@ public enum CMIEntityType {
     COMPLEX_PART(915, "Complex Part"),
     TIPPED_ARROW(916, "Tipped Arrow"),
 
-    PANDA(917, "Panda", Arrays.asList(
+    PANDA(917, "Panda", Collections.singletonList(
             "ZDE4OGM5ODBhYWNmYTk0Y2YzMzA4ODUxMmIxYjk1MTdiYTgyNmIxNTRkNGNhZmMyNjJhZmY2OTc3YmU4YSJ9fX0=")),
-    PILLAGER(918, "Pillager", Arrays.asList(
+    PILLAGER(918, "Pillager", Collections.singletonList(
             "NGFlZTZiYjM3Y2JmYzkyYjBkODZkYjVhZGE0NzkwYzY0ZmY0NDY4ZDY4Yjg0OTQyZmRlMDQ0MDVlOGVmNTMzMyJ9fX0=")),
     RAVAGER(919, "Ravager", Arrays.asList(
             "MWNiOWYxMzlmOTQ4OWQ4NmU0MTBhMDZkOGNiYzY3MGM4MDI4MTM3NTA4ZTNlNGJlZjYxMmZlMzJlZGQ2MDE5MyJ9fX0=",
@@ -232,7 +229,7 @@ public enum CMIEntityType {
             "ODQyNDc4MGIzYzVjNTM1MWNmNDlmYjViZjQxZmNiMjg5NDkxZGY2YzQzMDY4M2M4NGQ3ODQ2MTg4ZGI0Zjg0ZCJ9fX0=",
             "NzA4N2E1NTZkNGZmYTk1ZWNkMjg0NGYzNTBkYzQzZTI1NGU1ZDUzNWZhNTk2ZjU0MGQ3ZTc3ZmE2N2RmNDY5NiJ9fX0=",
             "YmU0ZDhhMGJjMTVmMjM5OTIxZWZkOGJlMzQ4MGJhNzdhOThlZTdkOWNlMDA3MjhjMGQ3MzNmMGEyZDYxNGQxNiJ9fX0=")),
-    WANDERING_TRADER(921, "Wandering Trader", Arrays.asList(
+    WANDERING_TRADER(921, "Wandering Trader", Collections.singletonList(
             "NWYxMzc5YTgyMjkwZDdhYmUxZWZhYWJiYzcwNzEwZmYyZWMwMmRkMzRhZGUzODZiYzAwYzkzMGM0NjFjZjkzMiJ9fX0=")),
     FOX(922, "Fox", Arrays.asList(
             "YjZmZWI3NjFiMmY1OWZhYmU1Y2MzY2M4MmE5MzRiNTM0ZWE5OWVkYjkxMzJjY2RhOWY0ODRiZDU5ODZkNyJ9fX0=",

@@ -404,7 +404,7 @@ public class shop implements cmd {
     public void getLocale() {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Manage residence shop");
-        c.get("Info", Arrays.asList("Manages residence shop feature"));
+        c.get("Info", Collections.singletonList("Manages residence shop feature"));
 
         // Sub commands
         c.setP(c.getPath() + "SubCommands.");
@@ -417,15 +417,15 @@ public class shop implements cmd {
 
         c.get("like.Description", "Give like for residence shop");
         c.get("like.Info", Arrays.asList("&eUsage: &6/res shop like <residence>", "Gives like for residence shop"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "like"), Arrays.asList("[residenceshop]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "like"), Collections.singletonList("[residenceshop]"));
 
         c.get("votes.Description", "Shows res shop votes");
         c.get("votes.Info", Arrays.asList("&eUsage: &6/res shop votes <residence> <page>", "Shows full vote list of current or defined residence shop"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "votes"), Arrays.asList("[residenceshop]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "votes"), Collections.singletonList("[residenceshop]"));
 
         c.get("likes.Description", "Shows res shop likes");
         c.get("likes.Info", Arrays.asList("&eUsage: &6/res shop likes <residence> <page>", "Shows full like list of current or defined residence shop"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "likes"), Arrays.asList("[residenceshop]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "likes"), Collections.singletonList("[residenceshop]"));
 
         c.get("setdesc.Description", "Sets residence shop description");
         c.get("setdesc.Info", Arrays.asList("&eUsage: &6/res shop setdesc [text]", "Sets residence shop description. Color code supported. For new line use /n"));
@@ -433,7 +433,7 @@ public class shop implements cmd {
         c.get("createboard.Description", "Create res shop board");
         c.get("createboard.Info", Arrays.asList("&eUsage: &6/res shop createboard [place]",
                 "Creates res shop board from selected area. Place - position from which to start filling board"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "createboard"), Arrays.asList("1"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "createboard"), Collections.singletonList("1"));
 
         c.get("deleteboard.Description", "Deletes res shop board");
         c.get("deleteboard.Info", Arrays.asList("&eUsage: &6/res shop deleteboard", "Deletes res shop board bi right clicking on one of signs"));

@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -218,17 +219,17 @@ public class select implements cmd {
         c.setP(c.getPath() + "SubCommands.");
 
         c.get("coords.Description", "Display selected coordinates");
-        c.get("coords.Info", Arrays.asList("&eUsage: &6/res select coords"));
+        c.get("coords.Info", Collections.singletonList("&eUsage: &6/res select coords"));
 
         c.get("size.Description", "Display selected size");
-        c.get("size.Info", Arrays.asList("&eUsage: &6/res select size"));
+        c.get("size.Info", Collections.singletonList("&eUsage: &6/res select size"));
 
         c.get("auto.Description", "Turns on auto selection tool");
-        c.get("auto.Info", Arrays.asList("&eUsage: &6/res select auto [playername]"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "auto"), Arrays.asList("[playername]"));
+        c.get("auto.Info", Collections.singletonList("&eUsage: &6/res select auto [playername]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "auto"), Collections.singletonList("[playername]"));
 
         c.get("cost.Description", "Display selection cost");
-        c.get("cost.Info", Arrays.asList("&eUsage: &6/res select cost"));
+        c.get("cost.Info", Collections.singletonList("&eUsage: &6/res select cost"));
 
         c.get("vert.Description", "Expand Selection Vertically");
         c.get("vert.Info", Arrays.asList("&eUsage: &6/res select vert", "Will expand selection as high and as low as allowed."));
@@ -250,7 +251,7 @@ public class select implements cmd {
 
         c.get("residence.Description", "Select a existing area in a residence.");
         c.get("residence.Info", Arrays.asList("&eUsage: &6/res select residence <residence>", "Selects a existing area in a residence."));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "residence"), Arrays.asList("[residence]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName(), "residence"), Collections.singletonList("[residence]"));
 
         c.get("worldedit.Description", "Set selection using the current WorldEdit selection.");
         c.get("worldedit.Info", Arrays.asList("&eUsage: &6/res select worldedit", "Sets selection area using the current WorldEdit selection."));

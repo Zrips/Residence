@@ -776,7 +776,7 @@ public class ConfigManager {
         c.addComment("Global.AutoCleanUp.Regenerate", "Do you want to regenerate old residence area", "This requires world edit to be present");
         AutoCleanUpRegenerate = c.get("Global.AutoCleanUp.Regenerate", false);
         c.addComment("Global.AutoCleanUp.Worlds", "Worlds to be included in check list");
-        AutoCleanUpWorlds = c.get("Global.AutoCleanUp.Worlds", Arrays.asList(defaultWorldName));
+        AutoCleanUpWorlds = c.get("Global.AutoCleanUp.Worlds", Collections.singletonList(defaultWorldName));
 
         // TNT explosions below 63
         c.addComment("Global.AntiGreef.TNT.ExplodeBelow",
@@ -796,7 +796,7 @@ public class ConfigManager {
         NoLava = c.get("Global.AntiGreef.Flow.NoLavaFlow", true);
         c.addComment("Global.AntiGreef.Flow.NoWaterFlow", "With this set to true, water flow outside residence is blocked");
         NoWater = c.get("Global.AntiGreef.Flow.NoWaterFlow", true);
-        NoFlowWorlds = c.get("Global.AntiGreef.Flow.Worlds", Arrays.asList(defaultWorldName));
+        NoFlowWorlds = c.get("Global.AntiGreef.Flow.Worlds", Collections.singletonList(defaultWorldName));
 
         // Place
         c.addComment("Global.AntiGreef.Place.Level", "Level from which one to start block lava and water place", "This don't have effect in residence area");
@@ -805,7 +805,7 @@ public class ConfigManager {
         NoLavaPlace = c.get("Global.AntiGreef.Place.NoLavaPlace", true);
         c.addComment("Global.AntiGreef.Place.NoWaterPlace", "With this set to true, playrs cant place water outside residence");
         NoWaterPlace = c.get("Global.AntiGreef.Place.NoWaterPlace", true);
-        NoPlaceWorlds = c.get("Global.AntiGreef.Place.Worlds", Arrays.asList(defaultWorldName));
+        NoPlaceWorlds = c.get("Global.AntiGreef.Place.Worlds", Collections.singletonList(defaultWorldName));
 
         // Sand fall
         c.addComment("Global.AntiGreef.BlockFall.Use", "With this set to true, falling blocks will be deleted if they will land in different area");
@@ -813,7 +813,7 @@ public class ConfigManager {
         c.addComment("Global.AntiGreef.BlockFall.Level", "Level from which one to start block block's fall",
                 "This don't have effect in residence area or outside");
         BlockFallLevel = c.get("Global.AntiGreef.BlockFall.Level", 62);
-        BlockFallWorlds = c.get("Global.AntiGreef.BlockFall.Worlds", Arrays.asList(defaultWorldName));
+        BlockFallWorlds = c.get("Global.AntiGreef.BlockFall.Worlds", Collections.singletonList(defaultWorldName));
 
         // Res cleaning
         c.addComment("Global.AntiGreef.ResCleaning.Use",
@@ -831,13 +831,13 @@ public class ConfigManager {
                 CleanBlocks.add(mat.getMaterial());
         }
 
-        CleanWorlds = c.get("Global.AntiGreef.ResCleaning.Worlds", Arrays.asList(defaultWorldName));
+        CleanWorlds = c.get("Global.AntiGreef.ResCleaning.Worlds", Collections.singletonList(defaultWorldName));
 
         c.addComment("Global.AntiGreef.Flags.Prevent",
                 "By setting this to true flags from list will be protected from change while there is some one inside residence besides owner",
                 "Protects in example from people inviting some one and changing pvp flag to true to kill them");
         PvPFlagPrevent = c.get("Global.AntiGreef.Flags.Prevent", true);
-        FlagsList = c.get("Global.AntiGreef.Flags.list", Arrays.asList("pvp"));
+        FlagsList = c.get("Global.AntiGreef.Flags.list", Collections.singletonList("pvp"));
 
         c.addComment("Global.DefaultGroup", "The default group to use if Permissions fails to attach or your not using Permissions.");
         defaultGroup = c.get("Global.DefaultGroup", "default");

@@ -8,6 +8,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class listhidden implements cmd {
 
@@ -48,6 +49,6 @@ public class listhidden implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "List Hidden Residences");
         c.get("Info", Arrays.asList("&eUsage: &6/res listhidden <player> <page>", "Lists hidden residences for a player."));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()), Arrays.asList("[playername]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()), Collections.singletonList("[playername]"));
     }
 }

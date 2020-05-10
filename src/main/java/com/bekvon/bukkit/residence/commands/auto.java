@@ -14,6 +14,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class auto implements cmd {
@@ -244,7 +245,7 @@ public class auto implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         // Main command
         c.get("Description", "Create maximum allowed residence around you");
-        c.get("Info", Arrays.asList("&eUsage: &6/res auto (residence name) (radius)"));
+        c.get("Info", Collections.singletonList("&eUsage: &6/res auto (residence name) (radius)"));
     }
 
     public enum direction {

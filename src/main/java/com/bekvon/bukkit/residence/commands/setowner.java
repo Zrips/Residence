@@ -9,6 +9,7 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class setowner implements cmd {
 
@@ -61,8 +62,8 @@ public class setowner implements cmd {
     public void getLocale() {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Change owner of a residence.");
-        c.get("Info", Arrays.asList("&eUsage: &6/resadmin setowner [residence] [player]"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()), Arrays.asList("[cresidence]"));
+        c.get("Info", Collections.singletonList("&eUsage: &6/resadmin setowner [residence] [player]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()), Collections.singletonList("[cresidence]"));
     }
 
 }

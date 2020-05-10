@@ -8,6 +8,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class removeall implements cmd {
 
@@ -35,7 +36,7 @@ public class removeall implements cmd {
         c.get("Description", "Remove all residences owned by a player.");
         c.get("Info", Arrays.asList("&eUsage: &6/res removeall [owner]",
                 "Removes all residences owned by a specific player.'", "Requires /resadmin if you use it on anyone besides yourself."));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()), Arrays.asList("[playername]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()), Collections.singletonList("[playername]"));
     }
 
 }

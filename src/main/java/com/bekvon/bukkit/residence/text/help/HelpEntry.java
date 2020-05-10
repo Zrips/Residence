@@ -432,6 +432,6 @@ public class HelpEntry {
                 return tempmeinPath.getKeys(false);
 //	    Bukkit.dispatchCommand(sender, command + " ?");
         }
-        return new HashSet<String>(Arrays.asList("?"));
+        return new HashSet<String>(Collections.singletonList("?"));
     }
 }

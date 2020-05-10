@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class pdel implements cmd {
 
@@ -40,7 +41,7 @@ public class pdel implements cmd {
         // Main command
         c.get("Description", "Remove player from residence.");
         c.get("Info", Arrays.asList("&eUsage: &6/res pdel <residence> [player]", "Removes essential flags from player"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()), Arrays.asList("[residence]%%[playername]", "[playername]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()), Arrays.asList("[residence]%%[playername]", "[playername]"));
     }
 
 }

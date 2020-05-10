@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class clearflags implements cmd {
 
@@ -43,7 +44,7 @@ public class clearflags implements cmd {
     public void getLocale() {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Remove all flags from residence");
-        c.get("Info", Arrays.asList("&eUsage: &6/res clearflags <residence>"));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()), Arrays.asList("[residence]"));
+        c.get("Info", Collections.singletonList("&eUsage: &6/res clearflags <residence>"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()), Collections.singletonList("[residence]"));
     }
 }

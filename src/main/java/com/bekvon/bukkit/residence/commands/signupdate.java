@@ -8,6 +8,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class signupdate implements cmd {
 
@@ -26,6 +27,6 @@ public class signupdate implements cmd {
     public void getLocale() {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Updated residence signs");
-        c.get("Info", Arrays.asList("&eUsage: &6/res signupdate"));
+        c.get("Info", Collections.singletonList("&eUsage: &6/res signupdate"));
     }
 }

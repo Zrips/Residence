@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class unstuck implements cmd {
 
@@ -44,6 +45,6 @@ public class unstuck implements cmd {
     public void getLocale() {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Teleports outside of residence");
-        c.get("Info", Arrays.asList("&eUsage: &6/res unstuck"));
+        c.get("Info", Collections.singletonList("&eUsage: &6/res unstuck"));
     }
 }

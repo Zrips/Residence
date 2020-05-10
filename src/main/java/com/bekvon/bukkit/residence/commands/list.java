@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class list implements cmd {
 
@@ -55,6 +56,6 @@ public class list implements cmd {
                 "Lists all the residences a player owns (except hidden ones).",
                 "If listing your own residences, shows hidden ones as well.",
                 "To list everyones residences, use /res listall."));
-        Residence.getInstance().getLocaleManager().CommandTab.put(Arrays.asList(this.getClass().getSimpleName()), Arrays.asList("[playername]", "[worldname]"));
+        Residence.getInstance().getLocaleManager().CommandTab.put(Collections.singletonList(this.getClass().getSimpleName()), Arrays.asList("[playername]", "[worldname]"));
     }
 }
