@@ -5,7 +5,6 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
 import java.io.File;
 
-@SuppressWarnings("deprecation")
 public class Schematics7Manager implements WESchematicManager {
     private Residence plugin;
 

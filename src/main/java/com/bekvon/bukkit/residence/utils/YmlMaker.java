@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
 public class YmlMaker {
@@ -63,9 +64,7 @@ public class YmlMaker {
     public void reloadConfig() {
         InputStreamReader f = null;
         try {
-            f = new InputStreamReader(new FileInputStream(this.ConfigFile), "UTF-8");
-        } catch (UnsupportedEncodingException e1) {
-            e1.printStackTrace();
+            f = new InputStreamReader(new FileInputStream(this.ConfigFile), StandardCharsets.UTF_8);
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }

@@ -266,8 +266,7 @@ public class LeaseManager {
         return m;
     }
 
-    @SuppressWarnings("unchecked")
-    public LeaseManager load(@SuppressWarnings("rawtypes") Map root) {
+    public LeaseManager load(Map root) {
         LeaseManager l = new LeaseManager(plugin);
         if (root == null)
             return l;

@@ -46,8 +46,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.DynmapAPI;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -473,9 +473,7 @@ public class Residence extends JavaPlugin {
 
                 BufferedReader in = null;
                 try {
-                    in = new BufferedReader(new InputStreamReader(new FileInputStream(langFile), "UTF8"));
-                } catch (UnsupportedEncodingException e1) {
-                    e1.printStackTrace();
+                    in = new BufferedReader(new InputStreamReader(new FileInputStream(langFile), StandardCharsets.UTF_8));
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
                 }
@@ -497,9 +495,7 @@ public class Residence extends JavaPlugin {
 
                 BufferedReader in = null;
                 try {
-                    in = new BufferedReader(new InputStreamReader(new FileInputStream(langFile), "UTF8"));
-                } catch (UnsupportedEncodingException e1) {
-                    e1.printStackTrace();
+                    in = new BufferedReader(new InputStreamReader(new FileInputStream(langFile), StandardCharsets.UTF_8));
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
                 }
@@ -1117,7 +1113,7 @@ public class Residence extends JavaPlugin {
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+
     protected boolean loadYml() throws Exception {
         File saveFolder = new File(dataFolder, "Save");
         try {
@@ -1408,7 +1404,7 @@ public class Residence extends JavaPlugin {
                 JarEntry entry = jar.getJarEntry(jarPath);
                 if (entry != null && !entry.isDirectory()) {
                     InputStream in = jar.getInputStream(entry);
-                    InputStreamReader isr = new InputStreamReader(in, "UTF8");
+                    InputStreamReader isr = new InputStreamReader(in, StandardCharsets.UTF_8);
                     if (writeName.isFile()) {
                         if (backupOld) {
                             if (fileBackup.isFile()) {
@@ -1420,7 +1416,7 @@ public class Residence extends JavaPlugin {
                         }
                     }
                     FileOutputStream out = new FileOutputStream(writeName);
-                    OutputStreamWriter osw = new OutputStreamWriter(out, "UTF8");
+                    OutputStreamWriter osw = new OutputStreamWriter(out, StandardCharsets.UTF_8);
                     char[] tempbytes = new char[512];
                     int readbytes = isr.read(tempbytes, 0, 512);
                     while (readbytes > -1) {
@@ -1445,11 +1441,9 @@ public class Residence extends JavaPlugin {
             return true;
         if (inform)
             sender.sendMessage(msg(lm.Invalid_Player));
-        @SuppressWarnings("unused")
+
         String a = "%%__USER__%%";
-        @SuppressWarnings("unused")
         String b = "%%__RESOURCE__%%";
-        @SuppressWarnings("unused")
         String c = "%%__NONCE__%%";
         return false;
 

@@ -85,7 +85,7 @@ public class PermissionListManager {
         list.printFlags(player);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+
     public Map<String, Object> save() {
         Map root = new LinkedHashMap<>();
         for (Entry<String, Map<String, FlagPermissions>> players : lists.entrySet()) {
@@ -99,7 +99,6 @@ public class PermissionListManager {
         return root;
     }
 
-    @SuppressWarnings("unchecked")
     public PermissionListManager load(Map<String, Object> root) {
 
         PermissionListManager p = new PermissionListManager(plugin);

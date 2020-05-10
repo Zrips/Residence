@@ -40,6 +40,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -177,7 +178,7 @@ public class Metrics {
      * @return the encoded text, as UTF-8
      */
     private static String encode(final String text) throws UnsupportedEncodingException {
-        return URLEncoder.encode(text, "UTF-8");
+        return URLEncoder.encode(text, StandardCharsets.UTF_8);
     }
 
     /**
@@ -388,7 +389,7 @@ public class Metrics {
         String pluginVersion = description.getVersion();
         String serverVersion = Bukkit.getVersion();
         int playersOnline = 0;
-        for (@SuppressWarnings("unused")
+        for (
                 Player one : Bukkit.getOnlinePlayers()) {
             playersOnline++;
         }

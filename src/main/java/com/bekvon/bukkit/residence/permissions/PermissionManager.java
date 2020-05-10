@@ -19,7 +19,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 
 import java.io.File;
 import java.util.*;

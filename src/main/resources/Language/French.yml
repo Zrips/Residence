@@ -990,7 +990,7 @@ CommandHelp:
               Info:
                 - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
             container:
-              Description: &7Autorise ou non l utilisation de fours, coffres, dispensers, etc...
+              Description: Autorise ou non l utilisation de fours, coffres, dispensers, etc...
               Info:
                 - '&eUsage: &6/res set/pset  <residence> [flag] true/false/remove'
             coords:

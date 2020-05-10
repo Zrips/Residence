@@ -759,7 +759,7 @@ public class SelectionManager {
         return contract(player, amount, false);
     }
 
-    public boolean contract(Player player, double amount, @SuppressWarnings("unused") boolean resadmin) {
+    public boolean contract(Player player, double amount, boolean resadmin) {
         if (!hasPlacedBoth(player)) {
             plugin.msg(player, lm.Select_Points);
             return false;

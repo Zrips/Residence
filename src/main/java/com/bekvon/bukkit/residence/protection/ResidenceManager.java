@@ -472,7 +472,7 @@ public class ResidenceManager implements ResidenceInterface {
         removeResidence(rPlayer, res, resadmin, false);
     }
 
-    @SuppressWarnings("deprecation")
+
     public void removeResidence(ResidencePlayer rPlayer, ClaimedResidence res, boolean resadmin, boolean regenerate) {
 
         Player player = null;
@@ -536,7 +536,7 @@ public class ResidenceManager implements ResidenceInterface {
                                 Location temploc = new Location(world, low.getBlockX(), low.getBlockY(), low.getBlockZ());
 
                                 Bukkit.getScheduler().runTask(plugin, () -> {
-                                    Long blocks = 0L;
+                                    long blocks = 0L;
                                     for (int x = low.getBlockX(); x <= high.getBlockX(); x++) {
                                         temploc.setX(x);
                                         for (int z = low.getBlockZ(); z <= high.getBlockZ(); z++) {
@@ -916,7 +916,6 @@ public class ResidenceManager implements ResidenceInterface {
         for (World world : plugin.getServ().getWorlds()) {
             long time = System.currentTimeMillis();
 
-            @SuppressWarnings("unchecked")
             Map<String, Object> reslist = (Map<String, Object>) root.get(world.getName());
             Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Loading " + world.getName() + " data into memory...");
             if (reslist != null) {
@@ -954,7 +953,6 @@ public class ResidenceManager implements ResidenceInterface {
             i++;
             y++;
             try {
-                @SuppressWarnings("unchecked")
                 ClaimedResidence residence = ClaimedResidence.load(worldName, (Map<String, Object>) res.getValue(), null, plugin);
                 if (residence == null)
                     continue;

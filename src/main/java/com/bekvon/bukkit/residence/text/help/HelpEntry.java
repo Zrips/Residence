@@ -43,7 +43,7 @@ public class HelpEntry {
     }
 
     public static HelpEntry parseHelp(FileConfiguration node, String key) {
-        String split[] = key.split("\\.");
+        String[] split = key.split("\\.");
         String thisname = split[split.length - 1];
         HelpEntry entry = new HelpEntry(thisname);
         ConfigurationSection keysnode = node.getConfigurationSection(key);
@@ -68,9 +68,7 @@ public class HelpEntry {
                 Set<String> subcommandkeys = node.getConfigurationSection(key + ".SubCommands").getKeys(false);
                 if (key.equalsIgnoreCase("CommandHelp.SubCommands.res")) {
                     subcommandkeys.clear();
-                    for (String one : Residence.getInstance().getCommandFiller().getCommands()) {
-                        subcommandkeys.add(one);
-                    }
+                    subcommandkeys.addAll(Residence.getInstance().getCommandFiller().getCommands());
                 }
                 for (String subkey : subcommandkeys) {
                     entry.subentrys.add(HelpEntry.parseHelp(node, key + ".SubCommands." + subkey));
@@ -258,7 +256,7 @@ public class HelpEntry {
         return subentrys.size();
     }
 
-    @SuppressWarnings("deprecation")
+
     public Set<String> getSubCommands(CommandSender sender, String[] args) {
         Set<String> subCommands = new HashSet<String>();
 

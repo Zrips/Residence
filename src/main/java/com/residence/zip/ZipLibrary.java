@@ -84,8 +84,8 @@ public class ZipLibrary {
     }
 
     private void cleanFiles() {
-        Long x = plugin.getConfigManager().BackupAutoCleanUpDays() * 60L * 1000L * 24L * 60L;
-        Long time = System.currentTimeMillis();
+        long x = plugin.getConfigManager().BackupAutoCleanUpDays() * 60L * 1000L * 24L * 60L;
+        long time = System.currentTimeMillis();
         for (File file : BackupDir.listFiles()) {
             long diff = time - file.lastModified();
             if (diff > x) {

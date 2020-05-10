@@ -427,8 +427,8 @@ public class ItemManager {
             if (ncm.getCMIType().isPotion() || ncm.getCMIType().equals(CMIMaterial.SPLASH_POTION) || ncm.getCMIType().equals(CMIMaterial.TIPPED_ARROW)) {
                 Integer d = null;
                 PotionEffectType type = null;
-                Boolean upgraded = false;
-                Boolean extended = false;
+                boolean upgraded = false;
+                boolean extended = false;
                 String[] split = subdata.split("-");
                 try {
                     d = Integer.parseInt(split.length > 0 ? split[0] : subdata);

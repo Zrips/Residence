@@ -307,7 +307,7 @@ public class CMIGui {
         GUIRows size = this.getInvSize();
         int v = place.getCollumn() * 9;
         v = place.getCollumn() > 0 ? v - 1 : v;
-        Integer value = (((place.getRow() * (size.getRows())) * 9) - 8) + v;
+        int value = (((place.getRow() * (size.getRows())) * 9) - 8) + v;
         value = place.getRow() > 0 ? value : value + 9;
         return value - 1;
     }

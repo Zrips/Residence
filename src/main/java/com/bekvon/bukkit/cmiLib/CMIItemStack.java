@@ -257,7 +257,7 @@ public class CMIItemStack {
         this.material = material == null ? null : material.getMaterial();
     }
 
-    @SuppressWarnings("deprecation")
+
     public ItemStack getItemStack() {
         if (item == null) {
             if (cmiMaterial.isMonsterEgg()) {
@@ -292,7 +292,7 @@ public class CMIItemStack {
         return item;
     }
 
-    @SuppressWarnings("deprecation")
+
     public CMIItemStack setItemStack(ItemStack item) {
         this.item = item == null ? null : item;
         if (item != null) {

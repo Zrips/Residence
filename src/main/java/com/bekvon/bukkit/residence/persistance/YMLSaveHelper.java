@@ -6,6 +6,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.reader.ReaderException;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -31,12 +32,12 @@ public class YMLSaveHelper {
         if (f.isFile())
             f.delete();
         FileOutputStream fout = new FileOutputStream(f);
-        OutputStreamWriter osw = new OutputStreamWriter(fout, "UTF8");
+        OutputStreamWriter osw = new OutputStreamWriter(fout, StandardCharsets.UTF_8);
         yml.dump(root, osw);
         osw.close();
     }
 
-    @SuppressWarnings("unchecked")
+
     public void load() throws IOException {
         InputStream fis = new FileInputStream(f);
         try {

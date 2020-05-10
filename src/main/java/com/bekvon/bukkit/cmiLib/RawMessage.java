@@ -32,29 +32,29 @@ public class RawMessage {
     private boolean dontBreakLine = false;
 
     private static String getItemEnchants(ItemStack item) {
-        String Enchants = "";
+        StringBuilder Enchants = new StringBuilder();
         if (item.getEnchantments().isEmpty())
-            return Enchants;
+            return Enchants.toString();
 
-        Enchants = "";
+        Enchants = new StringBuilder();
         for (Entry<Enchantment, Integer> one : item.getEnchantments().entrySet()) {
-            if (!Enchants.isEmpty())
-                Enchants += ",";
+            if (Enchants.length() > 0)
+                Enchants.append(",");
             if (Version.isCurrentEqualOrHigher(Version.v1_13_R1))
-                Enchants += "{id:" + one.getKey().getKey().getKey() + ",lvl:" + one.getValue() + "s}";
+                Enchants.append("{id:").append(one.getKey().getKey().getKey()).append(",lvl:").append(one.getValue()).append("s}");
             else {
                 try {
-                    Enchants += "{id:" + String.valueOf(one.getKey().getClass().getMethod("getId").invoke(one.getKey())) + ",lvl:" + one.getValue() + "}";
+                    Enchants.append("{id:").append(one.getKey().getClass().getMethod("getId").invoke(one.getKey())).append(",lvl:").append(one.getValue()).append("}");
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                     e.printStackTrace();
                 }
             }
         }
-        if (!Enchants.isEmpty()) {
-            Enchants = "[" + Enchants;
-            Enchants += "]";
+        if (Enchants.length() > 0) {
+            Enchants.insert(0, "[");
+            Enchants.append("]");
         }
-        return Enchants;
+        return Enchants.toString();
     }
 
     private static String convertLore(List<String> lore) {

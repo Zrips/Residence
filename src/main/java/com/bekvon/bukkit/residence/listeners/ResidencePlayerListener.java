@@ -935,7 +935,7 @@ public class ResidencePlayerListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getRespawnLocation().getWorld()))
             return;
         Location loc = event.getRespawnLocation();
-        Boolean bed = event.isBedSpawn();
+        boolean bed = event.isBedSpawn();
         Player player = event.getPlayer();
         if (player.hasMetadata("NPC"))
             return;
@@ -1115,7 +1115,7 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         Player player = event.getPlayer();
-        @SuppressWarnings("deprecation")
+
         CMIMaterial heldItem = CMIMaterial.get(player.getItemInHand());
 
         if (heldItem != plugin.getConfigManager().getSelectionTool()) {
@@ -2349,7 +2349,7 @@ public class ResidencePlayerListener implements Listener {
         return message;
     }
 
-    @SuppressWarnings("deprecation")
+
     public void doHeals() {
         if (!Flags.healing.isGlobalyEnabled())
             return;

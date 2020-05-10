@@ -349,7 +349,7 @@ public class ResidencePlayer {
             return;
         boolean rem = this.ResidenceList.remove(residence);
         // in case its fails to remove, double check by name
-        if (rem == false) {
+        if (!rem) {
             Iterator<ClaimedResidence> iter = this.ResidenceList.iterator();
             while (iter.hasNext()) {
                 ClaimedResidence one = iter.next();

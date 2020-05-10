@@ -117,8 +117,8 @@ public class BossBarInfo {
         if (titleOfBar != null && titleOfBar.contains("[autoTimeLeft]")) {
             if (this.percentage != null && this.adjustPerc != null && this.auto != null) {
                 double leftTicks = this.percentage / (this.adjustPerc < 0 ? -this.adjustPerc : this.adjustPerc);
-                Long totalTicks = (long) (leftTicks * (this.auto < 0 ? -this.auto : this.auto));
-                Long mili = totalTicks * 50;
+                long totalTicks = (long) (leftTicks * (this.auto < 0 ? -this.auto : this.auto));
+                long mili = totalTicks * 50;
                 return titleOfBar.replace("[autoTimeLeft]", Utils.to24hourShort(mili + 1000));
             }
         }

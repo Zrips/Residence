@@ -10,9 +10,9 @@ public class ResidenceCommandEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     protected boolean cancelled;
     protected String cmd;
-    protected String arglist[];
+    protected String[] arglist;
     CommandSender commandsender;
-    public ResidenceCommandEvent(String command, String args[], CommandSender sender) {
+    public ResidenceCommandEvent(String command, String[] args, CommandSender sender) {
         super();
         cancelled = false;
         arglist = args;

@@ -25,7 +25,7 @@ public enum TimeModifier {
             for (TimeModifier one : TimeModifier.values()) {
                 if (t.endsWith(one.name())) {
                     try {
-                        Long amount = Long.parseLong(t.substring(0, t.length() - one.name().length()));
+                        long amount = Long.parseLong(t.substring(0, t.length() - one.name().length()));
                         if (total == null)
                             total = 0L;
                         total += amount * one.getModifier();

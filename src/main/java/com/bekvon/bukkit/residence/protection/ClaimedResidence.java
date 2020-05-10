@@ -96,16 +96,15 @@ public class ClaimedResidence {
         DecimalFormat formatter = new DecimalFormat("#0.00");
         formatter.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.getDefault()));
         dString = dString.replace(",", ".");
-        Double d = 0D;
+        double d = 0D;
         try {
-            d = Double.valueOf(dString);
-            d = Double.valueOf(formatter.format(d));
+            d = Double.parseDouble(dString);
+            d = Double.parseDouble(formatter.format(d));
         } catch (Exception e) {
         }
         return d;
     }
 
-    @SuppressWarnings("unchecked")
     public static ClaimedResidence load(String worldName, Map<String, Object> root, ClaimedResidence parent,
                                         Residence plugin) throws Exception {
         ClaimedResidence res = new ClaimedResidence(plugin);
@@ -931,7 +930,7 @@ public class ClaimedResidence {
         if (!subzonename.contains(".")) {
             return subzones.get(subzonename);
         }
-        String split[] = subzonename.split("\\.");
+        String[] split = subzonename.split("\\.");
         ClaimedResidence get = subzones.get(split[0]);
         for (int i = 1; i < split.length; i++) {
             if (get == null) {
@@ -1272,7 +1271,7 @@ public class ClaimedResidence {
     }
 
     public String[] listSubzones() {
-        String list[] = new String[subzones.size()];
+        String[] list = new String[subzones.size()];
         int i = 0;
         for (String res : subzones.keySet()) {
             list[i] = res;
@@ -1328,9 +1327,7 @@ public class ClaimedResidence {
 
     public void printAreaList(Player player, int page) {
         ArrayList<String> temp = new ArrayList<>();
-        for (String area : areas.keySet()) {
-            temp.add(area);
-        }
+        temp.addAll(areas.keySet());
         plugin.getInfoPageManager().printInfo(player, "res area list " + this.getName(),
                 plugin.msg(lm.General_PhysicalAreas), temp, page);
     }
@@ -1355,7 +1352,7 @@ public class ClaimedResidence {
     }
 
     public String[] getAreaList() {
-        String arealist[] = new String[areas.size()];
+        String[] arealist = new String[areas.size()];
         int i = 0;
         for (Entry<String, CuboidArea> entry : areas.entrySet()) {
             arealist[i] = entry.getKey();

@@ -753,8 +753,8 @@ public class ResidenceEntityListener implements Listener {
 
         Entity ent = event.getEntity();
 
-        Boolean cancel = false;
-        Boolean remove = true;
+        boolean cancel = false;
+        boolean remove = true;
         FlagPermissions perms = plugin.getPermsByLoc(loc);
         FlagPermissions world = plugin.getWorldFlags().getPerms(loc.getWorld().getName());
 
@@ -979,7 +979,7 @@ public class ResidenceEntityListener implements Listener {
             LivingEntity target = it.next();
             if (target.getType() != EntityType.PLAYER)
                 continue;
-            Boolean tgtpvp = plugin.getPermsByLoc(target.getLocation()).has(Flags.pvp, FlagCombo.TrueOrNone);
+            boolean tgtpvp = plugin.getPermsByLoc(target.getLocation()).has(Flags.pvp, FlagCombo.TrueOrNone);
             if (!srcpvp || !tgtpvp) {
                 event.setIntensity(target, 0);
                 continue;
@@ -1046,8 +1046,8 @@ public class ResidenceEntityListener implements Listener {
         if (cause == null)
             return;
 
-        Boolean srcpvp = plugin.getPermsByLoc(cause.getLocation()).has(Flags.pvp, FlagCombo.TrueOrNone);
-        Boolean tgtpvp = plugin.getPermsByLoc(entity.getLocation()).has(Flags.pvp, FlagCombo.TrueOrNone);
+        boolean srcpvp = plugin.getPermsByLoc(cause.getLocation()).has(Flags.pvp, FlagCombo.TrueOrNone);
+        boolean tgtpvp = plugin.getPermsByLoc(entity.getLocation()).has(Flags.pvp, FlagCombo.TrueOrNone);
         if (!srcpvp || !tgtpvp)
             event.setCancelled(true);
     }

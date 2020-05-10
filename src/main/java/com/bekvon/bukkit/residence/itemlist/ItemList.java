@@ -68,7 +68,7 @@ public class ItemList {
     protected static ItemList load(Map<String, Object> map, ItemList newlist) {
         try {
             newlist.type = ListType.valueOf((String) map.get("Type"));
-            @SuppressWarnings("unchecked")
+
             List<String> list = (List<String>) map.get("ItemList");
             for (String item : list) {
                 CMIMaterial cmat = CMIMaterial.get(item);
@@ -158,7 +158,7 @@ public class ItemList {
     }
 
     public Material[] toArray() {
-        Material mats[] = new Material[list.size()];
+        Material[] mats = new Material[list.size()];
         int i = 0;
         for (Material mat : list) {
             mats[i] = mat;

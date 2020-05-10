@@ -274,7 +274,7 @@ public class RentManager implements MarketRentInterface {
         rent(player, res, AutoPay, resadmin);
     }
 
-    @SuppressWarnings("deprecation")
+
     public void rent(Player player, ClaimedResidence res, boolean AutoPay, boolean resadmin) {
 
         if (res == null) {
@@ -963,7 +963,6 @@ public class RentManager implements MarketRentInterface {
         return rentedLand;
     }
 
-    @SuppressWarnings("unchecked")
     public void load(Map<String, Object> root) {
         if (root == null)
             return;

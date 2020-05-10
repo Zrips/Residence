@@ -292,8 +292,7 @@ public class FlagPermissions {
         return FlagPermissions.load(root, newperms);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    protected static FlagPermissions load(Map<String, Object> root, FlagPermissions newperms) throws Exception {
+    protected static FlagPermissions load(Map<String, Object> root, FlagPermissions newperms) {
         if (root.containsKey("LastKnownPlayerNames"))
             newperms.cachedPlayerNameUUIDs = (Map) root.get("LastKnownPlayerNames");
 

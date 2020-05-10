@@ -167,7 +167,7 @@ public class DynMapManager {
         List<String> visible = plugin.getConfigManager().DynMapVisibleRegions;
         List<String> hidden = plugin.getConfigManager().DynMapHiddenRegions;
         if (visible != null && visible.size() > 0) {
-            if ((visible.contains(id) == false) && (visible.contains("world:" + worldname) == false)) {
+            if ((!visible.contains(id)) && (!visible.contains("world:" + worldname))) {
                 return false;
             }
         }

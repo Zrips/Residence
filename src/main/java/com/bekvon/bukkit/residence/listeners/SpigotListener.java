@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class SpigotListener implements Listener {
-    @SuppressWarnings("deprecation")
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onItemDamage(PlayerItemDamageEvent event) {
         // disabling event on world

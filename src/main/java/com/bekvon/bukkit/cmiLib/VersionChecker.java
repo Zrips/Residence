@@ -27,7 +27,7 @@ public class VersionChecker {
 
     public Integer convertVersion(String v) {
         v = v.replaceAll("[^\\d.]", "");
-        Integer version = 0;
+        int version = 0;
         if (v.contains(".")) {
             String lVersion = "";
             for (String one : v.split("\\.")) {

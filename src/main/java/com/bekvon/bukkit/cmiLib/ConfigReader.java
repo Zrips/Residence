@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -129,7 +130,7 @@ public class ConfigReader extends YamlConfiguration {
         }
         Files.createParentDirs(file);
         String data = insertComments(saveToString());
-        PrintWriter writer = new PrintWriter(file, "UTF-8");
+        PrintWriter writer = new PrintWriter(file, StandardCharsets.UTF_8);
         try {
             writer.write(data);
         } finally {
@@ -282,7 +283,7 @@ public class ConfigReader extends YamlConfiguration {
 
         try {
             fileinputstream = new FileInputStream(file);
-            InputStreamReader str = new InputStreamReader(fileinputstream, Charset.forName("UTF-8"));
+            InputStreamReader str = new InputStreamReader(fileinputstream, StandardCharsets.UTF_8);
 
             config.load(str);
             str.close();
