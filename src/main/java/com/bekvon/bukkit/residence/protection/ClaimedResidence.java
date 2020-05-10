@@ -791,7 +791,7 @@ public class ClaimedResidence {
     }
 
     public boolean isServerLand() {
-        return this.getOwnerUUID().toString() == Residence.getInstance().getServerLandUUID();
+        return this.getOwnerUUID().toString().equals(Residence.getInstance().getServerLandUUID());
     }
 
     public boolean addSubzone(Player player, String name, boolean resadmin) {
