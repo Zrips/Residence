@@ -57,7 +57,7 @@ public class command implements cmd {
             case "list":
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < res.getCmdBlackList().size(); i++) {
-                    sb.append("/" + res.getCmdBlackList().get(i).replace("_", " "));
+                    sb.append("/").append(res.getCmdBlackList().get(i).replace("_", " "));
                     if (i + 1 < res.getCmdBlackList().size())
                         sb.append(", ");
                 }
@@ -65,7 +65,7 @@ public class command implements cmd {
 
                 sb = new StringBuilder();
                 for (int i = 0; i < res.getCmdWhiteList().size(); i++) {
-                    sb.append("/" + res.getCmdWhiteList().get(i).replace("_", " "));
+                    sb.append("/").append(res.getCmdWhiteList().get(i).replace("_", " "));
                     if (i + 1 < res.getCmdWhiteList().size())
                         sb.append(", ");
                 }

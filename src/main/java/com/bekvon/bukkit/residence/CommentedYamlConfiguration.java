@@ -177,10 +177,10 @@ public class CommentedYamlConfiguration extends YamlConfiguration {
      */
     public void addComment(String path, String... commentLines) {
         StringBuilder commentstring = new StringBuilder();
-        String leadingSpaces = "";
+        StringBuilder leadingSpaces = new StringBuilder();
         for (int n = 0; n < path.length(); n++) {
             if (path.charAt(n) == '.') {
-                leadingSpaces += "  ";
+                leadingSpaces.append("  ");
             }
         }
         for (String line : commentLines) {

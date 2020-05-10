@@ -299,6 +299,7 @@ public class FlagPermissions {
         if (root.containsKey("PlayerFlags")) {
             boolean old = true;
             for (Entry<String, Object> one : ((HashMap<String, Object>) root.get("PlayerFlags")).entrySet()) {
+                // TODO Possible BUG, break outside if
                 if (one.getValue() instanceof Integer)
                     old = false;
                 break;
@@ -338,6 +339,7 @@ public class FlagPermissions {
         if (root.containsKey("GroupFlags")) {
             boolean old = true;
             for (Entry<String, Object> one : ((HashMap<String, Object>) root.get("GroupFlags")).entrySet()) {
+                // TODO Possible BUG, break outside if
                 if (one.getValue() instanceof Integer)
                     old = false;
                 break;
@@ -1152,15 +1154,16 @@ public class FlagPermissions {
         if (perms.contains(" ")) {
             String[] splited = perms.split(" ");
             int i = 0;
-            perms = "";
+            StringBuilder permsBuilder = new StringBuilder();
             for (String one : splited) {
                 i++;
-                perms += one + " ";
+                permsBuilder.append(one).append(" ");
                 if (i >= by) {
                     i = 0;
-                    perms += "\n";
+                    permsBuilder.append("\n");
                 }
             }
+            perms = permsBuilder.toString();
         }
         return perms;
     }

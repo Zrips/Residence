@@ -150,8 +150,7 @@ public class GUIListener implements Listener {
             return;
         }
 
-        final List<Integer> buttons = new ArrayList<Integer>();
-        buttons.addAll(event.getRawSlots());
+        final List<Integer> buttons = new ArrayList<Integer>(event.getRawSlots());
         if (!GUIManager.canClick(player, buttons))
             event.setCancelled(true);
 

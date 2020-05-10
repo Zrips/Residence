@@ -38,8 +38,7 @@ public class SignUtil {
     }
 
     public int updateAllSigns() {
-        ConcurrentHashMap<String, Signs> temp = new ConcurrentHashMap<String, Signs>();
-        temp.putAll(Signs.GetAllSigns());
+        ConcurrentHashMap<String, Signs> temp = new ConcurrentHashMap<String, Signs>(Signs.GetAllSigns());
         for (Entry<String, Signs> one : temp.entrySet()) {
             SignUpdate(one.getValue());
         }

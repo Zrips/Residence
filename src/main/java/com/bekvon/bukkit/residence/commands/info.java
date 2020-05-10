@@ -49,15 +49,15 @@ public class info implements cmd {
                     plugin.msg(sender, lm.Invalid_Residence);
             }
 
-            String list = "";
+            StringBuilder list = new StringBuilder();
             if (!nearby.isEmpty()) {
                 for (ClaimedResidence one : nearby) {
-                    if (!list.isEmpty())
-                        list += ", ";
-                    list += one.getName();
+                    if (list.length() > 0)
+                        list.append(", ");
+                    list.append(one.getName());
                 }
 
-                plugin.msg(sender, lm.Residence_Near, list);
+                plugin.msg(sender, lm.Residence_Near, list.toString());
             }
 
             return true;

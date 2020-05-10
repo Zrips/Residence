@@ -58,13 +58,13 @@ public class RawMessage {
     }
 
     private static String convertLore(List<String> lore) {
-        String lr = "";
+        StringBuilder lr = new StringBuilder();
         for (String one : lore) {
-            if (!lr.isEmpty())
-                lr += ",";
-            lr += "\\\"" + one + "\\\"";
+            if (lr.length() > 0)
+                lr.append(",");
+            lr.append("\\\"").append(one).append("\\\"");
         }
-        return lr;
+        return lr.toString();
     }
 
     public void clear() {
@@ -84,15 +84,15 @@ public class RawMessage {
 
     public RawMessage add(String text, List<String> hoverText) {
 
-        String hover = "";
+        StringBuilder hover = new StringBuilder();
         if (hoverText != null)
             for (String one : hoverText) {
-                if (!hover.isEmpty())
-                    hover += "\n";
-                hover += one;
+                if (hover.length() > 0)
+                    hover.append("\n");
+                hover.append(one);
             }
 
-        return add(text, hover.isEmpty() ? null : hover, null, null, null);
+        return add(text, (hover.length() == 0) ? null : hover.toString(), null, null, null);
     }
 
     public RawMessage add(String text, String hoverText, String command) {
@@ -135,17 +135,17 @@ public class RawMessage {
         } else
             splited.add(text);
 
-        String newText = "";
+        StringBuilder newText = new StringBuilder();
 
         for (String one : splited) {
 
-            String colorString = "";
+            StringBuilder colorString = new StringBuilder();
             if (lastColor != null)
-                colorString += lastColor.getColorCode();
+                colorString.append(lastColor.getColorCode());
             else
-                colorString += CMIChatColor.WHITE.getColorCode();
+                colorString.append(CMIChatColor.WHITE.getColorCode());
             for (CMIChatColor oneC : formats) {
-                colorString = colorString + oneC.getColorCode();
+                colorString.append(oneC.getColorCode());
             }
 
             if (one.contains("&")) {
@@ -170,9 +170,9 @@ public class RawMessage {
                         if (c.isFormat()) {
                         } else if (c.isReset()) {
                         } else if (c.isColor()) {
-                            String form = "";
+                            StringBuilder form = new StringBuilder();
                             for (CMIChatColor oneC : formats) {
-                                form += oneC.getColorCode();
+                                form.append(oneC.getColorCode());
                             }
                             one = one.replace(c.getColorCode(), c.getColorCode() + form);
                         }
@@ -181,9 +181,9 @@ public class RawMessage {
                 }
             }
 
-            newText += colorString + one;
+            newText.append(colorString).append(one);
         }
-        return newText;
+        return newText.toString();
     }
 
     public RawMessage addText(String text) {
@@ -200,14 +200,14 @@ public class RawMessage {
     }
 
     public RawMessage addHoverText(List<String> hoverText) {
-        String hover = "";
+        StringBuilder hover = new StringBuilder();
         if (hoverText != null)
             for (String one : hoverText) {
-                if (!hover.isEmpty())
-                    hover += "\n";
-                hover += one;
+                if (hover.length() > 0)
+                    hover.append("\n");
+                hover.append(one);
             }
-        return addHoverText(hover);
+        return addHoverText(hover.toString());
     }
 
     public RawMessage addHoverText(String hoverText) {
@@ -446,47 +446,47 @@ public class RawMessage {
 
     public List<String> softCombine() {
         List<String> ls = new ArrayList<String>();
-        String f = "";
+        StringBuilder f = new StringBuilder();
         for (String part : parts) {
-            if (f.isEmpty())
-                f = "[\"\",";
+            if (f.length() == 0)
+                f = new StringBuilder("[\"\",");
             else {
                 if (f.length() > 30000) {
                     ls.add(f + "]");
-                    f = "[\"\"," + part;
+                    f = new StringBuilder("[\"\"," + part);
                     continue;
                 }
-                f += ",";
+                f.append(",");
             }
-            f += part;
+            f.append(part);
         }
-        if (!f.isEmpty())
-            f += "]";
-        ls.add(f);
+        if (f.length() > 0)
+            f.append("]");
+        ls.add(f.toString());
         return ls;
     }
 
     public RawMessage combine() {
-        String f = "";
+        StringBuilder f = new StringBuilder();
         for (String part : parts) {
-            if (f.isEmpty())
-                f = "[\"\",";
+            if (f.length() == 0)
+                f = new StringBuilder("[\"\",");
             else
-                f += ",";
-            f += part;
+                f.append(",");
+            f.append(part);
         }
-        if (!f.isEmpty())
-            f += "]";
-        combined = f;
+        if (f.length() > 0)
+            f.append("]");
+        combined = f.toString();
         return this;
     }
 
     public RawMessage combineClean() {
-        String f = "";
+        StringBuilder f = new StringBuilder();
         for (String part : cleanParts) {
-            f += part.replace("\\\"", "\"");
+            f.append(part.replace("\\\"", "\""));
         }
-        combinedClean = f;
+        combinedClean = f.toString();
         return this;
     }
 
@@ -517,16 +517,16 @@ public class RawMessage {
     }
 
     public int getFinalLenght() {
-        String f = "";
+        StringBuilder f = new StringBuilder();
         for (String part : parts) {
-            if (f.isEmpty())
-                f = "[\"\",";
+            if (f.length() == 0)
+                f = new StringBuilder("[\"\",");
             else
-                f += ",";
-            f += part;
+                f.append(",");
+            f.append(part);
         }
-        if (!f.isEmpty())
-            f += "]";
+        if (f.length() > 0)
+            f.append("]");
         return f.length();
     }
 
@@ -547,13 +547,13 @@ public class RawMessage {
     }
 
     public String getShortRaw() {
-        String f = "";
+        StringBuilder f = new StringBuilder();
         for (String part : parts) {
-            if (!f.isEmpty())
-                f += ",";
-            f += part;
+            if (f.length() > 0)
+                f.append(",");
+            f.append(part);
         }
-        return f;
+        return f.toString();
     }
 
     public boolean isDontBreakLine() {

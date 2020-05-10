@@ -20,12 +20,12 @@ public class version implements cmd {
         sender.sendMessage(ChatColor.GREEN + "Created by: " + ChatColor.YELLOW + "bekvon");
         sender.sendMessage(ChatColor.GREEN + "Updated to 1.8 by: " + ChatColor.YELLOW + "DartCZ");
         sender.sendMessage(ChatColor.GREEN + "Currently maintained by: " + ChatColor.YELLOW + "Zrips");
-        String names = null;
+        StringBuilder names = null;
         for (String auth : plugin.getAuthors()) {
             if (names == null)
-                names = auth;
+                names = new StringBuilder(auth);
             else
-                names = names + ", " + auth;
+                names.append(", ").append(auth);
         }
         sender.sendMessage(ChatColor.GREEN + "Authors: " + ChatColor.YELLOW + names);
         sender.sendMessage(ChatColor.DARK_AQUA + "For a command list, and help, see the wiki:");

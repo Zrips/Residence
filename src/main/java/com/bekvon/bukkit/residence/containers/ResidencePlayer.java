@@ -372,8 +372,7 @@ public class ResidencePlayer {
     }
 
     public List<ClaimedResidence> getResList() {
-        List<ClaimedResidence> ls = new ArrayList<ClaimedResidence>();
-        ls.addAll(ResidenceList);
+        List<ClaimedResidence> ls = new ArrayList<ClaimedResidence>(ResidenceList);
         return ls;
     }
 

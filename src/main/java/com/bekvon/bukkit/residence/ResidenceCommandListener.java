@@ -232,9 +232,7 @@ public class ResidenceCommandListener implements CommandExecutor {
 
                     if (!good) {
                         String[] tempArray = new String[args.length + 1];
-                        for (int i = 0; i < args.length; i++) {
-                            tempArray[i] = args[i];
-                        }
+                        System.arraycopy(args, 0, tempArray, 0, args.length);
                         tempArray[args.length] = "?";
                         args = tempArray;
                         return commandHelp(args, resadmin, sender, command);
@@ -273,9 +271,7 @@ public class ResidenceCommandListener implements CommandExecutor {
                         good = false;
                     if (!good) {
                         String[] tempArray = new String[args.length + 1];
-                        for (int i = 0; i < args.length; i++) {
-                            tempArray[i] = args[i];
-                        }
+                        System.arraycopy(args, 0, tempArray, 0, args.length);
                         tempArray[args.length] = "?";
                         args = tempArray;
                         return commandHelp(args, resadmin, sender, command);
@@ -287,9 +283,7 @@ public class ResidenceCommandListener implements CommandExecutor {
 
             if (respond != null && !respond) {
                 String[] tempArray = new String[args.length + 1];
-                for (int i = 0; i < args.length; i++) {
-                    tempArray[i] = args[i];
-                }
+                System.arraycopy(args, 0, tempArray, 0, args.length);
                 tempArray[args.length] = "?";
                 args = tempArray;
                 return commandHelp(args, resadmin, sender, command);
@@ -327,16 +321,16 @@ public class ResidenceCommandListener implements CommandExecutor {
     }
 
     private String getHelpPath(String[] args) {
-        String helppath = "res";
+        StringBuilder helppath = new StringBuilder("res");
         for (int i = 0; i < args.length; i++) {
             if (args[i].equalsIgnoreCase("?")) {
                 break;
             }
-            helppath = helppath + "." + args[i];
+            helppath.append(".").append(args[i]);
         }
-        if (!plugin.getHelpPages().containesEntry(helppath) && args.length > 0)
+        if (!plugin.getHelpPages().containesEntry(helppath.toString()) && args.length > 0)
             return getHelpPath(Arrays.copyOf(args, args.length - 1));
-        return helppath;
+        return helppath.toString();
     }
 
 }

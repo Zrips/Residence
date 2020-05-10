@@ -421,19 +421,19 @@ public class CMIItemStack {
         }
         if (this.getItemStack().getItemMeta() instanceof EnchantmentStorageMeta) {
             EnchantmentStorageMeta meta = (EnchantmentStorageMeta) this.getItemStack().getItemMeta();
-            String s = "";
+            StringBuilder s = new StringBuilder();
             for (Entry<Enchantment, Integer> one : meta.getStoredEnchants().entrySet()) {
-                if (!s.isEmpty())
-                    s += ";";
-                s += one.getKey().getName() + "x" + one.getValue();
+                if (s.length() > 0)
+                    s.append(";");
+                s.append(one.getKey().getName()).append("x").append(one.getValue());
             }
 
             for (Entry<Enchantment, Integer> one : meta.getEnchants().entrySet()) {
-                if (!s.isEmpty())
-                    s += ";";
-                s += one.getKey().getName() + "x" + one.getValue();
+                if (s.length() > 0)
+                    s.append(";");
+                s.append(one.getKey().getName()).append("x").append(one.getValue());
             }
-            if (!s.isEmpty()) {
+            if (s.length() > 0) {
                 liner += ":" + s;
             }
         }

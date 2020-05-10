@@ -64,17 +64,17 @@ public class setFlagInfo {
         for (Flags flag : Flags.values()) {
             List<String> lore = new ArrayList<String>();
             int i = 0;
-            String sentence = "";
+            StringBuilder sentence = new StringBuilder();
             for (String oneWord : flag.getDesc().split(" ")) {
-                sentence += oneWord + " ";
+                sentence.append(oneWord).append(" ");
                 if (i > 4) {
-                    lore.add(ChatColor.YELLOW + sentence);
-                    sentence = "";
+                    lore.add(ChatColor.YELLOW + sentence.toString());
+                    sentence = new StringBuilder();
                     i = 0;
                 }
                 i++;
             }
-            lore.add(ChatColor.YELLOW + sentence);
+            lore.add(ChatColor.YELLOW + sentence.toString());
             description.put(flag, lore);
         }
     }

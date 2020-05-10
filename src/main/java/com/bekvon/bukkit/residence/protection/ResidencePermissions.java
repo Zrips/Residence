@@ -759,17 +759,17 @@ public class ResidencePermissions extends FlagPermissions {
         if (FlagPermissions.validFlagGroups.containsKey(flaggroup)) {
             ArrayList<String> flags = FlagPermissions.validFlagGroups.get(flaggroup);
             boolean changed = false;
-            String flagString = "";
+            StringBuilder flagString = new StringBuilder();
             for (String flag : flags) {
                 if (this.setPlayerFlag(sender, target, flag, state, resadmin, false)) {
                     changed = true;
-                    if (!flagString.isEmpty())
-                        flagString += ", ";
-                    flagString += flag;
+                    if (flagString.length() > 0)
+                        flagString.append(", ");
+                    flagString.append(flag);
                 }
             }
             if (flagString.length() > 0)
-                Residence.getInstance().msg(sender, lm.Flag_Set, flagString, target, state);
+                Residence.getInstance().msg(sender, lm.Flag_Set, flagString.toString(), target, state);
             return changed;
         }
         return false;

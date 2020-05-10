@@ -103,36 +103,36 @@ public class InformationPager {
 
             ClaimedResidence res = resT.getValue();
             StringBuilder StringB = new StringBuilder();
-            StringB.append(" " + plugin.msg(lm.General_Owner, res.getOwner()));
+            StringB.append(" ").append(plugin.msg(lm.General_Owner, res.getOwner()));
 
             if (res.getAreaArray().length > 0 && (res.getPermissions().has(Flags.hidden, FlagCombo.FalseOrNone) && res.getPermissions().has(Flags.coords, FlagCombo.TrueOrNone) || resadmin)) {
                 CuboidArea area = res.getAreaArray()[0];
                 String cord1 = plugin.msg(lm.General_CoordsTop, area.getHighLoc().getBlockX(), area.getHighLoc().getBlockY(), area.getHighLoc().getBlockZ());
                 String cord2 = plugin.msg(lm.General_CoordsBottom, area.getLowLoc().getBlockX(), area.getLowLoc().getBlockY(), area.getLowLoc().getBlockZ());
                 String worldInfo = ChatColor.translateAlternateColorCodes('&', plugin.msg(lm.General_CoordsLiner, cord1, cord2));
-                StringB.append("\n" + worldInfo);
+                StringB.append("\n").append(worldInfo);
             }
 
-            StringB.append("\n " + plugin.msg(lm.General_CreatedOn, GetTime.getTime(res.getCreateTime())));
+            StringB.append("\n ").append(plugin.msg(lm.General_CreatedOn, GetTime.getTime(res.getCreateTime())));
 
             String ExtraString = "";
             if (res.isForRent()) {
                 if (res.isRented()) {
                     ExtraString = " " + plugin.msg(lm.Residence_IsRented);
-                    StringB.append("\n " + plugin.msg(lm.Residence_RentedBy, res.getRentedLand().player));
+                    StringB.append("\n ").append(plugin.msg(lm.Residence_RentedBy, res.getRentedLand().player));
                 } else {
                     ExtraString = " " + plugin.msg(lm.Residence_IsForRent);
                 }
                 RentableLand rentable = res.getRentable();
-                StringB.append("\n " + plugin.msg(lm.General_Cost, rentable.cost, rentable.days));
-                StringB.append("\n " + plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing));
-                StringB.append("\n " + plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket));
-                StringB.append("\n " + plugin.msg(lm.Rentable_AllowAutoPay, rentable.AllowAutoPay));
+                StringB.append("\n ").append(plugin.msg(lm.General_Cost, rentable.cost, rentable.days));
+                StringB.append("\n ").append(plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing));
+                StringB.append("\n ").append(plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket));
+                StringB.append("\n ").append(plugin.msg(lm.Rentable_AllowAutoPay, rentable.AllowAutoPay));
             }
 
             if (res.isForSell()) {
                 ExtraString = " " + plugin.msg(lm.Residence_IsForSale);
-                StringB.append("\n " + plugin.msg(lm.Economy_LandForSale) + " " + res.getSellPrice());
+                StringB.append("\n ").append(plugin.msg(lm.Economy_LandForSale)).append(" ").append(res.getSellPrice());
             }
 
             String tpFlag = "";
@@ -175,36 +175,36 @@ public class InformationPager {
 
             ClaimedResidence res = resT.getValue();
             StringBuilder StringB = new StringBuilder();
-            StringB.append(" " + plugin.msg(lm.General_Owner, res.getOwner()));
+            StringB.append(" ").append(plugin.msg(lm.General_Owner, res.getOwner()));
 
             if (res.getAreaArray().length > 0 && (res.getPermissions().has(Flags.hidden, FlagCombo.FalseOrNone) && res.getPermissions().has(Flags.coords, FlagCombo.TrueOrNone) || resadmin)) {
                 CuboidArea area = res.getAreaArray()[0];
                 String cord1 = plugin.msg(lm.General_CoordsTop, area.getHighLoc().getBlockX(), area.getHighLoc().getBlockY(), area.getHighLoc().getBlockZ());
                 String cord2 = plugin.msg(lm.General_CoordsBottom, area.getLowLoc().getBlockX(), area.getLowLoc().getBlockY(), area.getLowLoc().getBlockZ());
                 String worldInfo = ChatColor.translateAlternateColorCodes('&', plugin.msg(lm.General_CoordsLiner, cord1, cord2));
-                StringB.append("\n" + worldInfo);
+                StringB.append("\n").append(worldInfo);
             }
 
-            StringB.append("\n " + plugin.msg(lm.General_CreatedOn, GetTime.getTime(res.getCreateTime())));
+            StringB.append("\n ").append(plugin.msg(lm.General_CreatedOn, GetTime.getTime(res.getCreateTime())));
 
             String ExtraString = "";
             if (res.isForRent()) {
                 if (res.isRented()) {
                     ExtraString = " " + plugin.msg(lm.Residence_IsRented);
-                    StringB.append("\n " + plugin.msg(lm.Residence_RentedBy, res.getRentedLand().player));
+                    StringB.append("\n ").append(plugin.msg(lm.Residence_RentedBy, res.getRentedLand().player));
                 } else {
                     ExtraString = " " + plugin.msg(lm.Residence_IsForRent);
                 }
                 RentableLand rentable = res.getRentable();
-                StringB.append("\n " + plugin.msg(lm.General_Cost, rentable.cost, rentable.days));
-                StringB.append("\n " + plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing));
-                StringB.append("\n " + plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket));
-                StringB.append("\n " + plugin.msg(lm.Rentable_AllowAutoPay, rentable.AllowAutoPay));
+                StringB.append("\n ").append(plugin.msg(lm.General_Cost, rentable.cost, rentable.days));
+                StringB.append("\n ").append(plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing));
+                StringB.append("\n ").append(plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket));
+                StringB.append("\n ").append(plugin.msg(lm.Rentable_AllowAutoPay, rentable.AllowAutoPay));
             }
 
             if (res.isForSell()) {
                 ExtraString = " " + plugin.msg(lm.Residence_IsForSale);
-                StringB.append("\n " + plugin.msg(lm.Economy_LandForSale) + " " + res.getSellPrice());
+                StringB.append("\n ").append(plugin.msg(lm.Economy_LandForSale)).append(" ").append(res.getSellPrice());
             }
 
             String msg = plugin.msg(lm.Residence_ResList, i, res.getName(), res.getWorld(), "", ExtraString);
@@ -251,36 +251,36 @@ public class InformationPager {
 
                     ClaimedResidence res = resT.getValue();
                     StringBuilder StringB = new StringBuilder();
-                    StringB.append(" " + plugin.msg(lm.General_Owner, res.getOwner()));
+                    StringB.append(" ").append(plugin.msg(lm.General_Owner, res.getOwner()));
 
                     if (res.getAreaArray().length > 0 && (res.getPermissions().has(Flags.hidden, FlagCombo.FalseOrNone) && res.getPermissions().has(Flags.coords, FlagCombo.TrueOrNone) || resadmin)) {
                         CuboidArea area = res.getAreaArray()[0];
                         String cord1 = plugin.msg(lm.General_CoordsTop, area.getHighLoc().getBlockX(), area.getHighLoc().getBlockY(), area.getHighLoc().getBlockZ());
                         String cord2 = plugin.msg(lm.General_CoordsBottom, area.getLowLoc().getBlockX(), area.getLowLoc().getBlockY(), area.getLowLoc().getBlockZ());
                         String worldInfo = ChatColor.translateAlternateColorCodes('&', plugin.msg(lm.General_CoordsLiner, cord1, cord2));
-                        StringB.append("\n" + worldInfo);
+                        StringB.append("\n").append(worldInfo);
                     }
 
-                    StringB.append("\n " + plugin.msg(lm.General_CreatedOn, GetTime.getTime(res.getCreateTime())));
+                    StringB.append("\n ").append(plugin.msg(lm.General_CreatedOn, GetTime.getTime(res.getCreateTime())));
 
                     String ExtraString = "";
                     if (res.isForRent()) {
                         if (res.isRented()) {
                             ExtraString = " " + plugin.msg(lm.Residence_IsRented);
-                            StringB.append("\n " + plugin.msg(lm.Residence_RentedBy, res.getRentedLand().player));
+                            StringB.append("\n ").append(plugin.msg(lm.Residence_RentedBy, res.getRentedLand().player));
                         } else {
                             ExtraString = " " + plugin.msg(lm.Residence_IsForRent);
                         }
                         RentableLand rentable = res.getRentable();
-                        StringB.append("\n " + plugin.msg(lm.General_Cost, rentable.cost, rentable.days));
-                        StringB.append("\n " + plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing));
-                        StringB.append("\n " + plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket));
-                        StringB.append("\n " + plugin.msg(lm.Rentable_AllowAutoPay, rentable.AllowAutoPay));
+                        StringB.append("\n ").append(plugin.msg(lm.General_Cost, rentable.cost, rentable.days));
+                        StringB.append("\n ").append(plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing));
+                        StringB.append("\n ").append(plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket));
+                        StringB.append("\n ").append(plugin.msg(lm.Rentable_AllowAutoPay, rentable.AllowAutoPay));
                     }
 
                     if (res.isForSell()) {
                         ExtraString = " " + plugin.msg(lm.Residence_IsForSale);
-                        StringB.append("\n " + plugin.msg(lm.Economy_LandForSale) + " " + res.getSellPrice());
+                        StringB.append("\n ").append(plugin.msg(lm.Economy_LandForSale)).append(" ").append(res.getSellPrice());
                     }
 
                     String msg = plugin.msg(lm.Residence_ResList, y, res.getName(), res.getWorld(), "", ExtraString);

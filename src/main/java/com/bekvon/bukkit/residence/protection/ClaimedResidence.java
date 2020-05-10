@@ -963,7 +963,7 @@ public class ClaimedResidence {
                 zones.add(key);
             }
         }
-        return zones.toArray(new String[zones.size()]);
+        return zones.toArray(new String[0]);
     }
 
     public boolean checkCollision(CuboidArea area) {
@@ -1326,8 +1326,7 @@ public class ClaimedResidence {
     }
 
     public void printAreaList(Player player, int page) {
-        ArrayList<String> temp = new ArrayList<>();
-        temp.addAll(areas.keySet());
+        ArrayList<String> temp = new ArrayList<>(areas.keySet());
         plugin.getInfoPageManager().printInfo(player, "res area list " + this.getName(),
                 plugin.msg(lm.General_PhysicalAreas), temp, page);
     }

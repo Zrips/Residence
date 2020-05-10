@@ -95,37 +95,37 @@ public class raidstatus implements cmd {
     }
 
     private String getAttackers(ResidenceRaid raid) {
-        String r = "";
+        StringBuilder r = new StringBuilder();
         int i = 0;
         for (Entry<UUID, RaidAttacker> one : raid.getAttackers().entrySet()) {
             if (!one.getValue().getPlayer().isOnline())
                 continue;
             i++;
             if (i >= 5)
-                r += " \n";
-            if (!r.isEmpty())
-                r += ", ";
+                r.append(" \n");
+            if (r.length() > 0)
+                r.append(", ");
             if (one.getValue().getPlayer().isOnline())
-                r += one.getValue().getPlayer().getPlayer().getDisplayName();
+                r.append(one.getValue().getPlayer().getPlayer().getDisplayName());
         }
-        return r;
+        return r.toString();
     }
 
     private String getDefenders(ResidenceRaid raid) {
-        String r = "";
+        StringBuilder r = new StringBuilder();
         int i = 0;
         for (Entry<UUID, RaidDefender> one : raid.getDefenders().entrySet()) {
             if (!one.getValue().getPlayer().isOnline())
                 continue;
             i++;
             if (i >= 5)
-                r += " \n";
-            if (!r.isEmpty())
-                r += ", ";
+                r.append(" \n");
+            if (r.length() > 0)
+                r.append(", ");
             if (one.getValue().getPlayer().isOnline())
-                r += one.getValue().getPlayer().getPlayer().getDisplayName();
+                r.append(one.getValue().getPlayer().getPlayer().getDisplayName());
         }
-        return r;
+        return r.toString();
     }
 
     @Override

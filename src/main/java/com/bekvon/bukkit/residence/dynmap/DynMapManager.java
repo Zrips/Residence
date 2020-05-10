@@ -105,7 +105,7 @@ public class DynMapManager {
         m = res.getLeaveMessage();
         v = v.replace("%leavemsg%", (m != null) ? m : "");
         ResidencePermissions p = res.getPermissions();
-        String flgs = "";
+        StringBuilder flgs = new StringBuilder();
 
         // remake
         Map<String, Boolean> all = plugin.getPermissionManager().getAllFlags().getFlags();
@@ -119,14 +119,14 @@ public class DynMapManager {
         for (int i = 0; i < FLAGS.length; i++) {
             if (p.isSet(FLAGS[i])) {
                 if (flgs.length() > 0)
-                    flgs += "<br/>";
+                    flgs.append("<br/>");
                 boolean f = p.has(FLAGS[i], false);
-                flgs += FLAGS[i] + ": " + f;
+                flgs.append(FLAGS[i]).append(": ").append(f);
                 v = v.replace("%flag." + FLAGS[i] + "%", Boolean.toString(f));
             } else
                 v = v.replace("%flag." + FLAGS[i] + "%", "");
         }
-        v = v.replace("%flags%", flgs);
+        v = v.replace("%flags%", flgs.toString());
         RentManager rentmgr = plugin.getRentManager();
         TransactionManager transmgr = plugin.getTransactionManager();
 

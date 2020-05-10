@@ -1984,14 +1984,14 @@ public class ResidencePlayerListener implements Listener {
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
 
         ClaimedResidence orres = res;
-        String areaname = null;
+        StringBuilder areaname = null;
         String subzone = null;
         if (res != null) {
-            areaname = res.getName();
+            areaname = new StringBuilder(res.getName());
             while (res.getSubzoneByLoc(loc) != null) {
                 res = res.getSubzoneByLoc(player.getLocation());
                 subzone = res.getName();
-                areaname = areaname + "." + subzone;
+                areaname.append(".").append(subzone);
             }
         }
 

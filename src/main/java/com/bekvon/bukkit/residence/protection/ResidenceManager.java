@@ -717,9 +717,9 @@ public class ResidenceManager implements ResidenceInterface {
             RentableLand rentable = plugin.getRentManager().getRentableLand(areaname);
             StringBuilder rentableString = new StringBuilder();
             if (rentable != null) {
-                rentableString.append(plugin.msg(lm.General_Cost, rentable.cost, rentable.days) + "\n");
-                rentableString.append(plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing) + "\n");
-                rentableString.append(plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket) + "\n");
+                rentableString.append(plugin.msg(lm.General_Cost, rentable.cost, rentable.days)).append("\n");
+                rentableString.append(plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing)).append("\n");
+                rentableString.append(plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket)).append("\n");
                 rentableString.append(plugin.msg(lm.Rentable_AllowAutoPay, rentable.AllowAutoPay));
             }
             if (sender instanceof Player) {
@@ -737,16 +737,15 @@ public class ResidenceManager implements ResidenceInterface {
 
             StringBuilder rentableString = new StringBuilder();
             if (rented != null) {
-                rentableString.append(plugin.msg(lm.Rent_Expire, GetTime.getTime(rented.endTime)) + "\n");
+                rentableString.append(plugin.msg(lm.Rent_Expire, GetTime.getTime(rented.endTime))).append("\n");
                 if (rented.player.equals(sender.getName()) || resadmin || res.isOwner(sender))
-                    rentableString.append((rented.AutoPay ? plugin.msg(lm.Rent_AutoPayTurnedOn) : plugin.msg(lm.Rent_AutoPayTurnedOff))
-                            + "\n");
+                    rentableString.append(rented.AutoPay ? plugin.msg(lm.Rent_AutoPayTurnedOn) : plugin.msg(lm.Rent_AutoPayTurnedOff)).append("\n");
             }
 
             if (rentable != null) {
-                rentableString.append(plugin.msg(lm.General_Cost, rentable.cost, rentable.days) + "\n");
-                rentableString.append(plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing) + "\n");
-                rentableString.append(plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket) + "\n");
+                rentableString.append(plugin.msg(lm.General_Cost, rentable.cost, rentable.days)).append("\n");
+                rentableString.append(plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing)).append("\n");
+                rentableString.append(plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket)).append("\n");
                 rentableString.append(plugin.msg(lm.Rentable_AllowAutoPay, rentable.AllowAutoPay));
             }
 

@@ -194,7 +194,7 @@ public class shop implements cmd {
 
             ClaimedResidence res = null;
 
-            String desc = "";
+            StringBuilder desc = new StringBuilder();
             if (args.length >= 1) {
                 res = plugin.getResidenceManager().getByLoc(player.getLocation());
                 if (res == null) {
@@ -202,9 +202,9 @@ public class shop implements cmd {
                     return true;
                 }
                 for (int i = 2; i < args.length; i++) {
-                    desc += args[i];
+                    desc.append(args[i]);
                     if (i < args.length - 1)
-                        desc += " ";
+                        desc.append(" ");
                 }
             }
 
@@ -216,8 +216,8 @@ public class shop implements cmd {
                 return true;
             }
 
-            res.setShopDesc(desc);
-            plugin.msg(player, lm.Shop_DescChange, ChatColor.translateAlternateColorCodes('&', desc));
+            res.setShopDesc(desc.toString());
+            plugin.msg(player, lm.Shop_DescChange, ChatColor.translateAlternateColorCodes('&', desc.toString()));
             return true;
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("createboard")) {

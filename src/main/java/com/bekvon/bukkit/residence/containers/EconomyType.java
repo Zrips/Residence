@@ -13,12 +13,12 @@ public enum EconomyType {
     }
 
     public static String toStringLine() {
-        String l = "";
+        StringBuilder l = new StringBuilder();
         for (EconomyType one : EconomyType.values()) {
-            if (!l.isEmpty())
-                l += ", ";
-            l += one.toString();
+            if (l.length() > 0)
+                l.append(", ");
+            l.append(one.toString());
         }
-        return l;
+        return l.toString();
     }
 }

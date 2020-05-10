@@ -20,8 +20,7 @@ public class CommonNMS implements NMS {
 
     @Override
     public List<Block> getPistonRetractBlocks(BlockPistonRetractEvent event) {
-        List<Block> blocks = new ArrayList<Block>();
-        blocks.addAll(event.getBlocks());
+        List<Block> blocks = new ArrayList<Block>(event.getBlocks());
         return blocks;
     }
 

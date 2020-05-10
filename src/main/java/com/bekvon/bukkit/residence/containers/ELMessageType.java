@@ -12,12 +12,12 @@ public enum ELMessageType {
     }
 
     public static String getAllValuesAsString() {
-        String v = "";
+        StringBuilder v = new StringBuilder();
         for (ELMessageType one : ELMessageType.values()) {
-            if (!v.isEmpty())
-                v += ", ";
-            v += one.toString();
+            if (v.length() > 0)
+                v.append(", ");
+            v.append(one.toString());
         }
-        return v;
+        return v.toString();
     }
 }

@@ -679,8 +679,7 @@ public class ConfigManager {
         c.addComment("Global.Tp.TeleportTitleMessage", "Show aditional message in title message area when player is teleporting to residence");
         TeleportTitleMessage = c.get("Global.Tp.TeleportTitleMessage", true);
 
-        Set<World> worlds = new HashSet<World>();
-        worlds.addAll(Bukkit.getWorlds());
+        Set<World> worlds = new HashSet<World>(Bukkit.getWorlds());
 
         boolean commented = false;
         if (c.getC().isConfigurationSection("Global.RandomTeleportation.Worlds")) {
@@ -1071,13 +1070,13 @@ public class ConfigManager {
         if (VisualizerSidesCap < 1)
             VisualizerSidesCap = 1;
 
-        String effectsList = "";
+        StringBuilder effectsList = new StringBuilder();
         for (Effect one : Effect.values()) {
             if (one == null)
                 continue;
             if (one.name() == null)
                 continue;
-            effectsList += one.name().toLowerCase() + ", ";
+            effectsList.append(one.name().toLowerCase()).append(", ");
         }
 
         c.addComment("Global.Visualizer.Selected",
@@ -1085,7 +1084,7 @@ public class ConfigManager {
                 " smoke, largesmoke, spell, instantSpell, mobSpell, mobSpellAmbient, witchMagic, dripWater, dripLava, angryVillager, happyVillager, townaura",
                 " note, portal, enchantmenttable, flame, lava, footstep, cloud, reddust, snowballpoof, snowshovel, slime, heart, barrier", " droplet, take, mobappearance",
                 "",
-                "If using spigot based server different particles can be used:", effectsList);
+                "If using spigot based server different particles can be used:", effectsList.toString());
 
         // Frame
         String efname = c.get("Global.Visualizer.Selected.Frame", "happyVillager");

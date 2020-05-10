@@ -117,13 +117,13 @@ public class HelpEntry {
             if (helplines.get(i).getCommand() != null) {
                 HelpEntry sub = this.getSubEntry(helplines.get(i).getCommand());
 
-                String desc = "&6";
+                StringBuilder desc = new StringBuilder("&6");
                 int y = 0;
                 for (String one : sub.lines) {
-                    desc += one;
+                    desc.append(one);
                     y++;
                     if (y < sub.lines.length) {
-                        desc += "\n";
+                        desc.append("\n");
                     }
                 }
 
@@ -131,7 +131,7 @@ public class HelpEntry {
                     path = path.replace("/res ", "/resadmin ");
 
                 RawMessage rm = new RawMessage();
-                rm.add(CMIChatColor.translateAlternateColorCodes("&6" + helplines.get(i).getDesc()), desc, null, path + helplines.get(i).getCommand());
+                rm.add(CMIChatColor.translateAlternateColorCodes("&6" + helplines.get(i).getDesc()), desc.toString(), null, path + helplines.get(i).getCommand());
                 rm.show(sender);
 
             } else

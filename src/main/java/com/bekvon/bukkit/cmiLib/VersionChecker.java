@@ -29,16 +29,16 @@ public class VersionChecker {
         v = v.replaceAll("[^\\d.]", "");
         int version = 0;
         if (v.contains(".")) {
-            String lVersion = "";
+            StringBuilder lVersion = new StringBuilder();
             for (String one : v.split("\\.")) {
                 String s = one;
                 if (s.length() == 1)
                     s = "0" + s;
-                lVersion += s;
+                lVersion.append(s);
             }
 
             try {
-                version = Integer.parseInt(lVersion);
+                version = Integer.parseInt(lVersion.toString());
             } catch (Exception e) {
                 e.printStackTrace();
             }
