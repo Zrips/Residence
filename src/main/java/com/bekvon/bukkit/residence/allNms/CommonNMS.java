@@ -1,9 +1,7 @@
 package com.bekvon.bukkit.residence.allNms;
 
-import com.bekvon.bukkit.cmiLib.CMIEffect;
 import com.bekvon.bukkit.residence.containers.NMS;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.block.BlockPistonRetractEvent;
@@ -61,9 +59,9 @@ public class CommonNMS implements NMS {
         return false;
     }
 
-    @Override
-    public void playEffect(Player player, Location location, CMIEffect ef) {
-        throw new UnsupportedOperationException("Not implemented yet");
+//    @Override
+//    public void playEffect(Player player, Location location, CMIEffect ef) {
+//        throw new UnsupportedOperationException("Not implemented yet");
 //        if (location == null || ef == null || location.getWorld() == null)
 //            return;
 //
@@ -94,5 +92,5 @@ public class CommonNMS implements NMS {
 //            return;
 //
 //        cPlayer.getHandle().playerConnection.sendPacket(packet);
-    }
+//    }
 }

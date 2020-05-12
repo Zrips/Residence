@@ -1503,73 +1503,73 @@ public enum CMIMaterial {
             return false;
         return m.isSlab();
     }
-
-    public static SlabType getSlabType(Block block) {
-        if (!isSlab(block.getType()))
-            return SlabType.NOTSLAB;
-
-        if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
-            if (block.getBlockData() instanceof org.bukkit.block.data.type.Slab) {
-                org.bukkit.block.data.type.Slab slab = (org.bukkit.block.data.type.Slab) block.getBlockData();
-                switch (slab.getType()) {
-                    case TOP:
-                        return SlabType.TOP;
-                    case BOTTOM:
-                        return SlabType.BOTTOM;
-                    case DOUBLE:
-                        return SlabType.DOUBLE;
-                }
-
-            }
-            return SlabType.NOTSLAB;
-        }
-        if (block.getType().name().contains("STEP")) {
-            switch (CMIMaterial.get(block).getLegacyId()) {
-                case 44:
-                    switch (block.getData()) {
-                        case 0:
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5:
-                        case 6:
-                        case 7:
-                            return SlabType.BOTTOM;
-                        default:
-                            return SlabType.DOUBLE;
-                    }
-                case 126:
-                    switch (block.getData()) {
-                        case 0:
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5:
-                            return SlabType.BOTTOM;
-                        default:
-                            return SlabType.DOUBLE;
-                    }
-                case 182:
-                    switch (block.getData()) {
-                        case 0:
-                            return SlabType.BOTTOM;
-                        default:
-                            return SlabType.DOUBLE;
-                    }
-                case 205:
-                    switch (block.getData()) {
-                        case 0:
-                            return SlabType.BOTTOM;
-                        default:
-                            return SlabType.DOUBLE;
-                    }
-            }
-        }
-
-        return SlabType.NOTSLAB;
-    }
+//
+//    public static SlabType getSlabType(Block block) {
+//        if (!isSlab(block.getType()))
+//            return SlabType.NOTSLAB;
+//
+//        if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
+//            if (block.getBlockData() instanceof org.bukkit.block.data.type.Slab) {
+//                org.bukkit.block.data.type.Slab slab = (org.bukkit.block.data.type.Slab) block.getBlockData();
+//                switch (slab.getType()) {
+//                    case TOP:
+//                        return SlabType.TOP;
+//                    case BOTTOM:
+//                        return SlabType.BOTTOM;
+//                    case DOUBLE:
+//                        return SlabType.DOUBLE;
+//                }
+//
+//            }
+//            return SlabType.NOTSLAB;
+//        }
+//        if (block.getType().name().contains("STEP")) {
+//            switch (CMIMaterial.get(block).getLegacyId()) {
+//                case 44:
+//                    switch (block.getData()) {
+//                        case 0:
+//                        case 1:
+//                        case 2:
+//                        case 3:
+//                        case 4:
+//                        case 5:
+//                        case 6:
+//                        case 7:
+//                            return SlabType.BOTTOM;
+//                        default:
+//                            return SlabType.DOUBLE;
+//                    }
+//                case 126:
+//                    switch (block.getData()) {
+//                        case 0:
+//                        case 1:
+//                        case 2:
+//                        case 3:
+//                        case 4:
+//                        case 5:
+//                            return SlabType.BOTTOM;
+//                        default:
+//                            return SlabType.DOUBLE;
+//                    }
+//                case 182:
+//                    switch (block.getData()) {
+//                        case 0:
+//                            return SlabType.BOTTOM;
+//                        default:
+//                            return SlabType.DOUBLE;
+//                    }
+//                case 205:
+//                    switch (block.getData()) {
+//                        case 0:
+//                            return SlabType.BOTTOM;
+//                        default:
+//                            return SlabType.DOUBLE;
+//                    }
+//            }
+//        }
+//
+//        return SlabType.NOTSLAB;
+//    }
 
     public String getName() {
         return name;

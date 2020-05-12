@@ -1,8 +1,6 @@
 package com.bekvon.bukkit.residence.containers;
 
-import com.bekvon.bukkit.cmiLib.CMIEffect;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -30,7 +28,7 @@ public interface NMS {
 
     public boolean isChorusTeleport(TeleportCause tpcause);
 
-    void playEffect(Player player, Location location, CMIEffect ef);
+//    void playEffect(Player player, Location location, CMIEffect ef);
 
     ItemStack itemInOffHand(Player player);
 }
