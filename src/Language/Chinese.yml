@@ -74,7 +74,7 @@ Language:
     Secondary: '&e第二个选择点 ： &6%1。'
     TooHigh: '&c警告，选择区域已超过地图顶端，现在已裁剪。'
     TooLow: '&c警告，选择区域已超过地图底部，现在已裁剪。'
-    TotalSize: '&e选择区域总计尺寸 ： &6%1。'
+    TotalSize: '&e选择区域总计尺寸 ： &6%1'
     AutoEnabled: '&e自动选择模式&6开启&e，输入 &6/res select auto &e关闭。'
     AutoDisabled: '&e自动选择模式&6关闭&e，输入 &6/res select auto &e再次打开。'
     Disabled: '&c你没有使用选择命令的权限。'
