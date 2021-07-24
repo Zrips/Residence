@@ -1416,7 +1416,7 @@ CommandHelp:
               Info:
               - '&e用法 ： &6/res set <residence> piston true/false/remove'
             pistonprotection:
-              Translated: 防止外部活塞 （pistonprotection
+              Translated: 防止外部活塞 （pistonprotection）
               Description: 允許 或 禁止活塞從領地外推或拉領地內的方塊
               Info:
               - '&e用法 ： &6/res set <residence> pistonprotection true/false/remove'
