@@ -36,7 +36,8 @@ public class SpigotListener implements Listener {
 	}
 
 	held.setDurability(held.getDurability());
-	player.setItemInHand(held);
+	if(!held.getType().toString().equalsIgnoreCase("CROSSBOW"))
+   	    player.setItemInHand(held);
 	event.setDamage(0);
 	event.setCancelled(true);
     }
