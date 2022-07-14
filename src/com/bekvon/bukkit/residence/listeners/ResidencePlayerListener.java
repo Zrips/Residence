@@ -1807,6 +1807,10 @@ public class ResidencePlayerListener implements Listener {
 	Player player = event.getPlayer();
 	if (plugin.isResAdminOn(player))
 	    return;
+        
+        // Fix for milk buckets
+        if(event.getItemStack().getType() == Material.MILK_BUCKET)
+            return;
 
 	ClaimedResidence res = plugin.getResidenceManager().getByLoc(event.getBlockClicked().getLocation());
 	if (res != null && plugin.getConfigManager().preventRentModify() && plugin.getConfigManager().enabledRentSystem() && plugin.getRentManager().isRented(res.getName())) {
