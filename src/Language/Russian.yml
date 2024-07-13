@@ -309,7 +309,7 @@ Language:
   Economy:
     LandForSale: '&eЗемля под продажу:'
     NotEnoughMoney: '&cВы не имеете достаточно денег.'
-    MoneyCharged: '&eСнято &6%1 &eс вашего счет &6%2 &e.'
+    MoneyCharged: '&eСнято &6%1 &eс вашего счета &6%2 &e.'
     MoneyAdded: '&eПрибавлено &6%1 &eк вашему счету &6%2 &e.'
     MoneyCredit: '&eЗачислено &6%1 &eна ваш счет &6%2 &e.'
     RentReleaseInvalid: '&eРезиденция &6%1 &eне сдана и не сдается.'
