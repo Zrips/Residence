@@ -1674,9 +1674,9 @@ CommandHelp:
               - '&eПишите: &6/res set/pset <резиденция> brush true/false/remove'
             goathorn:
               Translated: goathorn
-              Description: Allows or denys goat horn usage
+              Description: Позволяет или запрещает использовать козий рог
               Info:
-              - '&eUsage: &6/res set/pset <residence> goathorn true/false/remove'
+              - '&eПишите: &6/res set/pset <резиденция> goathorn true/false/remove'
         remove:
           Description: Удалить резиденцию.
           Info:
