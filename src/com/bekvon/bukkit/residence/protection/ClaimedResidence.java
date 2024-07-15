@@ -16,7 +16,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -38,7 +37,6 @@ import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.MinimizeMessages;
 import com.bekvon.bukkit.residence.containers.RandomLoc;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
-import com.bekvon.bukkit.residence.containers.ValidLocation;
 import com.bekvon.bukkit.residence.containers.Visualizer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.economy.ResidenceBank;
@@ -65,7 +63,6 @@ import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Container.PageInfo;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Version.Version;
@@ -273,10 +270,12 @@ public class ClaimedResidence {
             Residence.getInstance().msg(player, lm.Area_ToSmallX, area.getXSize(), group.getMinX());
             return false;
         }
+
         if (area.getYSize() < group.getMinY()) {
             Residence.getInstance().msg(player, lm.Area_ToSmallY, area.getYSize(), group.getMinY());
             return false;
         }
+
         if (area.getZSize() < group.getMinZ()) {
             Residence.getInstance().msg(player, lm.Area_ToSmallZ, area.getZSize(), group.getMinZ());
             return false;
@@ -317,7 +316,7 @@ public class ClaimedResidence {
             return false;
         }
 
-        if (area.getYSize() > group.getMaxY()) {
+        if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && area.getYSize() > group.getMaxY()) {
             Residence.getInstance().msg(player, lm.Area_ToBigY, area.getYSize(), group.getMaxY());
             return false;
         }
@@ -1407,7 +1406,7 @@ public class ClaimedResidence {
 
         if (tpLoc == null)
             return 0;
-        
+
         // Temp fix for Folia.
         if (Version.isFolia())
             return 0;

@@ -24,7 +24,6 @@ import com.bekvon.bukkit.residence.selection.SelectionManager.Selection;
 
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class auto implements cmd {
@@ -64,10 +63,12 @@ public class auto implements cmd {
 
         int minY = loc.getBlockY();
         int maxY = loc.getBlockY();
+
         if (plugin.getConfigManager().isSelectionIgnoreY()) {
             minY = plugin.getSelectionManager().getSelection(player).getMinYAllowed();
             maxY = plugin.getSelectionManager().getSelection(player).getMaxYAllowed();
         }
+
         loc.setY(minY);
         plugin.getSelectionManager().placeLoc1(player, loc.clone(), false);
         loc.setY(maxY);

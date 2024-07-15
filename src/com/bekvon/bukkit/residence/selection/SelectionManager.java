@@ -379,11 +379,12 @@ public class SelectionManager {
     }
 
     public void placeLoc1(Player player, Location loc, boolean show) {
-        if (loc != null) {
-            getSelection(player).setBaseLoc1(loc);
-            if (show) {
-                this.afterSelectionUpdate(player);
-            }
+        if (loc == null)
+            return;
+
+        getSelection(player).setBaseLoc1(loc);
+        if (show) {
+            this.afterSelectionUpdate(player);
         }
     }
 
@@ -392,11 +393,12 @@ public class SelectionManager {
     }
 
     public void placeLoc2(Player player, Location loc, boolean show) {
-        if (loc != null) {
-            getSelection(player).setBaseLoc2(loc);
-            if (show) {
-                this.afterSelectionUpdate(player);
-            }
+        if (loc == null)
+            return;
+        
+        getSelection(player).setBaseLoc2(loc);
+        if (show) {
+            this.afterSelectionUpdate(player);
         }
     }
 

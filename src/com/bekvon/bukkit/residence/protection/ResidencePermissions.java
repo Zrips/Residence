@@ -692,7 +692,6 @@ public class ResidencePermissions extends FlagPermissions {
         if (rPlayer != null) {
             this.ownerUUID = rPlayer.getUniqueId();
             ownerLastKnownName = rPlayer.getName();
-
         }
 
         if (ownerLastKnownName.equalsIgnoreCase("Server Land") || ownerLastKnownName.equalsIgnoreCase(Residence.getInstance().getServerLandName())) {
