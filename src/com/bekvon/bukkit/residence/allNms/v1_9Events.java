@@ -19,6 +19,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class v1_9Events implements Listener {
@@ -52,7 +53,8 @@ public class v1_9Events implements Listener {
             event.setCancelled(true);
     }
 
-    Method basePotionData = null;
+    private static Method basePotionData = null;
+    private static Method basePotionType = null;
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onLingeringEffectApply(AreaEffectCloudApplyEvent event) {
@@ -75,13 +77,15 @@ public class v1_9Events implements Listener {
                 }
             } else {
                 try {
-                    if (basePotionData == null) {
-                        Method tempMethod = event.getEntity().getClass().getMethod("getBasePotionData");
-                        basePotionData = tempMethod.invoke(event.getEntity()).getClass().getMethod("getType");
-                    }
 
+                    if (basePotionData == null) {
+                        basePotionData = event.getEntity().getClass().getMethod("getBasePotionData");
+                        Object data = basePotionData.invoke(event.getEntity());
+                        basePotionType = data.getClass().getMethod("getType");
+                    }
+                    Object data = basePotionData.invoke(event.getEntity());
+                    org.bukkit.potion.PotionType type = (org.bukkit.potion.PotionType) basePotionType.invoke(data);
                     for (String oneHarm : Residence.getInstance().getConfigManager().getNegativeLingeringPotionEffects()) {
-                        org.bukkit.potion.PotionType type = (org.bukkit.potion.PotionType) basePotionData.invoke(event.getEntity());
                         if (type.name().equalsIgnoreCase(oneHarm)) {
                             harmfull = true;
                             break;
