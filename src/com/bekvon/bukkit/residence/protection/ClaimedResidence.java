@@ -1206,8 +1206,9 @@ public class ClaimedResidence {
         }
 
         if (!found) {
-            if (Residence.getInstance().getConfigManager().getKickLocation() != null)
+            if (Residence.getInstance().getConfigManager().getKickLocation() != null) {
                 return Residence.getInstance().getConfigManager().getKickLocation();
+            }
             // Fail safe for kick out location
 
             if (!toSpawnOnFail)
