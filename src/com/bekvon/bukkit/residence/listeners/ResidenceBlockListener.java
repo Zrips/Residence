@@ -417,7 +417,7 @@ public class ResidenceBlockListener implements Listener {
             if (ent.hasMetadata(SourceResidenceName))
                 saved = ent.getMetadata(SourceResidenceName).get(0).asString();
 
-            if (!saved.equalsIgnoreCase(resName)) {
+            if (res != null && !saved.equalsIgnoreCase(resName)) {
                 event.setCancelled(true);
                 ent.remove();
             }
@@ -451,23 +451,11 @@ public class ResidenceBlockListener implements Listener {
 
         if (block.getY() <= plugin.getConfigManager().getBlockFallLevel())
             return;
+
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-        Location loc = new Location(block.getLocation().getWorld(), block.getX(), block.getY(), block.getZ());
-        for (int i = loc.getBlockY() - 1; i >= plugin.getConfigManager().getBlockFallLevel() - 1; i--) {
-            loc.setY(i);
-            if (loc.getBlock().getType() != Material.AIR) {
-                ClaimedResidence targetRes = plugin.getResidenceManager().getByLoc(loc);
-                if (targetRes == null)
-                    continue;
-                if (res != null && !res.getName().equals(targetRes.getName())) {
-                    if (targetRes.getPermissions().has(Flags.fallinprotection, FlagCombo.OnlyFalse))
-                        continue;
-                    event.setCancelled(true);
-                    block.setType(Material.AIR);
-                }
-                return;
-            }
-        }
+
+        if (res != null)
+            event.getEntity().setMetadata(SourceResidenceName, new FixedMetadataValue(plugin, res.getName()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
