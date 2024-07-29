@@ -219,6 +219,9 @@ public class FlagPermissions {
 
         addMaterialToUseFlag(CMIMaterial.CRAFTING_TABLE.getMaterial(), Flags.table);
 
+        if (Version.isCurrentEqualOrHigher(Version.v1_21_R1))
+            addMaterialToUseFlag(CMIMaterial.CRAFTER.getMaterial(), Flags.table);
+
         for (CMIMaterial one : CMIMaterial.values()) {
             if (one.getMaterial() == null)
                 continue;

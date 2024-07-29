@@ -1011,6 +1011,7 @@ public class ResidencePlayerListener implements Listener {
         case "BED_BLOCK":
         case "WORKBENCH":
         case "CRAFTING_TABLE":
+        case "CRAFTER":
         case "BREWING_STAND":
         case "ENCHANTMENT_TABLE":
         case "ENCHANTING_TABLE":
