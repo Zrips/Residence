@@ -12,6 +12,7 @@ import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.listeners.ResidenceBlockListener;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.ProtectionModule;
@@ -53,7 +54,10 @@ public class SlimeFunResidenceModule implements ProtectionModule {
             Player player = Bukkit.getPlayer(op.getUniqueId());
             if (player == null)
                 return false;
-            return ResidenceBlockListener.canBreakBlock(player, loc, true);
+            ResidencePermissions.setEventCallsSuspended(true);
+            boolean result = ResidenceBlockListener.canBreakBlock(player, loc, true);
+            ResidencePermissions.setEventCallsSuspended(false);
+            return result;
         default:
             break;
         }
