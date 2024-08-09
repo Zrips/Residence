@@ -39,6 +39,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 
 import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Colors.CMIChatColor;
+import net.Zrips.CMILib.Container.CMIList;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Effects.CMIEffectManager.CMIParticle;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
@@ -147,6 +148,7 @@ public class ConfigManager {
     protected int VisualizerUpdateInterval;
     protected int TeleportDelay;
     protected boolean TeleportTitleMessage;
+    private List<String> TeleportBlockedWorlds;
     protected int VisualizerRowSpacing;
     protected int VisualizerCollumnSpacing;
     protected int VisualizerSkipBy;
@@ -871,6 +873,10 @@ public class ConfigManager {
         TeleportDelay = c.get("Global.Tp.TeleportDelay", 3);
         c.addComment("Global.Tp.TeleportTitleMessage", "Show aditional message in title message area when player is teleporting to residence");
         TeleportTitleMessage = c.get("Global.Tp.TeleportTitleMessage", true);
+        
+        c.addComment("Global.Tp.BlockedWorlds", "List of worlds where teleportation using /res tp is not allowed","This only blocks teleportation to those worlds, not from them");
+        TeleportBlockedWorlds = c.get("Global.Tp.BlockedWorlds", Arrays.asList("SomeWorldNames"));
+        CMIList.toLowerCase(TeleportBlockedWorlds);
 
         Set<World> worlds = new HashSet<World>();
 
@@ -2373,6 +2379,10 @@ public class ConfigManager {
 
     public boolean isDisableResidenceCreation() {
         return DisableResidenceCreation;
+    }
+
+    public List<String> getTeleportBlockedWorlds() {
+        return TeleportBlockedWorlds;
     }
 
 //    public int getTownMinRange() {

@@ -264,6 +264,7 @@ public enum lm {
     Residence_Near("&eNearby residences: &7%1"),
     Residence_TeleportNear("&eTeleported to near residence."),
     Residence_SetTeleportLocation("&eTeleport Location Set..."),
+    Residence_TeleportBlockedWorlds("&cCan't teleport to residence in blocked world"),
     Residence_PermissionsApply("&ePermissions applied to residence."),
     Residence_NotOwner("&cYou are not owner of this residence"),
     Residence_RemovePlayersResidences("&eRemoved all residences belonging to player &6%1"),
