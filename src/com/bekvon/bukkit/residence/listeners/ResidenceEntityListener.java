@@ -104,7 +104,7 @@ public class ResidenceEntityListener implements Listener {
         // Disabling listener if flag disabled globally
         if (!Flags.nomobs.isGlobalyEnabled())
             return;
-        
+
         Entity entity = event.getEntity();
         if (entity == null)
             return;
@@ -337,9 +337,11 @@ public class ResidenceEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void VehicleDestroy(VehicleDestroyEvent event) {
+
         // Disabling listener if flag disabled globally
         if (!Flags.vehicledestroy.isGlobalyEnabled())
             return;
+
         // disabling event on world
         Entity damager = event.getAttacker();
         if (damager == null)
@@ -350,14 +352,42 @@ public class ResidenceEntityListener implements Listener {
 
         Vehicle vehicle = event.getVehicle();
 
-        if (vehicle == null)
+        if (!vehicleDamageable(damager, vehicle))
+            event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void vehicleCombust(EntityCombustByEntityEvent event) {
+
+        // Disabling listener if flag disabled globally
+        if (!Flags.vehicledestroy.isGlobalyEnabled())
             return;
+
+        // disabling event on world
+        Entity damager = event.getCombuster();
+        if (damager == null)
+            return;
+
+        if (plugin.isDisabledWorldListener(damager.getWorld()))
+            return;
+
+        if (!(event.getEntity() instanceof Vehicle))
+            return;
+
+        Vehicle vehicle = (Vehicle) event.getEntity();
+
+        if (!vehicleDamageable(damager, vehicle))
+            event.setCancelled(true);
+    }
+
+    private boolean vehicleDamageable(Entity damager, Vehicle vehicle) {
+        if (vehicle == null)
+            return true;
 
         if (damager instanceof Projectile && !(((Projectile) damager).getShooter() instanceof Player) || !(damager instanceof Player)) {
             FlagPermissions perms = plugin.getPermsByLoc(vehicle.getLocation());
             if (!perms.has(Flags.vehicledestroy, true)) {
-                event.setCancelled(true);
-                return;
+                return false;
             }
         }
 
@@ -370,20 +400,22 @@ public class ResidenceEntityListener implements Listener {
         }
 
         if (cause == null)
-            return;
+            return true;
 
         if (plugin.isResAdminOn(cause))
-            return;
+            return true;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(vehicle.getLocation());
 
         if (res == null)
-            return;
+            return true;
 
         if (res.getPermissions().playerHas(cause, Flags.vehicledestroy, FlagCombo.OnlyFalse)) {
             plugin.msg(cause, lm.Residence_FlagDeny, Flags.vehicledestroy, res.getName());
-            event.setCancelled(true);
+            return false;
         }
+
+        return true;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -1153,6 +1185,7 @@ public class ResidenceEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void PlayerKillingByFlame(EntityCombustByEntityEvent event) {
+
         // Disabling listener if flag disabled globally
         if (!Flags.pvp.isGlobalyEnabled())
             return;
@@ -1199,6 +1232,7 @@ public class ResidenceEntityListener implements Listener {
 
     @EventHandler
     public void OnFallDamage(EntityDamageEvent event) {
+
         // Disabling listener if flag disabled globally
         if (!Flags.falldamage.isGlobalyEnabled())
             return;
