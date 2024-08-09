@@ -1700,8 +1700,8 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         Entity ent = event.getRightClicked();
-
-        if (ent.getType() != EntityType.MINECART && ent.getType() != EntityType.BOAT)
+ 
+        if (ent.getType() != EntityType.MINECART && !(ent instanceof Boat))
             return;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
