@@ -88,11 +88,13 @@ import com.bekvon.bukkit.residence.utils.Utils;
 import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Colors.CMIChatColor;
+import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -2814,6 +2816,8 @@ public class ResidencePlayerListener implements Listener {
                 residences.add(res);
             }
 
+            int chunkRadius = 3;
+            int range = 3 * 16;
             for (ClaimedResidence res : residences) {
                 Set<Entity> entities = new HashSet<Entity>();
 
@@ -2823,12 +2827,32 @@ public class ResidencePlayerListener implements Listener {
                     continue;
 
                 if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
-                    for (CuboidArea area : res.getAreaMap().values()) {
-                        entities.addAll(world.getNearbyEntities(BoundingBox.of(area.getLowVector(), area.getHighVector())));
+                    for (Player player : res.getPlayersInResidence()) {
+                        Vector vloc = player.getLocation().toVector();
+                        // Limit check area in case residence is very big
+                        entities.addAll(world.getNearbyEntities(BoundingBox.of(vloc.clone().subtract(new Vector(range, range, range)), vloc.clone().add(new Vector(range, range, range)))));
                     }
                 } else {
                     for (CuboidArea area : res.getAreaMap().values()) {
                         for (ChunkRef chunk : area.getChunks()) {
+
+                            // Checking if chunk is near a player.
+                            // In case residence is extremely big it will check all chunks which can cause performance issues
+                            boolean near = false;
+                            for (Player player : res.getPlayersInResidence()) {
+                                int x = player.getLocation().getChunk().getX();
+                                int z = player.getLocation().getChunk().getZ();
+
+                                if (CMINumber.abs(x - chunk.getX()) > chunkRadius)
+                                    continue;
+
+                                if (CMINumber.abs(z - chunk.getZ()) > chunkRadius)
+                                    continue;
+                                near = true;
+                                break;
+                            }
+                            if (!near)
+                                continue;
                             entities.addAll(Arrays.asList(world.getChunkAt(chunk.getX(), chunk.getZ()).getEntities()));
                         }
                     }
