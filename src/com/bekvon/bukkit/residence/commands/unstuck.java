@@ -2,12 +2,8 @@ package com.bekvon.bukkit.residence.commands;
 
 import java.util.Arrays;
 
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import net.Zrips.CMILib.FileHandler.ConfigReader;
-import net.Zrips.CMILib.Version.Teleporters.CMITeleporter;
 
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
@@ -17,6 +13,8 @@ import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+
+import net.Zrips.CMILib.FileHandler.ConfigReader;
 
 public class unstuck implements cmd {
 
@@ -36,14 +34,14 @@ public class unstuck implements cmd {
             return true;
         }
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
+
         if (res == null) {
             plugin.msg(player, lm.Residence_NotIn);
-        } else {
-            plugin.msg(player, lm.General_Moved);
-            Location loc = res.getOutsideFreeLoc(player.getLocation(), player, true);
-            if (loc != null)
-                CMITeleporter.teleportAsync(player, loc);
+            return true;
         }
+
+        res.kickFromResidence(player);
+
         return true;
     }
 

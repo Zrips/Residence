@@ -127,6 +127,7 @@ import com.bekvon.bukkit.residence.text.help.InformationPager;
 import com.bekvon.bukkit.residence.utils.CrackShot;
 import com.bekvon.bukkit.residence.utils.FileCleanUp;
 import com.bekvon.bukkit.residence.utils.RandomTp;
+import com.bekvon.bukkit.residence.utils.SafeLocationCache;
 import com.bekvon.bukkit.residence.utils.Sorting;
 import com.bekvon.bukkit.residence.utils.TabComplete;
 import com.bekvon.bukkit.residence.vaultinterface.ResidenceVaultAdapter;
@@ -241,7 +242,7 @@ public class Residence extends JavaPlugin {
 
     public HashMap<String, Long> rtMap = new HashMap<String, Long>();
     public List<String> teleportDelayMap = new ArrayList<String>();
-    public HashMap<String, ClaimedResidence> teleportMap = new HashMap<String, ClaimedResidence>();
+    public HashMap<UUID, SafeLocationCache> teleportMap = new HashMap<UUID, SafeLocationCache>();
 
     private Placeholder Placeholder;
     private boolean PlaceholderAPIEnabled = false;
@@ -252,7 +253,7 @@ public class Residence extends JavaPlugin {
         return spigotPlatform;
     }
 
-    public HashMap<String, ClaimedResidence> getTeleportMap() {
+    public HashMap<UUID, SafeLocationCache> getTeleportMap() {
         return teleportMap;
     }
 

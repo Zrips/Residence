@@ -239,9 +239,9 @@ public class ResidenceRaid {
             if (player == null)
                 continue;
             Residence.getInstance().msg(player, lm.Raid_Ended, res.getName());
-            Location outside = res.getOutsideFreeLoc(player.getLocation(), player, true);
-            if (outside != null)
-                CMITeleporter.teleportAsync(player, outside);
+
+            res.kickFromResidence(player);
+
         }
 
         for (Entry<UUID, RaidAttacker> one : getAttackers().entrySet()) {

@@ -44,11 +44,12 @@ public class tp implements cmd {
             return true;
         }
 
-        if (plugin.getConfigManager().getTeleportBlockedWorlds().contains(res.getPermissions().getWorldName().toLowerCase())) {            
+        if (plugin.getConfigManager().getTeleportBlockedWorlds().contains(res.getPermissions().getWorldName().toLowerCase())) {
             plugin.msg(player, lm.Residence_TeleportBlockedWorlds);
             return true;
         }
 
+        plugin.getTeleportMap().remove(player.getUniqueId());
         res.tpToResidence(player, player, resadmin);
         return true;
     }

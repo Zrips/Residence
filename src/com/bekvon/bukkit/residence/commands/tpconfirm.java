@@ -23,9 +23,9 @@ public class tpconfirm implements cmd {
 	if (args.length != 0) {
 	    return false;
 	}
-	if (plugin.getTeleportMap().containsKey(player.getName())) {
-	    plugin.getTeleportMap().get(player.getName()).tpToResidence(player, player, resadmin);
-	    plugin.getTeleportMap().remove(player.getName());
+	if (plugin.getTeleportMap().containsKey(player.getUniqueId())) {
+	    plugin.getTeleportMap().get(player.getUniqueId()).getResidence().tpToResidence(player, player, resadmin);
+	    plugin.getTeleportMap().remove(player.getUniqueId());
 	} else
 	    plugin.msg(player, lm.General_NoTeleportConfirm);
 	return true;

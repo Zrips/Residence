@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -118,32 +117,33 @@ public class ResidenceBlockListener implements Listener {
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
 
         Flags result = FlagPermissions.getMaterialUseFlagList().get(block.getType());
-        if (result != null) {
-            main: if (!perms.playerHas(player, result, hasuse)) {
+        if (result == null)
+            return;
 
-                if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
-                    break main;
-                }
+        if (perms.playerHas(player, result, hasuse))
+            return;
 
-                switch (result) {
-                case button:
-                    if (ResPerm.bypass_button.hasPermission(player, 10000L))
-                        break main;
-                    break;
-                }
-
-                e.setCancelled(true);
-                plugin.msg(player, lm.Flag_Deny, result);
-                CMIScheduler.runAtLocation(block.getLocation(), () -> {
-                    Location loc = block.getLocation().clone();
-                    loc.add(e.getHitBlockFace().getDirection());
-                    CMITeleporter.teleportAsync(e.getEntity(), loc);
-                    e.getEntity().setVelocity(e.getEntity().getVelocity().multiply(-1));
-                });
-
-                return;
-            }
+        if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
+            return;
         }
+
+        switch (result) {
+        case button:
+            if (ResPerm.bypass_button.hasPermission(player, 10000L))
+                return;
+            break;
+        }
+
+        e.setCancelled(true);
+        plugin.msg(player, lm.Flag_Deny, result);
+        CMIScheduler.runAtLocation(block.getLocation(), () -> {
+            Location loc = block.getLocation().clone();
+            loc.add(e.getHitBlockFace().getDirection());
+            CMITeleporter.teleportAsync(e.getEntity(), loc);
+            e.getEntity().setVelocity(e.getEntity().getVelocity().multiply(-1));
+        });
+
+        return;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -956,6 +956,7 @@ public class ResidenceBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLandDryPhysics(BlockPhysicsEvent event) {
+
         // Moved to separate class
         if (Version.isCurrentEqualOrHigher(Version.v1_13_R1))
             return;

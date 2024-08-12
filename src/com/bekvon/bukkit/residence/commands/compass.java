@@ -1,12 +1,15 @@
 package com.bekvon.bukkit.residence.commands;
 
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
+
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
@@ -43,11 +46,14 @@ public class compass implements cmd {
         CuboidArea area = res.getMainArea();
         if (area == null)
             return false;
-        Location loc = res.getTeleportLocation(player, false);
-        if (loc == null)
+        CompletableFuture<Location> future = res.getTeleportLocationASYNC(player, false);
+        if (future == null)
             return false;
-        player.setCompassTarget(loc);
-        plugin.msg(player, lm.General_CompassTargetSet, args[0]);
+
+        future.thenAccept(loc1 -> {
+            CMIScheduler.runAtEntity(player, () -> player.setCompassTarget(loc1));
+            plugin.msg(player, lm.General_CompassTargetSet, args[0]);
+        });
 
         return true;
     }

@@ -3,7 +3,6 @@ package com.bekvon.bukkit.residence.commands;
 import java.util.Arrays;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -19,8 +18,6 @@ import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
-import net.Zrips.CMILib.Locale.LC;
-import net.Zrips.CMILib.Version.Teleporters.CMITeleporter;
 
 public class kick implements cmd {
 
@@ -72,25 +69,7 @@ public class kick implements cmd {
             plugin.msg(sender, lm.Residence_CantKick);
             return true;
         }
-
-        Location loc = plugin.getConfigManager().getKickLocation();
-        targetplayer.closeInventory();
-
-        if (loc == null)
-            loc = res.getOutsideFreeLoc(targetplayer.getLocation(), targetplayer, true);
-
-        if (loc == null) {
-            LC.info_IncorrectLocation.getLocale();
-            return true;
-        }
-
-        CMITeleporter.teleportAsync(targetplayer, loc).thenApply(success -> {
-            if (success)
-                plugin.msg(targetplayer, lm.Residence_Kicked);
-            else
-                plugin.msg(targetplayer, lm.General_TeleportCanceled);
-            return null;
-        });
+        res.kickFromResidence(targetplayer);
 
         return true;
     }

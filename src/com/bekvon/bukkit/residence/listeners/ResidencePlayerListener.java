@@ -93,7 +93,6 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -486,6 +485,7 @@ public class ResidencePlayerListener implements Listener {
         checkSpecialFlags(player, null, plugin.getResidenceManager().getByLoc(player.getLocation()));
 
         plugin.getPlayerManager().getResidencePlayer(player).onQuit();
+        plugin.getTeleportMap().remove(player.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -974,7 +974,7 @@ public class ResidencePlayerListener implements Listener {
         }
         res = plugin.getResidenceManager().getByLoc(loc);
         if (res != null && res.getPermissions().playerHas(player, Flags.move, FlagCombo.OnlyFalse)) {
-            loc = res.getOutsideFreeLoc(loc, player, true);
+            res.kickFromResidence(player);
         }
 
         plugin.msg(player, lm.General_NoSpawn);
@@ -1700,7 +1700,7 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         Entity ent = event.getRightClicked();
- 
+
         if (ent.getType() != EntityType.MINECART && !(ent instanceof Boat))
             return;
 
@@ -2339,7 +2339,7 @@ public class ResidencePlayerListener implements Listener {
         if (player == null || !player.isOnline() || loc == null)
             return false;
 
-        if (Version.isFolia()) {
+        if (Version.isAsyncProcessing()) {
             CMITeleporter.teleportAsync(player, loc);
             return true;
         }
@@ -2374,7 +2374,8 @@ public class ResidencePlayerListener implements Listener {
                 res = plugin.getResidenceManager().getByLoc(lastLoc);
                 if (res != null) {
                     if (Flags.tp.isGlobalyEnabled() && res.getPermissions().playerHas(player, Flags.tp, FlagCombo.OnlyFalse) && !ResPerm.admin_tp.hasPermission(player, 10000L)) {
-                        teleported = teleport(player, res.getOutsideFreeLoc(lastLoc, player, true));
+                        res.kickFromResidence(player);
+                        teleported = true;
                     } else {
                         player.setFlying(false);
                         player.setAllowFlight(false);
@@ -2383,7 +2384,8 @@ public class ResidencePlayerListener implements Listener {
                     teleported = teleport(player, lastLoc);
                 }
             } else {
-                teleported = teleport(player, res.getOutsideFreeLoc(loc, player, true));
+                res.kickFromResidence(player);
+                teleported = true;
             }
             if (teleported) {
                 player.setFlying(false);
@@ -2466,9 +2468,9 @@ public class ResidencePlayerListener implements Listener {
                     boolean teleported = false;
 
                     if (preRes != null && Flags.tp.isGlobalyEnabled() && preRes.getPermissions().playerHas(player, Flags.tp, FlagCombo.OnlyFalse) && !ResPerm.admin_tp.hasPermission(player, 10000L)) {
-                        Location newLoc = res.getOutsideFreeLoc(loc, player, true);
+                        res.kickFromResidence(player);
                         player.closeInventory();
-                        teleported = teleport(player, newLoc);
+                        teleported = true;
                     }
 
                     if (!teleported) {
@@ -2476,16 +2478,16 @@ public class ResidencePlayerListener implements Listener {
                             StuckInfo info = updateStuckTeleport(player, loc);
                             player.closeInventory();
                             if (info != null && info.getTimesTeleported() > 5) {
-                                Location newLoc = res.getOutsideFreeLoc(loc, player, true);
-                                teleported = teleport(player, newLoc);
+                                res.kickFromResidence(player);
+                                teleported = true;
                             } else {
                                 teleported = teleport(player, lastLoc);
                             }
                         }
                         if (!teleported) {
-                            Location newLoc = res.getOutsideFreeLoc(loc, player, true);
+                            res.kickFromResidence(player);
                             player.closeInventory();
-                            teleported = teleport(player, newLoc);
+                            teleported = true;
                         }
                     }
 
@@ -2519,9 +2521,9 @@ public class ResidencePlayerListener implements Listener {
                     ClaimedResidence preRes = plugin.getResidenceManager().getByLoc(lastLoc);
                     boolean teleported = false;
                     if (preRes != null && preRes.getPermissions().playerHas(player, Flags.tp, FlagCombo.OnlyFalse) && !ResPerm.admin_tp.hasPermission(player, 10000L)) {
-                        Location newLoc = res.getOutsideFreeLoc(loc, player, true);
+                        res.kickFromResidence(player);
                         player.closeInventory();
-                        teleported = teleport(player, newLoc);
+                        teleported = true;
                     }
 
                     if (!teleported) {
@@ -2529,17 +2531,17 @@ public class ResidencePlayerListener implements Listener {
                             StuckInfo info = updateStuckTeleport(player, loc);
                             player.closeInventory();
                             if (info != null && info.getTimesTeleported() > 5) {
-                                Location newLoc = res.getOutsideFreeLoc(loc, player, true);
-                                teleported = teleport(player, newLoc);
+                                res.kickFromResidence(player);
+                                teleported = true;
                             } else {
                                 teleported = teleport(player, lastLoc);
                             }
                         }
 
                         if (!teleported) {
-                            Location newLoc = res.getOutsideFreeLoc(loc, player, true);
+                            res.kickFromResidence(player);
                             player.closeInventory();
-                            teleported = teleport(player, newLoc);
+                            teleported = true;
                         }
                     }
 
@@ -2581,7 +2583,7 @@ public class ResidencePlayerListener implements Listener {
                     Long last = lastUpdate.get(player.getUniqueId());
                     // Fail safe in case we are triggering teleportation event check with this teleportation, we should teleport player outside residence instead of its repeating teleportation to avoid stack overflow 
                     if (last != null && System.currentTimeMillis() - last < 45L) {
-                        teleport(player, res.getOutsideFreeLoc(loc, player, true));
+                        res.kickFromResidence(player);
                     } else {
                         this.lastUpdate.put(player.getUniqueId(), System.currentTimeMillis());
 
@@ -2598,7 +2600,7 @@ public class ResidencePlayerListener implements Listener {
                         teleport(player, lastLoc);
                     }
                 } else {
-                    teleport(player, res.getOutsideFreeLoc(loc, player, true));
+                    res.kickFromResidence(player);
                 }
                 return false;
             } else {
