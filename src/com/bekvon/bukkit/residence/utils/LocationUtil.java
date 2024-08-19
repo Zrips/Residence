@@ -288,12 +288,6 @@ public class LocationUtil {
         if (chunk == null)
             return null;
 
-        try {
-            if (!Version.isFolia())
-                insideLoc.getChunk().setForceLoaded(true);
-        } catch (Throwable e) {
-        }
-
         while (it < maxIt) {
             it++;
 

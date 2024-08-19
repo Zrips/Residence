@@ -2084,6 +2084,8 @@ public class ClaimedResidence {
                     LC.info_IncorrectLocation.getLocale();
                     return;
                 }
+                
+                loc1.add(0, 0.4, 0); 
 
                 CMITeleporter.teleportAsync(player, loc1).thenApply(success -> {
                     if (success)
@@ -2105,7 +2107,7 @@ public class ClaimedResidence {
         });
         return true;
     }
-    
+
 //    public Town getTown() {
 //	return town;
 //    }
