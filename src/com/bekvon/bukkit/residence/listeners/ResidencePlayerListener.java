@@ -682,9 +682,9 @@ public class ResidencePlayerListener implements Listener {
 
         FlagPermissions globalPerm = plugin.getWorldFlags().getPerms(player);
         boolean globalLimited = globalPerm.playerHas(player, Flags.command, FlagCombo.OnlyFalse);
-        boolean areaLimited = perms.playerHas(player, Flags.command, FlagCombo.OnlyFalse);
+        boolean areaAllowed = perms.playerHas(player, Flags.command, FlagCombo.OnlyTrue);
 
-        if (!globalLimited && !areaLimited)
+        if (!globalLimited && !areaAllowed)
             return;
 
         if (plugin.getPermissionManager().isResidenceAdmin(player))
@@ -710,7 +710,7 @@ public class ResidencePlayerListener implements Listener {
         List<String> w = new ArrayList<String>(res.getCmdWhiteList());
         List<String> b = new ArrayList<String>(res.getCmdBlackList());
 
-        if (!areaLimited) {
+        if (!areaAllowed) {
             w.clear();
             b.clear();
         }

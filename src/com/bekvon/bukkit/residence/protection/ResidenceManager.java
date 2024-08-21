@@ -548,12 +548,12 @@ public class ResidenceManager implements ResidenceInterface {
             plugin.msg(player, lm.Invalid_Residence);
             return;
         }
-        removeResidence(player, res, resadmin);
+        removeResidence(ResidencePlayer.get(player), res, resadmin);
     }
 
     @Deprecated
     public void removeResidence(Player player, ClaimedResidence res, boolean resadmin) {
-        removeResidence(plugin.getPlayerManager().getResidencePlayer(player), res, resadmin);
+        removeResidence(ResidencePlayer.get(player), res, resadmin);
     }
 
     public void removeResidence(ResidencePlayer rPlayer, ClaimedResidence res, boolean resadmin) {
