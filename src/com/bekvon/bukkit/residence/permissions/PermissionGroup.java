@@ -520,7 +520,7 @@ public class PermissionGroup {
 
     public void printLimits(CommandSender player, OfflinePlayer target, boolean resadmin) {
 
-        ResidencePlayer rPlayer = Residence.getInstance().getPlayerManager().getResidencePlayer(target.getName());
+        ResidencePlayer rPlayer = Residence.getInstance().getPlayerManager().getResidencePlayer(target);
         rPlayer.getGroup(true);
         PermissionGroup group = rPlayer.getGroup();
 

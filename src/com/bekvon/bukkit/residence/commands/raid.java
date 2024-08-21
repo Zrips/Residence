@@ -123,9 +123,7 @@ public class raid implements cmd {
 	    if (args.length < 2)
 		return false;
 
-	    String playername = args[1];
-
-	    ResidencePlayer rplayer = plugin.getPlayerManager().getResidencePlayer(playername);
+	    ResidencePlayer rplayer = plugin.getPlayerManager().getResidencePlayer(args[1]);
 
 	    if (rplayer == null) {
 		plugin.msg(sender, lm.Invalid_Player);

@@ -62,6 +62,17 @@ public class PlayerManager implements ResidencePlayerInterface {
         return resPlayer;
     }
 
+    public ResidencePlayer playerJoin(OfflinePlayer player) {
+        ResidencePlayer resPlayer = playersUuid.get(player.getUniqueId().toString());
+        if (resPlayer == null) {
+            resPlayer = new ResidencePlayer(player);
+            addPlayer(resPlayer);
+        } else {
+            resPlayer.updatePlayer(player);
+        }
+        return resPlayer;
+    }
+
     public ResidencePlayer playerJoin(UUID uuid) {
         ResidencePlayer resPlayer = playersUuid.get(uuid.toString());
         if (resPlayer == null) {
@@ -234,7 +245,7 @@ public class PlayerManager implements ResidencePlayerInterface {
 
     @Override
     public PermissionGroup getGroup(String player) {
-        ResidencePlayer resPlayer = getResidencePlayer(player);
+        ResidencePlayer resPlayer = getResidencePlayerIfExist(player);
         if (resPlayer != null) {
             return resPlayer.getGroup();
         }
@@ -243,7 +254,7 @@ public class PlayerManager implements ResidencePlayerInterface {
 
     @Override
     public int getMaxResidences(String player) {
-        ResidencePlayer resPlayer = getResidencePlayer(player);
+        ResidencePlayer resPlayer = getResidencePlayerIfExist(player);
         if (resPlayer != null) {
             return resPlayer.getMaxRes();
         }
@@ -252,7 +263,7 @@ public class PlayerManager implements ResidencePlayerInterface {
 
     @Override
     public int getMaxSubzones(String player) {
-        ResidencePlayer resPlayer = getResidencePlayer(player);
+        ResidencePlayer resPlayer = getResidencePlayerIfExist(player);
         if (resPlayer != null) {
             return resPlayer.getMaxSubzones();
         }
@@ -261,7 +272,7 @@ public class PlayerManager implements ResidencePlayerInterface {
 
     @Override
     public int getMaxSubzoneDepth(String player) {
-        ResidencePlayer resPlayer = getResidencePlayer(player);
+        ResidencePlayer resPlayer = getResidencePlayerIfExist(player);
         if (resPlayer != null) {
             return resPlayer.getMaxSubzoneDepth();
         }
@@ -270,28 +281,49 @@ public class PlayerManager implements ResidencePlayerInterface {
 
     @Override
     public int getMaxRents(String player) {
-        ResidencePlayer resPlayer = getResidencePlayer(player);
+        ResidencePlayer resPlayer = getResidencePlayerIfExist(player);
         if (resPlayer != null) {
             return resPlayer.getMaxRents();
         }
         return -1;
     }
 
-//    public ResidencePlayer getResidencePlayer(Player player) {
-//	return getResidencePlayer(player, true);
-//    }
-
-    public ResidencePlayer getResidencePlayer(Player player) {
-        ResidencePlayer resPlayer = null;
+    public ResidencePlayer getResidencePlayer(OfflinePlayer player) {
         if (player == null)
             return null;
-        resPlayer = playersUuid.get(player.getUniqueId().toString());
-        if (resPlayer != null) {
-            resPlayer.updatePlayer(player);
-        } else {
-            resPlayer = playerJoin(player);
-        }
-        return resPlayer;
+
+        ResidencePlayer resPlayer = playersUuid.get(player.getUniqueId().toString());
+
+        if (resPlayer != null)
+            return resPlayer.updatePlayer(player);
+
+        return playerJoin(player);
+    }
+
+    public ResidencePlayer getResidencePlayer(Player player) {
+        if (player == null)
+            return null;
+
+        ResidencePlayer resPlayer = playersUuid.get(player.getUniqueId().toString());
+
+        if (resPlayer != null)
+            return resPlayer.updatePlayer(player);
+
+        return playerJoin(player);
+    }
+
+    public ResidencePlayer getResidencePlayerIfExist(String player) {
+        if (player == null)
+            return null;
+
+        if (player.equalsIgnoreCase("CONSOLE"))
+            return null;
+
+        Player p = Bukkit.getPlayer(player);
+        if (p != null && p.getName().equalsIgnoreCase(player))
+            return getResidencePlayer(p);
+
+        return players.get(player.toLowerCase());
     }
 
     @Override
@@ -303,7 +335,7 @@ public class PlayerManager implements ResidencePlayerInterface {
             return null;
 
         Player p = Bukkit.getPlayer(player);
-        if (p != null)
+        if (p != null && p.getName().equalsIgnoreCase(player))
             return getResidencePlayer(p);
         ResidencePlayer rplayer = players.get(player.toLowerCase());
         if (rplayer != null) {
@@ -315,7 +347,7 @@ public class PlayerManager implements ResidencePlayerInterface {
     public ResidencePlayer getResidencePlayer(UUID uuid) {
         if (uuid == null)
             return null;
-        
+
         Player p = Bukkit.getPlayer(uuid);
         if (p != null)
             return getResidencePlayer(p);
@@ -405,13 +437,6 @@ public class PlayerManager implements ResidencePlayerInterface {
         removeResFromPlayer(residence.getOwnerUUID(), residence);
     }
 
-    public void removeResFromPlayer(UUID uuid, ClaimedResidence residence) {
-        ResidencePlayer resPlayer = playersUuid.get(uuid.toString());
-        if (resPlayer != null) {
-            resPlayer.removeResidence(residence);
-        }
-    }
-
     public void removeResFromPlayer(OfflinePlayer player, ClaimedResidence residence) {
         removeResFromPlayer(player.getUniqueId(), residence);
     }
@@ -420,6 +445,14 @@ public class PlayerManager implements ResidencePlayerInterface {
         removeResFromPlayer(player.getUniqueId(), residence);
     }
 
+    public void removeResFromPlayer(UUID uuid, ClaimedResidence residence) {
+        ResidencePlayer resPlayer = playersUuid.get(uuid.toString());
+        if (resPlayer != null)
+            resPlayer.removeResidence(residence);
+    }
+
+    @Deprecated
+    /** @deprecated use {@link #removeResFromPlayer(UUID, ClaimedResidence)} */
     public void removeResFromPlayer(String player, ClaimedResidence residence) {
         ResidencePlayer resPlayer = this.getResidencePlayer(player);
         if (resPlayer != null) {

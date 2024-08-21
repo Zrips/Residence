@@ -1833,7 +1833,7 @@ public class Residence extends JavaPlugin {
         if (offPlayer != null)
             return offPlayer;
 
-        Player player = Bukkit.getPlayer(Name);
+        Player player = Bukkit.getPlayerExact(Name);
         if (player != null)
             return player;
 

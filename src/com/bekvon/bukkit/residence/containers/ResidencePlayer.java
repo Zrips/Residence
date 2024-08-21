@@ -67,7 +67,7 @@ public class ResidencePlayer {
     }
 
     public boolean isOnline() {
-        return this.player != null && this.player.isOnline() || Bukkit.getPlayer(this.uuid) != null;
+        return Bukkit.getPlayer(this.uuid) != null;
     }
 
     public ResidencePlayer(String userName, UUID uuid) {
@@ -289,6 +289,19 @@ public class ResidencePlayer {
         return this;
     }
 
+    public ResidencePlayer updatePlayer(OfflinePlayer player) {
+        if (updated)
+            return this;
+        if (player.isOnline()) {
+            updated = true;
+            this.player = Bukkit.getPlayer(player.getUniqueId());
+        }
+        this.uuid = player.getUniqueId();
+        this.userName = player.getName();
+        this.ofPlayer = player;
+        return this;
+    }
+
     public void onQuit() {
         this.ofPlayer = null;
         this.player = null;
@@ -309,7 +322,7 @@ public class ResidencePlayer {
         }
 
         if (this.userName != null) {
-            player = Bukkit.getPlayer(this.userName);
+            player = Bukkit.getPlayerExact(this.userName);
         }
         if (player != null) {
             this.userName = player.getName();
