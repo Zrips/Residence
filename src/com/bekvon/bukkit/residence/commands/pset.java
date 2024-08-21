@@ -6,117 +6,147 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+import net.Zrips.CMILib.Logs.CMIDebug;
+
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 
 public class pset implements cmd {
+
+    enum Action {
+        removeall, pset;
+
+        public static Action get(String name) {
+            for (Action one : Action.values()) {
+                if (one.name().equalsIgnoreCase(name))
+                    return one;
+            }
+            return null;
+        }
+    }
 
     @Override
     @CommandAnnotation(simple = true, priority = 800)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
 
-	if (!(sender instanceof Player) && args.length != 4 && args.length == 3 && !args[2].equalsIgnoreCase("removeall"))
-	    return false;
+        Action action = null;
+        FlagState state = FlagState.INVALID;
+        ResidencePlayer rplayer = null;
+        ClaimedResidence residence = null;
+        Flags flag = null;
 
-	if (args.length == 2 && args[1].equalsIgnoreCase("removeall")) {
-	    Player player = (Player) sender;
-	    ClaimedResidence area = plugin.getResidenceManager().getByLoc(player.getLocation());
-	    if (area != null) {
-		area.getPermissions().removeAllPlayerFlags(sender, args[0], resadmin);
-	    } else {
-		plugin.msg(sender, lm.Invalid_Residence);
-	    }
-	    return true;
-	} else if (args.length == 3 && args[2].equalsIgnoreCase("removeall")) {
-	    ClaimedResidence area = plugin.getResidenceManager().getByName(args[0]);
-	    if (area != null) {
-		area.getPermissions().removeAllPlayerFlags(sender, args[1], resadmin);
-	    } else {
-		plugin.msg(sender, lm.Invalid_Residence);
-	    }
-	    return true;
-	} else if (args.length == 3) {
-	    Player player = (Player) sender;
-	    ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
+        for (String one : args) {
 
-	    if (!plugin.isPlayerExist(sender, args[0], true))
-		return false;
+            if (action == null) {
+                action = Action.get(one);
+                if (action != null)
+                    continue;
+            }
 
-	    if (res == null) {
-		plugin.msg(sender, lm.Invalid_Residence);
-		return true;
-	    }
+            if (state.equals(FlagState.INVALID)) {
+                state = FlagPermissions.stringToFlagState(one);
+                if (!state.equals(FlagState.INVALID))
+                    continue;
+            }
 
-	    if (!res.isOwner(player) && !resadmin && !res.getPermissions().playerHas(player, Flags.admin, false)) {
-		plugin.msg(sender, lm.General_NoPermission);
-		return true;
-	    }
-	    res.getPermissions().setPlayerFlag(sender, args[0], args[1], args[2], resadmin, true);
+            if (residence == null) {
+                residence = plugin.getResidenceManager().getByName(one);
+                if (residence != null)
+                    continue;
+            }
 
-	    return true;
-	} else if (args.length == 4) {
-	    ClaimedResidence res = plugin.getResidenceManager().getByName(args[0]);
-	    if (!plugin.isPlayerExist(sender, args[1], true))
-		return false;
+            if (rplayer == null) {
+                rplayer = Residence.getInstance().getPlayerManager().getResidencePlayerIfExist(one);
+                if (rplayer != null) {
+                    continue;
+                }
+            }
 
-	    if (res == null) {
-		plugin.msg(sender, lm.Invalid_Residence);
-		return true;
-	    }
+            if (flag == null) {
+                flag = Flags.getFlag(one);
+                if (flag != null)
+                    continue;
+            }
+        }
 
-	    if (!res.isOwner(sender) && !resadmin && !res.getPermissions().playerHas(sender, Flags.admin, false)) {
-		plugin.msg(sender, lm.General_NoPermission);
-		return true;
-	    }
+        if (rplayer == null && residence != null) {
+            rplayer = Residence.getInstance().getPlayerManager().getResidencePlayerIfExist(residence.getName());
+            residence = null;
+        }
 
-	    res.getPermissions().setPlayerFlag(sender, args[1], args[2], args[3], resadmin, true);
-	    return true;
-	} else if ((args.length == 1 || args.length == 2) && plugin.getConfigManager().useFlagGUI()) {
-	    final Player player = (Player) sender;
-	    player.closeInventory();
+        if (rplayer == null && sender instanceof Player) {
+            rplayer = Residence.getInstance().getPlayerManager().getResidencePlayer((Player) sender);
+        }
 
-	    ClaimedResidence res = null;
-	    String targetPlayer = null;
-	    if (args.length == 1) {
-		res = plugin.getResidenceManager().getByLoc(player.getLocation());
-		targetPlayer = args[0];
-	    } else {
-		res = plugin.getResidenceManager().getByName(args[0]);
-		targetPlayer = args[1];
-	    }
+        if (residence == null && sender instanceof Player) {
+            residence = plugin.getResidenceManager().getByLoc(((Player) sender).getLocation());
+        }
 
-	    if (res == null) {
-		plugin.msg(sender, lm.Invalid_Residence);
-		return true;
-	    }
+        CMIDebug.d(residence == null ? null : residence.getName(), rplayer == null ? null : rplayer.getName(), action, flag, state);
 
-	    if (!plugin.isPlayerExist(player, targetPlayer, true)) {
-		plugin.msg(sender, lm.Invalid_Player);
-		return true;
-	    }
-	    if (!res.isOwner(player) && !resadmin && !res.getPermissions().playerHas(player, Flags.admin, false)) {
-		plugin.msg(sender, lm.General_NoPermission);
-		return true;
-	    }
+        if (residence == null) {
+            plugin.msg(sender, lm.Invalid_Residence);
+            return null;
+        }
 
-	    plugin.getFlagUtilManager().openPsetFlagGui(player, targetPlayer, res, resadmin, 1);
+        if (rplayer == null) {
+            plugin.msg(sender, lm.Invalid_Player);
+            return true;
+        }
 
-	    return true;
-	}
-	return false;
+        if (action == null)
+            action = Action.pset;
+
+        switch (action) {
+        case pset:
+
+            if (!state.equals(FlagState.INVALID) && flag != null) {
+                if (!residence.isOwner(sender) && !resadmin && !residence.getPermissions().playerHas(sender, Flags.admin, false)) {
+                    plugin.msg(sender, lm.General_NoPermission);
+                    return true;
+                }
+                residence.getPermissions().setPlayerFlag(sender, rplayer.getName(), flag.name(), state.toString(), resadmin, true);
+                return true;
+            }
+
+            if (!(sender instanceof Player))
+                return false;
+
+            final Player player = (Player) sender;
+            player.closeInventory();
+
+            if (!residence.isOwner(sender) && !resadmin && !residence.getPermissions().playerHas(sender, Flags.admin, false)) {
+                plugin.msg(sender, lm.General_NoPermission);
+                return true;
+            }
+
+            plugin.getFlagUtilManager().openPsetFlagGui(player, rplayer.getName(), residence, resadmin, 1);
+
+            return true;
+        case removeall:
+            residence.getPermissions().removeAllPlayerFlags(sender, rplayer.getName(), resadmin);
+            break;
+        default:
+            break;
+        }
+
+        return false;
     }
 
     @Override
     public void getLocale() {
-	ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
-	c.get("Description", "Set flags on a specific player for a Residence.");
-	c.get("Info", Arrays.asList("&eUsage: &6/res pset <residence> [player] [flag] [true/false/remove]",
-	    "&eUsage: &6/res pset <residence> [player] removeall", "To see a list of flags, use /res flags ?"));
-	LocaleManager.addTabCompleteMain(this, "[residence]%%[playername]", "[playername]%%[flag]", "[flag]%%true%%false%%remove", "true%%false%%remove");
+        ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
+        c.get("Description", "Set flags on a specific player for a Residence.");
+        c.get("Info", Arrays.asList("&eUsage: &6/res pset <residence> [player] [flag] [true/false/remove]",
+            "&eUsage: &6/res pset <residence> [player] removeall", "To see a list of flags, use /res flags ?"));
+        LocaleManager.addTabCompleteMain(this, "[residence]%%[playername]", "[playername]%%[flag]", "[flag]%%true%%false%%remove", "true%%false%%remove");
     }
 }
