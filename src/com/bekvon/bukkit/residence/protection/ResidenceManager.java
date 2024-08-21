@@ -55,6 +55,7 @@ import com.bekvon.bukkit.residence.utils.GetTime;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.PageInfo;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -281,7 +282,11 @@ public class ResidenceManager implements ResidenceInterface {
 
         if (!newRes.addArea(player, newArea, "main", resadmin, false))
             return false;
-
+        
+        if (player != null && newArea.containsLoc(player.getLocation())) {
+            newRes.setTpLoc(player, resadmin);
+        }
+        
         if (Residence.getInstance().getConfigManager().isChargeOnCreation() && !newRes.isSubzone() && plugin.getConfigManager().enableEconomy() && !resadmin) {
             double chargeamount = newArea.getCost(group);
 
