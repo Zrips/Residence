@@ -15,6 +15,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -136,12 +137,9 @@ public class ResidenceBlockListener implements Listener {
 
         e.setCancelled(true);
         plugin.msg(player, lm.Flag_Deny, result);
-        CMIScheduler.runAtLocation(block.getLocation(), () -> {
-            Location loc = block.getLocation().clone();
-            loc.add(e.getHitBlockFace().getDirection());
-            CMITeleporter.teleportAsync(e.getEntity(), loc);
-            e.getEntity().setVelocity(e.getEntity().getVelocity().multiply(-1));
-        });
+
+        if (e.getEntity() instanceof Arrow)
+            e.getEntity().remove();
 
         return;
     }
