@@ -42,6 +42,7 @@ public class pset implements cmd {
         ResidencePlayer rplayer = null;
         ClaimedResidence residence = null;
         Flags flag = null;
+        String flagGroup = null;
 
         for (String one : args) {
 
@@ -75,6 +76,10 @@ public class pset implements cmd {
                 if (flag != null)
                     continue;
             }
+            if (flagGroup == null && FlagPermissions.flagGroupExists(one)) {
+                flagGroup = one;
+                continue;
+            }
         }
 
         if (rplayer == null && residence != null) {
@@ -89,8 +94,6 @@ public class pset implements cmd {
         if (residence == null && sender instanceof Player) {
             residence = plugin.getResidenceManager().getByLoc(((Player) sender).getLocation());
         }
-
-        CMIDebug.d(residence == null ? null : residence.getName(), rplayer == null ? null : rplayer.getName(), action, flag, state);
 
         if (residence == null) {
             plugin.msg(sender, lm.Invalid_Residence);
@@ -108,12 +111,12 @@ public class pset implements cmd {
         switch (action) {
         case pset:
 
-            if (!state.equals(FlagState.INVALID) && flag != null) {
+            if (!state.equals(FlagState.INVALID) && (flag != null || flagGroup != null)) {
                 if (!residence.isOwner(sender) && !resadmin && !residence.getPermissions().playerHas(sender, Flags.admin, false)) {
                     plugin.msg(sender, lm.General_NoPermission);
                     return true;
                 }
-                residence.getPermissions().setPlayerFlag(sender, rplayer.getName(), flag.name(), state.toString(), resadmin, true);
+                residence.getPermissions().setPlayerFlag(sender, rplayer.getName(), flag != null ? flag.name() : flagGroup, state.toString(), resadmin, true);
                 return true;
             }
 
@@ -133,7 +136,7 @@ public class pset implements cmd {
             return true;
         case removeall:
             residence.getPermissions().removeAllPlayerFlags(sender, rplayer.getName(), resadmin);
-            break;
+            return true;
         default:
             break;
         }
