@@ -24,7 +24,9 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -1582,25 +1584,30 @@ public class ResidencePlayerListener implements Listener {
         }
     }
 
-    private static boolean canRide(EntityType type) {
-        switch (type.name().toLowerCase()) {
-        case "horse":
-        case "donkey":
-        case "llama":
-        case "pig":
+    private static boolean canRide(Entity entity) {
+        switch (CMIEntityType.get(entity)) {
+        case HORSE:
+        case DONKEY:
+        case PIG:
+        case LLAMA:
+        case STRIDER:
+        case SKELETON_HORSE: 
             return true;
+        default:
+            return false;
         }
-        return false;
+
     }
 
-    private static boolean canHaveContainer(EntityType type) {
-        switch (type.name().toLowerCase()) {
-        case "horse":
-        case "donkey":
-        case "llama":
+    private static boolean canHaveContainer(Entity entity) {
+        switch (CMIEntityType.get(entity)) {
+        case HORSE:
+        case DONKEY:
+        case LLAMA:
             return true;
+        default:
+            return false;
         }
-        return false;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1617,7 +1624,7 @@ public class ResidencePlayerListener implements Listener {
 
         Entity ent = event.getRightClicked();
 
-        if (!canHaveContainer(ent.getType()))
+        if (!canHaveContainer(ent))
             return;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
@@ -1646,7 +1653,7 @@ public class ResidencePlayerListener implements Listener {
 
         Entity ent = event.getRightClicked();
 
-        if (!canRide(ent.getType()))
+        if (!canRide(ent))
             return;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
