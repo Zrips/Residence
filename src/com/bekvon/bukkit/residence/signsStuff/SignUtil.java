@@ -137,7 +137,7 @@ public class SignUtil {
     }
 
     public void CheckSign(final ClaimedResidence res, int time) {
-        CMIScheduler.runTaskLater(() -> CheckSign(res), time * 1L);
+        CMIScheduler.runTaskLater(plugin, () -> CheckSign(res), time * 1L);
     }
 
     public void CheckSign(ClaimedResidence res) {
@@ -191,7 +191,7 @@ public class SignUtil {
             return false;
         }
 
-        CMIScheduler.runAtLocation(nloc, () -> {
+        CMIScheduler.runAtLocation(plugin, nloc, () -> {
             Block block = nloc.getBlock();
 
             if (!CMIMaterial.isSign(block.getType())) {

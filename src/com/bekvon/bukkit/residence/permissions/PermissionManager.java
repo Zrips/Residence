@@ -66,7 +66,7 @@ public class PermissionManager {
     }
 
     public void startCacheClearScheduler() {
-        autoCacheClear = CMIScheduler.scheduleSyncRepeatingTask(cacheClear, cacheClearDelay * 20L, cacheClearDelay * 20L);
+        autoCacheClear = CMIScheduler.scheduleSyncRepeatingTask(plugin, cacheClear, cacheClearDelay * 20L, cacheClearDelay * 20L);
     }
 
     public void stopCacheClearScheduler() {

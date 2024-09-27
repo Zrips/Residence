@@ -52,7 +52,7 @@ public class FlagUtil {
                 CMIAsyncHead ahead = new CMIAsyncHead() {
                     @Override
                     public void afterAsyncUpdate(ItemStack item) {
-                        CMIScheduler.runTask(() -> flagData.addFlagButton(oneFlag.toLowerCase(), item));
+                        CMIScheduler.runTask(plugin, () -> flagData.addFlagButton(oneFlag.toLowerCase(), item));
                     }
                 };
 

@@ -43,7 +43,7 @@ public class ChatChannel {
     }
 
     public void chat(String sourcePlayer, String message) {
-        CMIScheduler.runTask(() -> {
+        CMIScheduler.runTask(Residence.getInstance(), () -> {
 	    Server serv = Residence.getInstance().getServ();
 	    ResidenceChatEvent cevent = new ResidenceChatEvent(Residence.getInstance().getResidenceManager().getByName(channelName), serv.getPlayer(sourcePlayer), this.ChatPrefix, message,
 		this.ChannelColor);

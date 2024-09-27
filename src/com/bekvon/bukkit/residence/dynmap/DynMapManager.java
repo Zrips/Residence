@@ -54,7 +54,7 @@ public class DynMapManager {
             scheduler.cancel();
         }
 
-        scheduler = CMIScheduler.runTaskLater(() -> handleResidenceAdd(res.getName(), res, deep), 10L);
+        scheduler = CMIScheduler.runTaskLater(plugin, () -> handleResidenceAdd(res.getName(), res, deep), 10L);
     }
 
     public void fireUpdateRemove(final ClaimedResidence res, final int deep) {

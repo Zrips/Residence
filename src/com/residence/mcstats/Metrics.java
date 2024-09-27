@@ -35,6 +35,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.bekvon.bukkit.residence.Residence;
+
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
 
@@ -224,7 +226,7 @@ public class Metrics {
             }
 
             // Begin hitting the server with glorious data
-            task = CMIScheduler.runTimerAsync(() -> {
+            task = CMIScheduler.runTimerAsync(Residence.getInstance(), () -> {
                 // This has to be synchronized or it can collide with the disable method.
                 synchronized (optOutLock) {
                     // Disable Task, if it is running and the server owner decided to opt-out

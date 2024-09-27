@@ -1314,7 +1314,7 @@ public class ClaimedResidence {
             return;
         }
 
-        CMIScheduler.runTask(() -> {
+        CMIScheduler.runTask(Residence.getInstance(), () -> {
             if (Residence.getInstance().getConfigManager().getTeleportDelay() > 0 && !isAdmin && !bypassDelay)
                 performDelaydTp(loc, targetPlayer, reqPlayer, true);
             else
@@ -1325,7 +1325,7 @@ public class ClaimedResidence {
     public void TpTimer(final Player player, final int t) {
         CMITitleMessage.send(player, Residence.getInstance().msg(lm.General_TeleportTitle),
             Residence.getInstance().msg(lm.General_TeleportTitleTime, t));
-        CMIScheduler.runTaskLater(() -> {
+        CMIScheduler.runTaskLater(Residence.getInstance(), () -> {
             if (!Residence.getInstance().getTeleportDelayMap().contains(player.getName()))
                 return;
             if (t > 1)
@@ -1340,7 +1340,7 @@ public class ClaimedResidence {
         if (tpevent.isCancelled())
             return;
 
-        CMIScheduler.runAtLocationLater(targloc, () -> {
+        CMIScheduler.runAtLocationLater(Residence.getInstance(), targloc, () -> {
             if (targloc == null || targetPlayer == null || !targetPlayer.isOnline())
                 return;
 
@@ -2084,8 +2084,8 @@ public class ClaimedResidence {
                     LC.info_IncorrectLocation.getLocale();
                     return;
                 }
-                
-                loc1.add(0, 0.4, 0); 
+
+                loc1.add(0, 0.4, 0);
 
                 CMITeleporter.teleportAsync(player, loc1).thenApply(success -> {
                     if (success)

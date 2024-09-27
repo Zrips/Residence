@@ -282,11 +282,11 @@ public class ResidenceManager implements ResidenceInterface {
 
         if (!newRes.addArea(player, newArea, "main", resadmin, false))
             return false;
-        
+
         if (player != null && newArea.containsLoc(player.getLocation())) {
             newRes.setTpLoc(player, resadmin);
         }
-        
+
         if (Residence.getInstance().getConfigManager().isChargeOnCreation() && !newRes.isSubzone() && plugin.getConfigManager().enableEconomy() && !resadmin) {
             double chargeamount = newArea.getCost(group);
 
@@ -657,7 +657,7 @@ public class ResidenceManager implements ResidenceInterface {
             return;
 
         CuboidArea[] arr = res.getAreaArray();
-        CMIScheduler.runTaskAsynchronously(() -> {
+        CMIScheduler.runTaskAsynchronously(plugin, () -> {
             ChunkSnapshot chunkSnapshot = null;
             int chunkX = 0;
             int chunkZ = 0;
@@ -703,11 +703,9 @@ public class ResidenceManager implements ResidenceInterface {
                     }
                 }
             }
-            CMIScheduler.runTask(() -> {
-                for (Location one : locations) {
-                    CMIScheduler.runAtLocation(one, () -> one.getBlock().setType(Material.AIR));
-                }
-            });
+            for (Location one : locations) {
+                CMIScheduler.runAtLocation(one, () -> one.getBlock().setType(Material.AIR));
+            }
         });
     }
 

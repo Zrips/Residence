@@ -146,7 +146,7 @@ public class ResidencePlayerListener implements Listener {
         }
         this.plugin = plugin;
 
-        CMIScheduler.scheduleSyncRepeatingTask(locationChangeCheck, 20L, 15 * 20L);
+        CMIScheduler.scheduleSyncRepeatingTask(plugin, locationChangeCheck, 20L, 15 * 20L);
     }
 
     public void reload() {
@@ -355,7 +355,7 @@ public class ResidencePlayerListener implements Listener {
         if (!plugin.getConfigManager().isRentInformOnEnding())
             return;
         final Player player = event.getPlayer();
-        CMIScheduler.runTaskLater(() -> {
+        CMIScheduler.runTaskLater(plugin, () -> {
             if (!player.isOnline())
                 return;
             List<String> list = plugin.getRentManager().getRentedLandsList(player.getName());
@@ -840,7 +840,7 @@ public class ResidencePlayerListener implements Listener {
         plugin.getSignUtil().getSigns().addSign(signInfo);
         plugin.getSignUtil().saveSigns();
 
-        CMIScheduler.runTaskLater(() -> plugin.getSignUtil().CheckSign(residence), 5L);
+        CMIScheduler.runTaskLater(plugin, () -> plugin.getSignUtil().CheckSign(residence), 5L);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -1590,6 +1590,7 @@ public class ResidencePlayerListener implements Listener {
         case DONKEY:
         case PIG:
         case LLAMA:
+        case TRADER_LLAMA:
         case STRIDER:
         case SKELETON_HORSE: 
             return true;
@@ -2049,7 +2050,7 @@ public class ResidencePlayerListener implements Listener {
         }
 
         if (res.getPermissions().has(Flags.respawn, false) && Version.isSpigot())
-            CMIScheduler.runTaskLater(() -> {
+            CMIScheduler.runTaskLater(plugin, () -> {
                 try {
                     event.getEntity().spigot().respawn();
                 } catch (Throwable e) {
@@ -2108,7 +2109,7 @@ public class ResidencePlayerListener implements Listener {
             player.setAllowFlight(false);
         } else {
             player.setAllowFlight(true);
-            CMIScheduler.runAtEntityLater(player, () -> {
+            CMIScheduler.runAtEntityLater(plugin, player, () -> {
                 ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
                 if (res != null && res.getPermissions().playerHas(player, Flags.fly, FlagCombo.OnlyTrue) && player.isOnline()) {
                     player.setAllowFlight(true);
@@ -2441,7 +2442,7 @@ public class ResidencePlayerListener implements Listener {
         }
 
         if (!plugin.getAutoSelectionManager().getList().isEmpty()) {
-            CMIScheduler.runTaskAsynchronously(() -> plugin.getAutoSelectionManager().UpdateSelection(player));
+            CMIScheduler.runTaskAsynchronously(plugin, () -> plugin.getAutoSelectionManager().UpdateSelection(player));
         }
 
         if (res == null) {

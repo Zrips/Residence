@@ -51,7 +51,7 @@ public class ResidencePlayerListener1_9 implements Listener {
         plugin.msg(player, lm.Flag_Deny, Flags.elytra);
 
         event.setCancelled(true);
-        CMIScheduler.runAtEntityLater(player, () -> player.setGliding(false), 2L);
+        CMIScheduler.runAtEntityLater(plugin, player, () -> player.setGliding(false), 2L);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -23,7 +23,7 @@ public class SlimefunManager {
     private static CMITask task = null;
 
     public static void register(Residence residence) {
-        task = CMIScheduler.scheduleSyncRepeatingTask(() -> {
+        task = CMIScheduler.scheduleSyncRepeatingTask(Residence.getInstance(), () -> {
             ++times;
             if (times >= TRIES) {
                 residence.consoleMessage("&cFailed to initialize SlimeFun support");

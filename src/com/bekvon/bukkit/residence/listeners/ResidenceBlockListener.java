@@ -15,11 +15,13 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Powerable;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowman;
+import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -134,12 +136,22 @@ public class ResidenceBlockListener implements Listener {
                 return;
             break;
         }
-
         e.setCancelled(true);
         plugin.msg(player, lm.Flag_Deny, result);
 
         if (e.getEntity() instanceof Arrow)
             e.getEntity().remove();
+
+        if (Version.isCurrentHigher(Version.v1_13_R1) && e.getEntity() instanceof Trident && !block.getType().toString().contains("STONE") && block
+            .getBlockData() instanceof org.bukkit.block.data.Powerable) {
+            org.bukkit.block.data.Powerable powerable = (org.bukkit.block.data.Powerable) block.getBlockData();
+            if (!powerable.isPowered()) {
+                CMIScheduler.runAtLocation(plugin, block.getLocation(), () -> {
+                    powerable.setPowered(false);
+                    block.setBlockData(powerable, true);
+                });
+            }
+        }
 
         return;
     }

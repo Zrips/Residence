@@ -330,7 +330,7 @@ public class ShopSignUtil {
     }
 
     public boolean boardUpdateDelayed() {
-        CMIScheduler.runTaskLater(() -> boardUpdate(), 20L);
+        CMIScheduler.runTaskLater(plugin, () -> boardUpdate(), 20L);
         return true;
     }
 

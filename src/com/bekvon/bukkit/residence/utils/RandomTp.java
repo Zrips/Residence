@@ -235,7 +235,7 @@ public class RandomTp {
 
                             Location location = loc;
 
-                            CompletableFuture<Void> fut = CMIScheduler.runAtLocation(loc, () -> {
+                            CompletableFuture<Void> fut = CMIScheduler.runAtLocation(plugin, loc, () -> {
                                 Chunk chunk = location.getChunk();
                                 int y = chunk.getChunkSnapshot().getHighestBlockYAt(location.getBlockX() & 0xF, location.getBlockZ() & 0xF) - 1;
                                 location.setY(y);
@@ -269,7 +269,7 @@ public class RandomTp {
 
                 if (Version.isFolia()) {
                     Location location = loc;
-                    CompletableFuture<Void> fut = CMIScheduler.runAtLocation(loc, () -> {
+                    CompletableFuture<Void> fut = CMIScheduler.runAtLocation(plugin, loc, () -> {
                         empty.valid = ResidencePlayerListener.isEmptyBlock(location.getBlock());
 
                         if (!empty.valid)
@@ -331,7 +331,7 @@ public class RandomTp {
 
                     Location location = loc.clone();
 
-                    CompletableFuture<Void> fut = CMIScheduler.runAtLocation(loc, () -> {
+                    CompletableFuture<Void> fut = CMIScheduler.runAtLocation(Residence.getInstance(), loc, () -> {
                         Chunk chunk = location.getChunk();
                         int y = chunk.getChunkSnapshot().getHighestBlockYAt(location.getBlockX() & 0xF, location.getBlockZ() & 0xF) - 1;
                         location.setY(y + 1);
@@ -376,7 +376,7 @@ public class RandomTp {
     }
 
     public void performDelaydTp(final Location loc, final Player targetPlayer) {
-        CMIScheduler.runAtLocationLater(loc, () -> {
+        CMIScheduler.runAtLocationLater(plugin, loc, () -> {
             if (!plugin.getTeleportDelayMap().contains(targetPlayer.getName()) && plugin.getConfigManager().getTeleportDelay() > 0)
                 return;
             else if (plugin.getTeleportDelayMap().contains(targetPlayer.getName()))

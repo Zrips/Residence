@@ -52,7 +52,7 @@ public class ResidenceLWCListener implements com.griefcraft.scripting.Module {
         if (Version.isCurrentLower(Version.v1_13_R1))
             return;
 
-        CMIScheduler.runTaskAsynchronously(() -> {
+        CMIScheduler.runTaskAsynchronously(Residence.getInstance(), () -> {
             long time = System.currentTimeMillis();
             com.griefcraft.lwc.LWC lwc = com.griefcraft.lwc.LWC.getInstance();
             if (lwc == null)

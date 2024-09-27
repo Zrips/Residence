@@ -51,7 +51,7 @@ public class compass implements cmd {
             return false;
 
         future.thenAccept(loc1 -> {
-            CMIScheduler.runAtEntity(player, () -> player.setCompassTarget(loc1));
+            CMIScheduler.runAtEntity(Residence.getInstance(), player, () -> player.setCompassTarget(loc1));
             plugin.msg(player, lm.General_CompassTargetSet, args[0]);
         });
 

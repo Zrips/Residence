@@ -348,13 +348,13 @@ public class ResidenceRaid {
             return false;
 
         ResidenceRaidStartEvent start = new ResidenceRaidStartEvent(res, getAttackers());
-        this.shedRaidStartId = CMIScheduler.runTaskLater(() -> {
+        this.shedRaidStartId = CMIScheduler.runTaskLater(Residence.getInstance(), () -> {
             Bukkit.getPluginManager().callEvent(start);
             if (start.isCancelled())
                 start.getRes().getRaid().endRaid();
         }, ((getStartsAt() - System.currentTimeMillis()) / 50));
 
-        schedBossBarId = CMIScheduler.scheduleSyncRepeatingTask(() -> {
+        schedBossBarId = CMIScheduler.scheduleSyncRepeatingTask(Residence.getInstance(), () -> {
             if (!isUnderRaid() && !isInPreRaid()) {
                 schedBossBarId.cancel();
                 return;
@@ -363,7 +363,7 @@ public class ResidenceRaid {
 
         }, this.isUnderRaid() ? 20L : 0L, 20L);
 
-        this.schedRaidEndId = CMIScheduler.runTaskLater(() -> endRaid(), ((getEndsAt() - System.currentTimeMillis()) / 50));
+        this.schedRaidEndId = CMIScheduler.runTaskLater(Residence.getInstance(), this::endRaid, ((getEndsAt() - System.currentTimeMillis()) / 50));
 
         return true;
     }

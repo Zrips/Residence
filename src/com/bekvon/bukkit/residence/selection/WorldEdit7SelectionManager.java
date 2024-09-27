@@ -142,7 +142,7 @@ public class WorldEdit7SelectionManager extends SelectionManager {
         queue.add(area);
 
         if (task == null)
-            task = CMIScheduler.runTaskLater(this::nextInQueue, 1);
+            task = CMIScheduler.runTaskLater(plugin, this::nextInQueue, 1);
     }
 
     private void nextInQueue() {
@@ -177,6 +177,6 @@ public class WorldEdit7SelectionManager extends SelectionManager {
                 session.close();
         }
 
-        task = CMIScheduler.runTaskLater(this::nextInQueue, 20);
+        task = CMIScheduler.runTaskLater(plugin, this::nextInQueue, 20);
     }
 }

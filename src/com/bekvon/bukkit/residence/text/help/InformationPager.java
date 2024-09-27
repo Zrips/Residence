@@ -232,14 +232,14 @@ public class InformationPager {
             return;
         }
 
-        CMIScheduler.runTaskLater(() -> printListWithDelay(sender, ownedResidences, start + 100, resadmin), 5L);
+        CMIScheduler.runTaskLater(plugin, () -> printListWithDelay(sender, ownedResidences, start + 100, resadmin), 5L);
 
     }
 
     private void printListToFile(final TreeMap<String, ClaimedResidence> ownedResidences, final boolean resadmin) {
 
         Bukkit.getConsoleSender().sendMessage("Saving");
-        CMIScheduler.runTaskAsynchronously(() -> {
+        CMIScheduler.runTaskAsynchronously(plugin, () -> {
             int y = 0;
             final StringBuilder sb = new StringBuilder();
             for (Entry<String, ClaimedResidence> resT : ownedResidences.entrySet()) {

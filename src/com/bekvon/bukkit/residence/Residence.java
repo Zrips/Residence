@@ -351,7 +351,7 @@ public class Residence extends JavaPlugin {
         if (!initsuccess)
             return;
 
-        CMIScheduler.runTaskAsynchronously(() -> {
+        CMIScheduler.runTaskAsynchronously(this, () -> {
             try {
                 saveYml();
             } catch (Throwable e) {
@@ -628,7 +628,7 @@ public class Residence extends JavaPlugin {
                 }
                 Bukkit.getConsoleSender().sendMessage(getPrefix() + " Player data loaded: " + OfflinePlayerList.size());
             } else {
-                CMIScheduler.runTaskAsynchronously(() -> {
+                CMIScheduler.runTaskAsynchronously(this, () -> {
                     for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
                         if (player == null)
                             continue;
@@ -800,17 +800,17 @@ public class Residence extends JavaPlugin {
                 autosaveInt = 1;
             }
             autosaveInt = autosaveInt * 60 * 20;
-            autosaveBukkitId = CMIScheduler.scheduleSyncRepeatingTask(autoSave, autosaveInt, autosaveInt);
+            autosaveBukkitId = CMIScheduler.scheduleSyncRepeatingTask(this, autoSave, autosaveInt, autosaveInt);
 
             if (getConfigManager().getHealInterval() > 0)
-                healBukkitId = CMIScheduler.scheduleSyncRepeatingTask(doHeals, 20, getConfigManager().getHealInterval() * 20);
+                healBukkitId = CMIScheduler.scheduleSyncRepeatingTask(this, doHeals, 20, getConfigManager().getHealInterval() * 20);
             if (getConfigManager().getFeedInterval() > 0)
-                feedBukkitId = CMIScheduler.scheduleSyncRepeatingTask(doFeed, 20, getConfigManager().getFeedInterval() * 20);
+                feedBukkitId = CMIScheduler.scheduleSyncRepeatingTask(this, doFeed, 20, getConfigManager().getFeedInterval() * 20);
             if (getConfigManager().getSafeZoneInterval() > 0)
-                effectRemoveBukkitId = CMIScheduler.scheduleSyncRepeatingTask(removeBadEffects, 20, getConfigManager().getSafeZoneInterval() * 20);
+                effectRemoveBukkitId = CMIScheduler.scheduleSyncRepeatingTask(this, removeBadEffects, 20, getConfigManager().getSafeZoneInterval() * 20);
 
             if (getConfigManager().AutoMobRemoval())
-                DespawnMobsBukkitId = CMIScheduler.scheduleSyncRepeatingTask(DespawnMobs, 20 * getConfigManager().AutoMobRemovalInterval(), 20
+                DespawnMobsBukkitId = CMIScheduler.scheduleSyncRepeatingTask(this, DespawnMobs, 20 * getConfigManager().AutoMobRemovalInterval(), 20
                     * getConfigManager().AutoMobRemovalInterval());
 
             if (getConfigManager().useLeases()) {
@@ -819,7 +819,7 @@ public class Residence extends JavaPlugin {
                     leaseInterval = 1;
                 }
                 leaseInterval = leaseInterval * 60 * 20;
-                leaseBukkitId = CMIScheduler.scheduleSyncRepeatingTask(leaseExpire, leaseInterval, leaseInterval);
+                leaseBukkitId = CMIScheduler.scheduleSyncRepeatingTask(this, leaseExpire, leaseInterval, leaseInterval);
             }
             if (getConfigManager().enabledRentSystem()) {
                 int rentint = getConfigManager().getRentCheckInterval();
@@ -827,7 +827,7 @@ public class Residence extends JavaPlugin {
                     rentint = 1;
                 }
                 rentint = rentint * 60 * 20;
-                rentBukkitId = CMIScheduler.scheduleSyncRepeatingTask(rentExpire, rentint, rentint);
+                rentBukkitId = CMIScheduler.scheduleSyncRepeatingTask(this, rentExpire, rentint, rentint);
             }
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 if (getPermissionManager().isResidenceAdmin(player)) {

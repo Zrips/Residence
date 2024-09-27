@@ -531,7 +531,7 @@ public class SelectionManager {
         if (tv != null) {
             tv.cancelAll();
         }
-        CMIScheduler.runTask(() -> {
+        CMIScheduler.runTask(Residence.getInstance(), () -> {
 
             ResidenceSelectionVisualizationEvent ev = new ResidenceSelectionVisualizationEvent(player, v.getAreas(), v.getErrorAreas());
             Bukkit.getPluginManager().callEvent(ev);
@@ -542,7 +542,7 @@ public class SelectionManager {
             vMap.put(player.getUniqueId(), v);
             if (!plugin.isEnabled())
                 return;
-            v.setBaseSheduler(CMIScheduler.runTaskAsynchronously(() -> {
+            v.setBaseSheduler(CMIScheduler.runTaskAsynchronously(Residence.getInstance(), () -> {
                 if (!v.getAreas().isEmpty())
                     MakeBorders(player, false);
                 if (!v.getErrorAreas().isEmpty())
@@ -778,7 +778,7 @@ public class SelectionManager {
 
         if (!plugin.isEnabled())
             return false;
-        CMIScheduler.runTaskAsynchronously(() -> {
+        CMIScheduler.runTaskAsynchronously(Residence.getInstance(), () -> {
 
             int size = locList.size();
             int errorSize = errorLocList.size();
@@ -821,7 +821,7 @@ public class SelectionManager {
         if (v.getStart() + plugin.getConfigManager().getVisualizerShowFor() < System.currentTimeMillis())
             return false;
 
-        CMITask scid = CMIScheduler.runTaskLater(() -> {
+        CMITask scid = CMIScheduler.runTaskLater(Residence.getInstance(), () -> {
             if (player.isOnline()) {
                 MakeBorders(player, error);
             }
