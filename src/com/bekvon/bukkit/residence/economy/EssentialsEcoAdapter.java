@@ -49,7 +49,8 @@ public class EssentialsEcoAdapter implements EconomyInterface {
 
     @Override
     public boolean canAfford(Player player, double amount) {
-        if (amount < 0) return false;
+        if (amount < 0)
+            return false;
         try {
             if (Economy.playerExists(player.getUniqueId())) {
                 return Economy.hasEnough(player.getUniqueId(), BigDecimal.valueOf(amount));
@@ -63,7 +64,8 @@ public class EssentialsEcoAdapter implements EconomyInterface {
     @SuppressWarnings("deprecation")
     @Override
     public boolean canAfford(String playerName, double amount) {
-        if (amount < 0) return false;
+        if (amount < 0)
+            return false;
         try {
             if (Economy.playerExists(playerName)) {
                 return Economy.hasEnough(playerName, amount);
@@ -77,7 +79,8 @@ public class EssentialsEcoAdapter implements EconomyInterface {
     @SuppressWarnings("deprecation")
     @Override
     public boolean add(String playerName, double amount) {
-        if (amount < 0) return false;
+        if (amount < 0)
+            return false;
         if (Economy.playerExists(playerName)) {
             try {
                 Economy.add(playerName, amount);
@@ -94,7 +97,8 @@ public class EssentialsEcoAdapter implements EconomyInterface {
     @SuppressWarnings("deprecation")
     @Override
     public boolean subtract(String playerName, double amount) {
-        if (amount < 0) return false;
+        if (amount < 0)
+            return false;
         if (Economy.playerExists(playerName)) {
             try {
                 Economy.subtract(playerName, amount);
@@ -111,7 +115,8 @@ public class EssentialsEcoAdapter implements EconomyInterface {
     @SuppressWarnings("deprecation")
     @Override
     public boolean transfer(String playerFrom, String playerTo, double amount) {
-        if (amount < 0) return false;
+        if (amount < 0)
+            return false;
         try {
             if (Economy.playerExists(playerFrom) && Economy.playerExists(playerTo) && Economy.hasEnough(playerFrom, amount)) {
                 if (!subtract(playerFrom, amount))

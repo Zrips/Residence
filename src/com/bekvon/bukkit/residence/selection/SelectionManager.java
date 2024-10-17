@@ -35,6 +35,7 @@ import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Effects.CMIEffect;
 import net.Zrips.CMILib.Effects.CMIEffectManager.CMIParticle;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
 
@@ -193,15 +194,16 @@ public class SelectionManager {
 
                 CuboidArea base = this.getBaseArea();
 
-                int y1 = base.getLowVector().getBlockY();
+                int selectedLowY = base.getLowVector().getBlockY();
 
                 int newy = this.getMaxYAllowed();
 
                 if (!resadmin) {
-                    if (group.getMaxHeight() < newy)
-                        newy = group.getMaxHeight();
-                    if (newy - y1 > (group.getMaxY() - 1))
-                        newy = y1 + (group.getMaxY() - 1);
+                    if (group.getHighestYAllowed() < newy)
+                        newy = group.getHighestYAllowed();
+
+                    if (Math.abs(newy - selectedLowY) > (group.getMaxYSize() - 1))
+                        newy = selectedLowY + (group.getMaxYSize() - 1);
                 }
 
                 loc1 = base.getLowLocation();
@@ -221,14 +223,17 @@ public class SelectionManager {
 
                 CuboidArea base = this.getBaseArea();
 
-                int y2 = base.getHighVector().getBlockY();
+                int selectedHighY = base.getHighVector().getBlockY();
 
                 int newy = this.getMinYAllowed();
                 if (!resadmin) {
-                    if (newy < group.getMinHeight())
-                        newy = group.getMinHeight();
-                    if (y2 - newy > (group.getMaxY() - 1))
-                        newy = y2 - (group.getMaxY() - 1);
+
+                    if (newy < group.getLowestYAllowed())
+                        newy = group.getLowestYAllowed();
+
+                    if (Math.abs(selectedHighY - newy) > (group.getMaxYSize() - 1)) {
+                        newy = selectedHighY - (group.getMaxYSize() - 1);
+                    }
                 }
 
                 loc1 = base.getLowLocation();
@@ -395,7 +400,7 @@ public class SelectionManager {
     public void placeLoc2(Player player, Location loc, boolean show) {
         if (loc == null)
             return;
-        
+
         getSelection(player).setBaseLoc2(loc);
         if (show) {
             this.afterSelectionUpdate(player);

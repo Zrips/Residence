@@ -23,10 +23,10 @@ public class resadmin implements cmd {
 	    return true;
 
 	Player player = (Player) sender;
-	if (args[0].equals("on")) {
+	if (args[0].equalsIgnoreCase("on")) {
 	    plugin.resadminToggle.add(player.getName());
 	    plugin.msg(player, lm.General_AdminToggleTurnOn);
-	} else if (args[0].equals("off")) {
+	} else if (args[0].equalsIgnoreCase("off")) {
 	    plugin.resadminToggle.remove(player.getName());
 	    plugin.msg(player, lm.General_AdminToggleTurnOff);
 	}

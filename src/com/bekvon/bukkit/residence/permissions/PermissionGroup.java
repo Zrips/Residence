@@ -48,12 +48,10 @@ public class PermissionGroup {
 //    protected Map<String, Boolean> rentedDefaultFlags;
     protected Map<String, Map<String, Boolean>> groupDefaultFlags;
     protected Map<String, Boolean> residenceDefaultFlags;
-    
-    
+
     protected Map<String, Map<String, FlagPermissions>> groupperms;
     protected Map<String, FlagPermissions> worldperms;
-    
-    
+
     protected boolean messageperms = false;
     protected String defaultEnterMessage = null;
     protected String defaultLeaveMessage = null;
@@ -83,10 +81,10 @@ public class PermissionGroup {
 //	rentedDefaultFlags = new HashMap<String, Boolean>();
         residenceDefaultFlags = new HashMap<String, Boolean>();
         groupDefaultFlags = new HashMap<String, Map<String, Boolean>>();
-        
+
         worldperms = new HashMap<>();
         groupperms = new HashMap<>();
-        
+
         groupname = name;
     }
 
@@ -327,8 +325,17 @@ public class PermissionGroup {
         return xmax;
     }
 
-    public int getMaxY() {
+    public int getMaxYSize() {
         return ymax;
+    }
+
+    public int getMinYSize() {
+        return ymin;
+    }
+
+    @Deprecated
+    public int getMaxY() {
+        return getMaxYSize();
     }
 
     public int getMaxZ() {
@@ -339,8 +346,9 @@ public class PermissionGroup {
         return xmin;
     }
 
+    @Deprecated
     public int getMinY() {
-        return ymin;
+        return getMinYSize();
     }
 
     public int getMinZ() {
@@ -371,12 +379,22 @@ public class PermissionGroup {
         return Subzonezmin;
     }
 
+    @Deprecated
     public int getMinHeight() {
+        return getLowestYAllowed();
+    }
+
+    public int getLowestYAllowed() {
         return minHeight;
     }
 
-    public int getMaxHeight() {
+    public int getHighestYAllowed() {
         return maxHeight;
+    }
+
+    @Deprecated
+    public int getMaxHeight() {
+        return getHighestYAllowed();
     }
 
     public int getMaxZones() {
@@ -580,12 +598,12 @@ public class PermissionGroup {
 
     @Deprecated
     public int getYmin() {
-        return ymin;
+        return getMinYSize();
     }
 
     @Deprecated
     public int getYmax() {
-        return ymax;
+        return getMaxYSize();
     }
 
     @Deprecated

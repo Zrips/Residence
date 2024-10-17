@@ -423,7 +423,8 @@ public class LocationUtil {
                     CMIChunkSnapShot cmiChunkSnapshot = new CMIChunkSnapShot(world);
                     try {
 
-                        CompletableFuture<Void> t = CMIScheduler.runAtLocation(Residence.getInstance(), new Location(world, chunkX * 16, 0, chunkZ * 16), () -> cmiChunkSnapshot.setSnapshot(world.getChunkAt(chunkX, chunkZ)
+                        CompletableFuture<Void> t = CMIScheduler.runAtLocation(Residence.getInstance(), new Location(world, chunkX * 16, 0, chunkZ * 16), () -> cmiChunkSnapshot.setSnapshot(world
+                            .getChunkAt(chunkX, chunkZ)
                             .getChunkSnapshot(true, biomeData, false)));
 
                         if (Version.isCurrentEqualOrHigher(Version.v1_13_R1))
@@ -457,7 +458,8 @@ public class LocationUtil {
                 return cmiChunkSnapshot;
 
             try {
-                CompletableFuture<Void> t = CMIScheduler.runAtLocation(Residence.getInstance(), new Location(world, chunkX * 16, 0, chunkZ * 16), () -> cmiChunkSnapshot.setSnapshot(chunk.getChunkSnapshot(true, biomeData, false)));
+                CompletableFuture<Void> t = CMIScheduler.runAtLocation(Residence.getInstance(), new Location(world, chunkX * 16, 0, chunkZ * 16), () -> cmiChunkSnapshot.setSnapshot(chunk.getChunkSnapshot(
+                    true, biomeData, false)));
 
                 if (Version.isCurrentEqualOrHigher(Version.v1_13_R1))
                     t = t.orTimeout(10, TimeUnit.SECONDS);
