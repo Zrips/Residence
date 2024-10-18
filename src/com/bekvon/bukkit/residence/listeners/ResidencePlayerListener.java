@@ -1132,10 +1132,10 @@ public class ResidencePlayerListener implements Listener {
         ItemStack iih = null;
 
         try {
-            if (event.getHand() == EquipmentSlot.HAND)
-                iih = CMIItemStack.getItemInMainHand(player);
+            if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
+                iih = event.getItem();
             else
-                iih = CMIItemStack.getItemInOffHand(player);
+                iih = CMIItemStack.getItemInMainHand(player);
         } catch (Throwable e) {
             iih = CMIItemStack.getItemInMainHand(player);
         }
@@ -1144,6 +1144,58 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         if (!iih.getType().toString().equals("END_CRYSTAL"))
+            return;
+
+        if (player.hasMetadata("NPC"))
+            return;
+        if (plugin.isResAdminOn(player))
+            return;
+        FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
+
+        boolean hasplace = perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true));
+        if (hasplace)
+            return;
+
+        event.setCancelled(true);
+        plugin.msg(player, lm.Flag_Deny, Flags.build);
+        return;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerSpawnerInteract(PlayerInteractEvent event) {
+        if (event.getPlayer() == null)
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
+            return;
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
+
+        Block block = event.getClickedBlock();
+
+        if (block == null)
+            return;
+
+        if (block.getType() != Material.SPAWNER)
+            return;
+
+        Player player = event.getPlayer();
+
+        ItemStack iih = null;
+
+        try {
+            if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
+                iih = event.getItem();
+            else
+                iih = CMIItemStack.getItemInMainHand(player);
+        } catch (Throwable e) {
+            iih = CMIItemStack.getItemInMainHand(player);
+        }
+
+        if (iih == null)
+            return;
+
+        if (!iih.getType().toString().endsWith("_EGG"))
             return;
 
         if (player.hasMetadata("NPC"))
