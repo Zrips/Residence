@@ -116,7 +116,7 @@ public class pset implements cmd {
                     plugin.msg(sender, lm.General_NoPermission);
                     return true;
                 }
-                residence.getPermissions().setPlayerFlag(sender, rplayer.getName(), flag != null ? flag.name() : flagGroup, state.toString(), resadmin, true);
+                residence.getPermissions().setPlayerFlag(sender, rplayer.getName(), flag != null ? flag.name() : flagGroup, state.getName(), resadmin, true);
                 return true;
             }
 

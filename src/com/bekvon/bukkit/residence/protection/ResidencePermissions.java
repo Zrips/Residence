@@ -27,6 +27,8 @@ import com.bekvon.bukkit.residence.event.ResidenceOwnerChangeEvent;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 
+import net.Zrips.CMILib.Logs.CMIDebug;
+
 public class ResidencePermissions extends FlagPermissions {
 
     private UUID ownerUUID;
@@ -371,7 +373,7 @@ public class ResidencePermissions extends FlagPermissions {
         return group.hasFlagAccess(flag);
     }
 
-    public boolean setPlayerFlag(CommandSender sender, String targetPlayer, String flag, String flagstate, boolean resadmin, boolean Show) {
+    public boolean setPlayerFlag(CommandSender sender, String targetPlayer, String flag, String flagstate, boolean resadmin, boolean show) {
         if (Residence.getInstance().getPlayerUUID(targetPlayer) == null) {
             sender.sendMessage("No player by this name");
             return false;
@@ -388,6 +390,7 @@ public class ResidencePermissions extends FlagPermissions {
         if (validFlagGroups.containsKey(flag)) {
             return this.setFlagGroupOnPlayer(sender, targetPlayer, flag, flagstate, resadmin);
         }
+
         FlagState state = FlagPermissions.stringToFlagState(flagstate);
         if (checkCanSetFlag(sender, flag, state, false, resadmin)) {
 
@@ -400,8 +403,19 @@ public class ResidencePermissions extends FlagPermissions {
             }
 
             if (super.setPlayerFlag(targetPlayer, flag, state)) {
-                if (Show)
-                    Residence.getInstance().msg(sender, lm.Flag_Set, flag, residence.getName(), flagstate);
+                if (show) {
+                    switch (state) {
+                    case NEITHER:
+                        Residence.getInstance().msg(sender, lm.Flag_PRemoved, flag, residence.getName(), targetPlayer);
+                        break;
+                    case FALSE:
+                    case TRUE:
+                        Residence.getInstance().msg(sender, lm.Flag_PSet, flag, residence.getName(), flagstate, targetPlayer);
+                        break;
+                    default:
+                        break;
+                    }
+                }
 
                 if ((f == null || f.isInGroup(padd.groupedFlag)) && targetPlayer != null) {
                     boolean trusted = this.residence.isTrusted(targetPlayer);
@@ -527,8 +541,19 @@ public class ResidencePermissions extends FlagPermissions {
                     return false;
             }
             if (super.setFlag(flag, state)) {
-                if (inform)
-                    Residence.getInstance().msg(sender, lm.Flag_Set, flag, this.residence.getName(), state.name());
+                if (inform) {
+                    switch (state) {
+                    case NEITHER:
+                        Residence.getInstance().msg(sender, lm.Flag_Removed, flag, this.residence.getName(), state.getName());
+                        break;
+                    case FALSE:
+                    case TRUE:
+                        Residence.getInstance().msg(sender, lm.Flag_Set, flag, this.residence.getName(), state.getName());
+                        break;
+                    default:
+                        break;
+                    }
+                }
                 return true;
             }
         }

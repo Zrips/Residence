@@ -322,6 +322,10 @@ public class PlayerManager implements ResidencePlayerInterface {
         Player p = Bukkit.getPlayer(player);
         if (p != null && p.getName().equalsIgnoreCase(player))
             return getResidencePlayer(p);
+        
+        OfflinePlayer offline = plugin.getOfflinePlayer(player);
+        if (offline != null)
+            return getResidencePlayer(offline);
 
         return players.get(player.toLowerCase());
     }

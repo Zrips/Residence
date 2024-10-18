@@ -74,6 +74,7 @@ public class FlagPermissions {
         public String getName() {
             return name().toLowerCase();
         }
+
     }
 
     public static void addMaterialToUseFlag(Material mat, Flags flag) {
@@ -552,7 +553,7 @@ public class FlagPermissions {
             return FlagState.TRUE;
         } else if (flagstate.equalsIgnoreCase("false") || flagstate.equalsIgnoreCase("f")) {
             return FlagState.FALSE;
-        } else if (flagstate.equalsIgnoreCase("remove") || flagstate.equalsIgnoreCase("r")) {
+        } else if (flagstate.equalsIgnoreCase("remove") || flagstate.equalsIgnoreCase("r") || flagstate.equalsIgnoreCase("neither")) {
             return FlagState.NEITHER;
         } else {
             return FlagState.INVALID;

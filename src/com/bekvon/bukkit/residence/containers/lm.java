@@ -184,6 +184,9 @@ public enum lm {
     Flag_lackPrefix(""),
     Flag_others("&eand &2%1 &eothers"),
     Flag_Set("&eFlag (&6%1&e) set for &6%2 &eto &6%3 &estate"),
+    Flag_Removed("&eFlag (&6%1&e) removed for &6%2"),
+    Flag_PSet("&eFlag (&6%1&e) set for &6%2 &eto &6%3 &estate for &6%4"),
+    Flag_PRemoved("&eFlag (&6%1&e) removed from &6%2 &eresidence for &6%3"),
     Flag_SetFailed("&cYou dont have access to &6%1 &cflag"),
     Flag_CheckTrue("&eFlag &6%1 &eapplies to player &6%2 &efor residence &6%3&e, value = &6%4"),
     Flag_CheckFalse("&eFlag &6%1 &edoes not apply to player &6%2 &efor residence."),
@@ -290,7 +293,7 @@ public enum lm {
     Residence_LwcRemoved("&eRemoved &6%1 &eLwc protections in &6%2ms"),
 
     Residence_Balance("&eBalance: &6%1"),
-    
+
     Residence_CanBeRented("&6%1&e can be rented for &6%2 &eper &6%3 &edays. &6/res market rent"),
     Residence_CanBeBought("&6%1&e can be bought for &6%2&e. &6/res market buy"),
 
