@@ -1124,7 +1124,7 @@ public class ResidencePlayerListener implements Listener {
         if (block == null)
             return;
 
-        if (block.getType() != Material.BEDROCK)
+        if (block.getType() != Material.BEDROCK && block.getType() != Material.OBSIDIAN)
             return;
 
         Player player = event.getPlayer();
