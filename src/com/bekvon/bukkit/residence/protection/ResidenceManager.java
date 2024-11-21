@@ -905,19 +905,19 @@ public class ResidenceManager implements ResidenceInterface {
     }
 
     public void mirrorPerms(Player reqPlayer, String targetArea, String sourceArea, boolean resadmin) {
-        ClaimedResidence reciever = this.getByName(targetArea);
+        ClaimedResidence receiver = this.getByName(targetArea);
         ClaimedResidence source = this.getByName(sourceArea);
-        if (source == null || reciever == null) {
+        if (source == null || receiver == null) {
             plugin.msg(reqPlayer, lm.Invalid_Residence);
             return;
         }
         if (!resadmin) {
-            if (!reciever.getPermissions().hasResidencePermission(reqPlayer, true) || !source.getPermissions().hasResidencePermission(reqPlayer, true)) {
+            if (!receiver.getPermissions().hasResidencePermission(reqPlayer, true) || !source.getPermissions().hasResidencePermission(reqPlayer, true)) {
                 plugin.msg(reqPlayer, lm.General_NoPermission);
                 return;
             }
         }
-        reciever.getPermissions().applyTemplate(reqPlayer, source.getPermissions(), resadmin);
+        receiver.getPermissions().applyTemplate(reqPlayer, source.getPermissions(), resadmin);
     }
 
     public Map<String, Object> save() {
@@ -1429,7 +1429,7 @@ public class ResidenceManager implements ResidenceInterface {
             return;
         // Fix phrases here
         plugin.msg(reqPlayer, lm.Residence_Give, residence, giveplayer.getName());
-        plugin.msg(giveplayer, lm.Residence_Recieve, residence, reqPlayer.getName());
+        plugin.msg(giveplayer, lm.Residence_Received, residence, reqPlayer.getName());
         plugin.getSignUtil().updateSignResName(res);
         if (includeSubzones)
             for (ClaimedResidence one : res.getSubzones()) {

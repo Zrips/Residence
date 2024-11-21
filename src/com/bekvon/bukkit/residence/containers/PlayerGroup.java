@@ -43,7 +43,7 @@ public class PlayerGroup {
 	    return;
 
 	this.lastCheck = System.currentTimeMillis();
-	List<PermissionGroup> posibleGroups = new ArrayList<PermissionGroup>();
+	List<PermissionGroup> possibleGroups = new ArrayList<PermissionGroup>();
 	String group;
 	if (Residence.getInstance().getPermissionManager().getPlayersGroups().containsKey(resPlayer.getName().toLowerCase())) {
 	    group = Residence.getInstance().getPermissionManager().getPlayersGroups().get(resPlayer.getName().toLowerCase());
@@ -51,33 +51,33 @@ public class PlayerGroup {
 		group = group.toLowerCase();
 		if (group != null && Residence.getInstance().getPermissionManager().getGroups().containsKey(group)) {
 		    PermissionGroup g = Residence.getInstance().getPermissionManager().getGroups().get(group);
-		    posibleGroups.add(g);
+		    possibleGroups.add(g);
 		    this.groups.put(world, g);
 		}
 	    }
 	}
 
-	posibleGroups.add(getPermissionGroup());
+	possibleGroups.add(getPermissionGroup());
 
 	group = Residence.getInstance().getPermissionManager().getPermissionsGroup(resPlayer.getName(), world);
 
 	PermissionGroup g = Residence.getInstance().getPermissionManager().getGroupByName(group);
 
 	if (g != null)
-	    posibleGroups.add(g);
+	    possibleGroups.add(g);
 
 	PermissionGroup finalGroup = null;
-	if (posibleGroups.size() == 1)
-	    finalGroup = posibleGroups.get(0);
+	if (possibleGroups.size() == 1)
+	    finalGroup = possibleGroups.get(0);
 
-	for (int i = 0; i < posibleGroups.size(); i++) {
+	for (int i = 0; i < possibleGroups.size(); i++) {
 	    if (finalGroup == null) {
-		finalGroup = posibleGroups.get(i);
+		finalGroup = possibleGroups.get(i);
 		continue;
 	    }
 
-	    if (finalGroup.getPriority() < posibleGroups.get(i).getPriority())
-		finalGroup = posibleGroups.get(i);
+	    if (finalGroup.getPriority() < possibleGroups.get(i).getPriority())
+		finalGroup = possibleGroups.get(i);
 	}
 
 	if (finalGroup == null || !Residence.getInstance().getPermissionManager().getGroups().containsValue(finalGroup)) {

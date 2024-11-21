@@ -39,6 +39,7 @@ import com.griefcraft.scripting.event.LWCReloadEvent;
 import com.griefcraft.scripting.event.LWCSendLocaleEvent;
 
 import net.Zrips.CMILib.Container.CMILocation;
+import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
@@ -94,15 +95,17 @@ public class ResidenceLWCListener implements com.griefcraft.scripting.Module {
                                 chunkZ = z >> 4;
                             }
 
+                            int minY = Math.max(low.getBlockY(), CMIWorld.getMinHeight(area.getWorld()));
+
                             if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
-                                for (int y = low.getBlockY(); y <= hy; y++) {
+                                for (int y = minY; y <= hy; y++) {
                                     BlockData type = chunkSnapshot.getBlockData(cx, y, cz);
                                     if (!list.contains(type.getMaterial()))
                                         continue;
                                     block.add(world.getBlockAt(x, y, z));
                                 }
                             } else {
-                                for (int y = low.getBlockY(); y <= hy; y++) {
+                                for (int y = minY; y <= hy; y++) {
                                     Material type = CMILocation.getBlockTypeSafe(new Location(world, x, y, z));
                                     if (!list.contains(type))
                                         continue;

@@ -97,7 +97,7 @@ public class setFlagInfo {
     private void recalculateResidence() {
 	buttons.clear();
 
-	List<String> flags = residence.getPermissions().getPosibleFlags(player, true, this.admin);
+	List<String> flags = residence.getPermissions().getPossibleFlags(player, true, this.admin);
 
 	Map<String, Boolean> resFlags = new HashMap<String, Boolean>();
 	Map<String, Object> TempPermMap = new LinkedHashMap<String, Object>();
@@ -192,7 +192,7 @@ public class setFlagInfo {
 	    globalFlags.put(oneFlag.toString(), oneFlag.isEnabled());
 	}
 
-	List<String> flags = residence.getPermissions().getPosibleFlags(player, false, this.admin);
+	List<String> flags = residence.getPermissions().getPossibleFlags(player, false, this.admin);
 
 	Map<String, Boolean> resFlags = new HashMap<String, Boolean>();
 
@@ -203,9 +203,9 @@ public class setFlagInfo {
 
 	if (targetPlayer != null) {
 
-	    Set<String> PosibleResPFlags = FlagPermissions.getAllPosibleFlags();
+	    Set<String> possibleResPFlags = FlagPermissions.getAllPossibleFlags();
 	    Map<String, Boolean> temp = new HashMap<String, Boolean>();
-	    for (String one : PosibleResPFlags) {
+	    for (String one : possibleResPFlags) {
 		if (globalFlags.containsKey(one))
 		    temp.put(one, globalFlags.get(one));
 	    }

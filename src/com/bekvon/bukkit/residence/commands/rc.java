@@ -100,17 +100,17 @@ public class rc implements cmd {
 		if (!ResPerm.chatcolor.hasPermission(player))
 		    return true;
 
-		String posibleColor = args[1];
+		String possibleColor = args[1];
 
-		if (posibleColor.length() == 1 && !posibleColor.contains("&"))
-		    posibleColor = "&" + posibleColor;
+		if (possibleColor.length() == 1 && !possibleColor.contains("&"))
+		    possibleColor = "&" + possibleColor;
 
-		CMIChatColor color = CMIChatColor.getColor(posibleColor);
+		CMIChatColor color = CMIChatColor.getColor(possibleColor);
 
-		if (color == null && posibleColor.length() > 2 && !posibleColor.startsWith(CMIChatColor.colorCodePrefix) && !posibleColor.endsWith(CMIChatColor.colorCodeSuffix))
-		    posibleColor = CMIChatColor.colorCodePrefix + posibleColor + CMIChatColor.colorCodeSuffix;
+		if (color == null && possibleColor.length() > 2 && !possibleColor.startsWith(CMIChatColor.colorCodePrefix) && !possibleColor.endsWith(CMIChatColor.colorCodeSuffix))
+		    possibleColor = CMIChatColor.colorCodePrefix + possibleColor + CMIChatColor.colorCodeSuffix;
  
-		color = CMIChatColor.getColor(posibleColor);
+		color = CMIChatColor.getColor(possibleColor);
 
 		if (color == null) {
 		    plugin.msg(player, lm.Chat_InvalidColor);

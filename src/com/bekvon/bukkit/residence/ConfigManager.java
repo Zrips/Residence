@@ -540,7 +540,7 @@ public class ConfigManager {
         cfg.addComment("Global.GroupedFlags", "These are grouped flags, so when using /res pset nickname redstone true, player will get all flags in list, same when setting to false or removing them.");
         cfg.addComment("Global.GroupedFlags.trusted", "This group of flags will be used for padd sub command");
         cfg.addComment("Global.TotalFlagDisabling", "Completely disables defined flag which will no longer be accesable even with resadmin command",
-            "Can save some of the server processing resources if you dont want to utilize specific checks for specific flags");
+            "Can save some of the server processing resources if you don't want to utilize specific checks for specific flags");
         cfg.addComment("Global.GroupDefault", "These are default group flags applied to a residence made by a user of any group.");
         cfg.addComment("ItemList", "this is where you can create blacklists / whitelists");
         cfg.addComment("ItemList.DefaultList", "list name is not important, as long as it is unique. Its good to use a descripive name.");
@@ -634,7 +634,7 @@ public class ConfigManager {
 
         c.addComment("Global", "These are Global Settings for Residence.");
 
-        c.addComment("Global.UUIDConvertion", "Starts UUID conversion on plugin startup", "DONT change this if you are not sure what you doing");
+        c.addComment("Global.UUIDConvertion", "Starts UUID conversion on plugin startup", "DON'T change this if you are not sure what you doing");
         UUIDConvertion = c.get("Global.UUIDConvertion", true);
 
         c.addComment("Global.OfflineMode",
@@ -771,7 +771,7 @@ public class ConfigManager {
         GlobalChatFormat = c.get("Global.Optimizations.GlobalChat.Format", "&c[&e%1&c]");
 
         c.addComment("Global.Optimizations.BlockAnyTeleportation",
-            "When this set to true, any teleportation to residence where player dont have tp flag, action will be denyied",
+            "When this set to true, any teleportation to residence where player don't have tp flag, action will be denyied",
             "This can prevent from teleporting players to residence with 3rd party plugins like esentials /tpa");
         BlockAnyTeleportation = c.get("Global.Optimizations.BlockAnyTeleportation", true);
 
@@ -844,7 +844,7 @@ public class ConfigManager {
 
         // negative potion effect list
         c.addComment("Global.Optimizations.NegativePotionEffects",
-            "Potions containing one of thos effects will be ignored if residence dont have pvp true flag set");
+            "Potions containing one of thos effects will be ignored if residence don't have pvp true flag set");
         NegativePotionEffects = c.get("Global.Optimizations.NegativePotionEffects", Arrays.asList("blindness", "confusion", "harm", "hunger", "poison", "slow",
             "slow_digging", "weakness", "wither"));
 
@@ -1057,7 +1057,7 @@ public class ConfigManager {
         CreeperExplodeBelow = c.get("Global.AntiGreef.Creeper.ExplodeBelow", false);
         CreeperExplodeBelowLevel = c.get("Global.AntiGreef.Creeper.level", 62);
         // Flow
-        c.addComment("Global.AntiGreef.Flow.Level", "Level from which one to start lava and water flow blocking", "This dont have effect in residence area");
+        c.addComment("Global.AntiGreef.Flow.Level", "Level from which one to start lava and water flow blocking", "This don't have effect in residence area");
         FlowLevel = c.get("Global.AntiGreef.Flow.Level", 63);
         c.addComment("Global.AntiGreef.Flow.NoLavaFlow", "With this set to true, lava flow outside residence is blocked");
         NoLava = c.get("Global.AntiGreef.Flow.NoLavaFlow", false);
@@ -1088,7 +1088,7 @@ public class ConfigManager {
             c.addComment("Global.AntiGreef.ResCleaning.Use",
                 "With this set to true, after player removes its residence, all blocks listed below, will be replaced with air blocks",
                 "Effective way to prevent residence creating near greefing target and then remove it",
-                "ATTENTION! Bigger residence areas could want to create bigger loads on server when cleaning up areas. So dont use this if regular player have access to huge residences. 15 million blocks would be a max limit");
+                "ATTENTION! Bigger residence areas could want to create bigger loads on server when cleaning up areas. So don't use this if regular player have access to huge residences. 15 million blocks would be a max limit");
             UseClean = c.get("Global.AntiGreef.ResCleaning.Use", false);
             c.addComment("Global.AntiGreef.ResCleaning.Level", "Level from whichone you want to replace blocks");
             CleanLevel = c.get("Global.AntiGreef.ResCleaning.Level", 63);
@@ -1259,7 +1259,7 @@ public class ConfigManager {
             "Setting this to true server administration wont need to use /resadmin command to access admin command if they are op or have residence.admin permission node.");
         AdminFullAccess = c.get("Global.AdminFullAccess", false);
 
-        c.addComment("Global.MultiWorldPlugin", "This is the name of the plugin you use for multiworld, if you dont have a multiworld plugin you can safely ignore this.",
+        c.addComment("Global.MultiWorldPlugin", "This is the name of the plugin you use for multiworld, if you don't have a multiworld plugin you can safely ignore this.",
             "The only thing this does is check to make sure the multiworld plugin is enabled BEFORE Residence, to ensure properly loading residences for other worlds.");
         multiworldPlugin = c.get("Global.MultiWorldPlugin", "Multiverse-Core");
 

@@ -538,11 +538,14 @@ public class SelectionManager {
         }
         CMIScheduler.runTask(Residence.getInstance(), () -> {
 
-            ResidenceSelectionVisualizationEvent ev = new ResidenceSelectionVisualizationEvent(player, v.getAreas(), v.getErrorAreas());
-            Bukkit.getPluginManager().callEvent(ev);
+            // Only firing selection event if its selection and not one time showing. Check can be removed on later builds and plugins can check if this is short visualization
+            if (!v.isOnce()) {
+                ResidenceSelectionVisualizationEvent ev = new ResidenceSelectionVisualizationEvent(player, v.getAreas(), v.getErrorAreas(), v.isOnce());
+                Bukkit.getPluginManager().callEvent(ev);
 
-            if (ev.isCancelled())
-                return;
+                if (ev.isCancelled())
+                    return;
+            }
 
             vMap.put(player.getUniqueId(), v);
             if (!plugin.isEnabled())

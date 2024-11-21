@@ -458,7 +458,7 @@ public class HelpEntry {
                         continue;
                     }
 
-                    for (String one : FlagPermissions.getAllPosibleFlags()) {
+                    for (String one : FlagPermissions.getAllPossibleFlags()) {
                         Flags f = Flags.getFlag(one);
 
                         if (f != null) {
@@ -473,7 +473,7 @@ public class HelpEntry {
                         subCommands.add(one);
                     }
 
-                    for (String one : FlagPermissions.getPosibleAreaFlags()) {
+                    for (String one : FlagPermissions.getPossibleAreaFlags()) {
                         Flags f = Flags.getFlag(one);
                         if (f != null) {
 
