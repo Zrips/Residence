@@ -1312,30 +1312,34 @@ public class ResidenceManager implements ResidenceInterface {
     }
 
     public boolean renameResidence(Player player, String oldName, String newName, boolean resadmin) {
-        if (!ResPerm.rename.hasPermission(player, true)) {
+        return this.renameResidence((CommandSender) player, oldName, newName, resadmin);
+    }
+
+    public boolean renameResidence(CommandSender sender, String oldName, String newName, boolean resadmin) {
+        if (!ResPerm.rename.hasPermission(sender, true)) {
             return false;
         }
 
         if (!plugin.validName(newName)) {
-            plugin.msg(player, lm.Invalid_NameCharacters);
+            plugin.msg(sender, lm.Invalid_NameCharacters);
             return false;
         }
         ClaimedResidence res = this.getByName(oldName);
         if (res == null) {
-            plugin.msg(player, lm.Invalid_Residence);
+            plugin.msg(sender, lm.Invalid_Residence);
             return false;
         }
 
         if (res.getRaid().isRaidInitialized() && !resadmin) {
-            plugin.msg(player, lm.Raid_cantDo);
+            plugin.msg(sender, lm.Raid_cantDo);
             return false;
         }
 
         oldName = res.getName();
-        if (res.getPermissions().hasResidencePermission(player, true) || resadmin) {
+        if (res.getPermissions().hasResidencePermission(sender, true) || resadmin) {
             if (res.getParent() == null) {
                 if (residences.containsKey(newName.toLowerCase())) {
-                    plugin.msg(player, lm.Residence_AlreadyExists, newName);
+                    plugin.msg(sender, lm.Residence_AlreadyExists, newName);
                     return false;
                 }
 
@@ -1357,21 +1361,21 @@ public class ResidenceManager implements ResidenceInterface {
 
                 plugin.getSignUtil().updateSignResName(res);
 
-                plugin.msg(player, lm.Residence_Rename, oldName, newName);
+                plugin.msg(sender, lm.Residence_Rename, oldName, newName);
 
                 return true;
             }
             String[] oldname = oldName.split("\\.");
             ClaimedResidence parent = res.getParent();
 
-            boolean feed = parent.renameSubzone(player, oldname[oldname.length - 1], newName, resadmin);
+            boolean feed = parent.renameSubzone(sender, oldname[oldname.length - 1], newName, resadmin);
 
             plugin.getSignUtil().updateSignResName(res);
 
             return feed;
         }
 
-        plugin.msg(player, lm.General_NoPermission);
+        plugin.msg(sender, lm.General_NoPermission);
 
         return false;
     }

@@ -1820,9 +1820,13 @@ public class ClaimedResidence {
     }
 
     public boolean renameSubzone(Player player, String oldName, String newName, boolean resadmin) {
+        return this.renameSubzone((CommandSender) player, oldName, newName, resadmin);
+    }
+
+    public boolean renameSubzone(CommandSender sender, String oldName, String newName, boolean resadmin) {
 
         if (!Residence.getInstance().validName(newName)) {
-            Residence.getInstance().msg(player, lm.Invalid_NameCharacters);
+            Residence.getInstance().msg(sender, lm.Invalid_NameCharacters);
             return false;
         }
         if (oldName == null)
@@ -1835,24 +1839,22 @@ public class ClaimedResidence {
 
         ClaimedResidence res = subzones.get(oldName);
         if (res == null) {
-            if (player != null)
-                Residence.getInstance().msg(player, lm.Invalid_Subzone);
+            Residence.getInstance().msg(sender, lm.Invalid_Subzone);
             return false;
         }
-        if (player != null && !res.getPermissions().hasResidencePermission(player, true) && !resadmin) {
-            Residence.getInstance().msg(player, lm.General_NoPermission);
+        if (sender != null && !res.getPermissions().hasResidencePermission(sender, true) && !resadmin) {
+            Residence.getInstance().msg(sender, lm.General_NoPermission);
             return false;
         }
         if (subzones.containsKey(newName)) {
-            if (player != null)
-                Residence.getInstance().msg(player, lm.Subzone_Exists, newName);
+            Residence.getInstance().msg(sender, lm.Subzone_Exists, newName);
             return false;
         }
         res.setName(newN);
         subzones.put(newName, res);
         subzones.remove(oldName);
-        if (player != null)
-            Residence.getInstance().msg(player, lm.Subzone_Rename, oldName, newName);
+
+        Residence.getInstance().msg(sender, lm.Subzone_Rename, oldName, newName);
         return true;
     }
 
