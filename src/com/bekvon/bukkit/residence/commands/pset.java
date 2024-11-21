@@ -41,7 +41,7 @@ public class pset implements cmd {
         FlagState state = FlagState.INVALID;
         ResidencePlayer rplayer = null;
         ClaimedResidence residence = null;
-        Flags flag = null;
+        String flag = null;
         String flagGroup = null;
 
         for (String one : args) {
@@ -72,9 +72,15 @@ public class pset implements cmd {
             }
 
             if (flag == null) {
-                flag = Flags.getFlag(one);
-                if (flag != null)
+                Flags tflag = Flags.getFlag(one);
+                if (tflag != null) {
+                    flag = tflag.toString();
                     continue;
+                }
+
+                if (Residence.getInstance().getPermissionManager().getAllFlags().checkValidFlag(one, true)) {
+                    flag = one;
+                }
             }
             if (flagGroup == null && FlagPermissions.flagGroupExists(one)) {
                 flagGroup = one;
@@ -111,12 +117,14 @@ public class pset implements cmd {
         switch (action) {
         case pset:
 
+            CMIDebug.d("this??", !state.equals(FlagState.INVALID), flag != null, flagGroup != null);
             if (!state.equals(FlagState.INVALID) && (flag != null || flagGroup != null)) {
                 if (!residence.isOwner(sender) && !resadmin && !residence.getPermissions().playerHas(sender, Flags.admin, false)) {
                     plugin.msg(sender, lm.General_NoPermission);
                     return true;
                 }
-                residence.getPermissions().setPlayerFlag(sender, rplayer.getName(), flag != null ? flag.name() : flagGroup, state.getName(), resadmin, true);
+                CMIDebug.d("this?");
+                residence.getPermissions().setPlayerFlag(sender, rplayer.getName(), flag != null ? flag : flagGroup, state.getName(), resadmin, true);
                 return true;
             }
 

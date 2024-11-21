@@ -3,19 +3,18 @@ package com.bekvon.bukkit.residence.commands;
 import java.util.Arrays;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
+
+import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.containers.CommandAnnotation;
+import com.bekvon.bukkit.residence.containers.cmd;
 
 import net.Zrips.CMILib.Container.CMIText;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.Locale.LC;
 import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Version.Version;
-
-import com.bekvon.bukkit.residence.Residence;
-import com.bekvon.bukkit.residence.containers.CommandAnnotation;
-import com.bekvon.bukkit.residence.containers.cmd;
 
 public class version implements cmd {
 
@@ -59,7 +58,6 @@ public class version implements cmd {
         CMIMessages.sendMessage(sender, "&fJava version: &7" + javaVersion);
 
         LC.info_Spliter.sendMessage(sender);
-
         return true;
     }
 
