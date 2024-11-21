@@ -303,11 +303,8 @@ public class Pl3xMapManager {
         }
 
         for (Entry<String, CuboidArea> oneArea : res.getAreaMap().entrySet()) {
-
             String id = oneArea.getKey() + "." + resid;
-
             provider.removeMarker(id);
-
             if (depth <= plugin.getConfigManager().Pl3xMapLayerSubZoneDepth + 1) {
                 List<ClaimedResidence> subids = res.getSubzones();
                 for (ClaimedResidence one : subids) {
@@ -318,13 +315,8 @@ public class Pl3xMapManager {
     }
 
     public void activate() {
-
         CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " Pl3xMap residence activated!");
-
-        CMIDebug.c("pre add residence to plex", plugin.getResidenceManager().getResidences().size());
-
         for (Entry<String, ClaimedResidence> one : plugin.getResidenceManager().getResidences().entrySet()) {
-
             try {
                 handleResidenceAdd(one.getValue().getName(), one.getValue(), one.getValue().getSubzoneDeep());
             } catch (Throwable e) {

@@ -116,14 +116,11 @@ public class pset implements cmd {
 
         switch (action) {
         case pset:
-
-            CMIDebug.d("this??", !state.equals(FlagState.INVALID), flag != null, flagGroup != null);
             if (!state.equals(FlagState.INVALID) && (flag != null || flagGroup != null)) {
                 if (!residence.isOwner(sender) && !resadmin && !residence.getPermissions().playerHas(sender, Flags.admin, false)) {
                     plugin.msg(sender, lm.General_NoPermission);
                     return true;
                 }
-                CMIDebug.d("this?");
                 residence.getPermissions().setPlayerFlag(sender, rplayer.getName(), flag != null ? flag : flagGroup, state.getName(), resadmin, true);
                 return true;
             }
