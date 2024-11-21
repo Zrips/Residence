@@ -15,6 +15,8 @@ import com.bekvon.bukkit.residence.event.ResidenceRentEvent;
 import com.bekvon.bukkit.residence.event.ResidenceSizeChangeEvent;
 import com.bekvon.bukkit.residence.event.ResidenceSubzoneCreationEvent;
 
+import net.Zrips.CMILib.Logs.CMIDebug;
+
 public class Pl3xMapListeners implements Listener {
 
     private Residence plugin;

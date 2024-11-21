@@ -19,6 +19,7 @@ import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.bekvon.bukkit.residence.utils.GetTime;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
@@ -40,7 +41,6 @@ public class Pl3xMapManager {
 
     public Pl3xMap api;
 
-    private CMITask scheduler = null;
     HashMap<String, SimpleLayer> providers = new HashMap<String, SimpleLayer>();
 
     public Pl3xMapManager(Residence plugin) {
@@ -50,13 +50,11 @@ public class Pl3xMapManager {
     public void fireUpdateAdd(final ClaimedResidence res, final int deep) {
         if (api == null)
             return;
+
         if (res == null)
             return;
 
-        if (scheduler != null)
-            scheduler.cancel();
-
-        scheduler = CMIScheduler.runTaskLater(plugin, () -> handleResidenceAdd(res.getName(), res, deep), 10L);
+        CMIScheduler.runTaskLater(plugin, () -> handleResidenceAdd(res.getName(), res, deep), 10L);
     }
 
     public void fireUpdateRemove(final ClaimedResidence res, final int deep) {
@@ -323,8 +321,10 @@ public class Pl3xMapManager {
 
         CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " Pl3xMap residence activated!");
 
+        CMIDebug.c("pre add residence to plex", plugin.getResidenceManager().getResidences().size());
+
         for (Entry<String, ClaimedResidence> one : plugin.getResidenceManager().getResidences().entrySet()) {
-            fireUpdateAdd(one.getValue(), one.getValue().getSubzoneDeep());
+
             try {
                 handleResidenceAdd(one.getValue().getName(), one.getValue(), one.getValue().getSubzoneDeep());
             } catch (Throwable e) {
