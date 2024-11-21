@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Allay;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Entity;
@@ -26,6 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.lm;
@@ -201,13 +203,14 @@ public class Utils {
     }
 
     public static boolean isAnimal(Entity ent) {
-
         return (ent instanceof Animals ||
             ent instanceof WaterMob ||
             ent instanceof NPC ||
             ent instanceof Bat ||
             ent instanceof Snowman ||
-            ent instanceof IronGolem);
+            ent instanceof IronGolem ||
+            // crude approach to include Allay and be multi version supported
+            ent.getClass().getSimpleName().equals("CraftAllay"));
     }
 
     public static boolean isArmorStandEntity(EntityType ent) {
