@@ -578,7 +578,7 @@ public class ResidencePlayerListener implements Listener {
             for (Player one : event.getResidence().getPlayersInResidence())
                 one.resetPlayerWeather();
 
-        if (event.getPlayer() != null && res.getPermissions().playerHas(event.getPlayer(), Flags.fly, FlagCombo.OnlyTrue))
+        if (res.getPermissions().has(Flags.fly, FlagCombo.OnlyTrue))
             for (Player one : event.getResidence().getPlayersInResidence())
                 fly(one, false);
 
