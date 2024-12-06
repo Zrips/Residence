@@ -1753,6 +1753,7 @@ public class ResidencePlayerListener implements Listener {
         case TRADER_LLAMA:
         case STRIDER:
         case SKELETON_HORSE:
+        case CAMEL:
             return true;
         default:
             return false;
