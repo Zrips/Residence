@@ -94,6 +94,7 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -1581,14 +1582,19 @@ public class ResidencePlayerListener implements Listener {
             CMIMaterial btype = CMIMaterial.get(block);
 
             if (heldItem.isDye() || heldItem.equals(CMIMaterial.GLOW_INK_SAC)) {
+
                 if (heldItem.equals(CMIMaterial.BONE_MEAL) && (btype == CMIMaterial.GRASS_BLOCK ||
                     btype == CMIMaterial.GRASS ||
+                    btype == CMIMaterial.SHORT_GRASS ||
+                    btype == CMIMaterial.TALL_GRASS ||
+                    btype == CMIMaterial.TALL_SEAGRASS ||
                     btype.isSapling()) ||
                     heldItem == CMIMaterial.COCOA_BEANS && blockM == CMIMaterial.JUNGLE_WOOD ||
                     btype == CMIMaterial.MOSS_BLOCK ||
                     btype == CMIMaterial.BIG_DRIPLEAF_STEM ||
                     btype == CMIMaterial.BIG_DRIPLEAF ||
                     btype == CMIMaterial.SMALL_DRIPLEAF) {
+
                     FlagPermissions tperms = plugin.getPermsByLocForPlayer(block.getRelative(event.getBlockFace()).getLocation(), player);
                     if (!tperms.playerHas(player, Flags.build, true)) {
                         plugin.msg(player, lm.Flag_Deny, Flags.build);
