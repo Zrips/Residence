@@ -3,6 +3,7 @@ Global:
   # These are world flags that are applied when the player is NOT within a residence.
   Flags:
     # these are default for all worlds unless specified below, they can be overridden per group
+    # Using command: false flag will allow you to disable and allow predefined commands. Command list can be difined under CommandLimits section
     Global:
       use: true
       build: true
@@ -244,6 +245,20 @@ Global:
     wspeed1: true
     # Applies to: Residence
     wspeed2: true
+    # Applies to: Both
+    brush: true
+    # Applies to: Both
+    copper: true
+    # Applies to: Both
+    elytra: false
+    # Applies to: Both
+    goathorn: true
+    # Applies to: Both
+    harvest: false
+    # Applies to: Residence
+    safezone: false
+    # Applies to: Residence
+    skulk: true
   # This sets GUI items to represent each flag, if not given, then gray wool will be used
   FlagGui:
     admin: BEDROCK
@@ -361,6 +376,13 @@ Global:
     witherspawn: WITHER_SKELETON_SKULL
     wspeed1: POTION
     wspeed2: POTION
+    brush: BRUSH
+    copper: IRON_BLOCK
+    elytra: ELYTRA
+    goathorn: GOAT_HORN
+    harvest: SWEET_BERRIES
+    safezone: APPLE
+    skulk: SCULK_CATALYST
   # These are default flags applied to all residences from any user group.
   ResidenceDefault:
     build: false
@@ -381,6 +403,7 @@ Global:
     tp: false
     explode: false
     harvest: false
+    skulk: false
   # These are default flags applied to the residence creator of any group.
   CreatorDefault:
     build: true
@@ -424,6 +447,7 @@ Global:
     - brew
     - table
     - enchant
+    # This group of flags will be used for padd sub command
     trusted:
     - use
     - tp
@@ -442,12 +466,26 @@ Global:
     - ignite
     - firespread
   # Completely disables defined flag which will no longer be accesable even with resadmin command
-  # Can save some of the server processing resources if you dont want to utilize specific checks for specific flags
+  # Can save some of the server processing resources if you don't want to utilize specific checks for specific flags
   TotalFlagDisabling:
   - Completely
   - Disable
   - Particular
   - Flags
+  # Provide list of commands you want to allow or block
+  # This is when using 'command: false' flag for global/world flags
+  # For example 'res create' under allow section and '*' would block everything except 'res create' command
+  # Can be defined per world just like world flags can be
+  # This will NOT apply inside residences. Inside residence command limits are based on residence command flag and its set commands limits
+  # Residence itself will need to have 'command: false' to override global command limits with specific to that residence ones
+  CommandLimits:
+    Global:
+      # When enabled allowed and blocked commands inside residence will be inherited from global list and combined with residence command limits
+      Inherit: false
+      WhiteList:
+      - some allowed command
+      BlackList:
+      - some blocked command
 # this is where you can create blacklists / whitelists
 ItemList:
   # list name is not important, as long as it is unique. Its good to use a descripive name.

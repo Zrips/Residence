@@ -60,7 +60,7 @@ public class ResidencePlayerListener1_17 implements Listener {
 
         Entity ent = event.getEntity();
 
-        ItemStack iih = CMIItemStack.getItemInMainHand(player);
+        ItemStack iih = event.getOriginalBucket();
         if (iih == null)
             return;
 
