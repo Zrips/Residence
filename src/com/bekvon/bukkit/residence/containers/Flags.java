@@ -108,6 +108,7 @@ public enum Flags {
     shop(CMIMaterial.ITEM_FRAME, FlagMode.Residence, "Adds residence to special residence shop list", true),
     snowtrail(CMIMaterial.SNOW, FlagMode.Residence, "Prevents snowman snow trails", true),
     spread(CMIMaterial.SNOWBALL, FlagMode.Residence, "Prevents block spreading", true),
+    skulk(CMIMaterial.SCULK_CATALYST, FlagMode.Residence, "Prevents skulk catalyst spreading", true),
     snowball(CMIMaterial.SNOWBALL, FlagMode.Residence, "Prevents snowball knockback", true),
     sanimals(CMIMaterial.RABBIT_SPAWN_EGG, FlagMode.Residence, "Allows or denys spawner or spawn egg animal spawns", true),
     shear(CMIMaterial.SHEARS, FlagMode.Both, "Allows or denys sheep shear", false),

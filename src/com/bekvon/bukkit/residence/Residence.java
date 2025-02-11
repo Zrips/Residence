@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -93,7 +92,6 @@ import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_9;
 import com.bekvon.bukkit.residence.listeners.SpigotListener;
 import com.bekvon.bukkit.residence.permissions.PermissionManager;
 import com.bekvon.bukkit.residence.persistance.YMLSaveHelper;
-import com.bekvon.bukkit.residence.persistance.YMLSaveHelper;
 import com.bekvon.bukkit.residence.pl3xmap.Pl3xMapListeners;
 import com.bekvon.bukkit.residence.pl3xmap.Pl3xMapManager;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -139,7 +137,6 @@ import fr.crafter.tickleman.realeconomy.RealEconomy;
 import fr.crafter.tickleman.realplugin.RealPlugin;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -151,6 +148,7 @@ import net.pl3x.map.core.Pl3xMap;
  * @author Gary Smoak - bekvon
  * 
  */
+
 public class Residence extends JavaPlugin {
 
     private static Residence instance;

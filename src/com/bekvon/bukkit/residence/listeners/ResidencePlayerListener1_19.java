@@ -1,10 +1,12 @@
 package com.bekvon.bukkit.residence.listeners;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -12,6 +14,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
 public class ResidencePlayerListener1_19 implements Listener {
@@ -59,5 +62,24 @@ public class ResidencePlayerListener1_19 implements Listener {
         event.setCancelled(true);
 
         plugin.msg(player, lm.Residence_FlagDeny, Flags.goathorn, res.getName());
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onBlockSpread(BlockSpreadEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.skulk.isGlobalyEnabled())
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
+            return;
+
+        if (!Material.SCULK_CATALYST.equals(event.getSource().getType()))
+            return;
+
+        Location loc = event.getBlock().getLocation();
+        FlagPermissions perms = plugin.getPermsByLoc(loc);
+        if (!perms.has(Flags.skulk, true)) {
+            event.setCancelled(true);
+        }
     }
 }
