@@ -15,7 +15,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Powerable;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -70,10 +69,8 @@ import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Container.CMIBlock;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
-import net.Zrips.CMILib.Version.Teleporters.CMITeleporter;
 
 public class ResidenceBlockListener implements Listener {
 
@@ -88,7 +85,6 @@ public class ResidenceBlockListener implements Listener {
         this.plugin = residence;
     }
 
-    
     @EventHandler(priority = EventPriority.LOWEST)
     public void onButtonHitWithProjectile(ProjectileHitEvent e) {
         // Disabling listener if flag disabled globally
@@ -211,7 +207,6 @@ public class ResidenceBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onVineGrow(BlockSpreadEvent event) {
-        CMIDebug.d("block spread", event.getSource().getType());
         // Disabling listener if flag disabled globally
         if (!Flags.grow.isGlobalyEnabled())
             return;
@@ -220,10 +215,8 @@ public class ResidenceBlockListener implements Listener {
 
         if (!type.equals(CMIMaterial.VINE) && !type.toString().contains("_VINES"))
             return;
-        
         if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
             return;
-        
         FlagPermissions perms = plugin.getPermsByLoc(event.getBlock().getLocation());
         if (!perms.has(Flags.grow, true)) {
             event.setCancelled(true);
@@ -346,7 +339,6 @@ public class ResidenceBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockForm(BlockFormEvent event) {
-
         // Disabling listener if flag disabled globally
         if (!Flags.snowtrail.isGlobalyEnabled())
             return;
