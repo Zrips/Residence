@@ -23,6 +23,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 
+import net.Zrips.CMILib.Container.CMIText;
 import net.Zrips.CMILib.Enchants.CMIEnchantEnum;
 import net.Zrips.CMILib.GUI.CMIGuiButton;
 import net.Zrips.CMILib.GUI.GUIManager.GUIClickType;
@@ -340,8 +341,8 @@ public class setFlagInfo {
 	// Can it be null?
 	if (MiscInfoMeta == null)
 	    return miscInfo;
-	MiscInfoMeta.setDisplayName(ChatColor.GREEN + flagName);
-	List<String> lore = new ArrayList<String>();
+	MiscInfoMeta.setDisplayName(lm.Gui_Flag_NameColor.getMessage() + CMIText.firstToUpperCase(flagName));
+	List<String> lore = new ArrayList<String>(); 
 	String variable = "";
 	switch (state) {
 	case FALSE:
