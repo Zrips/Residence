@@ -94,6 +94,7 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -2802,10 +2803,14 @@ public class ResidencePlayerListener implements Listener {
             message = to.getEnterMessage();
             res = to;
         }
+
         Player player = event.getPlayer();
         if (player.hasMetadata("NPC"))
             return;
         if (message != null && !message.isEmpty()) {
+
+            message = lm.Limits_EnterLeavePrefix.getMessage() + message;
+
             Long time = informar.get(player.getUniqueId());
             if (time == null || time + 100L < System.currentTimeMillis()) {
 

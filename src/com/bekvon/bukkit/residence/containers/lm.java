@@ -399,6 +399,7 @@ public enum lm {
     Limits_MaxSubDepth("&7- &eMax Subzone Depth:&3 %1"),
     Limits_MaxRents("&7- &eMax Rents:&3 %1"),
     Limits_MaxRentDays(" &eMax Rent days:&3 %1"),
+    Limits_EnterLeavePrefix(""),
     Limits_EnterLeave("&7- &eCan Set Enter/Leave Messages:&3 %1"),
     Limits_NumberOwn("&7- &eNumber of Residences you own:&3 %1"),
     Limits_Cost("&7- &eResidence Cost Per Block:&3 %1"),
