@@ -18,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -34,6 +35,7 @@ import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Logs.CMIDebug;
+import net.Zrips.CMILib.Version.Version;
 
 public class ResidencePlayerListener1_17 implements Listener {
 
@@ -50,6 +52,28 @@ public class ResidencePlayerListener1_17 implements Listener {
             return size() > MAX_ENTRIES;
         }
     };
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onBlockPlace(BlockPlaceEvent event) {
+
+        if (ResidenceBlockListener.canPlaceBlock(event.getPlayer(), event.getBlock(), true))
+            return;
+
+        event.setCancelled(true);
+
+        if (event.getBlock().getType() != Material.POWDER_SNOW)
+            return;
+
+        BlockData data = ResidencePlayerListener1_17.powder_snow.remove(event.getBlock().getLocation().toString());
+        if (data == null)
+            return;
+
+        Block blockUnder = event.getBlock().getLocation().clone().add(0, -1, 0).getBlock();
+
+        if (data.getMaterial().equals(blockUnder.getType())) {
+            blockUnder.setBlockData(data);
+        }
+    }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerBucketEntityEvent(PlayerBucketEntityEvent event) {

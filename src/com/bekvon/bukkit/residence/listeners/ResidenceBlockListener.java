@@ -14,13 +14,10 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowman;
-import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -41,7 +38,6 @@ import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.world.PortalCreateEvent;
@@ -70,7 +66,6 @@ import net.Zrips.CMILib.Container.CMIBlock;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
-import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class ResidenceBlockListener implements Listener {
 
@@ -83,74 +78,6 @@ public class ResidenceBlockListener implements Listener {
 
     public ResidenceBlockListener(Residence residence) {
         this.plugin = residence;
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onButtonHitWithProjectile(ProjectileHitEvent e) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.button.isGlobalyEnabled())
-            return;
-
-        if (Version.isCurrentEqualOrLower(Version.v1_12_R1))
-            return;
-
-        if (e.getHitBlock() == null)
-            return;
-
-        if (plugin.isDisabledWorldListener(e.getHitBlock().getWorld()))
-            return;
-
-        if (!(e.getEntity().getShooter() instanceof Player))
-            return;
-
-        Player player = (Player) e.getEntity().getShooter();
-
-        Block block = e.getHitBlock().getLocation().clone().add(e.getHitBlockFace().getDirection()).getBlock();
-
-        if (!CMIMaterial.isButton(block.getType()))
-            return;
-
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
-
-        boolean hasuse = perms.playerHas(player, Flags.use, true);
-
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-
-        Flags result = FlagPermissions.getMaterialUseFlagList().get(block.getType());
-        if (result == null)
-            return;
-
-        if (perms.playerHas(player, result, hasuse))
-            return;
-
-        if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
-            return;
-        }
-
-        switch (result) {
-        case button:
-            if (ResPerm.bypass_button.hasPermission(player, 10000L))
-                return;
-            break;
-        }
-        e.setCancelled(true);
-        plugin.msg(player, lm.Flag_Deny, result);
-
-        if (e.getEntity() instanceof Arrow)
-            e.getEntity().remove();
-
-        if (Version.isCurrentHigher(Version.v1_13_R1) && e.getEntity() instanceof Trident && !block.getType().toString().contains("STONE") && block
-            .getBlockData() instanceof org.bukkit.block.data.Powerable) {
-            org.bukkit.block.data.Powerable powerable = (org.bukkit.block.data.Powerable) block.getBlockData();
-            if (!powerable.isPowered()) {
-                CMIScheduler.runAtLocation(plugin, block.getLocation(), () -> {
-                    powerable.setPowered(false);
-                    block.setBlockData(powerable, true);
-                });
-            }
-        }
-
-        return;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -682,28 +609,6 @@ public class ResidenceBlockListener implements Listener {
 
         plugin.getSelectionManager().placeLoc1(player, cuboid.getLowLocation());
         plugin.getSelectionManager().placeLoc2(player, cuboid.getHighLocation());
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onBlockPlace(BlockPlaceEvent event) {
-
-        if (canPlaceBlock(event.getPlayer(), event.getBlock(), true))
-            return;
-
-        event.setCancelled(true);
-
-        if (!Version.isCurrentEqualOrHigher(Version.v1_17_R1) || event.getBlock().getType() != Material.POWDER_SNOW)
-            return;
-
-        BlockData data = ResidencePlayerListener1_17.powder_snow.remove(event.getBlock().getLocation().toString());
-        if (data == null)
-            return;
-
-        Block blockUnder = event.getBlock().getLocation().clone().add(0, -1, 0).getBlock();
-
-        if (data.getMaterial().equals(blockUnder.getType())) {
-            blockUnder.setBlockData(data);
-        }
     }
 
     public static boolean canPlaceBlock(Player player, Block block, boolean informPlayer) {
