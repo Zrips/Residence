@@ -250,6 +250,7 @@ public class ConfigManager {
     protected List<RandomTeleport> RTeleport = new ArrayList<RandomTeleport>();
 
     protected List<String> DisabledWorldsList = new ArrayList<String>();
+    protected List<String> EnabledWorldsList = new ArrayList<String>();
 
     protected int rtCooldown;
     protected int rtMaxTries;
@@ -693,8 +694,13 @@ public class ConfigManager {
         c.addComment("Global.Optimizations.DefaultWorld", "Name of your main residence world. Usually normal starting world 'World'. Capitalization essential");
         DefaultWorld = c.get("Global.Optimizations.DefaultWorld", defaultWorldName);
 
-        c.addComment("Global.Optimizations.DisabledWorlds.List", "List Of Worlds where this plugin is disabled", "Make sure that world names capitalization is correct");
-        DisabledWorldsList = c.get("Global.Optimizations.DisabledWorlds.List", Arrays.asList("worldNamesHere"));
+        c.addComment("Global.Optimizations.DisabledWorlds.BlackList", "List Of Worlds where this plugin is disabled", "Make sure that world names capitalization is correct",
+            "In case WhiteList contains any entries then this section is ignored entirely");
+        DisabledWorldsList = c.get("Global.Optimizations.DisabledWorlds.BlackList", (List<String>) c.getC().getList("Global.Optimizations.DisabledWorlds.List", new ArrayList<String>()));
+
+        c.addComment("Global.Optimizations.DisabledWorlds.WhiteList", "List Of Worlds where this plugin is enabled", "Make sure that world names capitalization is correct",
+            "In case WhiteList contains any entries then BlackList section is ignored entirely");
+        EnabledWorldsList = c.get("Global.Optimizations.DisabledWorlds.WhiteList", new ArrayList<String>()); 
 
         c.addComment("Global.Optimizations.DisabledWorlds.DisableListeners", "Disables all listeners in included worlds");
         DisableListeners = c.get("Global.Optimizations.DisabledWorlds.DisableListeners", true);
@@ -873,8 +879,8 @@ public class ConfigManager {
         TeleportDelay = c.get("Global.Tp.TeleportDelay", 3);
         c.addComment("Global.Tp.TeleportTitleMessage", "Show aditional message in title message area when player is teleporting to residence");
         TeleportTitleMessage = c.get("Global.Tp.TeleportTitleMessage", true);
-        
-        c.addComment("Global.Tp.BlockedWorlds", "List of worlds where teleportation using /res tp is not allowed","This only blocks teleportation to those worlds, not from them");
+
+        c.addComment("Global.Tp.BlockedWorlds", "List of worlds where teleportation using /res tp is not allowed", "This only blocks teleportation to those worlds, not from them");
         TeleportBlockedWorlds = c.get("Global.Tp.BlockedWorlds", Arrays.asList("SomeWorldNames"));
         CMIList.toLowerCase(TeleportBlockedWorlds);
 

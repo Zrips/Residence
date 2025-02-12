@@ -1941,6 +1941,9 @@ public class Residence extends JavaPlugin {
     }
 
     public boolean isDisabledWorld(String worldname) {
+        if (!getConfigManager().EnabledWorldsList.isEmpty()) {
+            return !getConfigManager().EnabledWorldsList.contains(worldname);
+        }
         return getConfigManager().DisabledWorldsList.contains(worldname);
     }
 
@@ -1949,6 +1952,11 @@ public class Residence extends JavaPlugin {
     }
 
     public boolean isDisabledWorldListener(String worldname) {
+
+        if (!getConfigManager().EnabledWorldsList.isEmpty()) {
+            return !getConfigManager().EnabledWorldsList.contains(worldname) && getConfigManager().DisableListeners;
+        }
+
         return getConfigManager().DisabledWorldsList.contains(worldname) && getConfigManager().DisableListeners;
     }
 
@@ -1957,6 +1965,11 @@ public class Residence extends JavaPlugin {
     }
 
     public boolean isDisabledWorldCommand(String worldname) {
+
+        if (!getConfigManager().EnabledWorldsList.isEmpty()) {
+            return !getConfigManager().EnabledWorldsList.contains(worldname) && getConfigManager().DisableCommands;
+        }
+
         return getConfigManager().DisabledWorldsList.contains(worldname) && getConfigManager().DisableCommands;
     }
 
