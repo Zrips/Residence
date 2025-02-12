@@ -55,6 +55,7 @@ public class Placeholder {
         residence_user_blocksell,
         residence_user_current_owner,
         residence_user_current_res,
+        residence_user_current_resname,
         residence_user_current_bank,
         residence_user_current_qsize,
         residence_user_current_ssize,
@@ -433,6 +434,10 @@ public class Placeholder {
                 case residence_user_current_res:
                     res = plugin.getResidenceManager().getByLoc(user.getPlayer().getLocation());
                     result = res == null ? "" : res.getName();
+                    break;
+                case residence_user_current_resname:
+                    res = plugin.getResidenceManager().getByLoc(user.getPlayer().getLocation());
+                    result = res == null ? "" : res.getResidenceName();
                     break;
                 case residence_user_current_bank:
                     res = plugin.getResidenceManager().getByLoc(user.getPlayer().getLocation());

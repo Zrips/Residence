@@ -27,6 +27,7 @@ import net.Zrips.CMILib.Container.CMIText;
 import net.Zrips.CMILib.Enchants.CMIEnchantEnum;
 import net.Zrips.CMILib.GUI.CMIGuiButton;
 import net.Zrips.CMILib.GUI.GUIManager.GUIClickType;
+import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class setFlagInfo {
 
@@ -158,7 +159,7 @@ public class setFlagInfo {
 			command = "false";
 			break;
 		    case RightShift:
-		    case LeftShift:
+		    case LeftShift: 
 		    case MiddleMouse:
 			command = "remove";
 			break;
@@ -180,7 +181,6 @@ public class setFlagInfo {
 		}
 	    };
 	    button.hideItemFlags();
-
 	    buttons.add(button);
 	    i++;
 	}
@@ -273,7 +273,7 @@ public class setFlagInfo {
 		    updateLooks();
 		}
 
-		@Override
+		@Override 
 		public void updateLooks() {
 		    this.setItem(updateLook(one.getKey()));
 		    hideItemFlags();
