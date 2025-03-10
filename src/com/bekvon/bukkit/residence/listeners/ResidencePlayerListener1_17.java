@@ -188,8 +188,11 @@ public class ResidencePlayerListener1_17 implements Listener {
             return;
 
         Block block = event.getBlock();
+        
         if (block == null)
             return;
+
+        ClaimedResidence originRes = plugin.getResidenceManager().getByLoc(block.getLocation());
 
         List<BlockState> blocks = new ArrayList<BlockState>(event.getBlocks());
 
@@ -201,10 +204,15 @@ public class ResidencePlayerListener1_17 implements Listener {
             if (res == null)
                 continue;
 
-            FlagPermissions perms = Residence.getInstance().getPermsByLocForPlayer(oneBlock.getLocation(), player);
+            if (player != null) {
+                FlagPermissions perms = Residence.getInstance().getPermsByLocForPlayer(oneBlock.getLocation(), player);
 
-            if (!perms.playerHas(player, Flags.build, FlagCombo.TrueOrNone)) {
+                if (!perms.playerHas(player, Flags.build, FlagCombo.TrueOrNone)) {
+                    event.getBlocks().remove(oneBlock);
+                }
+            } else if (originRes == null || !originRes.equals(res)) {
                 event.getBlocks().remove(oneBlock);
+
             }
         }
 
