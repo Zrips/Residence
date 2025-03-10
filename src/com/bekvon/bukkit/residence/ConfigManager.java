@@ -79,6 +79,7 @@ public class ConfigManager {
     protected boolean BlockAnyTeleportation;
     protected CMIMaterial infoTool;
     protected int AutoCleanUpDays;
+    protected boolean AutoCleanDetailsOnUnknown;
     protected boolean AutoCleanUpRegenerate;
     protected boolean CanTeleportIncludeOwner;
     private boolean LoadEveryWorld;
@@ -700,7 +701,7 @@ public class ConfigManager {
 
         c.addComment("Global.Optimizations.DisabledWorlds.WhiteList", "List Of Worlds where this plugin is enabled", "Make sure that world names capitalization is correct",
             "In case WhiteList contains any entries then BlackList section is ignored entirely");
-        EnabledWorldsList = c.get("Global.Optimizations.DisabledWorlds.WhiteList", new ArrayList<String>()); 
+        EnabledWorldsList = c.get("Global.Optimizations.DisabledWorlds.WhiteList", new ArrayList<String>());
 
         c.addComment("Global.Optimizations.DisabledWorlds.DisableListeners", "Disables all listeners in included worlds");
         DisableListeners = c.get("Global.Optimizations.DisabledWorlds.DisableListeners", true);
@@ -985,6 +986,8 @@ public class ConfigManager {
         AutoCleanUp = c.get("Global.AutoCleanUp.Use", false);
         c.addComment("Global.AutoCleanUp.Days", "For how long player should be offline to delete hes residence");
         AutoCleanUpDays = c.get("Global.AutoCleanUp.Days", 60);
+        c.addComment("Global.AutoCleanUp.DetailsOnUnknown", "When enabled in case residence owner can't be determined we will print out some basic information about it into console");
+        AutoCleanDetailsOnUnknown = c.get("Global.AutoCleanUp.DetailsOnUnknown", false);
         c.addComment("Global.AutoCleanUp.Regenerate", "Extra heavy on server and will lag it out while regeneration is ongoing",
             "Do you want to regenerate old residence area",
             "This requires world edit to be present");
@@ -1853,6 +1856,10 @@ public class ConfigManager {
 
     public boolean isAutoCleanUpRegenerate() {
         return AutoCleanUpRegenerate;
+    }
+
+    public boolean isAutoCleanDetailsOnUnknown() {
+        return AutoCleanDetailsOnUnknown;
     }
 
     public boolean isUseClean() {

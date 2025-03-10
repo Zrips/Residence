@@ -58,6 +58,8 @@ public class FileCleanUp {
 
                 if (player == null) {
                     skipped++;
+                    if (plugin.getConfigManager().isAutoCleanDetailsOnUnknown())
+                        Bukkit.getConsoleSender().sendMessage("Skipping " + res.getName() + " residence owned by " + res.getOwner() + " (" + res.getOwnerUUID() + ")");
                     continue;
                 }
 
