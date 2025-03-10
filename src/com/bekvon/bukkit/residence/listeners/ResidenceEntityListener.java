@@ -52,6 +52,7 @@ import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
@@ -73,6 +74,7 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceEntityListener implements Listener {
@@ -181,6 +183,7 @@ public class ResidenceEntityListener implements Listener {
         // disabling event on world
         if (plugin.isDisabledWorldListener(entity.getWorld()))
             return;
+
         if (!Utils.isAnimal(entity))
             return;
 
@@ -1435,11 +1438,10 @@ public class ResidenceEntityListener implements Listener {
         }
 
         Location loc = event.getEntity().getLocation();
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
-        if (res == null)
-            return;
 
-        if (isMonster(dmgr) && !res.getPermissions().has(Flags.destroy, false)) {
+        FlagPermissions perms = plugin.getPermsByLocForPlayer(loc, player);
+
+        if (isMonster(dmgr) && !perms.has(Flags.destroy, false)) {
             event.setCancelled(true);
             return;
         }
@@ -1449,8 +1451,6 @@ public class ResidenceEntityListener implements Listener {
 
         if (plugin.isResAdminOn(player))
             return;
-
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(loc, player);
 
         if (CMIEntity.isItemFrame(event.getEntity())) {
             ItemStack stack = null;
