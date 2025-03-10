@@ -189,7 +189,7 @@ public class ResidencePlayerListener1_17 implements Listener {
 
         Block block = event.getBlock();
         
-        if (block == null)
+        if (block == null) 
             return;
 
         ClaimedResidence originRes = plugin.getResidenceManager().getByLoc(block.getLocation());

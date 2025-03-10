@@ -28,6 +28,7 @@ import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.chat.ChatChannel;
 import com.bekvon.bukkit.residence.commands.padd;
+import com.bekvon.bukkit.residence.containers.DelayTeleport;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.MinimizeMessages;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
@@ -54,6 +55,7 @@ import com.bekvon.bukkit.residence.utils.LocationCheck;
 import com.bekvon.bukkit.residence.utils.LocationUtil;
 import com.bekvon.bukkit.residence.utils.LocationValidity;
 import com.bekvon.bukkit.residence.utils.SafeLocationCache;
+import com.bekvon.bukkit.residence.utils.Teleporting;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
@@ -1271,12 +1273,9 @@ public class ClaimedResidence {
         boolean bypassDelay = ResPerm.tpdelaybypass.hasPermission(targetPlayer);
 
         if (Residence.getInstance().getConfigManager().getTeleportDelay() > 0 && !isAdmin && !bypassDelay) {
-
-            Residence.getInstance().msg(reqPlayer, lm.General_TeleportStarted, this.getName(),
-                Residence.getInstance().getConfigManager().getTeleportDelay());
+            Residence.getInstance().msg(reqPlayer, lm.General_TeleportStarted, this.getName(), Residence.getInstance().getConfigManager().getTeleportDelay());
             if (Residence.getInstance().getConfigManager().isTeleportTitleMessage())
                 TpTimer(reqPlayer, Residence.getInstance().getConfigManager().getTeleportDelay());
-            Residence.getInstance().getTeleportDelayMap().add(reqPlayer.getName());
         }
 
         CompletableFuture<Location> future = this.getTeleportLocationASYNC(targetPlayer, false);
@@ -1307,31 +1306,38 @@ public class ClaimedResidence {
     }
 
     public void TpTimer(final Player player, final int t) {
-        CMITitleMessage.send(player, Residence.getInstance().msg(lm.General_TeleportTitle),
-            Residence.getInstance().msg(lm.General_TeleportTitleTime, t));
-        CMIScheduler.runTaskLater(Residence.getInstance(), () -> {
-            if (!Residence.getInstance().getTeleportDelayMap().contains(player.getName()))
-                return;
-            if (t > 1)
-                TpTimer(player, t - 1);
-        }, 20L);
+
+        DelayTeleport old = Teleporting.getOrCreateTeleportDelay(player.getUniqueId());
+        if (old.getMessageTask() != null)
+            old.getMessageTask().cancel();
+
+        old.setRemainingTime(t);
+        old.setMessageTask(CMIScheduler.scheduleSyncRepeatingTask(Residence.getInstance(), () -> {
+            CMITitleMessage.send(player, Residence.getInstance().msg(lm.General_TeleportTitle), Residence.getInstance().msg(lm.General_TeleportTitleTime, old.getRemainingTime()));
+            old.lowerRemainingTime();
+        }, 1L, 20L));
     }
 
-    public void performDelaydTp(final Location targloc, final Player targetPlayer, Player reqPlayer,
-        final boolean near) {
+    public void performDelaydTp(final Location targloc, final Player targetPlayer, Player reqPlayer, final boolean near) {
+        if (targetPlayer == null || targloc == null)
+            return;
+
         ResidenceTPEvent tpevent = new ResidenceTPEvent(this, targloc, targetPlayer, reqPlayer);
         Residence.getInstance().getServ().getPluginManager().callEvent(tpevent);
         if (tpevent.isCancelled())
             return;
 
-        CMIScheduler.runAtLocationLater(Residence.getInstance(), targloc, () -> {
-            if (targloc == null || targetPlayer == null || !targetPlayer.isOnline())
+        DelayTeleport tpDelayRecord = Teleporting.getOrCreateTeleportDelay(targetPlayer.getUniqueId());
+        if (tpDelayRecord.getTeleportTask() != null)
+            tpDelayRecord.getTeleportTask().cancel();
+
+        tpDelayRecord.setTeleportTask(CMIScheduler.runAtLocationLater(Residence.getInstance(), targloc, () -> {
+            if (!targetPlayer.isOnline())
                 return;
 
-            if (!Residence.getInstance().getTeleportDelayMap().contains(targetPlayer.getName()) && Residence.getInstance().getConfigManager().getTeleportDelay() > 0)
+            if (!Teleporting.isUnderTeleportDelay(targetPlayer.getUniqueId()) && Residence.getInstance().getConfigManager().getTeleportDelay() > 0)
                 return;
-            else if (Residence.getInstance().getTeleportDelayMap().contains(targetPlayer.getName()))
-                Residence.getInstance().getTeleportDelayMap().remove(targetPlayer.getName());
+            Teleporting.cancelTeleportDelay(targetPlayer.getUniqueId());
 
             targetPlayer.closeInventory();
             CMITeleporter.teleportAsync(targetPlayer, targloc);
@@ -1340,7 +1346,8 @@ public class ClaimedResidence {
             else
                 Residence.getInstance().msg(targetPlayer, lm.General_TeleportSuccess);
 
-        }, Residence.getInstance().getConfigManager().getTeleportDelay() * 20L);
+        }, Residence.getInstance().getConfigManager().getTeleportDelay() * 20L));
+
     }
 
     private void performInstantTp(final Location targloc, final Player targetPlayer, Player reqPlayer,

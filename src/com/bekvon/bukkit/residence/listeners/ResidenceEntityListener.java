@@ -99,7 +99,7 @@ public class ResidenceEntityListener implements Listener {
             event.setCancelled(true);
         }
     }
-
+ 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntitySpawnEvent(EntitySpawnEvent event) {
 

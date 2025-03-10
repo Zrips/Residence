@@ -83,6 +83,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.protection.ResidenceManager.ChunkRef;
 import com.bekvon.bukkit.residence.signsStuff.Signs;
 import com.bekvon.bukkit.residence.utils.GetTime;
+import com.bekvon.bukkit.residence.utils.Teleporting;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.CMILib;
@@ -2436,13 +2437,17 @@ public class ResidencePlayerListener implements Listener {
         if (!handled)
             event.setCancelled(true);
 
-        if (!plugin.getTeleportDelayMap().isEmpty() && plugin.getConfigManager().getTeleportDelay() > 0 && plugin.getTeleportDelayMap().contains(player
-            .getName())) {
-            plugin.getTeleportDelayMap().remove(player.getName());
-            plugin.msg(player, lm.General_TeleportCanceled);
-            if (plugin.getConfigManager().isTeleportTitleMessage())
-                CMITitleMessage.send(player, "", "");
-        }
+        if (Teleporting.getTeleportDelayMap().isEmpty())
+            return;
+
+        if (plugin.getConfigManager().getTeleportDelay() <= 0 || !Teleporting.isUnderTeleportDelay(player.getUniqueId()))
+            return;
+
+        Teleporting.cancelTeleportDelay(player.getUniqueId());
+
+        plugin.msg(player, lm.General_TeleportCanceled);
+        if (plugin.getConfigManager().isTeleportTitleMessage())
+            CMITitleMessage.send(player, "", "");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -2489,13 +2494,16 @@ public class ResidencePlayerListener implements Listener {
                 CMITeleporter.teleportAsync(event.getVehicle(), event.getFrom());
             }
 
-            if (!plugin.getTeleportDelayMap().isEmpty() && plugin.getConfigManager().getTeleportDelay() > 0 && plugin.getTeleportDelayMap().contains(player
-                .getName())) {
-                plugin.getTeleportDelayMap().remove(player.getName());
-                plugin.msg(player, lm.General_TeleportCanceled);
-                if (plugin.getConfigManager().isTeleportTitleMessage())
-                    CMITitleMessage.send(player, "", "");
-            }
+            if (Teleporting.getTeleportDelayMap().isEmpty())
+                continue;
+
+            if (plugin.getConfigManager().getTeleportDelay() <= 0 || !Teleporting.isUnderTeleportDelay(player.getUniqueId()))
+                continue;
+
+            Teleporting.cancelTeleportDelay(player.getUniqueId());
+            plugin.msg(player, lm.General_TeleportCanceled);
+            if (plugin.getConfigManager().isTeleportTitleMessage())
+                CMITitleMessage.send(player, "", "");
         }
     }
 
@@ -2991,47 +2999,58 @@ public class ResidencePlayerListener implements Listener {
                 if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
                     for (Player player : res.getPlayersInResidence()) {
                         Vector vloc = player.getLocation().toVector();
+
                         // Limit check area in case residence is very big
-                        entities.addAll(world.getNearbyEntities(BoundingBox.of(vloc.clone().subtract(new Vector(range, range, range)), vloc.clone().add(new Vector(range, range, range)))));
+                        BoundingBox searchBox = BoundingBox.of(
+                            vloc.clone().subtract(new Vector(range, range, range)),
+                            vloc.clone().add(new Vector(range, range, range)));
+
+                        CMIScheduler.runAtLocation(plugin, player.getLocation(), () -> {
+                            Set<Entity> ent = new HashSet<>(world.getNearbyEntities(searchBox));
+                            processEntities(ent, res);
+                        });
+
                     }
-                } else {
-                    for (CuboidArea area : res.getAreaMap().values()) {
-                        for (ChunkRef chunk : area.getChunks()) {
+                    continue;
+                }
 
-                            // Checking if chunk is near a player.
-                            // In case residence is extremely big it will check all chunks which can cause performance issues
-                            boolean near = false;
-                            for (Player player : res.getPlayersInResidence()) {
-                                int x = player.getLocation().getChunk().getX();
-                                int z = player.getLocation().getChunk().getZ();
+                for (CuboidArea area : res.getAreaMap().values()) {
+                    for (ChunkRef chunk : area.getChunks()) {
 
-                                if (CMINumber.abs(x - chunk.getX()) > chunkRadius)
-                                    continue;
+                        // Checking if chunk is near a player.
+                        // In case residence is extremely big it will check all chunks which can cause performance issues
+                        boolean near = false;
+                        for (Player player : res.getPlayersInResidence()) {
+                            int x = player.getLocation().getChunk().getX();
+                            int z = player.getLocation().getChunk().getZ();
 
-                                if (CMINumber.abs(z - chunk.getZ()) > chunkRadius)
-                                    continue;
-                                near = true;
-                                break;
-                            }
-                            if (!near)
+                            if (CMINumber.abs(x - chunk.getX()) > chunkRadius)
                                 continue;
-                            entities.addAll(Arrays.asList(world.getChunkAt(chunk.getX(), chunk.getZ()).getEntities()));
+
+                            if (CMINumber.abs(z - chunk.getZ()) > chunkRadius)
+                                continue;
+                            near = true;
+                            break;
                         }
+                        if (!near)
+                            continue;
+                        entities.addAll(Arrays.asList(world.getChunkAt(chunk.getX(), chunk.getZ()).getEntities()));
                     }
                 }
 
-                for (Entity ent : entities) {
-                    if (!ResidenceEntityListener.isMonster(ent))
-                        continue;
-                    if (!res.containsLoc(ent.getLocation()))
-                        continue;
-                    ClaimedResidence ares = plugin.getResidenceManager().getByLoc(ent.getLocation());
-                    if (ares.getPermissions().has(Flags.nomobs, FlagCombo.OnlyTrue)) {
-                        ent.remove();
-                    }
-                }
+                processEntities(entities, res);
             }
         } catch (Exception ex) {
+        }
+    }
+
+    private void processEntities(Set<Entity> entities, ClaimedResidence res) {
+        for (Entity ent : entities) {
+            if (!ResidenceEntityListener.isMonster(ent))
+                continue;
+            if (!res.containsLoc(ent.getLocation()))
+                continue;
+            ent.remove();
         }
     }
 

@@ -747,7 +747,7 @@ public class ConfigManager {
         c.addComment("Global.Optimizations.AutomaticResidenceCreation.Size.Percentage",
             "Value between 1 and 100 which will define size of residence we will create in percentage depending on players permission group");
         ARCSizePercentage = c.get("Global.Optimizations.AutomaticResidenceCreation.Size.Percentage", 50);
-        ARCSizePercentage = ARCSizePercentage < 1 ? 1 : ARCSizePercentage > 100 ? 100 : ARCSizePercentage;
+        ARCSizePercentage = CMINumber.clamp(ARCSizePercentage, 1, 100);
 
         c.addComment("Global.Optimizations.AutomaticResidenceCreation.Size.Min",
             "Value in blocks. While previous percentage will determine general size, this can be used to avoid having tiny residences",

@@ -130,7 +130,6 @@ public class rt implements cmd {
         CMIScheduler.runAtLocationLater(Residence.getInstance(), lc, () -> {
             if (Residence.getInstance().getConfigManager().getTeleportDelay() > 0 && !resadmin && !ResPerm.randomtp_delaybypass.hasPermission(sender, false)) {
                 Residence.getInstance().msg(player, lm.RandomTeleport_TeleportStarted, lc.getX(), lc.getY(), lc.getZ(), Residence.getInstance().getConfigManager().getTeleportDelay());
-                Residence.getInstance().getTeleportDelayMap().add(player.getName());
                 Residence.getInstance().getRandomTpManager().performDelaydTp(lc, player);
             } else
                 Residence.getInstance().getRandomTpManager().performInstantTp(lc, player);

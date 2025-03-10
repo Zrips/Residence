@@ -13,6 +13,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.containers.DelayTeleport;
 import com.bekvon.bukkit.residence.containers.RandomTeleport;
 import com.bekvon.bukkit.residence.containers.ValidLocation;
 import com.bekvon.bukkit.residence.containers.lm;
@@ -24,6 +25,7 @@ import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
+import net.Zrips.CMILib.Version.Schedulers.CMITask;
 import net.Zrips.CMILib.Version.Teleporters.CMITeleporter;
 
 public class RandomTp {
@@ -376,15 +378,24 @@ public class RandomTp {
     }
 
     public void performDelaydTp(final Location loc, final Player targetPlayer) {
-        CMIScheduler.runAtLocationLater(plugin, loc, () -> {
-            if (!plugin.getTeleportDelayMap().contains(targetPlayer.getName()) && plugin.getConfigManager().getTeleportDelay() > 0)
+
+        DelayTeleport tpDelayRecord = Teleporting.getOrCreateTeleportDelay(targetPlayer.getUniqueId());
+        if (tpDelayRecord.getTeleportTask() != null)
+            tpDelayRecord.getTeleportTask().cancel();
+
+        CMITask task = CMIScheduler.runAtLocationLater(plugin, loc, () -> {
+            if (!Teleporting.isUnderTeleportDelay(targetPlayer.getUniqueId()) && plugin.getConfigManager().getTeleportDelay() > 0)
                 return;
-            else if (plugin.getTeleportDelayMap().contains(targetPlayer.getName()))
-                plugin.getTeleportDelayMap().remove(targetPlayer.getName());
+
+            Teleporting.cancelTeleportDelay(targetPlayer.getUniqueId());
+
             targetPlayer.closeInventory();
             CMITeleporter.teleportAsync(targetPlayer, loc);
             plugin.msg(targetPlayer, lm.RandomTeleport_TeleportSuccess, loc.getX(), loc.getY(), loc.getZ());
         }, plugin.getConfigManager().getTeleportDelay() * 20L);
+
+        tpDelayRecord.setRemainingTime(plugin.getConfigManager().getTeleportDelay());
+        tpDelayRecord.setTeleportTask(task);
     }
 
     public void performInstantTp(Location loc, Player targetPlayer) {

@@ -65,6 +65,7 @@ import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Container.CMIBlock;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceBlockListener implements Listener {
@@ -91,7 +92,7 @@ public class ResidenceBlockListener implements Listener {
                 return;
         } catch (Exception | NoSuchMethodError ex) {
             return;
-        }
+        } 
         Block b = e.getInventory().getLocation().getBlock();
         if (b == null || !CMIMaterial.isAnvil(b.getType()))
             return;
@@ -205,7 +206,7 @@ public class ResidenceBlockListener implements Listener {
     }
 
     public static boolean canBreakBlock(Player player, Location loc, boolean inform) {
-
+        
         if (player == null)
             return true;
 

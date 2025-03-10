@@ -58,6 +58,7 @@ import com.bekvon.bukkit.residence.api.ResidencePlayerInterface;
 import com.bekvon.bukkit.residence.bigDoors.BigDoorsManager;
 import com.bekvon.bukkit.residence.chat.ChatManager;
 import com.bekvon.bukkit.residence.commands.padd;
+import com.bekvon.bukkit.residence.containers.DelayTeleport;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.MinimizeFlags;
 import com.bekvon.bukkit.residence.containers.MinimizeMessages;
@@ -239,7 +240,6 @@ public class Residence extends JavaPlugin {
     private UUID TempUserUUID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
 
     public HashMap<String, Long> rtMap = new HashMap<String, Long>();
-    public List<String> teleportDelayMap = new ArrayList<String>();
     public HashMap<UUID, SafeLocationCache> teleportMap = new HashMap<UUID, SafeLocationCache>();
 
     private Placeholder Placeholder;
@@ -253,10 +253,6 @@ public class Residence extends JavaPlugin {
 
     public HashMap<UUID, SafeLocationCache> getTeleportMap() {
         return teleportMap;
-    }
-
-    public List<String> getTeleportDelayMap() {
-        return teleportDelayMap;
     }
 
     public HashMap<String, Long> getRandomTeleportMap() {
