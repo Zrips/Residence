@@ -55,7 +55,6 @@ import com.bekvon.bukkit.residence.utils.GetTime;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.PageInfo;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -118,7 +117,6 @@ public class ResidenceManager implements ResidenceInterface {
 
             ClaimedResidence subres = residence.getSubzoneByLoc(loc);
             return subres == null ? residence : subres;
-
         }
         return null;
     }
@@ -251,7 +249,7 @@ public class ResidenceManager implements ResidenceInterface {
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
 
         PermissionGroup group = rPlayer.getGroup();
-//	PermissionGroup group = plugin.getPermissionManager().getGroup(owner, loc1.getWorld().getName());
+//      PermissionGroup group = plugin.getPermissionManager().getGroup(owner, loc1.getWorld().getName());
         if (!resadmin && !group.canCreateResidences() && !ResPerm.create.hasPermission(player, lm.General_NoPermission)) {
             return false;
         }
@@ -1156,7 +1154,6 @@ public class ResidenceManager implements ResidenceInterface {
                 for (Entry<String, Object> currentEntry : currentBatch) {
                     try {
                         ClaimedResidence residence = ClaimedResidence.load(worldName, (Map<String, Object>) currentEntry.getValue(), null, plugin);
-
                         if (residence == null) {
                             continue;
                         }
@@ -1183,12 +1180,19 @@ public class ResidenceManager implements ResidenceInterface {
                             resName += increment;
                         }
 
-                        for (ChunkRef chunk : getChunks(residence)) {
+                        List<ChunkRef> chunks = getChunks(residence);
+
+                        if (chunks.size() > 1000000)
+                            Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + ChatColor.YELLOW + " Detected extensively big residence area (" + currentEntry.getKey() + ") which covers " + chunks
+                                .size() + " chunks!");
+
+                        for (ChunkRef chunk : chunks) {
                             retRes.compute(chunk, (k, v) -> {
                                 if (v == null) {
-                                    v = new ArrayList<>();
+                                    v = new ArrayList<>(1);
                                 }
                                 v.add(residence);
+                                chunkCount++;
                                 return v;
                             });
                         }
@@ -1474,7 +1478,7 @@ public class ResidenceManager implements ResidenceInterface {
             sender.sendMessage(ChatColor.RED + "Removed " + ChatColor.YELLOW + count + ChatColor.RED + " residences in world: " + ChatColor.YELLOW + world);
         }
 
-//	plugin.getPlayerManager().fillList();
+//      plugin.getPlayerManager().fillList();
     }
 
     private void cleanResidenceRecords(ClaimedResidence res, boolean removeSigns) {

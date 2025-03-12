@@ -93,7 +93,7 @@ public class shop implements cmd {
                 return true;
             }
 
-            List<ShopVote> VoteList = res.GetShopVotes();
+            List<ShopVote> VoteList = res.getAllShopVotes();
 
             String separator = plugin.msg(lm.InformationPage_SmallSeparator);
 
@@ -368,8 +368,8 @@ public class shop implements cmd {
 
 //	    ConcurrentHashMap<String, List<ShopVote>> VoteList = plugin.getShopSignUtilManager().GetAllVoteList();
 
-            if (!res.GetShopVotes().isEmpty()) {
-                List<ShopVote> list = res.GetShopVotes();
+            if (!res.getAllShopVotes().isEmpty()) {
+                List<ShopVote> list = res.getAllShopVotes();
                 boolean found = false;
                 for (ShopVote OneVote : list) {
                     if (OneVote.getName().equalsIgnoreCase(player.getName()) || OneVote.getUuid() != null && OneVote.getUuid() == player.getUniqueId()) {
@@ -401,7 +401,7 @@ public class shop implements cmd {
                 else
                     plugin.msg(player, lm.Shop_Voted, vote, resName);
             }
-            plugin.getShopSignUtilManager().saveShopVotes();
+            plugin.getShopSignUtilManager().saveShopVotes(true);
             plugin.getShopSignUtilManager().boardUpdate();
             return true;
         }

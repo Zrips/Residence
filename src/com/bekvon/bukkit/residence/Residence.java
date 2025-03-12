@@ -377,6 +377,8 @@ public class Residence extends JavaPlugin {
         this.getPermissionManager().stopCacheClearScheduler();
 
         this.getSelectionManager().onDisable();
+        
+        this.getShopSignUtilManager().forceSaveIfPending();
 
         if (this.metrics != null)
             try {

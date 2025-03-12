@@ -95,7 +95,6 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -323,17 +322,23 @@ public class ResidencePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerDropItemEvent(PlayerDropItemEvent event) {
+
         if (!Flags.itemdrop.isGlobalyEnabled())
             return;
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(event.getPlayer().getLocation());
+
+        Player player = event.getPlayer();
+
+        ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
         if (res == null)
             return;
-        if (event.getPlayer().hasMetadata("NPC"))
-            return;
-        if (!res.getPermissions().playerHas(event.getPlayer(), Flags.itemdrop, FlagCombo.OnlyFalse))
+
+        if (player.hasMetadata("NPC"))
             return;
 
-        if (ResPerm.bypass_itemdrop.hasPermission(event.getPlayer(), 10000L))
+        if (!res.getPermissions().playerHas(player, Flags.itemdrop, FlagCombo.OnlyFalse))
+            return;
+
+        if (ResPerm.bypass_itemdrop.hasPermission(player, 10000L))
             return;
 
         event.setCancelled(true);

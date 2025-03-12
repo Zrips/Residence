@@ -25,6 +25,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
+import net.Zrips.CMILib.Version.Schedulers.CMITask;
 
 public class ShopSignUtil {
 
@@ -84,7 +85,7 @@ public class ShopSignUtil {
 
         ConfigurationSection ConfCategory = f.getConfigurationSection("ShopVotes");
         ArrayList<String> categoriesList = new ArrayList<String>(ConfCategory.getKeys(false));
-        if (categoriesList.size() == 0)
+        if (categoriesList.isEmpty())
             return;
 
         for (String category : categoriesList) {
@@ -144,8 +145,40 @@ public class ShopSignUtil {
         return;
     }
 
-    // Signs save file
+    CMITask shopSaveTask = null;
+
+    public void saveShopVotes(boolean delay) {
+
+        if (!delay) {
+            saveShopVotes();
+            return;
+        }
+
+        if (shopSaveTask != null)
+            return;
+
+        shopSaveTask = CMIScheduler.runLaterAsync(plugin, this::saveShopVotes, 20L * 15L); 
+    }
+
+    public void forceSaveIfPending() {
+
+        if (shopSaveTask == null)
+            return;
+
+        shopSaveTask.cancel();
+        shopSaveTask = null;
+
+        saveShopVotes();
+    }
+
+    // Shops votes save file
     public void saveShopVotes() {
+        
+        if (shopSaveTask != null) {
+            shopSaveTask.cancel();
+            shopSaveTask = null;
+        }
+
         File f = new File(plugin.getDataFolder(), "ShopVotes.yml");
         YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
@@ -159,14 +192,14 @@ public class ShopSignUtil {
 
         for (ClaimedResidence res : plugin.getResidenceManager().getShops()) {
 
-            if (res == null || res.GetShopVotes().isEmpty())
+            if (res == null || res.getAllShopVotes().isEmpty())
                 continue;
 
             String path = "ShopVotes." + res.getName().replace(".", "_");
 
             List<String> list = new ArrayList<String>();
 
-            for (ShopVote oneVote : res.GetShopVotes()) {
+            for (ShopVote oneVote : res.getAllShopVotes()) {
                 list.add(oneVote.getName() + ":" + oneVote.getUuid().toString() + "%" + oneVote.getVote() + "!" + oneVote.getTime());
             }
             writer.set(path, list);
@@ -188,10 +221,10 @@ public class ShopSignUtil {
 
     public Vote getAverageVote(ClaimedResidence res) {
 
-        if (res == null || res.GetShopVotes().isEmpty())
+        if (res == null || res.getAllShopVotes().isEmpty())
             return new Vote(plugin.getConfigManager().getVoteRangeTo() / 2, 0);
 
-        List<ShopVote> votes = res.GetShopVotes();
+        List<ShopVote> votes = res.getAllShopVotes();
 
         double total = 0;
         for (ShopVote oneVote : votes) {
@@ -210,10 +243,10 @@ public class ShopSignUtil {
     }
 
     public int getLikes(ClaimedResidence res) {
-        if (res == null || res.GetShopVotes().isEmpty())
+        if (res == null || res.getAllShopVotes().isEmpty())
             return 0;
 
-        List<ShopVote> votes = res.GetShopVotes();
+        List<ShopVote> votes = res.getAllShopVotes();
 
         int likes = 0;
         for (ShopVote oneVote : votes) {

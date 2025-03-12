@@ -1609,8 +1609,7 @@ public class ClaimedResidence {
     }
 
     @SuppressWarnings("unchecked")
-    public static ClaimedResidence load(String worldName, Map<String, Object> root, ClaimedResidence parent,
-        Residence plugin) throws Exception {
+    public static ClaimedResidence load(String worldName, Map<String, Object> root, ClaimedResidence parent, Residence plugin) throws Exception {
         ClaimedResidence res = new ClaimedResidence();
         if (root == null)
             throw new Exception("Null residence!");
@@ -2037,7 +2036,12 @@ public class ClaimedResidence {
         return within;
     }
 
+    @Deprecated
     public List<ShopVote> GetShopVotes() {
+        return getAllShopVotes();
+    }
+
+    public List<ShopVote> getAllShopVotes() {
         return ShopVoteList;
     }
 
