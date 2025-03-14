@@ -302,7 +302,7 @@ public class ResidenceManager implements ResidenceInterface {
 
         residences.put(resName.toLowerCase(), newRes);
 
-        calculateChunks(resName);
+        calculateChunks(newRes);
         plugin.getLeaseManager().removeExpireTime(newRes);
         plugin.getPlayerManager().addResidence(newRes.getOwner(), newRes);
 
@@ -1361,7 +1361,7 @@ public class ResidenceManager implements ResidenceInterface {
                 residences.put(newName.toLowerCase(), res);
                 residences.remove(oldName.toLowerCase());
 
-                calculateChunks(newName);
+                calculateChunks(res);
 
                 plugin.getSignUtil().updateSignResName(res);
 
@@ -1455,20 +1455,21 @@ public class ResidenceManager implements ResidenceInterface {
         while (it.hasNext()) {
             ClaimedResidence next = it.next();
 
-            if (next.getPermissions().getWorldName().equals(world)) {
-                if (playerExceptions != null && !playerExceptions.isEmpty()) {
-                    if (playerExceptions.contains(next.getOwner().toLowerCase()))
-                        continue;
+            if (!next.getPermissions().getWorldName().equals(world))
+                continue;
 
-                    if (playerExceptions.contains(next.getOwnerUUID().toString()))
-                        continue;
-                }
+            if (playerExceptions != null && !playerExceptions.isEmpty()) {
+                if (playerExceptions.contains(next.getOwner().toLowerCase()))
+                    continue;
 
-                cleanResidenceRecords(next, false);
-
-                it.remove();
-                count++;
+                if (playerExceptions.contains(next.getOwnerUUID().toString()))
+                    continue;
             }
+
+            cleanResidenceRecords(next, false);
+
+            it.remove();
+            count++;
         }
         chunkResidences.remove(world);
         chunkResidences.put(world, new HashMap<ChunkRef, List<ClaimedResidence>>());
@@ -1477,8 +1478,6 @@ public class ResidenceManager implements ResidenceInterface {
         } else {
             sender.sendMessage(ChatColor.RED + "Removed " + ChatColor.YELLOW + count + ChatColor.RED + " residences in world: " + ChatColor.YELLOW + world);
         }
-
-//      plugin.getPlayerManager().fillList();
     }
 
     private void cleanResidenceRecords(ClaimedResidence res, boolean removeSigns) {
@@ -1535,7 +1534,7 @@ public class ResidenceManager implements ResidenceInterface {
     }
 
     @Deprecated
-    public void calculateChunks(String name) {
+    public void calculateChunks2(String name) {
         if (name == null)
             return;
         name = name.toLowerCase();

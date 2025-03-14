@@ -160,7 +160,7 @@ public class SelectionManager {
 
             if (res2 == null)
                 return false;
-            return res1.getName().equals(res2.getName());
+            return res1.getName().equals(res2.getName()) || res1.getTopParent().equals(res2.getTopParent());
         }
 
         public void vert(boolean resadmin) {
@@ -278,6 +278,7 @@ public class SelectionManager {
         public CuboidArea getResizedArea() {
 
             CuboidArea area = this.getBaseArea();
+            
             switch (getSelectionRestrictions()) {
             case noLimits:
                 break;
@@ -1025,6 +1026,7 @@ public class SelectionManager {
         default:
             break;
         }
+
         updateLocations(player, area.getHighLocation(), area.getLowLocation(), true);
     }
 

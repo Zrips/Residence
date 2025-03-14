@@ -60,7 +60,6 @@ import com.bekvon.bukkit.residence.utils.Teleporting;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
 import net.Zrips.CMILib.Locale.LC;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Version.Version;
@@ -524,9 +523,9 @@ public class ClaimedResidence {
         if (resevent.isCancelled())
             return false;
 
-        Residence.getInstance().getResidenceManager().removeChunkList(this.getName());
+        Residence.getInstance().getResidenceManager().removeChunkList(this);
         areas.put(name, area);
-        Residence.getInstance().getResidenceManager().calculateChunks(this.getName());
+        Residence.getInstance().getResidenceManager().calculateChunks(this);
         return true;
     }
 
@@ -704,7 +703,7 @@ public class ClaimedResidence {
         Residence.getInstance().getResidenceManager().removeChunkList(this);
         areas.put(name, newarea);
         Residence.getInstance().getResidenceManager().calculateChunks(this);
-        
+
         if (player != null)
             Residence.getInstance().msg(player, lm.Area_Update);
         return true;
@@ -1408,9 +1407,9 @@ public class ClaimedResidence {
     }
 
     public void removeArea(String id) {
-        Residence.getInstance().getResidenceManager().removeChunkList(this.getName());
+        Residence.getInstance().getResidenceManager().removeChunkList(this);
         areas.remove(id);
-        Residence.getInstance().getResidenceManager().calculateChunks(this.getName());
+        Residence.getInstance().getResidenceManager().calculateChunks(this);
     }
 
     public void removeArea(Player player, String id, boolean resadmin) {
