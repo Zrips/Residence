@@ -2,9 +2,9 @@ package com.bekvon.bukkit.residence.listeners;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -2299,11 +2299,10 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         playerTempData.get(player).setLastUpdate(System.currentTimeMillis());
-        CMIDebug.it();
+
         boolean handled = handleNewLocation(player, locto, true);
         if (!handled)
             event.setCancelled(true);
-        CMIDebug.d(CMIDebug.getIT(), "ms");
 
         if (Teleporting.getTeleportDelayMap().isEmpty())
             return;
@@ -2492,12 +2491,16 @@ public class ResidencePlayerListener implements Listener {
         playerTempData tempData = playerTempData.get(uuid);
 
         ClaimedResidence resOld = tempData.getCurrentResidence();
-        boolean changedResidence = tempData.setCurrentResidence(player, res);
+
+        boolean changedResidence = !Objects.equals(resOld, res);
 
         if (res == null)
             playerPersistentData.get(uuid).setLastOutsideLoc(loc);
 
         if (!changedResidence) {
+            // In case we are inside same residence, we can assume we can move there
+            if (res != null)
+                tempData.setLastInsideLoc(loc);
             return true;
         }
 
@@ -2505,6 +2508,7 @@ public class ResidencePlayerListener implements Listener {
             CMIScheduler.runTaskAsynchronously(plugin, () -> plugin.getAutoSelectionManager().UpdateSelection(player));
 
         if (res == null) {
+            tempData.setCurrentResidence(player, res);
             // New ResidenceChangeEvent
             plugin.getServ().getPluginManager().callEvent(new ResidenceChangedEvent(resOld, null, player));
             return true;
@@ -2515,6 +2519,9 @@ public class ResidencePlayerListener implements Listener {
             !plugin.isResAdminOn(player) &&
             !res.isOwner(player) &&
             !ResPerm.admin_move.hasPermission(player, 10000L);
+
+        if (!cantMove)
+            tempData.setCurrentResidence(player, res);
 
         boolean teleported = false;
         if (!cantMove && Flags.nofly.isGlobalyEnabled() && player.isFlying() && res.getPermissions().playerHas(player, Flags.nofly, FlagCombo.OnlyTrue) && !plugin.isResAdminOn(player)
@@ -2561,7 +2568,8 @@ public class ResidencePlayerListener implements Listener {
             return false;
         }
 
-        tempData.setLastInsideLoc(loc);
+        if (!cantMove)
+            tempData.setLastInsideLoc(loc);
 
         plugin.getServ().getPluginManager().callEvent(new ResidenceChangedEvent(resOld, res, player));
 
@@ -2571,83 +2579,81 @@ public class ResidencePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceChangeMessagePrint(ResidenceChangedEvent event) {
 
-        CMIScheduler.runTaskAsynchronously(plugin, () -> {
-            ClaimedResidence from = event.getFrom();
-            ClaimedResidence to = event.getTo();
-            String message = null;
+        ClaimedResidence from = event.getFrom();
+        ClaimedResidence to = event.getTo();
+        String message = null;
 
-            ClaimedResidence res = from == null ? to : from;
+        ClaimedResidence res = from == null ? to : from;
 
-            if (from == null && to != null) {
-                message = to.getEnterMessage();
-                res = to;
-            }
+        if (from == null && to != null) {
+            message = to.getEnterMessage();
+            res = to;
+        }
 
-            if (from != null && to == null) {
-                message = from.getLeaveMessage();
-                res = from;
-            }
+        if (from != null && to == null) {
+            message = from.getLeaveMessage();
+            res = from;
+        }
 
-            if (from != null && to != null) {
-                message = to.getEnterMessage();
-                res = to;
-            }
+        if (from != null && to != null) {
+            message = to.getEnterMessage();
+            res = to;
+        }
 
-            Player player = event.getPlayer();
-            if (player.hasMetadata("NPC"))
-                return;
-            if (message != null && !message.isEmpty()) {
+        Player player = event.getPlayer();
+        if (player.hasMetadata("NPC"))
+            return;
+        if (message != null && !message.isEmpty()) {
 
-                message = lm.Limits_EnterLeavePrefix.getMessage() + message;
+            message = lm.Limits_EnterLeavePrefix.getMessage() + message;
 
-                Long time = playerTempData.get(player).getLastEnterLeaveInformTime();
-                if (time == null || time + 100L < System.currentTimeMillis()) {
+            Long time = playerTempData.get(player).getLastEnterLeaveInformTime();
+            if (time == null || time + 100L < System.currentTimeMillis()) {
 
-                    if (res.getPermissions().has(Flags.title, FlagCombo.TrueOrNone))
-                        switch (plugin.getConfigManager().getEnterLeaveMessageType()) {
-                        case ActionBar:
-                            CMIActionBar.send(player, (new StringBuilder()).append(ChatColor.YELLOW).append(insertMessages(player, res, message))
-                                .toString());
-                            break;
-                        case ChatBox:
-                            plugin.msg(player, ChatColor.YELLOW + this.insertMessages(player, res, message));
-                            break;
-                        case TitleBar:
-                            String title = ChatColor.YELLOW + insertMessages(player, res, message);
-                            String subtitle = "";
-                            if (title.contains("\\n")) {
-                                subtitle = ChatColor.YELLOW + title.split("\\\\n", 2)[1];
-                                title = title.split("\\\\n", 2)[0];
-                            }
-                            CMITitleMessage.send(player, title, subtitle);
-                            break;
-                        default:
-                            break;
+                if (res.getPermissions().has(Flags.title, FlagCombo.TrueOrNone))
+                    switch (plugin.getConfigManager().getEnterLeaveMessageType()) {
+                    case ActionBar:
+                        CMIActionBar.send(player, (new StringBuilder()).append(ChatColor.YELLOW).append(insertMessages(player, res, message))
+                            .toString());
+                        break;
+                    case ChatBox:
+                        plugin.msg(player, ChatColor.YELLOW + this.insertMessages(player, res, message));
+                        break;
+                    case TitleBar:
+                        String title = ChatColor.YELLOW + insertMessages(player, res, message);
+                        String subtitle = "";
+                        if (title.contains("\\n")) {
+                            subtitle = ChatColor.YELLOW + title.split("\\\\n", 2)[1];
+                            title = title.split("\\\\n", 2)[0];
                         }
-                    playerTempData.get(player).setLastEnterLeaveInformTime(System.currentTimeMillis());
-                }
+                        CMITitleMessage.send(player, title, subtitle);
+                        break;
+                    default:
+                        break;
+                    }
+                playerTempData.get(player).setLastEnterLeaveInformTime(System.currentTimeMillis());
             }
+        }
 
-            if (to != null && plugin.getConfigManager().isEnterAnimation() && to.isTopArea() && (from == null || from.getTopParent() != to)) {
-                to.showBounds(player, true);
-            }
+        if (to != null && plugin.getConfigManager().isEnterAnimation() && to.isTopArea() && (from == null || from.getTopParent() != to)) {
+            to.showBounds(player, true);
+        }
 
-            if (from == null || res == null) {
-                return;
-            }
+        if (from == null || res == null) {
+            return;
+        }
 
-            if (res != from.getParent() && plugin.getConfigManager().isExtraEnterMessage() && !res.isOwner(player) && (plugin.getRentManager().isForRent(from) || plugin
-                .getTransactionManager().isForSale(from))) {
-                if (plugin.getRentManager().isForRent(from) && !plugin.getRentManager().isRented(from)) {
-                    RentableLand rentable = plugin.getRentManager().getRentableLand(from);
-                    if (rentable != null)
-                        CMIActionBar.send(player, plugin.msg(lm.Residence_CanBeRented, from.getName(), rentable.cost, rentable.days));
-                } else if (plugin.getTransactionManager().isForSale(from) && !res.isOwner(player)) {
-                    int sale = plugin.getTransactionManager().getSaleAmount(from);
-                    CMIActionBar.send(player, plugin.msg(lm.Residence_CanBeBought, from.getName(), sale));
-                }
+        if (res != from.getParent() && plugin.getConfigManager().isExtraEnterMessage() && !res.isOwner(player) && (plugin.getRentManager().isForRent(from) || plugin
+            .getTransactionManager().isForSale(from))) {
+            if (plugin.getRentManager().isForRent(from) && !plugin.getRentManager().isRented(from)) {
+                RentableLand rentable = plugin.getRentManager().getRentableLand(from);
+                if (rentable != null)
+                    CMIActionBar.send(player, plugin.msg(lm.Residence_CanBeRented, from.getName(), rentable.cost, rentable.days));
+            } else if (plugin.getTransactionManager().isForSale(from) && !res.isOwner(player)) {
+                int sale = plugin.getTransactionManager().getSaleAmount(from);
+                CMIActionBar.send(player, plugin.msg(lm.Residence_CanBeBought, from.getName(), sale));
             }
-        });
+        }
     }
 
     private StuckInfo updateStuckTeleport(Player player, Location loc) {

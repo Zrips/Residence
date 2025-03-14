@@ -22,6 +22,7 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
 import com.bekvon.bukkit.residence.selection.SelectionManager.Selection;
 
+import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.Logs.CMIDebug;
@@ -400,8 +401,12 @@ public class auto implements cmd {
 
         if (maxX > max && max > 0)
             maxX = max;
-        if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && maxY > max && max > 0)
+
+        if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && maxY > max && max > 0) {
             maxY = max;
+        } else if (Residence.getInstance().getConfigManager().isSelectionIgnoreY())
+            maxY = CMINumber.abs(CMIWorld.getMinHeight(cuboid.getWorld()) - CMIWorld.getMaxHeight(cuboid.getWorld()));
+
         if (maxZ > max && max > 0)
             maxZ = max;
 
@@ -694,6 +699,8 @@ public class auto implements cmd {
         plugin.getSelectionManager().placeLoc2(player, cuboid.getHighLocation());
 
         cuboid = plugin.getSelectionManager().getSelectionCuboid(player);
+
+        CMIDebug.d(cuboid.getXSize(), "<=", groupMaxX, cuboid.getYSize(), "<=", maxY, cuboid.getZSize(), "<=", groupMaxZ);
 
         return cuboid.getXSize() <= groupMaxX && cuboid.getYSize() <= maxY && cuboid.getZSize() <= groupMaxZ;
     }

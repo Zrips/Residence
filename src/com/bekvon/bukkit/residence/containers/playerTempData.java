@@ -25,7 +25,7 @@ public class playerTempData {
     private long lastCheck = 0L;
     private Vector lastLocation = null;
     private StuckInfo stuckTeleportCounter = null;
-    
+
     private long lastEnterLeaveInformTime = 0L;
 
     public ClaimedResidence getCurrentResidence() {
