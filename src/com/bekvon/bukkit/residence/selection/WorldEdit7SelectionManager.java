@@ -18,8 +18,6 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.math.BlockVector3;
-//import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
-//import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -27,7 +25,6 @@ import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.limit.PermissiveSelectorLimits;
 import com.sk89q.worldedit.world.World;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
 
@@ -86,9 +83,6 @@ public class WorldEdit7SelectionManager extends SelectionManager {
         } catch (Exception | Error e) {
             return false;
         }
-//	CuboidSelection selection = new CuboidSelection(player.getWorld(), getPlayerLoc1(player), getPlayerLoc2(player));
-
-//	plugin.getWorldEdit().getSession(player).setRegionSelector(plugin.getWorldEdit().getSession(player).getSelectionWorld(), selection.getRegionSelector());
         return true;
     }
 
@@ -146,7 +140,6 @@ public class WorldEdit7SelectionManager extends SelectionManager {
     }
 
     private void nextInQueue() {
-
 
         if (queue.isEmpty()) {
             task = null;
