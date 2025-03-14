@@ -246,40 +246,10 @@ public class LocationUtil {
 
     private static Location getOutsideFreeLoc(ClaimedResidence res, Location insideLoc, Player player, boolean toSpawnOnFail) {
 
-        CMIDebug.d("get");
-
-        playerTempData tempData = playerTempData.get(player);
-
-        CompletableFuture<Location> futureLocation = new CompletableFuture<>();
-
-        Location outsideLocation = null;
-        try {
-            CMIScheduler.runTask(Residence.getInstance(), () -> {
-                futureLocation.complete(tempData.getLastValidLocation(player));
-            });
-        } catch (Throwable e) {
-            e.printStackTrace();            
-        }
-        
-        try {
-//             outsideLocation = 
-            futureLocation.get();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        
-        CMIDebug.d("get outside free", outsideLocation != null);
-
-        if (outsideLocation != null)
-            return outsideLocation;
-
         CuboidArea area = res.getAreaByLoc(insideLoc);
 
-        CMIDebug.d("get edge", area != null);
         if (area == null)
             return fallBackLocation(res, player, toSpawnOnFail);
-
-        CMIDebug.d("get edge");
 
         Location loc = getEdgeLocation(player, area);
 

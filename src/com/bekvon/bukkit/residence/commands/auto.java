@@ -700,8 +700,6 @@ public class auto implements cmd {
 
         cuboid = plugin.getSelectionManager().getSelectionCuboid(player);
 
-        CMIDebug.d(cuboid.getXSize(), "<=", groupMaxX, cuboid.getYSize(), "<=", maxY, cuboid.getZSize(), "<=", groupMaxZ);
-
         return cuboid.getXSize() <= groupMaxX && cuboid.getYSize() <= maxY && cuboid.getZSize() <= groupMaxZ;
     }
 
