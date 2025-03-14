@@ -99,7 +99,7 @@ public class ResidenceEntityListener implements Listener {
             event.setCancelled(true);
         }
     }
- 
+
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntitySpawnEvent(EntitySpawnEvent event) {
 
@@ -980,6 +980,19 @@ public class ResidenceEntityListener implements Listener {
                     break;
                 if (perms.has(Flags.explode, FlagCombo.OnlyFalse) || perms.has(Flags.witherdestruction, FlagCombo.OnlyFalse))
                     cancel = true;
+                break;
+            case WIND_CHARGE:
+                // Disabling listener if flag disabled globally
+                if (!Flags.pvp.isGlobalyEnabled())
+                    break;
+                if (perms.has(Flags.pvp, FlagCombo.OnlyFalse)) {
+
+                    ProjectileSource shooter = ((Projectile) ent).getShooter();
+                    if (shooter instanceof Player)
+                        Residence.getInstance().msg((Player) shooter, lm.Flag_Deny, Flags.pvp);
+
+                    cancel = true;
+                }
                 break;
             case ENDER_DRAGON:
                 remove = false;
