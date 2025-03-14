@@ -1718,7 +1718,9 @@ public class ResidencePlayerListener implements Listener {
 
         CMIEntityType type = CMIEntityType.get(ent);
 
-        if (type != CMIEntityType.CHEST_MINECART && type != CMIEntityType.HOPPER_MINECART)
+        if (!type.equals(CMIEntityType.CHEST_MINECART) &&
+            !type.equals(CMIEntityType.HOPPER_MINECART) &&
+            !type.equals(CMIEntityType.ALLAY))
             return;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
