@@ -701,10 +701,10 @@ public class ClaimedResidence {
             }
         }
 
-        Residence.getInstance().getResidenceManager().removeChunkList(this.getName());
-        areas.remove(name);
+        Residence.getInstance().getResidenceManager().removeChunkList(this);
         areas.put(name, newarea);
-        Residence.getInstance().getResidenceManager().calculateChunks(this.getName());
+        Residence.getInstance().getResidenceManager().calculateChunks(this);
+        
         if (player != null)
             Residence.getInstance().msg(player, lm.Area_Update);
         return true;

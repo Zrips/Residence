@@ -1503,6 +1503,7 @@ public class ResidenceManager implements ResidenceInterface {
         return residences;
     }
 
+    @Deprecated
     public void removeChunkList(String name) {
         if (name == null)
             return;
@@ -1510,21 +1511,30 @@ public class ResidenceManager implements ResidenceInterface {
         ClaimedResidence res = residences.get(name);
         if (res == null)
             return;
-        String world = res.getWorld();
-        if (chunkResidences.get(world) == null)
-            return;
-        for (ChunkRef chunk : getChunks(res)) {
-            List<ClaimedResidence> ress = new ArrayList<>();
-            if (chunkResidences.get(world).containsKey(chunk)) {
-                ress.addAll(chunkResidences.get(world).get(chunk));
-            }
-
-            ress.remove(res);
-            chunkResidences.get(world).put(chunk, ress);
-        }
-
+        removeChunkList(res);
     }
 
+    public void removeChunkList(ClaimedResidence res) {
+        if (res == null)
+            return;
+        String world = res.getPermissions().getWorldName();
+
+        Map<ChunkRef, List<ClaimedResidence>> worldChunks = chunkResidences.get(world);
+
+        if (worldChunks == null)
+            return;
+
+        List<ChunkRef> chunks = getChunks(res);
+
+        for (ChunkRef chunk : chunks) {
+            List<ClaimedResidence> ress = worldChunks.get(chunk);
+            if (ress == null)
+                continue;
+            ress.remove(res);
+        }
+    }
+
+    @Deprecated
     public void calculateChunks(String name) {
         if (name == null)
             return;
@@ -1532,17 +1542,20 @@ public class ResidenceManager implements ResidenceInterface {
         ClaimedResidence res = residences.get(name);
         if (res == null)
             return;
-        String world = res.getWorld();
-        if (chunkResidences.get(world) == null) {
-            chunkResidences.put(world, new HashMap<ChunkRef, List<ClaimedResidence>>());
-        }
-        for (ChunkRef chunk : getChunks(res)) {
-            List<ClaimedResidence> ress = new ArrayList<>();
-            if (chunkResidences.get(world).containsKey(chunk)) {
-                ress.addAll(chunkResidences.get(world).get(chunk));
-            }
-            ress.add(res);
-            chunkResidences.get(world).put(chunk, ress);
+        calculateChunks(res);
+    }
+
+    public void calculateChunks(ClaimedResidence res) {
+        if (res == null)
+            return;
+        String world = res.getPermissions().getWorldName();
+
+        Map<ChunkRef, List<ClaimedResidence>> worldChunks = chunkResidences.computeIfAbsent(world, k -> new HashMap<ChunkRef, List<ClaimedResidence>>());
+
+        List<ChunkRef> chunks = getChunks(res);
+
+        for (ChunkRef chunk : chunks) {
+            worldChunks.computeIfAbsent(chunk, k -> new ArrayList<ClaimedResidence>()).add(res);
         }
     }
 
