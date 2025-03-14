@@ -805,6 +805,8 @@ public class ConfigManager {
                 KickLocation.setPitch(KickPitch.floatValue());
                 KickLocation.setYaw(KickYaw.floatValue());
             }
+        } else {
+            KickLocation = null;
         }
 
         c.addComment("Global.Optimizations.FlyLandLocation.World", "Used when players fly state is being turned to false because of fly flag and there is no solid land where to land for player");

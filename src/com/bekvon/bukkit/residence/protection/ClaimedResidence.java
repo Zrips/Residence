@@ -60,6 +60,7 @@ import com.bekvon.bukkit.residence.utils.Teleporting;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
 import net.Zrips.CMILib.Locale.LC;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Version.Version;
@@ -2066,8 +2067,10 @@ public class ClaimedResidence {
     }
 
     public boolean kickFromResidence(Player player) {
-        if (!this.containsLoc(player.getLocation()))
-            return false;
+
+        // We might be kicking player who is near residence but not inside of it
+        //if (!this.containsLoc(player.getLocation()))
+        //    return false;
 
         Location loc = Residence.getInstance().getConfigManager().getKickLocation();
         player.closeInventory();

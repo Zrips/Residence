@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.GameMode;
@@ -18,6 +19,8 @@ import org.bukkit.util.Vector;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.RandomLoc;
+import com.bekvon.bukkit.residence.containers.playerPersistentData;
+import com.bekvon.bukkit.residence.containers.playerTempData;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
@@ -26,6 +29,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.PaperMethods.CMIChunkSnapShot;
@@ -152,25 +156,17 @@ public class LocationUtil {
         }
     }
 
-    private static Location getOutsideFreeLoc(ClaimedResidence res, Location insideLoc, Player player, boolean toSpawnOnFail) {
-
-        CuboidArea area = res.getAreaByLoc(insideLoc);
-        if (area == null) {
-            if (!toSpawnOnFail)
-                return null;
-            World bw = res.getPermissions().getBukkitWorld();
-
-            return bw != null ? bw.getSpawnLocation() != null ? bw.getSpawnLocation() : player.getWorld().getSpawnLocation() : player.getWorld().getSpawnLocation();
-        }
+    private static Location getEdgeLocation(Player player, CuboidArea area) {
 
         int maxIt = 15;
 
-        Location loc = insideLoc.clone();
+        Location loc = new Location(area.getWorld(), 0, 0, 0);
 
         boolean admin = ResPerm.admin_tp.hasPermission(player);
 
         boolean found = false;
         int it = 0;
+
         while (!found && it < maxIt) {
 
             it++;
@@ -230,20 +226,66 @@ public class LocationUtil {
 
             break;
         }
+        return found ? loc : null;
+    }
 
-        if (!found) {
-            if (Residence.getInstance().getConfigManager().getKickLocation() != null) {
-                return Residence.getInstance().getConfigManager().getKickLocation();
-            }
+    private static Location fallBackLocation(ClaimedResidence res, Player player, boolean toSpawnOnFail) {
+        if (Residence.getInstance().getConfigManager().getKickLocation() != null)
+            return Residence.getInstance().getConfigManager().getKickLocation();
 
-            // Fail safe for kick out location
-            if (!toSpawnOnFail)
-                return null;
+        if (!toSpawnOnFail)
+            return null;
 
-            World bw = res.getPermissions().getBukkitWorld();
+        World bw = res.getPermissions().getBukkitWorld();
 
-            return bw != null ? bw.getSpawnLocation() != null ? bw.getSpawnLocation() : player.getWorld().getSpawnLocation() : player.getWorld().getSpawnLocation();
+        if (bw == null)
+            return player.getWorld().getSpawnLocation();
+
+        return bw.getSpawnLocation();
+    }
+
+    private static Location getOutsideFreeLoc(ClaimedResidence res, Location insideLoc, Player player, boolean toSpawnOnFail) {
+
+        CMIDebug.d("get");
+
+        playerTempData tempData = playerTempData.get(player);
+
+        CompletableFuture<Location> futureLocation = new CompletableFuture<>();
+
+        Location outsideLocation = null;
+        try {
+            CMIScheduler.runTask(Residence.getInstance(), () -> {
+                futureLocation.complete(tempData.getLastValidLocation(player));
+            });
+        } catch (Throwable e) {
+            e.printStackTrace();            
         }
+        
+        try {
+//             outsideLocation = 
+            futureLocation.get();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        
+        CMIDebug.d("get outside free", outsideLocation != null);
+
+        if (outsideLocation != null)
+            return outsideLocation;
+
+        CuboidArea area = res.getAreaByLoc(insideLoc);
+
+        CMIDebug.d("get edge", area != null);
+        if (area == null)
+            return fallBackLocation(res, player, toSpawnOnFail);
+
+        CMIDebug.d("get edge");
+
+        Location loc = getEdgeLocation(player, area);
+
+        if (loc == null)
+            return fallBackLocation(res, player, toSpawnOnFail);
+
         if (player != null) {
             loc.setPitch(player.getLocation().getPitch());
             loc.setYaw(player.getLocation().getYaw());
