@@ -1508,6 +1508,7 @@ public class ResidenceManager implements ResidenceInterface {
             return;
         name = name.toLowerCase();
         ClaimedResidence res = residences.get(name);
+
         if (res == null)
             return;
         removeChunkList(res);
@@ -1554,7 +1555,9 @@ public class ResidenceManager implements ResidenceInterface {
         List<ChunkRef> chunks = getChunks(res);
 
         for (ChunkRef chunk : chunks) {
-            worldChunks.computeIfAbsent(chunk, k -> new ArrayList<ClaimedResidence>()).add(res);
+            List<ClaimedResidence> resList = worldChunks.computeIfAbsent(chunk, k -> new ArrayList<ClaimedResidence>());
+            if (!resList.contains(res))
+                resList.add(res);
         }
     }
 

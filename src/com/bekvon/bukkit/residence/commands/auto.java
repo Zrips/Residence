@@ -393,9 +393,10 @@ public class auto implements cmd {
 
         int groupMaxX = rPlayer.getMaxX();
         int groupMaxZ = rPlayer.getMaxZ();
+        int groupMaxY = group.getMaxYSize();
 
         int maxX = getMax(groupMaxX);
-        int maxY = getMax(group.getMaxYSize());
+        int maxY = getMax(groupMaxY);
 
         int maxZ = getMax(groupMaxZ);
 
@@ -700,7 +701,7 @@ public class auto implements cmd {
 
         cuboid = plugin.getSelectionManager().getSelectionCuboid(player);
 
-        return cuboid.getXSize() <= groupMaxX && cuboid.getYSize() <= maxY && cuboid.getZSize() <= groupMaxZ;
+        return cuboid.getXSize() <= groupMaxX && cuboid.getYSize() <= groupMaxY && cuboid.getZSize() <= groupMaxZ;
     }
 
     public enum direction {
