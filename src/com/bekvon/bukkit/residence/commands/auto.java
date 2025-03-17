@@ -15,6 +15,7 @@ import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
+import com.bekvon.bukkit.residence.containers.Visualizer;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
@@ -25,7 +26,6 @@ import com.bekvon.bukkit.residence.selection.SelectionManager.Selection;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class auto implements cmd {
@@ -87,16 +87,32 @@ public class auto implements cmd {
 
         plugin.getSelectionManager().afterSelectionUpdate(player, true);
 
-        if (!result) {
-            Residence.getInstance().msg(player, lm.Area_SizeLimit);
-            return true;
-        }
-
         ClaimedResidence collision = Residence.getInstance().getResidenceManager().collidesWithResidence(plugin.getSelectionManager().getSelectionCuboid(player));
 
         if (collision != null) {
             Residence.getInstance().msg(player, lm.Area_Collision, collision.getResidenceName());
             return null;
+        }
+
+        if (plugin.getConfigManager().getAntiGreefRangeGaps(cuboid.getWorldName()) > 0) {
+            cuboid = plugin.getSelectionManager().getSelectionCuboid(player);
+            int gap = plugin.getConfigManager().getAntiGreefRangeGaps(cuboid.getWorldName());
+            CuboidArea temp = new CuboidArea(cuboid.getLowLocation().clone().add(-gap, -gap, -gap), cuboid.getHighLocation().clone().add(gap, gap, gap));
+
+            collision = Residence.getInstance().getResidenceManager().collidesWithResidence(temp);
+
+            if (collision != null) {
+                Visualizer v = new Visualizer(player);
+                v.setErrorAreas(collision);
+                Residence.getInstance().getSelectionManager().showBounds(player, v);
+                Residence.getInstance().msg(player, lm.Area_TooClose, gap, collision.getName());
+                return null;
+            }
+        }
+
+        if (!result) {
+            Residence.getInstance().msg(player, lm.Area_SizeLimit);
+            return true;
         }
 
         if (plugin.getResidenceManager().getByName(resName) != null) {
