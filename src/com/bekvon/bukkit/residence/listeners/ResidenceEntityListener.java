@@ -722,6 +722,7 @@ public class ResidenceEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onHangingBreak(HangingBreakByEntityEvent event) {
+
         // disabling event on world
         Hanging ent = event.getEntity();
         if (ent == null)
@@ -1300,6 +1301,7 @@ public class ResidenceEntityListener implements Listener {
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
             return;
+
         if (event.isCancelled())
             return;
 
@@ -1403,6 +1405,7 @@ public class ResidenceEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
+
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
             return;
@@ -1480,6 +1483,14 @@ public class ResidenceEntityListener implements Listener {
                     event.setCancelled(true);
                     plugin.msg(player, lm.Flag_Deny, Flags.container);
                 }
+
+                // Specific fix for the Itemadders plugin. 
+                // Custom event will not have damage source while it contains item as paper inside of it
+                if (event.getDamageSource() != null && event.getDamageSource().getCausingEntity() == null && !perms.playerHas(player, Flags.destroy, perms.playerHas(player, Flags.build, true))) {
+                    event.setCancelled(true);
+                    plugin.msg(player, lm.Flag_Deny, Flags.destroy);
+                }
+
                 return;
             }
         }
