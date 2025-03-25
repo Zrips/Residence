@@ -1486,7 +1486,7 @@ public class ResidenceEntityListener implements Listener {
 
                 // Specific fix for the Itemadders plugin. 
                 // Custom event will not have damage source while it contains item as paper inside of it
-                if (event.getDamageSource() != null && event.getDamageSource().getCausingEntity() == null && !perms.playerHas(player, Flags.destroy, perms.playerHas(player, Flags.build, true))) {
+                if (Version.isCurrentEqualOrHigher(Version.v1_20_R2) && event.getDamageSource() != null && event.getDamageSource().getCausingEntity() == null && !perms.playerHas(player, Flags.destroy, perms.playerHas(player, Flags.build, true))) {
                     event.setCancelled(true);
                     plugin.msg(player, lm.Flag_Deny, Flags.destroy);
                 }
