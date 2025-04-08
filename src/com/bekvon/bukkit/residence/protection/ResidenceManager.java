@@ -55,6 +55,8 @@ import com.bekvon.bukkit.residence.utils.GetTime;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.PageInfo;
+import net.Zrips.CMILib.Logs.CMIDebug;
+import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -208,17 +210,17 @@ public class ResidenceManager implements ResidenceInterface {
 
     @Override
     public boolean addResidence(String name, Location loc1, Location loc2) {
-        return this.addResidence(name, plugin.getServerLandName(), loc1, loc2);
+        return this.addResidence(null, name, null, plugin.getServerLandName(), loc1, loc2, true);
     }
 
     @Override
     public boolean addResidence(String name, String owner, Location loc1, Location loc2) {
-        return this.addResidence(null, owner, name, loc1, loc2, true);
+        return this.addResidence(null, owner, null, name, loc1, loc2, true);
     }
 
     @Override
     public boolean addResidence(Player player, String name, Location loc1, Location loc2, boolean resadmin) {
-        return this.addResidence(player, player.getName(), name, loc1, loc2, resadmin);
+        return this.addResidence(player, player.getName(), player.getUniqueId(), name, loc1, loc2, resadmin);
     }
 
     public boolean addResidence(Player player, String owner, String name, Location loc1, Location loc2, boolean resadmin) {
@@ -246,21 +248,29 @@ public class ResidenceManager implements ResidenceInterface {
             return false;
         }
 
+        if (owner == null)
+            owner = plugin.getServerLandName();
+        if (ownerUUId == null)
+            ownerUUId = plugin.getServerUUID();
+
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
+        PermissionGroup group = plugin.getPermissionManager().getDefaultGroup();
 
-        PermissionGroup group = rPlayer.getGroup();
-//      PermissionGroup group = plugin.getPermissionManager().getGroup(owner, loc1.getWorld().getName());
-        if (!resadmin && !group.canCreateResidences() && !ResPerm.create.hasPermission(player, lm.General_NoPermission)) {
-            return false;
-        }
+        if (rPlayer != null) {
+            group = rPlayer.getGroup();
 
-        if (!resadmin && !ResPerm.create.hasPermission(player, true)) {
-            return false;
-        }
+            if (!resadmin && !group.canCreateResidences() && !ResPerm.create.hasPermission(player, lm.General_NoPermission)) {
+                return false;
+            }
 
-        if (rPlayer.getResAmount() >= rPlayer.getMaxRes() && !resadmin) {
-            plugin.msg(player, lm.Residence_TooMany);
-            return false;
+            if (!resadmin && !ResPerm.create.hasPermission(player, true)) {
+                return false;
+            }
+
+            if (rPlayer.getResAmount() >= rPlayer.getMaxRes() && !resadmin) {
+                plugin.msg(player, lm.Residence_TooMany);
+                return false;
+            }
         }
 
         CuboidArea newArea = new CuboidArea(loc1, loc2);
@@ -1066,7 +1076,6 @@ public class ResidenceManager implements ResidenceInterface {
                         continue;
                     worldnames.add(name.substring(Residence.saveFilePrefix.length(), name.length() - 4));
                 }
-
             }
             plugin.getServ().getWorlds().forEach((w) -> {
                 worldnames.add(w.getName());
@@ -1081,15 +1090,29 @@ public class ResidenceManager implements ResidenceInterface {
         return worldnames;
     }
 
+    int batchSize = 1000000;
+    ExecutorService executorService = null;
+
     public void load(Map<String, Object> root) throws Exception {
         if (root == null)
             return;
         residences.clear();
-        for (String worldName : getWorldNames()) {
+
+        int numCores = Runtime.getRuntime().availableProcessors();
+
+        numCores = CMINumber.clamp(numCores, 1, numCores - 1);
+
+        executorService = Executors.newFixedThreadPool(numCores);
+        batchSize = (int) Math.ceil(root.entrySet().size() / (double) numCores);
+
+        for (Entry<String, Object> worldSet : root.entrySet()) {
+
             long time = System.currentTimeMillis();
 
+            String worldName = worldSet.getKey();
             @SuppressWarnings("unchecked")
-            Map<String, Object> reslist = (Map<String, Object>) root.get(worldName);
+            Map<String, Object> reslist = (Map<String, Object>) worldSet.getValue();
+
             if (!plugin.isDisabledWorld(worldName) && !plugin.getConfigManager().CleanerStartupLog)
                 Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Loading " + worldName + " data into memory...");
             if (reslist != null) {
@@ -1103,12 +1126,14 @@ public class ResidenceManager implements ResidenceInterface {
             }
 
             long pass = System.currentTimeMillis() - time;
-            String PastTime = pass > 1000 ? String.format("%.2f", (pass / 1000F)) + " sec" : pass + " ms";
+            String pastTime = pass > 1000 ? String.format("%.2f", (pass / 1000F)) + " sec" : pass + " ms";
 
             if (!plugin.isDisabledWorld(worldName))
-                Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Loaded " + worldName + " data into memory. (" + PastTime + ") -> " + (reslist == null ? "0" : reslist.size())
+                CMIMessages.consoleMessage(plugin.getPrefix() + "&f Loaded &e" + worldName + "&f data into memory. (&e" + pastTime + "&f) -> " + (reslist == null ? "?" : reslist.size())
                     + " residences");
         }
+
+        executorService.shutdown();
 
         clearLoadChache();
     }
@@ -1124,11 +1149,7 @@ public class ResidenceManager implements ResidenceInterface {
 
         chunkCount = 0;
 
-        int numCores = Runtime.getRuntime().availableProcessors();
-        ExecutorService executorService = Executors.newFixedThreadPool(numCores);
-
         List<Future<Void>> futures = new ArrayList<>();
-        int batchSize = (int) Math.ceil(root.entrySet().size() / (double) numCores);
 
         batchSize = CMINumber.clamp(batchSize, 500, root.entrySet().size());
 
@@ -1150,78 +1171,81 @@ public class ResidenceManager implements ResidenceInterface {
             batch = new ArrayList<>();
             i++;
 
-            Future<Void> future = executorService.submit(() -> {
-                for (Entry<String, Object> currentEntry : currentBatch) {
-                    try {
-                        ClaimedResidence residence = ClaimedResidence.load(worldName, (Map<String, Object>) currentEntry.getValue(), null, plugin);
-                        if (residence == null) {
-                            continue;
-                        }
-
-                        if (residence.getPermissions().getOwnerUUID().toString().equals(plugin.getServerLandUUID()) &&
-                            !residence.getOwner().equalsIgnoreCase("Server land") &&
-                            !residence.getOwner().equalsIgnoreCase(plugin.getServerLandName())) {
-                            continue;
-                        }
-
-                        if (residence.getOwner().equalsIgnoreCase("Server land")) {
-                            residence.getPermissions().setOwner(plugin.getServerLandName(), false);
-                        }
-
-                        String resName = currentEntry.getKey().toLowerCase();
-
-                        int increment = getNameIncrement(resName);
-
-                        if (residence.getResidenceName() == null)
-                            residence.setName(currentEntry.getKey());
-
-                        if (increment > 0) {
-                            residence.setName(residence.getResidenceName() + increment);
-                            resName += increment;
-                        }
-
-                        List<ChunkRef> chunks = getChunks(residence);
-
-                        if (chunks.size() > 1000000)
-                            Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + ChatColor.YELLOW + " Detected extensively big residence area (" + currentEntry.getKey() + ") which covers " + chunks
-                                .size() + " chunks!");
-
-                        for (ChunkRef chunk : chunks) {
-                            retRes.compute(chunk, (k, v) -> {
-                                if (v == null) {
-                                    v = new ArrayList<>(1);
-                                }
-                                v.add(residence);
-                                chunkCount++;
-                                return v;
-                            });
-                        }
-
-                        plugin.getPlayerManager().addResidence(residence.getOwner(), residence);
-
-                        residences.put(resName, residence);
-                    } catch (Exception ex) {
-                        Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + ChatColor.RED + " Failed to load residence (" + currentEntry.getKey() + ")! Reason:" + ex.getMessage()
-                            + " Error Log:");
-                        Logger.getLogger(ResidenceManager.class.getName()).log(Level.SEVERE, null, ex);
-                        if (plugin.getConfigManager().stopOnSaveError()) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-                }
-                return null;
-            });
-
-            futures.add(future);
+            futures.add(processBatch(worldName, currentBatch, retRes));
         }
+
+        if (!batch.isEmpty())
+            futures.add(processBatch(worldName, batch, retRes));
 
         for (Future<Void> future : futures) {
             future.get();
         }
 
-        executorService.shutdown();
-
         return retRes;
+    }
+
+    private Future<Void> processBatch(String worldName, List<Entry<String, Object>> currentBatch, Map<ChunkRef, List<ClaimedResidence>> retRes) {
+        return executorService.submit(() -> {
+            for (Entry<String, Object> currentEntry : currentBatch) {
+                try {
+                    ClaimedResidence residence = ClaimedResidence.load(worldName, (Map<String, Object>) currentEntry.getValue(), null, plugin);
+                    if (residence == null) {
+                        continue;
+                    }
+
+                    if (residence.getPermissions().getOwnerUUID().toString().equals(plugin.getServerLandUUID()) &&
+                        !residence.getOwner().equalsIgnoreCase("Server land") &&
+                        !residence.getOwner().equalsIgnoreCase(plugin.getServerLandName())) {
+                        continue;
+                    }
+
+                    if (residence.getOwner().equalsIgnoreCase("Server land")) {
+                        residence.getPermissions().setOwner(plugin.getServerLandName(), false);
+                    }
+
+                    String resName = currentEntry.getKey().toLowerCase();
+
+                    int increment = getNameIncrement(resName);
+
+                    if (residence.getResidenceName() == null)
+                        residence.setName(currentEntry.getKey());
+
+                    if (increment > 0) {
+                        residence.setName(residence.getResidenceName() + increment);
+                        resName += increment;
+                    }
+
+                    List<ChunkRef> chunks = getChunks(residence);
+
+                    if (chunks.size() > 1000000)
+                        Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + ChatColor.YELLOW + " Detected extensively big residence area (" + currentEntry.getKey() + ") which covers " + chunks
+                            .size() + " chunks!");
+
+                    for (ChunkRef chunk : chunks) {
+                        retRes.compute(chunk, (k, v) -> {
+                            if (v == null) {
+                                v = new ArrayList<>(1);
+                            }
+                            v.add(residence);
+                            chunkCount++;
+                            return v;
+                        });
+                    }
+
+                    plugin.getPlayerManager().addResidence(residence.getOwner(), residence);
+
+                    residences.put(resName, residence);
+                } catch (Exception ex) {
+                    Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + ChatColor.RED + " Failed to load residence (" + currentEntry.getKey() + ")! Reason:" + ex.getMessage()
+                        + " Error Log:");
+                    Logger.getLogger(ResidenceManager.class.getName()).log(Level.SEVERE, null, ex);
+                    if (plugin.getConfigManager().stopOnSaveError()) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+            return null;
+        });
     }
 
     // Old method for single core loading

@@ -1489,10 +1489,10 @@ public class Residence extends JavaPlugin {
                 worlds.put(worldName, yml.getRoot().get("Residences"));
 
                 int pass = (int) (System.currentTimeMillis() - time);
-                String PastTime = pass > 1000 ? String.format("%.2f", (pass / 1000F)) + " sec" : pass + " ms";
+                String pastTime = pass > 1000 ? String.format("%.2f", (pass / 1000F)) + " sec" : pass + " ms";
 
                 if (!isDisabledWorld(worldName) && !this.getConfigManager().CleanerStartupLog)
-                    Bukkit.getConsoleSender().sendMessage(getPrefix() + " Loaded " + worldName + " data. (" + PastTime + ")");
+                    Bukkit.getConsoleSender().sendMessage(getPrefix() + " Loaded " + worldName + " data. (" + pastTime + ")");
             }
 
             getResidenceManager().load(worlds);

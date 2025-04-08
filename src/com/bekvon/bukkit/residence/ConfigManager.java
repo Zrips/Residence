@@ -681,7 +681,7 @@ public class ConfigManager {
 
         c.addComment("Global.Optimizations.LoadEveryWorld", "When enabled we will load data from every single world file even if world doesn't exist but might be loaded later on",
             "Usually only useful when you have multiverse plugin which loads worlds durring server work time");
-        LoadEveryWorld = c.get("Global.Optimizations.LoadEveryWorld", false);
+        LoadEveryWorld = c.get("Global.Optimizations.LoadEveryWorld", true);
 
         c.addComment("Global.Optimizations.CleanerStartupLog", "While enabled we will avoid showing extra feedback lines on startup");
         CleanerStartupLog = c.get("Global.Optimizations.CleanerStartupLog", true);
