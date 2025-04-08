@@ -5,15 +5,12 @@ import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerSignOpenEvent;
-import org.bukkit.potion.PotionEffect;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.potion.PotionEffectType;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -22,10 +19,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
-
-import net.Zrips.CMILib.Entities.CMIEntityType;
-import net.Zrips.CMILib.Logs.CMIDebug;
-import net.Zrips.CMILib.Version.Version;
+import com.bekvon.bukkit.residence.utils.Utils;
 
 public class ResidencePlayerListener1_21 implements Listener {
 
@@ -33,6 +27,47 @@ public class ResidencePlayerListener1_21 implements Listener {
 
     public ResidencePlayerListener1_21(Residence plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void OnVehicleEnterEvent(VehicleEnterEvent event) {
+
+        // Disabling listener if flag disabled globally
+        if (!Flags.leash.isGlobalyEnabled())
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(event.getVehicle().getWorld()))
+            return;
+
+        Entity entity = event.getEntered();
+
+        if (!Utils.isAnimal(entity))
+            return;
+
+        ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
+
+        if (res == null)
+            return;
+
+        Player closest = null;
+
+        for (Player player : res.getPlayersInResidence()) {
+            if (closest == null) {
+                closest = player;
+                continue;
+            }
+
+            if (player.getLocation().distance(entity.getLocation()) < closest.getLocation().distance(entity.getLocation()))
+                closest = player;
+        }
+
+        if (closest == null)
+            return;
+
+        if (res.getPermissions().playerHas(closest, Flags.leash, FlagCombo.OnlyFalse)) {
+            plugin.msg(closest, lm.Residence_FlagDeny, Flags.leash, res.getName());
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

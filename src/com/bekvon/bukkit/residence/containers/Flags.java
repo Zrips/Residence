@@ -62,7 +62,6 @@ public enum Flags {
     grow(CMIMaterial.WHEAT_SEEDS, FlagMode.Residence, "Allows or denys plant growing", true),
     glow(CMIMaterial.SEA_LANTERN, FlagMode.Residence, "Players will start glowing when entering residence", true),
     goathorn(CMIMaterial.GOAT_HORN, FlagMode.Both, "Allows or denys goat horn usage", true),    
-//    god(CMIMaterial.BIRCH_LOG, FlagMode.Both, "Toggles god mode for players in residence", false),
     harvest(CMIMaterial.SWEET_BERRIES, FlagMode.Both, "Allows harvesting", true),
     hotfloor(CMIMaterial.MAGMA_BLOCK, FlagMode.Residence, "Prevent damage from magma blocks", true),
     hidden(CMIMaterial.GLASS_PANE, FlagMode.Residence, "Hides residence from list or listall commands", false),
