@@ -14,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -92,7 +93,7 @@ public class ResidenceBlockListener implements Listener {
                 return;
         } catch (Exception | NoSuchMethodError ex) {
             return;
-        } 
+        }
         Block b = e.getInventory().getLocation().getBlock();
         if (b == null || !CMIMaterial.isAnvil(b.getType()))
             return;
@@ -100,6 +101,7 @@ public class ResidenceBlockListener implements Listener {
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(e.getInventory().getLocation());
         if (res == null)
             return;
+
         // Fix anvil only when item is picked up
         if (e.getRawSlot() != 2)
             return;
@@ -111,12 +113,15 @@ public class ResidenceBlockListener implements Listener {
         if (Version.isCurrentLower(Version.v1_13_R1)) {
             try {
                 b.getClass().getMethod("setData", byte.class).invoke(b, (byte) 1);
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
+            } catch (Throwable e1) {
                 e1.printStackTrace();
             }
         } else {
-            // Need to fix roTation issue
+            BlockFace face = ((Directional) b.getBlockData()).getFacing();
             b.setType(CMIMaterial.ANVIL.getMaterial());
+            Directional directional = (Directional) b.getBlockData();
+            directional.setFacing(face);
+            b.setBlockData(directional);
         }
     }
 
@@ -206,7 +211,7 @@ public class ResidenceBlockListener implements Listener {
     }
 
     public static boolean canBreakBlock(Player player, Location loc, boolean inform) {
-        
+
         if (player == null)
             return true;
 
