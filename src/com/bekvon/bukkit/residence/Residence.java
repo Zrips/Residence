@@ -377,7 +377,7 @@ public class Residence extends JavaPlugin {
         this.getPermissionManager().stopCacheClearScheduler();
 
         this.getSelectionManager().onDisable();
-        
+
         this.getShopSignUtilManager().forceSaveIfPending();
 
         if (this.metrics != null)
@@ -1907,13 +1907,14 @@ public class Residence extends JavaPlugin {
     }
 
     public String getPlayerName(UUID uuid) {
+        if (uuid == null)
+            return null;
+
         String cache = cachedPlayerNames.get(uuid);
         if (cache != null) {
             return cache.equalsIgnoreCase("_UNKNOWN_") ? null : cache;
         }
 
-        if (uuid == null)
-            return null;
         OfflinePlayer p = getServ().getPlayer(uuid);
         if (p == null)
             p = getOfflinePlayer(uuid);
