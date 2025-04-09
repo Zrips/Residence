@@ -448,7 +448,7 @@ public class ResidencePlayerListener implements Listener {
 
         if (res.getPermissions().has(Flags.fly, FlagCombo.OnlyTrue))
             for (Player one : event.getResidence().getPlayersInResidence())
-                fly(one, false);
+                fly(one, false, event.getResidence());
 
         if (res.getPermissions().has(Flags.glow, FlagCombo.OnlyTrue) && Version.isCurrentEqualOrHigher(Version.v1_9_R1))
             for (Player one : event.getResidence().getPlayersInResidence())
@@ -520,7 +520,7 @@ public class ResidencePlayerListener implements Listener {
 
         if (res.getPermissions().has(Flags.fly, FlagCombo.OnlyTrue))
             for (Player one : event.getResidence().getPlayersInResidence())
-                fly(one, false);
+                fly(one, false, event.getResidence());
 
         if (res.getPermissions().has(Flags.glow, FlagCombo.OnlyTrue) && Version.isCurrentEqualOrHigher(Version.v1_9_R1))
             for (Player one : event.getResidence().getPlayersInResidence())
@@ -595,13 +595,13 @@ public class ResidencePlayerListener implements Listener {
         case NEITHER:
         case FALSE:
             for (Player one : event.getResidence().getPlayersInResidence())
-                fly(one, false);
+                fly(one, false, event.getResidence());
             break;
         case INVALID:
             break;
         case TRUE:
             for (Player one : event.getResidence().getPlayersInResidence())
-                fly(one, true);
+                fly(one, true, event.getResidence());
             break;
         default:
             break;
@@ -2104,7 +2104,28 @@ public class ResidencePlayerListener implements Listener {
         return null;
     }
 
-    private void fly(Player player, boolean state) {
+    private Location getFlyTeleportLocation(Player player, ClaimedResidence oldRes) {
+        Location loc = getSafeLocation(player.getLocation());
+
+        if (oldRes != null) {
+            if (Flags.tp.isGlobalyEnabled() && oldRes.getPermissions().playerHas(player, Flags.tp, FlagCombo.OnlyFalse) || ResPerm.admin_tp.hasPermission(player, 10000L))
+                loc = oldRes.getTeleportLocation(player, false);
+        }
+
+        if (loc != null)
+            return loc;
+
+        // get defined land location in case no safe landing spot are found
+        loc = plugin.getConfigManager().getFlyLandLocation();
+
+        if (loc != null)
+            return loc;
+
+        // get main world spawn location in case valid location is not found
+        return Bukkit.getWorlds().get(0).getSpawnLocation();
+    }
+
+    private void fly(Player player, boolean state, ClaimedResidence oldRes) {
         if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE)
             return;
         if (ResPerm.bypass_fly.hasPermission(player, 10000L))
@@ -2118,19 +2139,9 @@ public class ResidencePlayerListener implements Listener {
             player.setFlying(false);
             player.setAllowFlight(false);
             if (land) {
-                Location loc = getSafeLocation(player.getLocation());
-                if (loc == null) {
-                    // get defined land location in case no safe landing spot are found
-                    loc = plugin.getConfigManager().getFlyLandLocation();
-                    if (loc == null) {
-                        // get main world spawn location in case valid location is not found
-                        loc = Bukkit.getWorlds().get(0).getSpawnLocation();
-                    }
-                }
-                if (loc != null) {
-                    player.closeInventory();
-                    CMITeleporter.teleportAsync(player, loc);
-                }
+                Location loc = getFlyTeleportLocation(player, oldRes);
+                player.closeInventory();
+                CMITeleporter.teleportAsync(player, loc);
             }
             player.setFlying(false);
             player.setAllowFlight(false);
@@ -2177,7 +2188,7 @@ public class ResidencePlayerListener implements Listener {
                 player.resetPlayerWeather();
 
             if (Flags.fly.isGlobalyEnabled() && oldRes.getPermissions().playerHas(player, Flags.fly, FlagCombo.OnlyTrue)) {
-                fly(player, false);
+                fly(player, false, oldRes);
             }
 
             if (Flags.glow.isGlobalyEnabled() && Version.isCurrentEqualOrHigher(Version.v1_9_R1) && oldRes.getPermissions().has(Flags.glow, FlagCombo.OnlyTrue))
@@ -2196,9 +2207,9 @@ public class ResidencePlayerListener implements Listener {
 
             if (Flags.fly.isGlobalyEnabled()) {
                 if (newRes.getPermissions().playerHas(player, Flags.fly, FlagCombo.OnlyTrue))
-                    fly(player, true);
+                    fly(player, true, oldRes);
                 else if (oldRes.getPermissions().playerHas(player, Flags.fly, FlagCombo.OnlyTrue) && !newRes.getPermissions().playerHas(player, Flags.fly, FlagCombo.OnlyTrue))
-                    fly(player, false);
+                    fly(player, false, oldRes);
             }
 
             boolean updated = false;
@@ -2255,7 +2266,7 @@ public class ResidencePlayerListener implements Listener {
             }
 
             if (Flags.fly.isGlobalyEnabled() && newRes.getPermissions().playerHas(player, Flags.fly, FlagCombo.OnlyTrue)) {
-                fly(player, true);
+                fly(player, true, oldRes);
             }
 
             if (Flags.day.isGlobalyEnabled() && newRes.getPermissions().has(Flags.day, FlagCombo.OnlyTrue))

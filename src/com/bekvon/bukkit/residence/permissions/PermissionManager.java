@@ -282,7 +282,7 @@ public class PermissionManager {
         command_$1("Gives access to particular command", "commandName"),
         command_$1_others("Allows to perform command on another player", "commandName");
 
-        private Boolean show = true;
+        private boolean show = true;
         private String desc;
         private String[] wars;
         private String fixedPermission = null;
