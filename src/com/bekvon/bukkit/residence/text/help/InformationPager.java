@@ -67,7 +67,7 @@ public class InformationPager {
 
         int perPage = 20;
         if (sender instanceof Player)
-            perPage = 6;
+            perPage = 10;
 
         if (ownedResidences.isEmpty()) {
             plugin.msg(sender, lm.Residence_DontOwn, targetPlayer);
