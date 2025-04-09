@@ -15,6 +15,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
@@ -110,7 +111,7 @@ public class ResidencePlayerListener1_21 implements Listener {
         if (!(entity instanceof Boat))
             return;
 
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());

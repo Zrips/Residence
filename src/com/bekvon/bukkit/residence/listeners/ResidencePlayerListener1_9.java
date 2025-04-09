@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityToggleGlideEvent;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.event.ResidenceChangedEvent;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -37,7 +38,7 @@ public class ResidencePlayerListener1_9 implements Listener {
         if (!(event.getEntity() instanceof Player))
             return;
 
-        if (plugin.isResAdminOn(event.getEntity())) {
+        if (ResAdmin.isResAdmin(event.getEntity())) {
             return;
         }
 

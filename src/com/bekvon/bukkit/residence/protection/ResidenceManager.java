@@ -37,6 +37,7 @@ import com.bekvon.bukkit.residence.api.ResidenceInterface;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.MinimizeFlags;
 import com.bekvon.bukkit.residence.containers.MinimizeMessages;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.Visualizer;
 import com.bekvon.bukkit.residence.containers.lm;
@@ -366,7 +367,7 @@ public class ResidenceManager implements ResidenceInterface {
     public void listResidences(CommandSender sender, String targetplayer, int page, boolean showhidden, boolean onlyHidden, boolean resadmin, World world) {
         if (targetplayer == null)
             targetplayer = sender.getName();
-        if (showhidden && !plugin.isResAdminOn(sender) && !sender.getName().equalsIgnoreCase(targetplayer)) {
+        if (showhidden && !ResAdmin.isResAdmin(sender) && !sender.getName().equalsIgnoreCase(targetplayer)) {
             showhidden = false;
         } else if (sender.getName().equalsIgnoreCase(targetplayer))
             showhidden = true;

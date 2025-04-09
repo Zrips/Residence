@@ -31,6 +31,7 @@ import com.bekvon.bukkit.residence.commands.padd;
 import com.bekvon.bukkit.residence.containers.DelayTeleport;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.MinimizeMessages;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.Visualizer;
 import com.bekvon.bukkit.residence.containers.lm;
@@ -1201,7 +1202,7 @@ public class ClaimedResidence {
 
     public void tpToResidence(final Player reqPlayer, final Player targetPlayer, final boolean resadmin) {
 
-        boolean isAdmin = Residence.getInstance().isResAdminOn(reqPlayer) || resadmin;
+        boolean isAdmin = ResAdmin.isResAdmin(reqPlayer) || resadmin;
 
         if (this.getRaid().isRaidInitialized()) {
             if (this.getRaid().isAttacker(targetPlayer) || this.getRaid().isDefender(targetPlayer) && !ConfigManager.RaidDefenderTeleport || !isAdmin) {

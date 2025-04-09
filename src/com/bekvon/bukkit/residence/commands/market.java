@@ -13,6 +13,7 @@ import net.Zrips.CMILib.FileHandler.ConfigReader;
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
@@ -74,7 +75,7 @@ public class market implements cmd {
             }
 
             if (res.isRented()) {
-                if (resadmin || plugin.isResAdminOn(player) || ResPerm.market_evict.hasPermission(player)) {
+                if (resadmin || ResAdmin.isResAdmin(player) || ResPerm.market_evict.hasPermission(player)) {
                     plugin.UnrentConfirm.put(player.getName(), res.getName());
                     plugin.msg(sender, lm.Rent_EvictConfirm, res.getName());
                 } else if (plugin.getRentManager().getRentingPlayer(res).equalsIgnoreCase(sender.getName())) {

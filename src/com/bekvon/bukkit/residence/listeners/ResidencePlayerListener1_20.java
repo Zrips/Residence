@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerSignOpenEvent;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
@@ -40,7 +41,7 @@ public class ResidencePlayerListener1_20 implements Listener {
         boolean hasuse = perms.playerHas(player, Flags.use, FlagCombo.TrueOrNone);
         boolean hasBuild = perms.playerHas(player, Flags.build, FlagCombo.TrueOrNone);
 
-        if (hasuse && hasBuild || plugin.isResAdminOn(player))
+        if (hasuse && hasBuild || ResAdmin.isResAdmin(player))
             return;
 
         event.setCancelled(true);

@@ -17,6 +17,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.event.ResidenceCommandEvent;
@@ -172,9 +173,9 @@ public class ResidenceCommandListener implements CommandExecutor {
                 return true;
             }
 
-            if (!resadmin && player != null && plugin.resadminToggle.contains(player.getName())) {
+            if (!resadmin && player != null && ResAdmin.isResAdmin(player)) {
                 if (!plugin.getPermissionManager().isResidenceAdmin(player)) {
-                    plugin.resadminToggle.remove(player.getName());
+                    ResAdmin.turnResAdminOff(player);
                 }
             }
 

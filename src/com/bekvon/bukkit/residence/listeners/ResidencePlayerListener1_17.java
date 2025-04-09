@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
@@ -79,7 +80,7 @@ public class ResidencePlayerListener1_17 implements Listener {
     public void onPlayerBucketEntityEvent(PlayerBucketEntityEvent event) {
 
         Player player = event.getPlayer();
-        if (Residence.getInstance().isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Entity ent = event.getEntity();
@@ -142,7 +143,7 @@ public class ResidencePlayerListener1_17 implements Listener {
         boolean waxed = CMIMaterial.isWaxedCopper(mat);
 
         if ((CMIMaterial.get(item).equals(CMIMaterial.HONEYCOMB) && !waxed || item.getType().toString().contains("_AXE") && CMIMaterial.getCopperStage(mat) > 1) &&
-            !res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.copper, FlagCombo.TrueOrNone) && !plugin.isResAdminOn(player)) {
+            !res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.copper, FlagCombo.TrueOrNone) && !ResAdmin.isResAdmin(player)) {
 
             plugin.msg(player, lm.Residence_FlagDeny, Flags.copper, res.getName());
             event.setCancelled(true);
@@ -188,8 +189,8 @@ public class ResidencePlayerListener1_17 implements Listener {
             return;
 
         Block block = event.getBlock();
-        
-        if (block == null) 
+
+        if (block == null)
             return;
 
         ClaimedResidence originRes = plugin.getResidenceManager().getByLoc(block.getLocation());

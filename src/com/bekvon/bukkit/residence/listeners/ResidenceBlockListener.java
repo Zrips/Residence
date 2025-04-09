@@ -52,6 +52,7 @@ import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.commands.auto.direction;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
@@ -219,7 +220,7 @@ public class ResidenceBlockListener implements Listener {
         if (Residence.getInstance().isDisabledWorldListener(loc.getWorld()))
             return true;
 
-        if (Residence.getInstance().isResAdminOn(player)) {
+        if (ResAdmin.isResAdmin(player)) {
             return true;
         }
 
@@ -408,7 +409,7 @@ public class ResidenceBlockListener implements Listener {
             return;
 
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
         Block block = event.getBlock();
         if (block.getType() != Material.CHEST && block.getType() != Material.TRAPPED_CHEST)
@@ -450,7 +451,7 @@ public class ResidenceBlockListener implements Listener {
             return;
 
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Block block = event.getBlock();
@@ -481,7 +482,7 @@ public class ResidenceBlockListener implements Listener {
             return;
 
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
         Block block = event.getBlock();
         if (block.getType() != Material.CHEST && block.getType() != Material.TRAPPED_CHEST)
@@ -622,7 +623,7 @@ public class ResidenceBlockListener implements Listener {
         if (Residence.getInstance().isDisabledWorldListener(block.getWorld()))
             return true;
 
-        if (Residence.getInstance().isResAdminOn(player)) {
+        if (ResAdmin.isResAdmin(player)) {
             return true;
         }
 
@@ -1109,7 +1110,7 @@ public class ResidenceBlockListener implements Listener {
                 return;
             Player player = event.getPlayer();
             FlagPermissions perms = plugin.getPermsByLocForPlayer(event.getBlock().getLocation(), player);
-            if (player != null && !perms.playerHas(player, Flags.ignite, true) && !plugin.isResAdminOn(player)) {
+            if (player != null && !perms.playerHas(player, Flags.ignite, true) && !ResAdmin.isResAdmin(player)) {
                 event.setCancelled(true);
                 plugin.msg(player, lm.Flag_Deny, Flags.ignite);
             }

@@ -62,6 +62,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -220,7 +221,7 @@ public class ResidenceEntityListener implements Listener {
         if (cause == null)
             return;
 
-        if (plugin.isResAdminOn(cause))
+        if (ResAdmin.isResAdmin(cause))
             return;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
@@ -279,7 +280,7 @@ public class ResidenceEntityListener implements Listener {
         if (cause == null)
             return;
 
-        if (plugin.isResAdminOn(cause))
+        if (ResAdmin.isResAdmin(cause))
             return;
 
         if (res.getPermissions().playerHas(cause, Flags.animalkilling, FlagCombo.OnlyFalse)) {
@@ -409,7 +410,7 @@ public class ResidenceEntityListener implements Listener {
         if (cause == null)
             return true;
 
-        if (plugin.isResAdminOn(cause))
+        if (ResAdmin.isResAdmin(cause))
             return true;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(vehicle.getLocation());
@@ -459,7 +460,7 @@ public class ResidenceEntityListener implements Listener {
         if (cause == null)
             return;
 
-        if (plugin.isResAdminOn(cause))
+        if (ResAdmin.isResAdmin(cause))
             return;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
@@ -490,7 +491,7 @@ public class ResidenceEntityListener implements Listener {
         if (!Utils.isAnimal(entity))
             return;
 
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
@@ -519,7 +520,7 @@ public class ResidenceEntityListener implements Listener {
         if (CMIEntityType.get(entity.getType()) != CMIEntityType.LEASH_KNOT)
             return;
 
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
@@ -685,7 +686,7 @@ public class ResidenceEntityListener implements Listener {
             return;
         if (plugin.isDisabledWorldListener(player.getWorld()))
             return;
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         FlagPermissions perms = plugin.getPermsByLocForPlayer(event.getEntity().getLocation(), player);
@@ -709,7 +710,7 @@ public class ResidenceEntityListener implements Listener {
             return;
 
         if (event.getEntity().getShooter() instanceof Player) {
-            if (plugin.isResAdminOn((Player) event.getEntity().getShooter()))
+            if (ResAdmin.isResAdmin((Player) event.getEntity().getShooter()))
                 return;
         }
         FlagPermissions perms = plugin.getPermsByLoc(event.getEntity().getLocation());
@@ -734,7 +735,7 @@ public class ResidenceEntityListener implements Listener {
             return;
 
         Player player = (Player) event.getRemover();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         if (plugin.getResidenceManager().isOwnerOfLocation(player, ent.getLocation()))
@@ -1465,7 +1466,7 @@ public class ResidenceEntityListener implements Listener {
         if (player == null)
             return;
 
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         if (CMIEntity.isItemFrame(event.getEntity())) {
@@ -1804,7 +1805,7 @@ public class ResidenceEntityListener implements Listener {
         if (Version.isCurrentLower(Version.v1_12_R1))
             return;
         Player player = event.getPlayer();
-        if (Residence.getInstance().isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Entity ent = event.getRightClicked();

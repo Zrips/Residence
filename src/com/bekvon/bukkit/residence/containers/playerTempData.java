@@ -99,7 +99,7 @@ public class playerTempData {
 
         if (lastInsideLoc != null) {
             ClaimedResidence res = Residence.getInstance().getResidenceManager().getByLoc(lastInsideLoc);
-            if (res != null && Flags.tp.isGlobalyEnabled() && (res.getPermissions().playerHas(player, Flags.tp, FlagCombo.TrueOrNone) || Residence.getInstance().isResAdminOn(player)
+            if (res != null && Flags.tp.isGlobalyEnabled() && (res.getPermissions().playerHas(player, Flags.tp, FlagCombo.TrueOrNone) || ResAdmin.isResAdmin(player)
                 || res.isOwner(player) || ResPerm.admin_move.hasPermission(player, 10000L))) {
                 return lastInsideLoc;
             }

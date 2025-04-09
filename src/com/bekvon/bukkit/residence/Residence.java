@@ -58,10 +58,11 @@ import com.bekvon.bukkit.residence.api.ResidencePlayerInterface;
 import com.bekvon.bukkit.residence.bigDoors.BigDoorsManager;
 import com.bekvon.bukkit.residence.chat.ChatManager;
 import com.bekvon.bukkit.residence.commands.padd;
-import com.bekvon.bukkit.residence.containers.DelayTeleport;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.MinimizeFlags;
 import com.bekvon.bukkit.residence.containers.MinimizeMessages;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
+import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.dynmap.DynMapListeners;
 import com.bekvon.bukkit.residence.dynmap.DynMapManager;
@@ -171,13 +172,8 @@ public class Residence extends JavaPlugin {
     protected ResidencePlayerListener plistener;
     protected ResidenceEntityListener elistener;
 
-    protected ResidenceFixesListener flistener;
-    protected ResidenceRaidListener slistener;
-
     protected ResidenceCommandListener commandManager;
 
-    protected SpigotListener spigotlistener;
-    protected ShopListener shlistener;
     protected TransactionManager tmanager;
     protected PermissionListManager pmanager;
     protected LeaseManager leasemanager;
@@ -216,7 +212,7 @@ public class Residence extends JavaPlugin {
     protected CMITask healBukkitId = null;
     protected CMITask feedBukkitId = null;
     protected CMITask effectRemoveBukkitId = null;
-    protected CMITask DespawnMobsBukkitId = null;
+    protected CMITask despawnMobsBukkitId = null;
     protected CMITask autosaveBukkitId = null;
 
     private boolean SlimeFun = false;
@@ -227,7 +223,6 @@ public class Residence extends JavaPlugin {
     protected boolean initsuccess = false;
     public Map<String, String> deleteConfirm;
     public Map<String, String> UnrentConfirm = new HashMap<String, String>();
-    public List<String> resadminToggle;
     private ConcurrentHashMap<String, OfflinePlayer> OfflinePlayerList = new ConcurrentHashMap<String, OfflinePlayer>();
     private Map<UUID, OfflinePlayer> cachedPlayerNameUUIDs = new HashMap<UUID, OfflinePlayer>();
     private Map<UUID, String> cachedPlayerNames = new HashMap<UUID, String>();
@@ -371,8 +366,8 @@ public class Residence extends JavaPlugin {
             feedBukkitId.cancel();
         if (effectRemoveBukkitId != null)
             effectRemoveBukkitId.cancel();
-        if (DespawnMobsBukkitId != null)
-            DespawnMobsBukkitId.cancel();
+        if (despawnMobsBukkitId != null)
+            despawnMobsBukkitId.cancel();
 
         this.getPermissionManager().stopCacheClearScheduler();
 
@@ -415,7 +410,6 @@ public class Residence extends JavaPlugin {
 
             initsuccess = false;
             deleteConfirm = new HashMap<String, String>();
-            resadminToggle = new ArrayList<String>();
             server = this.getServer();
             dataFolder = this.getDataFolder();
 
@@ -432,7 +426,7 @@ public class Residence extends JavaPlugin {
             }
 
             if (!new File(dataFolder, "groups.yml").isFile() && !new File(dataFolder, "flags.yml").isFile() && new File(dataFolder, "config.yml").isFile()) {
-                this.ConvertFile();
+                this.convertFile();
             }
 
             if (!new File(dataFolder, "uuids.yml").isFile()) {
@@ -691,8 +685,6 @@ public class Residence extends JavaPlugin {
 
                 PluginManager pm = getServer().getPluginManager();
 
-                blistener = new ResidenceBlockListener(this);
-                plistener = new ResidencePlayerListener(this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
                     pm.registerEvents(new ResidencePlayerListener1_9(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_12_R1))
@@ -714,19 +706,16 @@ public class Residence extends JavaPlugin {
                 if (Version.isCurrentEqualOrHigher(Version.v1_21_R1))
                     pm.registerEvents(new ResidencePlayerListener1_21(this), this);
 
+                blistener = new ResidenceBlockListener(this);
+                plistener = new ResidencePlayerListener(this);
                 elistener = new ResidenceEntityListener(this);
-                flistener = new ResidenceFixesListener();
-                slistener = new ResidenceRaidListener();
-
-                shlistener = new ShopListener(this);
-                spigotlistener = new SpigotListener();
 
                 pm.registerEvents(blistener, this);
                 pm.registerEvents(plistener, this);
                 pm.registerEvents(elistener, this);
-                pm.registerEvents(flistener, this);
-                pm.registerEvents(shlistener, this);
-                pm.registerEvents(slistener, this);
+                pm.registerEvents(new ResidenceFixesListener(), this);
+                pm.registerEvents(new ShopListener(this), this);
+                pm.registerEvents(new ResidenceRaidListener(), this);
 
                 // 1.8 event
                 if (Version.isCurrentEqualOrHigher(Version.v1_8_R1))
@@ -753,7 +742,7 @@ public class Residence extends JavaPlugin {
 
             try {
                 Class.forName("org.bukkit.event.player.PlayerItemDamageEvent");
-                getServer().getPluginManager().registerEvents(spigotlistener, this);
+                getServer().getPluginManager().registerEvents(new SpigotListener(), this);
             } catch (Exception e) {
             }
 
@@ -806,7 +795,7 @@ public class Residence extends JavaPlugin {
                 effectRemoveBukkitId = CMIScheduler.scheduleSyncRepeatingTask(this, removeBadEffects, 20, getConfigManager().getSafeZoneInterval() * 20);
 
             if (getConfigManager().AutoMobRemoval())
-                DespawnMobsBukkitId = CMIScheduler.scheduleSyncRepeatingTask(this, DespawnMobs, 20 * getConfigManager().AutoMobRemovalInterval(), 20
+                despawnMobsBukkitId = CMIScheduler.scheduleSyncRepeatingTask(this, DespawnMobs, 20 * getConfigManager().AutoMobRemovalInterval(), 20
                     * getConfigManager().AutoMobRemovalInterval());
 
             if (getConfigManager().useLeases()) {
@@ -827,7 +816,7 @@ public class Residence extends JavaPlugin {
             }
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 if (getPermissionManager().isResidenceAdmin(player)) {
-                    turnResAdminOn(player);
+                    ResAdmin.turnResAdminOn(player);
                 }
             }
             try {
@@ -1233,45 +1222,47 @@ public class Residence extends JavaPlugin {
         }
     }
 
+    @Deprecated
+    /**
+    * @deprecated Use {@link ResAdmin#isResAdmin(CommandSender)} instead.
+    */
     public boolean isResAdminOn(CommandSender sender) {
-        if (sender instanceof Player)
-            return isResAdminOn((Player) sender);
-        return true;
+        return ResAdmin.isResAdmin(sender);
     }
 
+    @Deprecated
+    /**
+    * @deprecated Use {@link ResAdmin#isResAdmin(Player)} instead.
+    */
     public boolean isResAdminOn(Player player) {
-        if (player == null)
-            return true;
-        return resadminToggle.contains(player.getName());
+        return ResAdmin.isResAdmin(player);
     }
 
+    @Deprecated
+    /**
+    * @deprecated Use {@link ResAdmin#turnResAdmin(Player, Boolean)} instead.
+    */
     public void turnResAdminOn(Player player) {
-        resadminToggle.add(player.getName());
+        ResAdmin.turnResAdmin(player, true);
     }
 
+    @Deprecated
+    /**
+    * @deprecated Use {@link ResAdmin#turnResAdmin(Player, Boolean)} instead.
+    */
+    public void turnResAdminOff(Player player) {
+        ResAdmin.turnResAdmin(player, false);
+    }
+
+    @Deprecated
+    /**
+    * @deprecated Use {@link ResAdmin#isResAdmin(Player)} instead.
+    */
     public boolean isResAdminOn(String player) {
-        return resadminToggle.contains(player);
-    }
-
-    private static void saveFile(File worldFolder, String fileName, String key, Object value) throws IOException {
-        File ymlFlagsSaveLoc = new File(worldFolder, "res_" + fileName + ".yml");
-        File tmpFlagsFile = new File(worldFolder, "tmp_res_" + fileName + ".yml");
-
-        // Separate Flags file
-        YMLSaveHelper flagsTemp = new YMLSaveHelper(tmpFlagsFile);
-        flagsTemp.getRoot().put(key, value);
-        flagsTemp.save();
-
-        if (ymlFlagsSaveLoc.isFile()) {
-            File backupFolder = new File(worldFolder, "Backup");
-            backupFolder.mkdirs();
-            File backupFile = new File(backupFolder, "res_" + fileName + ".yml");
-            if (backupFile.isFile()) {
-                backupFile.delete();
-            }
-            ymlFlagsSaveLoc.renameTo(backupFile);
-        }
-        tmpFlagsFile.renameTo(ymlFlagsSaveLoc);
+        ResidencePlayer rPlayer = this.getPlayerManager().getResidencePlayer(player);
+        if (rPlayer == null)
+            return false;
+        return ResAdmin.isResAdmin(rPlayer.getUniqueId());
     }
 
     private static void saveBackup(File ymlSaveLoc, String worldName, File worldFolder) {
@@ -1576,7 +1567,7 @@ public class Residence extends JavaPlugin {
         }
     }
 
-    private void ConvertFile() {
+    private void convertFile() {
         File file = new File(this.getDataFolder(), "config.yml");
 
         File file_old = new File(this.getDataFolder(), "config_old.yml");
@@ -1709,38 +1700,6 @@ public class Residence extends JavaPlugin {
             out.close();
         }
     }
-
-//    private void writeDefaultLanguageFile(String lang) {
-//	File outFile = new File(new File(this.getDataFolder(), "Language"), lang + ".yml");
-//	outFile.getParentFile().mkdirs();
-//	if (this.writeDefaultFileFromJar(outFile, "languagefiles/" + lang + ".yml", true)) {
-//	    System.out.println("[Residence] Wrote default " + lang + " Language file...");
-//	}
-//    }
-//
-//    private boolean checkNewLanguageVersion(String lang) throws IOException, FileNotFoundException, InvalidConfigurationException {
-//	File outFile = new File(new File(this.getDataFolder(), "Language"), lang + ".yml");
-//	File checkFile = new File(new File(this.getDataFolder(), "Language"), "temp-" + lang + ".yml");
-//	if (outFile.isFile()) {
-//	    FileConfiguration testconfig = new YamlConfiguration();
-//	    testconfig.load(outFile);
-//	    int oldversion = testconfig.getInt("FieldsVersion", 0);
-//	    if (!this.writeDefaultFileFromJar(checkFile, "languagefiles/" + lang + ".yml", false)) {
-//		return false;
-//	    }
-//	    FileConfiguration testconfig2 = new YamlConfiguration();
-//	    testconfig2.load(checkFile);
-//	    int newversion = testconfig2.getInt("FieldsVersion", oldversion);
-//	    if (checkFile.isFile()) {
-//		checkFile.delete();
-//	    }
-//	    if (newversion > oldversion) {
-//		return true;
-//	    }
-//	    return false;
-//	}
-//	return true;
-//    }
 
     private boolean writeDefaultFileFromJar(File writeName, String jarPath, boolean backupOld) {
         try {

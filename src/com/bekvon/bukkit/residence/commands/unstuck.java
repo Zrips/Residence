@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
@@ -29,7 +30,7 @@ public class unstuck implements cmd {
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
 
-        if (!group.hasUnstuckAccess() && !plugin.isResAdminOn(player)) {
+        if (!group.hasUnstuckAccess() && !ResAdmin.isResAdmin(player)) {
             plugin.msg(player, lm.General_NoPermission);
             return true;
         }

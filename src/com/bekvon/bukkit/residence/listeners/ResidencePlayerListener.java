@@ -62,6 +62,7 @@ import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.chat.ChatChannel;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.StuckInfo;
 import com.bekvon.bukkit.residence.containers.Visualizer;
@@ -97,7 +98,6 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -363,7 +363,7 @@ public class ResidencePlayerListener implements Listener {
         Player player = event.getPlayer();
         if (event.getCaught() == null)
             return;
-        if ((Utils.isArmorStandEntity(event.getCaught().getType()) || event.getCaught() instanceof Boat || event.getCaught() instanceof LivingEntity) && !plugin.isResAdminOn(player)) {
+        if ((Utils.isArmorStandEntity(event.getCaught().getType()) || event.getCaught() instanceof Boat || event.getCaught() instanceof LivingEntity) && !ResAdmin.isResAdmin(player)) {
             FlagPermissions perm = plugin.getPermsByLoc(event.getCaught().getLocation());
             ClaimedResidence res = plugin.getResidenceManager().getByLoc(event.getCaught().getLocation());
             if (perm.has(Flags.hook, FlagCombo.OnlyFalse)) {
@@ -874,7 +874,7 @@ public class ResidencePlayerListener implements Listener {
             return;
         FlagPermissions perms = plugin.getPermsByLocForPlayer(player.getLocation(), player);
 
-        f: if ((player.getAllowFlight() || player.isFlying()) && perms.has(Flags.nofly, false) && !plugin.isResAdminOn(player)
+        f: if ((player.getAllowFlight() || player.isFlying()) && perms.has(Flags.nofly, false) && !ResAdmin.isResAdmin(player)
             && !ResPerm.bypass_nofly.hasPermission(player, 10000L)) {
 
             ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
@@ -921,7 +921,7 @@ public class ResidencePlayerListener implements Listener {
 //        lastUpdate.put(player.getUniqueId(), 0L);
         playerTempData.get(player).setLastUpdate(0L);
         if (plugin.getPermissionManager().isResidenceAdmin(player)) {
-            plugin.turnResAdminOn(player);
+            ResAdmin.isResAdmin(player);
         }
         handleNewLocation(player, player.getLocation(), true);
 
@@ -1125,7 +1125,7 @@ public class ResidencePlayerListener implements Listener {
 
         if (player.hasMetadata("NPC"))
             return;
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
         FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
 
@@ -1177,7 +1177,7 @@ public class ResidencePlayerListener implements Listener {
 
         if (player.hasMetadata("NPC"))
             return;
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
         FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
 
@@ -1216,7 +1216,7 @@ public class ResidencePlayerListener implements Listener {
         Player player = event.getPlayer();
         if (player.hasMetadata("NPC"))
             return;
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
         FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
 
@@ -1247,7 +1247,7 @@ public class ResidencePlayerListener implements Listener {
         FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
 
         CMIMaterial mat = CMIMaterial.get(block);
-        if (!plugin.isResAdminOn(player)) {
+        if (!ResAdmin.isResAdmin(player)) {
             boolean hasuse = perms.playerHas(player, Flags.use, true);
             boolean haspressure = perms.playerHas(player, Flags.pressure, hasuse);
             if ((!hasuse && !haspressure || !haspressure) && mat.isPlate()
@@ -1289,7 +1289,7 @@ public class ResidencePlayerListener implements Listener {
             return;
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
-        boolean resadmin = plugin.isResAdminOn(player);
+        boolean resadmin = ResAdmin.isResAdmin(player);
         if (ResPerm.select.hasPermission(player) || ResPerm.create.hasPermission(player) && !ResPerm.select.hasSetPermission(player) || group
             .canCreateResidences() && !ResPerm.create.hasSetPermission(player) && !ResPerm.select.hasSetPermission(player) || resadmin) {
 
@@ -1377,7 +1377,7 @@ public class ResidencePlayerListener implements Listener {
         } catch (Exception e) {
         }
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Block block = event.getClickedBlock();
@@ -1430,7 +1430,7 @@ public class ResidencePlayerListener implements Listener {
         if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
-        boolean resadmin = plugin.isResAdminOn(player);
+        boolean resadmin = ResAdmin.isResAdmin(player);
         if (resadmin)
             return;
 
@@ -1603,7 +1603,7 @@ public class ResidencePlayerListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Entity ent = event.getRightClicked();
@@ -1658,7 +1658,7 @@ public class ResidencePlayerListener implements Listener {
         if (!Flags.container.isGlobalyEnabled())
             return;
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Entity ent = event.getRightClicked();
@@ -1687,7 +1687,7 @@ public class ResidencePlayerListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Entity ent = event.getRightClicked();
@@ -1713,7 +1713,7 @@ public class ResidencePlayerListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Entity ent = event.getRightClicked();
@@ -1746,7 +1746,7 @@ public class ResidencePlayerListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Entity ent = event.getRightClicked();
@@ -1772,7 +1772,7 @@ public class ResidencePlayerListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Entity ent = event.getRightClicked();
@@ -1808,7 +1808,7 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Entity ent = event.getEntity();
@@ -1834,7 +1834,7 @@ public class ResidencePlayerListener implements Listener {
     public void onPlayerInteractAtArmoStand(PlayerInteractEntityEvent event) {
 
         Player player = event.getPlayer();
-        if (Residence.getInstance().isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Entity ent = event.getRightClicked();
@@ -1868,7 +1868,7 @@ public class ResidencePlayerListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Entity ent = event.getRightClicked();
@@ -1910,7 +1910,7 @@ public class ResidencePlayerListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Location loc = event.getBlockClicked().getLocation().clone();
@@ -1982,7 +1982,7 @@ public class ResidencePlayerListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
         Player player = event.getPlayer();
-        if (plugin.isResAdminOn(player))
+        if (ResAdmin.isResAdmin(player))
             return;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(event.getBlockClicked().getLocation());
@@ -2013,7 +2013,7 @@ public class ResidencePlayerListener implements Listener {
 
         Location loc = event.getTo();
         boolean handled = handleNewLocation(player, loc, false);
-        if (plugin.isResAdminOn(player)) {
+        if (ResAdmin.isResAdmin(player)) {
             return;
         }
 
@@ -2407,7 +2407,7 @@ public class ResidencePlayerListener implements Listener {
         if (res == null)
             return;
 
-        if (!Flags.nofly.isGlobalyEnabled() || !event.isFlying() || !res.getPermissions().playerHas(player, Flags.nofly, FlagCombo.OnlyTrue) || plugin.isResAdminOn(player)
+        if (!Flags.nofly.isGlobalyEnabled() || !event.isFlying() || !res.getPermissions().playerHas(player, Flags.nofly, FlagCombo.OnlyTrue) || ResAdmin.isResAdmin(player)
             || res.isOwner(player) || ResPerm.bypass_nofly.hasPermission(player, 10000L))
             return;
 
@@ -2528,7 +2528,7 @@ public class ResidencePlayerListener implements Listener {
 
         boolean cantMove = Flags.move.isGlobalyEnabled() &&
             res.getPermissions().playerHas(player, Flags.move, FlagCombo.OnlyFalse) &&
-            !plugin.isResAdminOn(player) &&
+            !ResAdmin.isResAdmin(player) &&
             !res.isOwner(player) &&
             !ResPerm.admin_move.hasPermission(player, 10000L);
 
@@ -2536,7 +2536,7 @@ public class ResidencePlayerListener implements Listener {
             tempData.setCurrentResidence(player, res);
 
         boolean teleported = false;
-        if (!cantMove && Flags.nofly.isGlobalyEnabled() && player.isFlying() && res.getPermissions().playerHas(player, Flags.nofly, FlagCombo.OnlyTrue) && !plugin.isResAdminOn(player)
+        if (!cantMove && Flags.nofly.isGlobalyEnabled() && player.isFlying() && res.getPermissions().playerHas(player, Flags.nofly, FlagCombo.OnlyTrue) && !ResAdmin.isResAdmin(player)
             && !res.isOwner(player) && !ResPerm.bypass_nofly.hasPermission(player, 10000L)) {
             teleported = checkNoFly(player, res, loc);
         }

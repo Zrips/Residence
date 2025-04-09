@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.api.MarketRentInterface;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.Visualizer;
 import com.bekvon.bukkit.residence.containers.lm;
@@ -866,7 +867,7 @@ public class RentManager implements MarketRentInterface {
             if (rented != null) {
                 plugin.msg(player, lm.Residence_RentedBy, rented.player);
 
-                if (rented.player.equals(player.getName()) || res.isOwner(player) || plugin.isResAdminOn(player))
+                if (rented.player.equals(player.getName()) || res.isOwner(player) || ResAdmin.isResAdmin(player))
                     player.sendMessage((rented.AutoPay ? plugin.msg(lm.Rent_AutoPayTurnedOn) : plugin.msg(lm.Rent_AutoPayTurnedOff))
                         + "\n");
                 plugin.msg(player, lm.Rent_Expire, GetTime.getTime(rented.endTime));
