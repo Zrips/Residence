@@ -1316,6 +1316,8 @@ public class ClaimedResidence {
         old.setMessageTask(CMIScheduler.scheduleSyncRepeatingTask(Residence.getInstance(), () -> {
             CMITitleMessage.send(player, Residence.getInstance().msg(lm.General_TeleportTitle), Residence.getInstance().msg(lm.General_TeleportTitleTime, old.getRemainingTime()));
             old.lowerRemainingTime();
+            if (old.getRemainingTime() < 0)
+                old.getMessageTask().cancel();
         }, 1L, 20L));
     }
 
