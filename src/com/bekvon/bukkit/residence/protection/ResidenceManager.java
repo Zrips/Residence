@@ -616,8 +616,9 @@ public class ResidenceManager implements ResidenceInterface {
             return;
 
         ClaimedResidence parent = res.getParent();
+        removeChunkList(res);
+
         if (parent == null) {
-            removeChunkList(name);
 
             residences.remove(name.toLowerCase());
 
@@ -658,6 +659,10 @@ public class ResidenceManager implements ResidenceInterface {
             if (res.getBank().getStoredMoneyD() > 0 && plugin.getConfigManager().isResBankBack()) {
                 plugin.getTransactionManager().giveEconomyMoney(res.getOwner(), res.getBank().getStoredMoneyD());
             }
+        }
+
+        for (ClaimedResidence sub : res.getSubzones()) {
+            removeResidence(rPlayer, sub, resadmin, false);
         }
     }
 
