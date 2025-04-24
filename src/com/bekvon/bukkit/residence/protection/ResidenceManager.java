@@ -1068,7 +1068,7 @@ public class ResidenceManager implements ResidenceInterface {
         File saveFolder = new File(plugin.dataFolder, "Save");
         try {
             File worldFolder = new File(saveFolder, "Worlds");
-            if (plugin.getConfigManager().isLoadEveryWorld()) {
+            if (plugin.getConfigManager().isLoadEveryWorld() && worldFolder.isDirectory()) {
                 for (File f : worldFolder.listFiles()) {
                     if (!f.isFile())
                         continue;
