@@ -2,6 +2,7 @@ package com.bekvon.bukkit.residence.listeners;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
@@ -41,6 +42,7 @@ public class ResidencePlayerListener1_13 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onButtonHitWithProjectile(ProjectileHitEvent e) {
+
         // Disabling listener if flag disabled globally
         if (!Flags.button.isGlobalyEnabled())
             return;
@@ -89,6 +91,17 @@ public class ResidencePlayerListener1_13 implements Listener {
 
         if (e.getEntity() instanceof Arrow)
             e.getEntity().remove();
+
+        if (Version.isCurrentHigher(Version.v1_13_R1) && CMIMaterial.isButton(block.getType()) && block.getBlockData() instanceof Switch) {
+            Switch button = (Switch) block.getBlockData();
+            button.setPowered(false);
+            block.setBlockData(button, true);
+            CMIScheduler.runAtLocationLater(plugin, block.getLocation(), () -> {
+                button.setPowered(false);
+                block.setBlockData(button, true);
+            }, 1L);
+            return;
+        }
 
         if (Version.isCurrentHigher(Version.v1_13_R1) && e.getEntity() instanceof Trident && !block.getType().toString().contains("STONE") && block
             .getBlockData() instanceof org.bukkit.block.data.Powerable) {
