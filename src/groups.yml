@@ -22,7 +22,7 @@ Groups:
            # (Optional) The minimum number of blocks a Residence can be, North to South (Z).
            MinNorthSouth: 3
            # The maximum number of blocks a Residence can be, High to Low (Y).
-           MaxUpDown: 320
+           MaxUpDown: 384
            # (Optional) The minimum number of blocks a Residence can be, High to Low (Y).
            MinUpDown: 3
            # The lowest altitude this group is allowed to protect.
@@ -44,7 +44,7 @@ Groups:
            # (Optional) The minimum number of blocks a Residence Subzone can be, North to South (Z).
            SubzoneMinNorthSouth: 3
            # (Optional) The maximum number of blocks a Residence Subzone can be, High to Low (Y).
-           SubzoneMaxUpDown: 320
+           SubzoneMaxUpDown: 384
            # (Optional) The minimum number of blocks a Residence Subzone can be, High to Low (Y).
            SubzoneMinUpDown: 3
            # Whether or not to allow teleporting to Residences.

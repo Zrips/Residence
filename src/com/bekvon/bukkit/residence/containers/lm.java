@@ -341,6 +341,7 @@ public enum lm {
 
     Economy_LandForSale("&eLand For Sale:"),
     Economy_NotEnoughMoney("&cYou don't have enough money."),
+    Economy_NotEnoughMoneyAmount("&cYou don't have enough money. (&6%1&c)"),
     Economy_MoneyCharged("&eCharged &6%1 &eto your &6%2 &eaccount."),
     Economy_MoneyAdded("&eGot &6%1 &eto your &6%2 &eaccount."),
     Economy_MoneyCredit("&eCredited &6%1 &eto your &6%2 &eaccount."),

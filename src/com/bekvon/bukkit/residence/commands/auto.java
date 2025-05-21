@@ -30,6 +30,10 @@ import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class auto implements cmd {
 
+    private enum failReason {
+        money, area, collision, none;
+    }
+
     @Override
     @CommandAnnotation(simple = true, priority = 150, regVar = { 0, 1, 2 }, consoleVar = { 666 })
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
@@ -78,12 +82,16 @@ public class auto implements cmd {
 
         CuboidArea cuboid = plugin.getSelectionManager().getSelectionCuboid(player);
 
-        boolean result = false;
+        failReason result = failReason.area;
 
         if (plugin.getConfigManager().isARCOldMethod())
             result = resize(plugin, player, cuboid, true, length);
         else
             result = optimizedResize(plugin, player, cuboid, true, length);
+
+        if (!result.equals(failReason.none)) {
+            return true;
+        }
 
         plugin.getSelectionManager().afterSelectionUpdate(player, true);
 
@@ -108,11 +116,6 @@ public class auto implements cmd {
                 Residence.getInstance().msg(player, lm.Area_TooClose, gap, collision.getName());
                 return null;
             }
-        }
-
-        if (!result) {
-            Residence.getInstance().msg(player, lm.Area_SizeLimit);
-            return true;
         }
 
         if (plugin.getResidenceManager().getByName(resName) != null) {
@@ -232,7 +235,7 @@ public class auto implements cmd {
         return newmin;
     }
 
-    public static boolean resize(Residence plugin, Player player, CuboidArea cuboid, boolean checkBalance, int max) {
+    public static failReason resize(Residence plugin, Player player, CuboidArea cuboid, boolean checkBalance, int max) {
 
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
@@ -357,7 +360,7 @@ public class auto implements cmd {
 
                 if (!Residence.getInstance().getEconomyManager().canAfford(player, cost)) {
                     plugin.msg(player, lm.Economy_NotEnoughMoney);
-                    return false;
+                    return failReason.money;
                 }
             }
 
@@ -373,10 +376,10 @@ public class auto implements cmd {
         cuboid = plugin.getSelectionManager().getSelectionCuboid(player);
 
         if (cuboid.getXSize() > groupMaxX || cuboid.getYSize() > group.getMaxYSize() + (-group.getMinYSize()) || cuboid.getZSize() > groupMaxZ) {
-            return false;
+            return failReason.area;
         }
 
-        return true;
+        return failReason.none;
     }
 
     private static void fillMaps(HashMap<direction, Integer> directionMap, HashMap<direction, Integer> maxMap, direction dir, int max, int cubeSize) {
@@ -385,7 +388,7 @@ public class auto implements cmd {
         maxMap.put(dir, maxV);
     }
 
-    public static boolean optimizedResize(Residence plugin, Player player, CuboidArea cuboid, boolean checkBalance, int max) {
+    public static failReason optimizedResize(Residence plugin, Player player, CuboidArea cuboid, boolean checkBalance, int max) {
 
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
@@ -398,7 +401,7 @@ public class auto implements cmd {
         boolean checkCollision = plugin.getConfigManager().isARCCheckCollision();
 
         if (checkCollision && plugin.getResidenceManager().collidesWithResidence(cuboid) != null) {
-            return false;
+            return failReason.collision;
         }
 
         int skipped = 0;
@@ -421,8 +424,9 @@ public class auto implements cmd {
 
         if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && maxY > max && max > 0) {
             maxY = max;
-        } else if (Residence.getInstance().getConfigManager().isSelectionIgnoreY())
-            maxY = CMINumber.abs(CMIWorld.getMinHeight(cuboid.getWorld()) - CMIWorld.getMaxHeight(cuboid.getWorld()));
+        } else if (Residence.getInstance().getConfigManager().isSelectionIgnoreY()) {
+            maxY = Math.min(CMINumber.abs(CMIWorld.getMinHeight(cuboid.getWorld()) - CMIWorld.getMaxHeight(cuboid.getWorld())), maxY);
+        }
 
         if (maxZ > max && max > 0)
             maxZ = max;
@@ -437,6 +441,12 @@ public class auto implements cmd {
             maxZ = (groupMaxZ - group.getMinZ()) / 2 + group.getMinZ();
 
         int gap = plugin.getConfigManager().getAntiGreefRangeGaps(cuboid.getWorldName());
+
+        if (cuboid.getYSize() > maxY) {
+            int dif = (cuboid.getYSize() - maxY) / 2;
+            cuboid.getLowVector().add(new Vector(0, dif, 0));
+            cuboid.getHighVector().add(new Vector(0, -dif, 0));
+        }
 
         HashMap<direction, Integer> directionMap = new HashMap<direction, Integer>();
         HashMap<direction, Integer> maxMap = new HashMap<direction, Integer>();
@@ -475,6 +485,7 @@ public class auto implements cmd {
             } else if (c.getLowVector().getBlockY() < minYaltitude) {
                 c.setLowVector(c.getLowVector().setY(minYaltitude));
             }
+
             if (checkCollision) {
 
                 if (gap > 0) {
@@ -593,14 +604,14 @@ public class auto implements cmd {
                 }
 
                 if (dir == direction.North && locked.contains(direction.South) && !permaLocked.contains(direction.South)) {
-                    maxMap.put(direction.South, maxX - (player.getLocation().getBlockZ() - cuboid.getHighVector().getBlockZ()));
+                    maxMap.put(direction.South, maxZ - (player.getLocation().getBlockZ() - cuboid.getHighVector().getBlockZ()));
                     directionMap.put(direction.South, maxMap.get(direction.South) / 2);
                     locked.remove(direction.South);
                     permaLocked.add(dir);
                 }
 
                 if (dir == direction.South && locked.contains(direction.North) && !permaLocked.contains(direction.North)) {
-                    maxMap.put(direction.North, maxX - (player.getLocation().getBlockZ() - cuboid.getHighVector().getBlockZ()));
+                    maxMap.put(direction.North, maxZ - (player.getLocation().getBlockZ() - cuboid.getHighVector().getBlockZ()));
                     directionMap.put(direction.North, maxMap.get(direction.North) / 2);
                     locked.remove(direction.North);
                     permaLocked.add(dir);
@@ -686,7 +697,8 @@ public class auto implements cmd {
                 continue;
             }
 
-            if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && (maxY > 0 && maxY < c.getYSize() || c.getYSize() > maxY)) {
+            if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() &&
+                (maxY > 0 && maxY < c.getYSize() || c.getYSize() > maxY)) {
                 if (Math.abs(offset) < 1) {
                     locked.add(dir);
                 }
@@ -702,8 +714,8 @@ public class auto implements cmd {
             }
 
             if (checkBalance && plugin.getConfigManager().enableEconomy() && !Residence.getInstance().getEconomyManager().canAfford(player, c.getCost(group))) {
-                plugin.msg(player, lm.Economy_NotEnoughMoney);
-                return false;
+                plugin.msg(player, lm.Economy_NotEnoughMoneyAmount, Residence.getInstance().getEconomyManager().format(c.getCost(group)));
+                return failReason.money;
             }
 
             cuboid.setLowLocation(c.getLowLocation());
@@ -717,7 +729,21 @@ public class auto implements cmd {
 
         cuboid = plugin.getSelectionManager().getSelectionCuboid(player);
 
-        return cuboid.getXSize() <= groupMaxX && cuboid.getYSize() <= groupMaxY && cuboid.getZSize() <= groupMaxZ;
+        if (cuboid.getXSize() > groupMaxX)
+            plugin.msg(player, lm.Area_ToBigX, cuboid.getXSize(), groupMaxX);
+
+        if (cuboid.getYSize() > groupMaxY)
+            plugin.msg(player, lm.Area_ToBigY, cuboid.getYSize(), groupMaxY);
+
+        if (cuboid.getZSize() > groupMaxZ)
+            plugin.msg(player, lm.Area_ToBigZ, cuboid.getZSize(), groupMaxZ);
+
+        if (cuboid.getXSize() > groupMaxX || cuboid.getYSize() > groupMaxY || cuboid.getZSize() > groupMaxZ) {
+            plugin.msg(player, lm.Area_SizeLimit);
+            return failReason.area;
+        }
+
+        return failReason.none;
     }
 
     public enum direction {

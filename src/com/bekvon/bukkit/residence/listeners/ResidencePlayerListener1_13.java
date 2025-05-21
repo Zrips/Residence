@@ -1,5 +1,6 @@
 package com.bekvon.bukkit.residence.listeners;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Switch;
@@ -10,6 +11,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -40,9 +43,44 @@ public class ResidencePlayerListener1_13 implements Listener {
             event.setCancelled(true);
     }
 
+    @EventHandler
+    public void onBlockPhysics(BlockPhysicsEvent event) {
+
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onButtonHitWithProjectile(BlockRedstoneEvent e) {
+
+        if (tempButtonLocation == null)
+            return;
+
+        // Disabling listener if flag disabled globally
+        if (!Flags.button.isGlobalyEnabled())
+            return;
+
+        if (e.getBlock() == null)
+            return;
+
+        if (plugin.isDisabledWorldListener(e.getBlock().getWorld()))
+            return;
+
+        Block block = e.getBlock();
+
+        if (!tempButtonLocation.equals(block.getLocation()) && !tempButtonLocation.clone().add(0, 1, 0).equals(block.getLocation()))
+            return;
+
+        if (!CMIMaterial.isButton(block.getType()))
+            return;
+
+        e.setNewCurrent(0);
+    }
+
+    private Location tempButtonLocation = null;
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onButtonHitWithProjectile(ProjectileHitEvent e) {
 
+        tempButtonLocation = null;
         // Disabling listener if flag disabled globally
         if (!Flags.button.isGlobalyEnabled())
             return;
@@ -59,6 +97,8 @@ public class ResidencePlayerListener1_13 implements Listener {
         Player player = (Player) e.getEntity().getShooter();
 
         Block block = e.getHitBlock().getLocation().clone().add(e.getHitBlockFace().getDirection()).getBlock();
+
+        tempButtonLocation = block.getLocation().clone();
 
         if (!CMIMaterial.isButton(block.getType()))
             return;
@@ -87,6 +127,7 @@ public class ResidencePlayerListener1_13 implements Listener {
             break;
         }
         e.setCancelled(true);
+
         plugin.msg(player, lm.Flag_Deny, result);
 
         if (e.getEntity() instanceof Arrow)
