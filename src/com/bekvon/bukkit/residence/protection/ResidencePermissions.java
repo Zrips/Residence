@@ -27,8 +27,6 @@ import com.bekvon.bukkit.residence.event.ResidenceOwnerChangeEvent;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
-
 public class ResidencePermissions extends FlagPermissions {
 
     private UUID ownerUUID;
@@ -716,17 +714,18 @@ public class ResidencePermissions extends FlagPermissions {
         ResidencePlayer rPlayer = Residence.getInstance().getPlayerManager().getResidencePlayer(newOwner);
         if (rPlayer != null) {
             this.ownerUUID = rPlayer.getUniqueId();
-            ownerLastKnownName = rPlayer.getName();
+            if (rPlayer.getName() != null)
+                ownerLastKnownName = rPlayer.getName();
         }
 
         if (ownerLastKnownName.equalsIgnoreCase("Server Land") || ownerLastKnownName.equalsIgnoreCase(Residence.getInstance().getServerLandName())) {
-            ownerUUID = UUID.fromString(Residence.getInstance().getServerLandUUID());// the UUID for server owned land
+            ownerUUID = Residence.getInstance().getServerUUID();// the UUID for server owned land
         } else {
             UUID playerUUID = Residence.getInstance().getPlayerUUID(ownerLastKnownName);
             if (playerUUID != null)
                 ownerUUID = playerUUID;
             else
-                ownerUUID = UUID.fromString(Residence.getInstance().getTempUserUUID());//the fake UUID used when unable to find the real one, will be updated with players real UUID when its possible to find it
+                ownerUUID = Residence.getInstance().getEmptyUserUUID();//the fake UUID used when unable to find the real one, will be updated with players real UUID when its possible to find it
         }
         Residence.getInstance().getPlayerManager().addResidence(ownerLastKnownName, residence);
         if (resetFlags)
@@ -784,7 +783,7 @@ public class ResidencePermissions extends FlagPermissions {
 
         if (root.containsKey("OwnerUUID") || root.containsKey("OwnerLastKnownName")) {
             if (!root.containsKey("OwnerUUID"))
-                newperms.ownerUUID = UUID.fromString(Residence.getInstance().getTempUserUUID());//get empty owner UUID
+                newperms.ownerUUID = Residence.getInstance().getEmptyUserUUID();//get empty owner UUID
             else
                 newperms.ownerUUID = UUID.fromString((String) root.get("OwnerUUID"));//get owner UUID
 
@@ -801,7 +800,7 @@ public class ResidencePermissions extends FlagPermissions {
                 return newperms;
 
             if (newperms.ownerLastKnownName.equalsIgnoreCase("Server land") || newperms.ownerLastKnownName.equalsIgnoreCase(Residence.getInstance().getServerLandName())) {
-                newperms.ownerUUID = UUID.fromString(Residence.getInstance().getServerLandUUID());//UUID for server land
+                newperms.ownerUUID = Residence.getInstance().getServerUUID();//UUID for server land
                 newperms.ownerLastKnownName = Residence.getInstance().getServerLandName();
             } else if (newperms.ownerUUID.toString().equals(Residence.getInstance().getTempUserUUID())) //check for fake UUID
             {
@@ -815,9 +814,9 @@ public class ResidencePermissions extends FlagPermissions {
             newperms.ownerLastKnownName = owner;
             newperms.ownerUUID = Residence.getInstance().getPlayerUUID(owner);
             if (newperms.ownerUUID == null)
-                newperms.ownerUUID = UUID.fromString(Residence.getInstance().getTempUserUUID());//set fake UUID until we can find real one for last known player
+                newperms.ownerUUID = Residence.getInstance().getEmptyUserUUID();//set fake UUID until we can find real one for last known player
         } else {
-            newperms.ownerUUID = UUID.fromString(Residence.getInstance().getServerLandUUID());//cant determine owner name or UUID... setting zero UUID which is server land
+            newperms.ownerUUID = Residence.getInstance().getServerUUID();//cant determine owner name or UUID... setting zero UUID which is server land
             newperms.ownerLastKnownName = Residence.getInstance().getServerLandName();
         }
         newperms.world = worldName;
