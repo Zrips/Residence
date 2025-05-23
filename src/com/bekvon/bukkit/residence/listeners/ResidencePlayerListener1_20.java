@@ -1,11 +1,15 @@
 package com.bekvon.bukkit.residence.listeners;
 
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSignOpenEvent;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -15,12 +19,40 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
+import net.Zrips.CMILib.Items.CMIMaterial;
+
 public class ResidencePlayerListener1_20 implements Listener {
 
     private Residence plugin;
 
     public ResidencePlayerListener1_20(Residence plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler
+    public void onSignWax(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
+
+        if (event.getItem() == null || event.getItem().getType() != Material.HONEYCOMB)
+            return;
+
+        Block block = event.getClickedBlock();
+        if (block == null)
+            return;
+
+        if (!CMIMaterial.isSign(block.getType()))
+            return;
+
+        Player player = event.getPlayer();
+
+        FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
+
+        if (perms.playerHas(player, Flags.build, true))
+            return;
+
+        plugin.msg(player, lm.Flag_Deny, Flags.build);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
