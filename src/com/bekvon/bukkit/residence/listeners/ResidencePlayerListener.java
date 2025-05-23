@@ -1620,7 +1620,13 @@ public class ResidencePlayerListener implements Listener {
     }
 
     private static boolean canRide(Entity entity) {
-        switch (CMIEntityType.get(entity)) {
+
+        CMIEntityType type = CMIEntityType.get(entity);
+
+        if (type == null)
+            return false;
+
+        switch (type) {
         case HORSE:
         case DONKEY:
         case PIG:
