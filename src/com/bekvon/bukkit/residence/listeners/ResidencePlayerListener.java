@@ -1645,7 +1645,13 @@ public class ResidencePlayerListener implements Listener {
     }
 
     private static boolean canHaveContainer(Entity entity) {
-        switch (CMIEntityType.get(entity)) {
+        
+        CMIEntityType type = CMIEntityType.get(entity);
+
+        if (type == null)
+            return false;
+        
+        switch (type) {
         case HORSE:
         case DONKEY:
         case LLAMA:
@@ -1726,6 +1732,9 @@ public class ResidencePlayerListener implements Listener {
 
         CMIEntityType type = CMIEntityType.get(ent);
 
+        if (type == null)
+            return;
+        
         if (!type.equals(CMIEntityType.CHEST_MINECART) &&
             !type.equals(CMIEntityType.HOPPER_MINECART) &&
             !type.equals(CMIEntityType.ALLAY))
