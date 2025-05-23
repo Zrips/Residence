@@ -1,5 +1,8 @@
 package com.bekvon.bukkit.residence.listeners;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
@@ -10,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.potion.PotionEffectType;
 
@@ -30,6 +34,13 @@ public class ResidencePlayerListener1_21 implements Listener {
         this.plugin = plugin;
     }
 
+    HashMap<UUID, Long> boats = new HashMap<UUID, Long>();
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerQuitEvent(PlayerQuitEvent event) {
+        boats.remove(event.getPlayer().getUniqueId());
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void OnVehicleEnterEvent(VehicleEnterEvent event) {
 
@@ -42,6 +53,9 @@ public class ResidencePlayerListener1_21 implements Listener {
 
         Entity entity = event.getEntered();
 
+        if (!(entity instanceof LivingEntity))
+            return;
+
         if (!Utils.isAnimal(entity))
             return;
 
@@ -51,22 +65,30 @@ public class ResidencePlayerListener1_21 implements Listener {
             return;
 
         Player closest = null;
+        double dist = 16D;
 
         for (Player player : res.getPlayersInResidence()) {
-            if (closest == null) {
-                closest = player;
-                continue;
-            }
 
-            if (player.getLocation().distance(entity.getLocation()) < closest.getLocation().distance(entity.getLocation()))
+            double tempDist = player.getLocation().distance(entity.getLocation());
+
+            if (tempDist < dist) {
                 closest = player;
+                dist = tempDist;
+            }
         }
 
         if (closest == null)
             return;
 
         if (res.getPermissions().playerHas(closest, Flags.leash, FlagCombo.OnlyFalse)) {
-            plugin.msg(closest, lm.Residence_FlagDeny, Flags.leash, res.getName());
+
+            Long time = boats.computeIfAbsent(entity.getUniqueId(), k -> 0L);
+
+            if (time + 1000L < System.currentTimeMillis()) {
+                boats.put(entity.getUniqueId(), System.currentTimeMillis());
+                plugin.msg(closest, lm.Residence_FlagDeny, Flags.leash, res.getName());
+            }
+
             event.setCancelled(true);
         }
     }
