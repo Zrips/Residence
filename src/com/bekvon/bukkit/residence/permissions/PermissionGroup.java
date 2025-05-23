@@ -143,9 +143,8 @@ public class PermissionGroup {
         ymin = ymin > ymax ? ymax : ymin;
 
         if (Residence.getInstance().getConfigManager().isSelectionIgnoreY()) {
-            ymin = CMIWorld.getMinHeight(Bukkit.getWorlds().get(0));
             // This needs to be 256 to include entire height where 255 and block 0
-            ymax = CMIWorld.getMaxHeight(Bukkit.getWorlds().get(0));
+            ymax = CMIWorld.getMaxHeight(Bukkit.getWorlds().get(0)) + Math.abs(CMIWorld.getMinHeight(Bukkit.getWorlds().get(0)));
         }
 
         if (limits.contains("Residence.MaxNorthSouth"))
@@ -170,10 +169,10 @@ public class PermissionGroup {
             subzonedepth = limits.getInt("Residence.SubzoneDepth", 0);
 
         if (limits.contains("Residence.SubzoneMaxEastWest"))
-            Subzonexmax = limits.getInt("Residence.SubzoneMaxEastWest", getXmax());
+            Subzonexmax = limits.getInt("Residence.SubzoneMaxEastWest", getMaxX());
         else
-            Subzonexmax = getXmax();
-        Subzonexmax = getXmax() < Subzonexmax ? getXmax() : Subzonexmax;
+            Subzonexmax = getMaxX();
+        Subzonexmax = getMaxX() < Subzonexmax ? getMaxX() : Subzonexmax;
 
         if (limits.contains("Residence.SubzoneMinEastWest"))
             Subzonexmin = limits.getInt("Residence.SubzoneMinEastWest", 0);
@@ -182,7 +181,7 @@ public class PermissionGroup {
         if (limits.contains("Residence.SubzoneMaxUpDown"))
             Subzoneymax = limits.getInt("Residence.SubzoneMaxUpDown", ymax);
         else
-            Subzoneymax = getYmax();
+            Subzoneymax = getMaxYSize();
 
         Subzoneymax = ymax < Subzoneymax ? ymax : Subzoneymax;
         if (limits.contains("Residence.SubzoneMinUpDown"))
@@ -192,7 +191,13 @@ public class PermissionGroup {
         if (limits.contains("Residence.SubzoneMaxNorthSouth"))
             Subzonezmax = limits.getInt("Residence.SubzoneMaxNorthSouth", zmax);
         else
-            Subzonezmax = getZmax();
+            Subzonezmax = getMaxZ();
+
+        if (Residence.getInstance().getConfigManager().isSelectionIgnoreYInSubzone()) {
+            // This needs to be 256 to include entire height where 255 and block 0
+            Subzonezmax = CMIWorld.getMaxHeight(Bukkit.getWorlds().get(0)) + Math.abs(CMIWorld.getMinHeight(Bukkit.getWorlds().get(0)));
+        }
+
         Subzonezmax = zmax < Subzonezmax ? zmax : Subzonezmax;
         if (limits.contains("Residence.SubzoneMinNorthSouth"))
             Subzonezmin = limits.getInt("Residence.SubzoneMinNorthSouth", 0);

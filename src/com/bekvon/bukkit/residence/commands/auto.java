@@ -26,6 +26,7 @@ import com.bekvon.bukkit.residence.selection.SelectionManager.Selection;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class auto implements cmd {
@@ -413,6 +414,8 @@ public class auto implements cmd {
         int groupMaxX = rPlayer.getMaxX();
         int groupMaxZ = rPlayer.getMaxZ();
         int groupMaxY = group.getMaxYSize();
+        
+CMIDebug.d("groupMaxY",groupMaxY);
 
         int maxX = getMax(groupMaxX);
         int maxY = getMax(groupMaxY);
