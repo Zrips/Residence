@@ -2143,6 +2143,7 @@ public class ResidencePlayerListener implements Listener {
                 return;
             boolean land = player.isFlying();
             player.setFlying(false);
+
             player.setAllowFlight(false);
             if (land) {
                 Location loc = getFlyTeleportLocation(player, oldRes);
@@ -2152,15 +2153,20 @@ public class ResidencePlayerListener implements Listener {
             player.setFlying(false);
             player.setAllowFlight(false);
         } else {
+
             player.setAllowFlight(true);
             CMIScheduler.runAtEntityLater(plugin, player, () -> {
                 ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
+
                 if (res == null || !res.getPermissions().playerHas(player, Flags.fly, FlagCombo.OnlyTrue) && player.isOnline()) {
                     if (player.hasPermission("cmi.command.fly") || player.hasPermission("essentials.fly"))
                         return;
 
                     player.setFlying(false);
                     player.setAllowFlight(false);
+                } else if (res != null && res.getPermissions().playerHas(player, Flags.fly, FlagCombo.OnlyTrue)) {
+                    // Secondary set of flight mode in case another plugin overrides previous set
+                    player.setAllowFlight(true);
                 }
             }, 20L);
         }
