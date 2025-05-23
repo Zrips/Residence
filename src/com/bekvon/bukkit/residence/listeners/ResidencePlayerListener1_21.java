@@ -85,7 +85,7 @@ public class ResidencePlayerListener1_21 implements Listener {
             Long time = boats.computeIfAbsent(entity.getUniqueId(), k -> 0L);
 
             if (time + 1000L < System.currentTimeMillis()) {
-                boats.put(entity.getUniqueId(), System.currentTimeMillis());
+                boats.put(closest.getUniqueId(), System.currentTimeMillis());
                 plugin.msg(closest, lm.Residence_FlagDeny, Flags.leash, res.getName());
             }
 
