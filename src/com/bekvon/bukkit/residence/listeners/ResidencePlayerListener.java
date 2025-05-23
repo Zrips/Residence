@@ -921,8 +921,9 @@ public class ResidencePlayerListener implements Listener {
 //        lastUpdate.put(player.getUniqueId(), 0L);
         playerTempData.get(player).setLastUpdate(0L);
         if (plugin.getPermissionManager().isResidenceAdmin(player)) {
-            ResAdmin.isResAdmin(player);
-        }
+            ResAdmin.turnResAdminOn(player);
+        } 
+
         handleNewLocation(player, player.getLocation(), true);
 
         plugin.getPlayerManager().playerJoin(player);
@@ -1645,12 +1646,12 @@ public class ResidencePlayerListener implements Listener {
     }
 
     private static boolean canHaveContainer(Entity entity) {
-        
+
         CMIEntityType type = CMIEntityType.get(entity);
 
         if (type == null)
             return false;
-        
+
         switch (type) {
         case HORSE:
         case DONKEY:
@@ -1734,7 +1735,7 @@ public class ResidencePlayerListener implements Listener {
 
         if (type == null)
             return;
-        
+
         if (!type.equals(CMIEntityType.CHEST_MINECART) &&
             !type.equals(CMIEntityType.HOPPER_MINECART) &&
             !type.equals(CMIEntityType.ALLAY))

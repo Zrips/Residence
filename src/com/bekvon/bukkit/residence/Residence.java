@@ -1242,7 +1242,7 @@ public class Residence extends JavaPlugin {
     /**
     * @deprecated Use {@link ResAdmin#turnResAdmin(Player, Boolean)} instead.
     */
-    public void turnResAdminOn(Player player) {
+    public void turnResAdminOn2(Player player) {
         ResAdmin.turnResAdmin(player, true);
     }
 
@@ -1250,7 +1250,7 @@ public class Residence extends JavaPlugin {
     /**
     * @deprecated Use {@link ResAdmin#turnResAdmin(Player, Boolean)} instead.
     */
-    public void turnResAdminOff(Player player) {
+    public void turnResAdminOff2(Player player) {
         ResAdmin.turnResAdmin(player, false);
     }
 
