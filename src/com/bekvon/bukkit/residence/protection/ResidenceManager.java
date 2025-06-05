@@ -151,6 +151,10 @@ public class ResidenceManager implements ResidenceInterface {
         if (split.length == 1) {
             return residences.get(name.toLowerCase());
         }
+        
+        if (split.length == 0)
+            return null;
+        
         ClaimedResidence res = residences.get(split[0].toLowerCase());
         for (int i = 1; i < split.length; i++) {
             if (res != null) {
