@@ -924,7 +924,9 @@ public class ResidencePlayerListener implements Listener {
             ResAdmin.turnResAdminOn(player);
         } 
 
-        handleNewLocation(player, player.getLocation(), true);
+        CMIScheduler.runAtEntityLater(plugin, player, () -> {
+            handleNewLocation(player, player.getLocation(), true);
+        }, 1L);
 
         plugin.getPlayerManager().playerJoin(player);
 
