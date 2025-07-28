@@ -1638,6 +1638,7 @@ public class ResidencePlayerListener implements Listener {
         case ZOMBIE_HORSE:
         case MULE:
         case CAMEL:
+        case HAPPY_GHAST:
             return true;
         default:
             return false;
