@@ -8,6 +8,8 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
@@ -71,6 +73,8 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
+import net.Zrips.CMILib.Effects.CMIEffect;
+import net.Zrips.CMILib.Effects.CMIEffectManager.CMIParticle;
 import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
@@ -713,7 +717,7 @@ public class ResidenceEntityListener implements Listener {
             if (ResAdmin.isResAdmin((Player) event.getEntity().getShooter()))
                 return;
         }
-        
+
         FlagPermissions perms = plugin.getPermsByLoc(event.getEntity().getLocation());
         if (perms.has(Flags.shoot, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
@@ -904,6 +908,9 @@ public class ResidenceEntityListener implements Listener {
                 ent.remove();
             }
             break;
+        case WIND_CHARGE:
+
+            break;
         case WITHER:
             break;
         default:
@@ -989,12 +996,13 @@ public class ResidenceEntityListener implements Listener {
                 if (!Flags.pvp.isGlobalyEnabled())
                     break;
                 if (perms.has(Flags.pvp, FlagCombo.OnlyFalse)) {
-
                     ProjectileSource shooter = ((Projectile) ent).getShooter();
                     if (shooter instanceof Player)
                         Residence.getInstance().msg((Player) shooter, lm.Flag_Deny, Flags.pvp);
-
+                    ent.getWorld().spawnParticle(Particle.GUST_EMITTER_SMALL, loc, 0);
+                    ent.getWorld().playSound(loc, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 2, 0.5F);
                     cancel = true;
+                    event.setYield(0);
                 }
                 break;
             case ENDER_DRAGON:
@@ -1488,7 +1496,8 @@ public class ResidenceEntityListener implements Listener {
 
                 // Specific fix for the Itemadders plugin. 
                 // Custom event will not have damage source while it contains item as paper inside of it
-                if (Version.isCurrentEqualOrHigher(Version.v1_21_R1) && event.getDamageSource() != null && event.getDamageSource().getCausingEntity() == null && !perms.playerHas(player, Flags.destroy, perms.playerHas(player, Flags.build, true))) {
+                if (Version.isCurrentEqualOrHigher(Version.v1_21_R1) && event.getDamageSource() != null && event.getDamageSource().getCausingEntity() == null && !perms.playerHas(player, Flags.destroy,
+                    perms.playerHas(player, Flags.build, true))) {
                     event.setCancelled(true);
                     plugin.msg(player, lm.Flag_Deny, Flags.destroy);
                 }
