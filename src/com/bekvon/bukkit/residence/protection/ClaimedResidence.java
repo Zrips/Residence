@@ -64,6 +64,7 @@ import net.Zrips.CMILib.Locale.LC;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Version.Version;
+import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Teleporters.CMITeleporter;
 
@@ -1343,7 +1344,7 @@ public class ClaimedResidence {
             Teleporting.cancelTeleportDelay(targetPlayer.getUniqueId());
 
             targetPlayer.closeInventory();
-            CMITeleporter.teleportAsync(targetPlayer, targloc);
+            PaperLib.teleportAsync(targetPlayer, targloc);
             if (near)
                 Residence.getInstance().msg(targetPlayer, lm.Residence_TeleportNear);
             else
@@ -1370,7 +1371,7 @@ public class ClaimedResidence {
 
         if (Version.isAsyncProcessing()) {
 
-            CompletableFuture<Boolean> future = CMITeleporter.teleportAsync(targetPlayer, targloc);
+            CompletableFuture<Boolean> future = PaperLib.teleportAsync(targetPlayer, targloc);
             future.thenAccept(result -> {
                 if (result) {
                     if (near)
@@ -2089,7 +2090,7 @@ public class ClaimedResidence {
 
                 loc1.add(0, 0.4, 0);
 
-                CMITeleporter.teleportAsync(player, loc1).thenApply(success -> {
+                PaperLib.teleportAsync(player, loc1).thenApply(success -> {
                     if (success)
                         Residence.getInstance().msg(player, lm.Residence_Kicked);
                     else
@@ -2100,7 +2101,7 @@ public class ClaimedResidence {
             return true;
         }
 
-        CMITeleporter.teleportAsync(player, loc).thenApply(success -> {
+        PaperLib.teleportAsync(player, loc).thenApply(success -> {
             if (success)
                 Residence.getInstance().msg(player, lm.Residence_Kicked);
             else

@@ -17,6 +17,7 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
+import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Teleporters.CMITeleporter;
 
@@ -87,7 +88,7 @@ public class ResidencePlayerListener1_9 implements Listener {
         if (loc != null) {
             plugin.msg(player, lm.Flag_Deny, Flags.elytra);
             player.closeInventory();
-            CMITeleporter.teleportAsync(player, loc);
+            PaperLib.teleportAsync(player, loc);
         }
     }
 }

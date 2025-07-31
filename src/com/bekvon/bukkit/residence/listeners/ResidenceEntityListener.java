@@ -713,6 +713,7 @@ public class ResidenceEntityListener implements Listener {
             if (ResAdmin.isResAdmin((Player) event.getEntity().getShooter()))
                 return;
         }
+        
         FlagPermissions perms = plugin.getPermsByLoc(event.getEntity().getLocation());
         if (perms.has(Flags.shoot, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);

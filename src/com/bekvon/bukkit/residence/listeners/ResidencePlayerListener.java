@@ -98,12 +98,11 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
+import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
-import net.Zrips.CMILib.Version.Teleporters.CMITeleporter;
 
 public class ResidencePlayerListener implements Listener {
 
@@ -909,7 +908,7 @@ public class ResidencePlayerListener implements Listener {
             }
             plugin.msg(player, lm.Residence_FlagDeny, Flags.nofly, location.getWorld().getName());
             player.closeInventory();
-            CMITeleporter.teleportAsync(player, location);
+            PaperLib.teleportAsync(player, location);
 
             player.setFlying(false);
             player.setAllowFlight(false);
@@ -2127,8 +2126,11 @@ public class ResidencePlayerListener implements Listener {
     private Location getFlyTeleportLocation(Player player, ClaimedResidence oldRes) {
         Location loc = getSafeLocation(player.getLocation());
 
+        if (loc != null)
+            return loc;
+
         if (oldRes != null) {
-            if (Flags.tp.isGlobalyEnabled() && oldRes.getPermissions().playerHas(player, Flags.tp, FlagCombo.OnlyFalse) || ResPerm.admin_tp.hasPermission(player, 10000L))
+            if (Flags.tp.isGlobalyEnabled() && !oldRes.getPermissions().playerHas(player, Flags.tp, FlagCombo.OnlyFalse) || ResPerm.admin_tp.hasPermission(player, 10000L))
                 loc = oldRes.getTeleportLocation(player, false);
         }
 
@@ -2162,7 +2164,7 @@ public class ResidencePlayerListener implements Listener {
             if (land) {
                 Location loc = getFlyTeleportLocation(player, oldRes);
                 player.closeInventory();
-                CMITeleporter.teleportAsync(player, loc);
+                PaperLib.teleportAsync(player, loc);
             }
             player.setFlying(false);
             player.setAllowFlight(false);
@@ -2396,7 +2398,7 @@ public class ResidencePlayerListener implements Listener {
 
             boolean handled = handleNewLocation(player, locto, true);
             if (!handled) {
-                CMITeleporter.teleportAsync(event.getVehicle(), event.getFrom());
+                PaperLib.teleportAsync(event.getVehicle(), event.getFrom());
             }
 
             if (Teleporting.getTeleportDelayMap().isEmpty())
@@ -2417,7 +2419,7 @@ public class ResidencePlayerListener implements Listener {
         if (player == null || !player.isOnline() || loc == null)
             return false;
         try {
-            CMITeleporter.teleportAsync(player, loc);
+            PaperLib.teleportAsync(player, loc);
         } catch (Throwable e) {
             e.printStackTrace();
         }
