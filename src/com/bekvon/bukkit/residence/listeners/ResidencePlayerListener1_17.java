@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -28,15 +27,14 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
 import net.Zrips.CMILib.CMILib;
-import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Logs.CMIDebug;
-import net.Zrips.CMILib.Version.Version;
 
 public class ResidencePlayerListener1_17 implements Listener {
 
@@ -199,21 +197,20 @@ public class ResidencePlayerListener1_17 implements Listener {
 
         Player player = event.getPlayer();
 
-        for (BlockState oneBlock : blocks) {
+        if (ResPerm.bypass_build.hasPermission(player, 10000L))
+            return;
 
+        for (BlockState oneBlock : blocks) {
             ClaimedResidence res = plugin.getResidenceManager().getByLoc(oneBlock.getLocation());
             if (res == null)
                 continue;
-
             if (player != null) {
                 FlagPermissions perms = Residence.getInstance().getPermsByLocForPlayer(oneBlock.getLocation(), player);
-
                 if (!perms.playerHas(player, Flags.build, FlagCombo.TrueOrNone)) {
                     event.getBlocks().remove(oneBlock);
                 }
             } else if (originRes == null || !originRes.equals(res)) {
                 event.getBlocks().remove(oneBlock);
-
             }
         }
 
