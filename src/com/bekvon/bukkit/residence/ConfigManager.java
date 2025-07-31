@@ -45,7 +45,6 @@ import net.Zrips.CMILib.Effects.CMIEffectManager.CMIParticle;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Locale.YmlMaker;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Version.Version;
 
@@ -620,7 +619,7 @@ public class ConfigManager {
 
     public void UpdateConfigFile() {
 
-        String defaultWorldName = Bukkit.getServer().getWorlds().size() > 0 ? Bukkit.getServer().getWorlds().get(0).getName() : "World";
+        String defaultWorldName = Bukkit.getServer().getWorlds().size() > 0 ? Bukkit.getServer().getWorlds().get(0).getName() : "world";
 
         ConfigReader c = null;
         try {
@@ -639,10 +638,12 @@ public class ConfigManager {
         c.addComment("Global.UUIDConvertion", "Starts UUID conversion on plugin startup", "DON'T change this if you are not sure what you doing");
         UUIDConvertion = c.get("Global.UUIDConvertion", true);
 
-        c.addComment("Global.OfflineMode",
-            "STRONGLY not recomended to be used anymore. Only enable if you are sure you want to use this",
-            "If you running offline server. Suggestion would be to keep this at false and base residence ownership from UUID and not on players name");
-        OfflineMode = c.get("Global.OfflineMode", false);
+        if (c.getC().isBoolean("Global.OfflineMode")) {
+            c.addComment("Global.OfflineMode",
+                "STRONGLY recomended to keep it set to false. Only enable if you are sure you want to use outdated methods",
+                "Suggestion is to keep this at false so that residence ownership gets determined by UUID and not by players name");
+            OfflineMode = c.get("Global.OfflineMode", false);
+        }
 
         c.addComment("Global.versionCheck", "Players with residence.versioncheck permission node will be noticed about new residence version on login");
         versionCheck = c.get("Global.versionCheck", true);
@@ -692,7 +693,7 @@ public class ConfigManager {
             "Keep in mind that this only applies for commands like /res tp");
         CanTeleportIncludeOwner = c.get("Global.Optimizations.CanTeleportIncludeOwner", false);
 
-        c.addComment("Global.Optimizations.DefaultWorld", "Name of your main residence world. Usually normal starting world 'World'. Capitalization essential");
+        c.addComment("Global.Optimizations.DefaultWorld", "Name of your main residence world. Usually normal starting world 'world'. Capitalization essential");
         DefaultWorld = c.get("Global.Optimizations.DefaultWorld", defaultWorldName);
 
         c.addComment("Global.Optimizations.DisabledWorlds.BlackList", "List Of Worlds where this plugin is disabled", "Make sure that world names capitalization is correct",
