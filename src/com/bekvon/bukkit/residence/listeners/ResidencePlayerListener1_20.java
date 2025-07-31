@@ -16,6 +16,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
@@ -42,6 +43,9 @@ public class ResidencePlayerListener1_20 implements Listener {
             return;
 
         if (!CMIMaterial.isSign(block.getType()))
+            return;
+
+        if (ResPerm.bypass_build.hasPermission(event.getPlayer(), 10000L))
             return;
 
         Player player = event.getPlayer();
