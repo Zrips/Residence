@@ -922,7 +922,7 @@ public class ResidencePlayerListener implements Listener {
         playerTempData.get(player).setLastUpdate(0L);
         if (plugin.getPermissionManager().isResidenceAdmin(player)) {
             ResAdmin.turnResAdminOn(player);
-        } 
+        }
 
         handleNewLocation(player, player.getLocation(), true);
 
@@ -1638,6 +1638,7 @@ public class ResidencePlayerListener implements Listener {
         case ZOMBIE_HORSE:
         case MULE:
         case CAMEL:
+        case HAPPY_GHAST:
             return true;
         default:
             return false;
@@ -1711,6 +1712,7 @@ public class ResidencePlayerListener implements Listener {
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
         if (res == null)
             return;
+
         if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.riding, FlagCombo.TrueOrNone)) {
             plugin.msg(player, lm.Residence_FlagDeny, Flags.riding, res.getName());
             event.setCancelled(true);
