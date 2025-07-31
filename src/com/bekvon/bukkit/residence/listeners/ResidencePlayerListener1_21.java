@@ -65,7 +65,7 @@ public class ResidencePlayerListener1_21 implements Listener {
             return;
 
         Player closest = null;
-        double dist = 16D;
+        double dist = 32D;
 
         for (Player player : res.getPlayersInResidence()) {
 
@@ -82,7 +82,7 @@ public class ResidencePlayerListener1_21 implements Listener {
 
         if (res.getPermissions().playerHas(closest, Flags.leash, FlagCombo.OnlyFalse)) {
 
-            Long time = boats.computeIfAbsent(entity.getUniqueId(), k -> 0L);
+            Long time = boats.computeIfAbsent(closest.getUniqueId(), k -> 0L);
 
             if (time + 1000L < System.currentTimeMillis()) {
                 boats.put(closest.getUniqueId(), System.currentTimeMillis());
