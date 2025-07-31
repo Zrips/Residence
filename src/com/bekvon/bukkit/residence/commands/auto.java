@@ -414,8 +414,6 @@ public class auto implements cmd {
         int groupMaxX = rPlayer.getMaxX();
         int groupMaxZ = rPlayer.getMaxZ();
         int groupMaxY = group.getMaxYSize();
-        
-CMIDebug.d("groupMaxY",groupMaxY);
 
         int maxX = getMax(groupMaxX);
         int maxY = getMax(groupMaxY);

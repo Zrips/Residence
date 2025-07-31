@@ -26,6 +26,8 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
+import net.Zrips.CMILib.Logs.CMIDebug;
+
 public class ResidencePlayerListener1_21 implements Listener {
 
     private Residence plugin;
@@ -64,6 +66,11 @@ public class ResidencePlayerListener1_21 implements Listener {
         if (res == null)
             return;
 
+        if (res.getPermissions().has(Flags.boarding, FlagCombo.OnlyFalse)) {
+            event.setCancelled(true);
+            return;
+        }
+
         Player closest = null;
         double dist = 32D;
 
@@ -81,7 +88,6 @@ public class ResidencePlayerListener1_21 implements Listener {
             return;
 
         if (res.getPermissions().playerHas(closest, Flags.leash, FlagCombo.OnlyFalse)) {
-
             Long time = boats.computeIfAbsent(closest.getUniqueId(), k -> 0L);
 
             if (time + 1000L < System.currentTimeMillis()) {
