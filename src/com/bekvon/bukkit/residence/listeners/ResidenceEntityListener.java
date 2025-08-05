@@ -910,6 +910,20 @@ public class ResidenceEntityListener implements Listener {
             break;
         case WIND_CHARGE:
 
+            if (!Flags.pvp.isGlobalyEnabled())
+                break;
+
+            if (perms.has(Flags.pvp, FlagCombo.OnlyFalse)) {
+                ProjectileSource shooter = ((Projectile) ent).getShooter();
+                if (shooter instanceof Player)
+                    Residence.getInstance().msg((Player) shooter, lm.Flag_Deny, Flags.pvp);
+
+                Location loc = ent.getLocation();
+                ent.getWorld().spawnParticle(Particle.GUST_EMITTER_SMALL, loc, 0);
+                ent.getWorld().playSound(loc, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 2, 0.5F);
+                event.setCancelled(true);
+            }
+
             break;
         case WITHER:
             break;
@@ -996,11 +1010,6 @@ public class ResidenceEntityListener implements Listener {
                 if (!Flags.pvp.isGlobalyEnabled())
                     break;
                 if (perms.has(Flags.pvp, FlagCombo.OnlyFalse)) {
-                    ProjectileSource shooter = ((Projectile) ent).getShooter();
-                    if (shooter instanceof Player)
-                        Residence.getInstance().msg((Player) shooter, lm.Flag_Deny, Flags.pvp);
-                    ent.getWorld().spawnParticle(Particle.GUST_EMITTER_SMALL, loc, 0);
-                    ent.getWorld().playSound(loc, Sound.ENTITY_WIND_CHARGE_WIND_BURST, 2, 0.5F);
                     cancel = true;
                     event.setYield(0);
                 }
