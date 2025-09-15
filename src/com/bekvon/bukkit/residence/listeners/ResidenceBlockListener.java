@@ -1134,6 +1134,7 @@ public class ResidenceBlockListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
         
+        
         Player player = event.getPlayer();
         FlagPermissions perms = plugin.getPermsByLocForPlayer(event.getClickedBlock().getLocation(), player);
         

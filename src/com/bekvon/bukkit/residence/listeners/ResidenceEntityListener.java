@@ -55,6 +55,7 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
@@ -502,7 +503,6 @@ public class ResidenceEntityListener implements Listener {
 
         if (res == null)
             return;
-
         if (res.getPermissions().playerHas(player, Flags.leash, FlagCombo.OnlyFalse)) {
             plugin.msg(player, lm.Residence_FlagDeny, Flags.leash, res.getName());
             event.setCancelled(true);
@@ -511,9 +511,11 @@ public class ResidenceEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onFenceLeashInteract(PlayerInteractEntityEvent event) {
+
         // Disabling listener if flag disabled globally
         if (!Flags.leash.isGlobalyEnabled())
             return;
+
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getRightClicked().getWorld()))
             return;
@@ -521,7 +523,26 @@ public class ResidenceEntityListener implements Listener {
 
         Entity entity = event.getRightClicked();
 
-        if (CMIEntityType.get(entity.getType()) != CMIEntityType.LEASH_KNOT)
+        boolean holdingShears = false;
+
+        if (entity instanceof LivingEntity && ((LivingEntity) event.getRightClicked()).isLeashed()) {
+            ItemStack usedItem = null;
+            if (Version.isCurrentEqualOrHigher(Version.v1_9_R1)) {
+                EquipmentSlot slot = event.getHand();
+                if (slot == EquipmentSlot.OFF_HAND) {
+                    usedItem = player.getInventory().getItemInOffHand();
+                } else {
+                    usedItem = player.getInventory().getItemInMainHand();
+                }
+            } else {
+                usedItem = player.getItemInHand();
+            }
+            if (usedItem != null && CMIMaterial.get(usedItem).equals(CMIMaterial.SHEARS)) {
+                holdingShears = true;
+            }
+        }
+
+        if (CMIEntityType.get(entity.getType()) != CMIEntityType.LEASH_KNOT && !holdingShears)
             return;
 
         if (ResAdmin.isResAdmin(player))
