@@ -22,6 +22,7 @@ import org.bukkit.entity.Snowman;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
@@ -41,6 +42,7 @@ import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.Inventory;
@@ -1096,6 +1098,7 @@ public class ResidenceBlockListener implements Listener {
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
             return;
+
         IgniteCause cause = event.getCause();
         if (cause == IgniteCause.SPREAD) {
             // Disabling listener if flag disabled globally
@@ -1123,5 +1126,29 @@ public class ResidenceBlockListener implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onInteract(PlayerInteractEvent event) {
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
+            return;
+        
+        Player player = event.getPlayer();
+        FlagPermissions perms = plugin.getPermsByLocForPlayer(event.getClickedBlock().getLocation(), player);
+        
+        if (perms.playerHas(player, Flags.ignite, true) || ResAdmin.isResAdmin(player))
+            return;
+
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK ||
+            event.getClickedBlock() == null ||
+            !CMIMaterial.get(event.getClickedBlock()).equals(CMIMaterial.TNT) ||
+            event.getItem() == null ||
+            !CMIMaterial.get(event.getItem()).equals(CMIMaterial.FLINT_AND_STEEL))
+            return;
+
+        event.setCancelled(true);
+        plugin.msg(player, lm.Flag_Deny, Flags.ignite);
+
     }
 }
