@@ -526,7 +526,7 @@ public class ResidenceBlockListener implements Listener {
 
         double balance = 0;
         if (plugin.getEconomyManager() != null)
-            balance = plugin.getEconomyManager().getBalance(player.getName());
+            balance = plugin.getEconomyManager().getBalance(player);
 
         direction dir = direction.Top;
 

@@ -390,7 +390,7 @@ public class market implements cmd {
             return true;
         }
 
-        if (res.isRented() && res.getRentedLand().player.equalsIgnoreCase(player.getName())) {
+        if (res.isRented() && res.getRentedLand().isRenter(player)) {
             plugin.getRentManager().setRentedRepeatable(player, res.getName(), value, resadmin);
         } else if (res.isForRent()) {
             plugin.getRentManager().setRentRepeatable(player, res.getName(), value, resadmin);

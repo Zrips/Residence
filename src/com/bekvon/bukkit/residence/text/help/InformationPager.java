@@ -126,7 +126,7 @@ public class InformationPager {
             if (res.isForRent()) {
                 if (res.isRented()) {
                     ExtraString = " " + plugin.msg(lm.Residence_IsRented);
-                    StringB.append("\n").append(plugin.msg(lm.Residence_RentedBy, res.getRentedLand().player));
+                    StringB.append("\n").append(plugin.msg(lm.Residence_RentedBy, res.getRentedLand().getRenterName()));
                 } else {
                     ExtraString = " " + plugin.msg(lm.Residence_IsForRent);
                 }
@@ -205,7 +205,7 @@ public class InformationPager {
             if (res.isForRent()) {
                 if (res.isRented()) {
                     ExtraString = " " + plugin.msg(lm.Residence_IsRented);
-                    StringB.append("\n " + plugin.msg(lm.Residence_RentedBy, res.getRentedLand().player));
+                    StringB.append("\n " + plugin.msg(lm.Residence_RentedBy, res.getRentedLand().getRenterName()));
                 } else {
                     ExtraString = " " + plugin.msg(lm.Residence_IsForRent);
                 }
@@ -265,7 +265,7 @@ public class InformationPager {
                 if (res.isForRent()) {
                     if (res.isRented()) {
                         ExtraString = " " + plugin.msg(lm.Residence_IsRented);
-                        StringB.append("\n " + plugin.msg(lm.Residence_RentedBy, res.getRentedLand().player));
+                        StringB.append("\n " + plugin.msg(lm.Residence_RentedBy, res.getRentedLand().getRenterName()));
                     } else {
                         ExtraString = " " + plugin.msg(lm.Residence_IsForRent);
                     }

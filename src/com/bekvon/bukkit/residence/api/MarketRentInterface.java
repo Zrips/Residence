@@ -2,6 +2,7 @@ package com.bekvon.bukkit.residence.api;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
@@ -53,7 +54,13 @@ public interface MarketRentInterface {
 
     public void setRentedRepeatable(Player player, String landName, boolean value, boolean resadmin);
 
+    @Deprecated
     public int getRentCount(String player);
 
+    @Deprecated
     public int getRentableCount(String player);
+
+    public int getRentableCount(UUID playerUUID);
+
+    public int getRentCount(UUID playerUUID);
 }

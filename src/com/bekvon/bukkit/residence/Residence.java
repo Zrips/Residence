@@ -70,8 +70,6 @@ import com.bekvon.bukkit.residence.economy.BlackHoleEconomy;
 import com.bekvon.bukkit.residence.economy.CMIEconomy;
 import com.bekvon.bukkit.residence.economy.EconomyInterface;
 import com.bekvon.bukkit.residence.economy.EssentialsEcoAdapter;
-import com.bekvon.bukkit.residence.economy.IConomy6Adapter;
-import com.bekvon.bukkit.residence.economy.RealShopEconomy;
 import com.bekvon.bukkit.residence.economy.TransactionManager;
 import com.bekvon.bukkit.residence.economy.rent.RentManager;
 import com.bekvon.bukkit.residence.gui.FlagUtil;
@@ -135,8 +133,6 @@ import com.earth2me.essentials.Essentials;
 import com.residence.mcstats.Metrics;
 import com.residence.zip.ZipLibrary;
 
-import fr.crafter.tickleman.realeconomy.RealEconomy;
-import fr.crafter.tickleman.realplugin.RealPlugin;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
@@ -570,15 +566,6 @@ public class Residence extends JavaPlugin {
                     if (economy == null) {
                         this.loadEssentialsEconomy();
                     }
-                    if (economy == null) {
-                        this.loadRealEconomy();
-                    }
-                    if (economy == null) {
-                        this.loadIConomy();
-                    }
-                    break;
-                case RealEconomy:
-                    this.loadRealEconomy();
                     break;
                 case Vault:
                     if (this.getPermissionManager().getPermissionsPlugin() instanceof ResidenceVaultAdapter) {
@@ -591,9 +578,6 @@ public class Residence extends JavaPlugin {
                     if (economy == null) {
                         this.loadVaultEconomy();
                     }
-                    break;
-                case iConomy:
-                    this.loadIConomy();
                     break;
                 default:
                     break;
@@ -705,6 +689,9 @@ public class Residence extends JavaPlugin {
                     pm.registerEvents(new ResidencePlayerListener1_20(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_21_R1))
                     pm.registerEvents(new ResidencePlayerListener1_21(this), this);
+                // No working at the moment
+//                if (Version.isCurrentEqualOrHigher(Version.v1_21_R5) && Version.isCurrentSubEqualOrHigher(8) || Version.isCurrentEqualOrHigher(Version.v1_22_R1))
+//                    pm.registerEvents(new ResidencePlayerListener1_21_8(this), this);
 
                 blistener = new ResidenceBlockListener(this);
                 plistener = new ResidencePlayerListener(this);
@@ -1161,22 +1148,6 @@ public class Residence extends JavaPlugin {
         return wmanager.getPerms(loc.getWorld().getName());
     }
 
-    private void loadIConomy() {
-        Plugin p = getServer().getPluginManager().getPlugin("iConomy");
-        if (p != null) {
-            if (p.getDescription().getVersion().startsWith("6")) {
-                economy = new IConomy6Adapter((com.iCo6.iConomy) p);
-            } else {
-                consoleMessage("UNKNOWN iConomy version!");
-                return;
-            }
-            consoleMessage("Successfully linked with &5iConomy");
-            consoleMessage("Version: " + p.getDescription().getVersion());
-        } else {
-            consoleMessage("iConomy NOT found!");
-        }
-    }
-
     private void loadEssentialsEconomy() {
         Plugin p = getServer().getPluginManager().getPlugin("Essentials");
         if (p != null) {
@@ -1194,16 +1165,6 @@ public class Residence extends JavaPlugin {
             consoleMessage("Successfully linked with &5CMIEconomy");
         } else {
             consoleMessage("CMIEconomy NOT found!");
-        }
-    }
-
-    private void loadRealEconomy() {
-        Plugin p = getServer().getPluginManager().getPlugin("RealPlugin");
-        if (p != null) {
-            economy = new RealShopEconomy(new RealEconomy((RealPlugin) p));
-            consoleMessage("Successfully linked with &5RealShop Economy");
-        } else {
-            consoleMessage("RealShop Economy NOT found!");
         }
     }
 

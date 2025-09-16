@@ -23,7 +23,6 @@ import com.bekvon.bukkit.residence.utils.GetTime;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.Zrips.CMILib.Chat.ChatFilterRule;
-import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class Placeholder {
 
@@ -425,7 +424,7 @@ public class Placeholder {
                     break;
                 case residence_user_maxud:
                     group = user.getGroup();
-                    result = group.getMinY() + "-" + group.getMaxY();
+                    result = group.getMinYSize() + "-" + group.getMaxYSize();
                     break;
                 case residence_user_current_owner:
                     ClaimedResidence res = plugin.getResidenceManager().getByLoc(user.getPlayer().getLocation());
@@ -469,11 +468,11 @@ public class Placeholder {
                     break;
                 case residence_user_current_rentedby:
                     res = plugin.getResidenceManager().getByLoc(user.getPlayer().getLocation());
-                    result = res == null || !res.isForRent() || res.getRentedLand() == null || res.getRentedLand().player == null ? "" : res.getRentedLand().player;
+                    result = res == null || !res.isForRent() || res.getRentedLand() == null || res.getRentedLand().getRenterName() == null ? "" : res.getRentedLand().getRenterName();
                     break;
                 case residence_user_current_rentends:
                     res = plugin.getResidenceManager().getByLoc(user.getPlayer().getLocation());
-                    result = res == null || !res.isForRent() || res.getRentedLand() == null || res.getRentedLand().player == null ? "" : GetTime.getTime(res.getRentedLand().endTime, true);
+                    result = res == null || !res.isForRent() || res.getRentedLand() == null || !res.getRentedLand().hasValidRenter() ? "" : GetTime.getTime(res.getRentedLand().endTime, true);
                     break;
                 case residence_user_current_forrent:
                     res = plugin.getResidenceManager().getByLoc(user.getPlayer().getLocation());

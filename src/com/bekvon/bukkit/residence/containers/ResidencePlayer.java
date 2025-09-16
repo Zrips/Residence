@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -408,7 +406,7 @@ public class ResidencePlayer {
         return ResidencePlayerRaidData.get(this.getUniqueId()).getLastRaidAttackTimer();
     }
 
-    public void setLastRaidAttackTimer(@Nonnull Long lastRaidAttackTimer) {
+    public void setLastRaidAttackTimer(Long lastRaidAttackTimer) {
         ResidencePlayerRaidData.get(this.getUniqueId()).setLastRaidAttackTimer(lastRaidAttackTimer);
     }
 
@@ -416,7 +414,7 @@ public class ResidencePlayer {
         return ResidencePlayerRaidData.get(this.getUniqueId()).getLastRaidDefendTimer();
     }
 
-    public void setLastRaidDefendTimer(@Nonnull Long lastRaidDefendTimer) {
+    public void setLastRaidDefendTimer(Long lastRaidDefendTimer) {
         ResidencePlayerRaidData.get(this.getUniqueId()).setLastRaidDefendTimer(lastRaidDefendTimer);
     }
 

@@ -2,7 +2,7 @@ package com.bekvon.bukkit.residence.containers;
 
 public enum EconomyType {
 
-    Vault, iConomy, Essentials, RealEconomy, CMIEconomy, None;
+    Vault, @Deprecated iConomy, Essentials, @Deprecated RealEconomy, CMIEconomy, None;
 
     public static EconomyType getByName(String string) {
 	for (EconomyType one : EconomyType.values()) {

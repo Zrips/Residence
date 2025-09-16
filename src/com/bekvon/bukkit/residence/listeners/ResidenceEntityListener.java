@@ -237,7 +237,6 @@ public class ResidenceEntityListener implements Listener {
         if (res.getPermissions().playerHas(cause, Flags.animalkilling, FlagCombo.OnlyFalse)) {
             plugin.msg(cause, lm.Residence_FlagDeny, Flags.animalkilling, res.getName());
             attackevent.setCancelled(true);
-
             if (damager instanceof Arrow)
                 damager.remove();
         }
@@ -394,6 +393,7 @@ public class ResidenceEntityListener implements Listener {
     }
 
     private boolean vehicleDamageable(Entity damager, Vehicle vehicle) {
+
         if (vehicle == null)
             return true;
 
@@ -433,6 +433,7 @@ public class ResidenceEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void MonsterKilling(EntityDamageByEntityEvent event) {
+
         // Disabling listener if flag disabled globally
         if (!Flags.mobkilling.isGlobalyEnabled())
             return;
@@ -1842,6 +1843,7 @@ public class ResidenceEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractAtFish(PlayerInteractEntityEvent event) {
+
         if (Version.isCurrentLower(Version.v1_12_R1))
             return;
         Player player = event.getPlayer();

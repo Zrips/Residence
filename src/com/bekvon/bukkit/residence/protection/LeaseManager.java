@@ -125,9 +125,8 @@ public class LeaseManager {
             double cost = group.getLeaseRenewCost();
             int amount = (int) Math.ceil(res.getTotalSize() * cost);
             if (cost != 0D) {
-                //Account account = iConomy.getBank().getAccount(player.getName());
-                if (econ.canAfford(player.getName(), amount)/*account.hasEnough(amount)*/) {
-                    econ.subtract(player.getName(), amount);
+                if (econ.canAfford(player, amount)) {
+                    econ.subtract(player, amount);
                     econ.add("Lease Money", amount);
                     if (amount != 0D)
                         plugin.msg(player, lm.Economy_MoneyCharged, plugin.getEconomyManager().format(amount), econ.getName());
@@ -201,7 +200,6 @@ public class LeaseManager {
 
             String resname = res.getName();
             boolean renewed = false;
-            String owner = res.getPermissions().getOwner();
 
             PermissionGroup group = res.getOwnerGroup();
 
@@ -214,8 +212,8 @@ public class LeaseManager {
                     renewed = true;
                     if (plugin.getConfigManager().debugEnabled())
                         System.out.println("Lease Renewed From Residence Bank: " + resname);
-                } else if (plugin.getEconomyManager().canAfford(owner, cost)) {
-                    if (plugin.getEconomyManager().subtract(owner, cost)) {
+                } else if (plugin.getEconomyManager().canAfford(res.getPermissions().getOwnerUUID(), cost)) {
+                    if (plugin.getEconomyManager().subtract(res.getPermissions().getOwnerUUID(), cost)) {
                         renewed = true;
                         if (plugin.getConfigManager().debugEnabled())
                             System.out.println("Lease Renewed From Economy: " + resname);

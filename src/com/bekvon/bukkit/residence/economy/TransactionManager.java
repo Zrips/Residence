@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -40,11 +41,11 @@ public class TransactionManager implements MarketBuyInterface {
             plugin.msg(player, lm.Economy_MarketDisabled);
             return false;
         }
-        if (!econ.canAfford(player.getName(), chargeamount)) {
+        if (!econ.canAfford(player, chargeamount)) {
             plugin.msg(player, lm.Economy_NotEnoughMoney);
             return false;
         }
-        econ.subtract(player.getName(), chargeamount);
+        econ.subtract(player, chargeamount);
         try {
             if (chargeamount != 0D)
                 plugin.msg(player, lm.Economy_MoneyCharged, plugin.getEconomyManager().format(chargeamount), econ.getName());
@@ -56,16 +57,26 @@ public class TransactionManager implements MarketBuyInterface {
     public boolean giveEconomyMoney(Player player, double amount) {
         if (player == null)
             return false;
+
+        if (giveEconomyMoney(player.getUniqueId(), amount)) {
+
+            EconomyInterface econ = plugin.getEconomyManager();
+            plugin.msg(player, lm.Economy_MoneyAdded, plugin.getEconomyManager().format(amount), econ.getName());
+            return true;
+        }
+
+        plugin.msg(player, lm.Economy_MarketDisabled);
+        return false;
+
+    }
+
+    public boolean giveEconomyMoney(UUID uuid, double amount) {
         if (amount == 0)
             return true;
         EconomyInterface econ = plugin.getEconomyManager();
-        if (econ == null) {
-            plugin.msg(player, lm.Economy_MarketDisabled);
+        if (econ == null)
             return false;
-        }
-
-        econ.add(player.getName(), amount);
-        plugin.msg(player, lm.Economy_MoneyAdded, plugin.getEconomyManager().format(amount), econ.getName());
+        econ.add(uuid, amount);
         return true;
     }
 
@@ -233,8 +244,8 @@ public class TransactionManager implements MarketBuyInterface {
             sellerName = sellerNameFix.getName();
         }
 
-        if (econ.canAfford(buyerName, amount)) {
-            if (!econ.transfer(buyerName, sellerName, amount)) {
+        if (econ.canAfford(res.getPermissions().getOwnerUUID(), amount)) {
+            if (!econ.transfer(player.getUniqueId(), res.getPermissions().getOwnerUUID(), amount)) {
                 player.sendMessage(ChatColor.RED + "Error, could not transfer " + amount + " from " + buyerName + " to " + sellerName);
                 return;
             }

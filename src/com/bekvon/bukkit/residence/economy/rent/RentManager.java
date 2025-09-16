@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -29,6 +30,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.utils.GetTime;
 
 import net.Zrips.CMILib.Container.PageInfo;
+import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class RentManager implements MarketRentInterface {
@@ -70,7 +72,7 @@ public class RentManager implements MarketRentInterface {
             if (!res.isRented())
                 continue;
 
-            if (!res.getRentedLand().player.equals(playername))
+            if (!res.getRentedLand().isRenter(playername))
                 continue;
 
             String world = " ";
@@ -105,7 +107,7 @@ public class RentManager implements MarketRentInterface {
             if (!res.isRented())
                 continue;
 
-            if (!res.getRentedLand().player.equalsIgnoreCase(playername))
+            if (!res.getRentedLand().isRenter(playername))
                 continue;
 
             ClaimedResidence topres = res.getTopParent();
@@ -131,7 +133,7 @@ public class RentManager implements MarketRentInterface {
             if (!res.isRented())
                 continue;
 
-            if (!res.getRentedLand().player.equalsIgnoreCase(playername))
+            if (!res.getRentedLand().isRenter(playername))
                 continue;
 
             ClaimedResidence topres = res.getTopParent();
@@ -159,7 +161,7 @@ public class RentManager implements MarketRentInterface {
                 continue;
             if (!res.isRented())
                 continue;
-            if (!res.getRentedLand().player.equalsIgnoreCase(playername))
+            if (!res.getRentedLand().isRenter(playername))
                 continue;
             rentedLands.add(res.getName());
         }
@@ -222,7 +224,7 @@ public class RentManager implements MarketRentInterface {
 
             days = group.getMaxRentDays() < days ? group.getMaxRentDays() : days;
 
-            if (this.getRentableCount(player.getName()) >= group.getMaxRentables()) {
+            if (this.getRentableCount(player.getUniqueId()) >= group.getMaxRentables()) {
                 plugin.msg(player, lm.Residence_MaxRent);
                 return;
             }
@@ -281,7 +283,7 @@ public class RentManager implements MarketRentInterface {
 
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         rPlayer.forceUpdateGroup();
-        if (!resadmin && this.getRentCount(player.getName()) >= rPlayer.getMaxRents()) {
+        if (!resadmin && this.getRentCount(player.getUniqueId()) >= rPlayer.getMaxRents()) {
             plugin.msg(player, lm.Residence_MaxRent);
             return;
         }
@@ -296,7 +298,7 @@ public class RentManager implements MarketRentInterface {
 
         RentableLand land = res.getRentable();
 
-        if (plugin.getEconomyManager().canAfford(player.getName(), land.cost)) {
+        if (plugin.getEconomyManager().canAfford(player, land.cost)) {
             ResidenceRentEvent revent = new ResidenceRentEvent(res, player, RentEventType.RENT);
             plugin.getServ().getPluginManager().callEvent(revent);
             if (revent.isCancelled())
@@ -307,9 +309,10 @@ public class RentManager implements MarketRentInterface {
                 AutoPay = false;
             }
 
-            if (plugin.getEconomyManager().transfer(player.getName(), res.getPermissions().getOwner(), land.cost)) {
+            if (plugin.getEconomyManager().transfer(player.getUniqueId(), res.getPermissions().getOwnerUUID(), land.cost)) {
                 RentedLand newrent = new RentedLand();
-                newrent.player = player.getName();
+//                newrent.player = player.getName();
+                newrent.setUniqueId(player.getUniqueId());
                 newrent.startTime = System.currentTimeMillis();
                 newrent.endTime = System.currentTimeMillis() + daysToMs(land.days);
                 newrent.AutoPay = AutoPay;
@@ -388,12 +391,12 @@ public class RentManager implements MarketRentInterface {
             return;
         }
 
-        if (plugin.getEconomyManager().canAfford(player.getName(), land.cost)) {
+        if (plugin.getEconomyManager().canAfford(player, land.cost)) {
             ResidenceRentEvent revent = new ResidenceRentEvent(res, player, RentEventType.RENT);
             plugin.getServ().getPluginManager().callEvent(revent);
             if (revent.isCancelled())
                 return;
-            if (plugin.getEconomyManager().transfer(player.getName(), res.getPermissions().getOwner(), land.cost)) {
+            if (plugin.getEconomyManager().transfer(player.getUniqueId(), res.getPermissions().getOwnerUUID(), land.cost)) {
                 rentedLand.endTime = rentedLand.endTime + daysToMs(land.days);
                 plugin.getSignUtil().CheckSign(res);
 
@@ -434,7 +437,7 @@ public class RentManager implements MarketRentInterface {
             return;
         }
 
-        if (resadmin || rent.player.equals(player.getName()) || res.isOwner(player) && ResPerm.market_evict.hasPermission(player)) {
+        if (resadmin || rent.isRenter(player) || res.isOwner(player) && ResPerm.market_evict.hasPermission(player)) {
             ResidenceRentEvent revent = new ResidenceRentEvent(res, player, RentEventType.UNRENTABLE);
             plugin.getServ().getPluginManager().callEvent(revent);
             if (revent.isCancelled())
@@ -580,7 +583,7 @@ public class RentManager implements MarketRentInterface {
     public String getRentingPlayer(ClaimedResidence res) {
         if (res == null)
             return null;
-        return res.isRented() ? res.getRentedLand().player : null;
+        return res.isRented() ? res.getRentedLand().getRenterName() : null;
     }
 
     @Override
@@ -648,7 +651,7 @@ public class RentManager implements MarketRentInterface {
                 continue;
 
             if (plugin.getConfigManager().debugEnabled())
-                System.out.println("Rent Check: " + res.getName());
+                CMIMessages.consoleMessage("Rent Check: " + res.getName());
 
             ResidenceRentEvent revent = new ResidenceRentEvent(res, null, RentEventType.RENT_EXPIRE);
             plugin.getServ().getPluginManager().callEvent(revent);
@@ -667,16 +670,19 @@ public class RentManager implements MarketRentInterface {
                 plugin.getSignUtil().CheckSign(res);
                 continue;
             }
-            if (land.AutoPay && rentable.AllowAutoPay) {
+
+            UUID renterUUID = land.getUniqueId();
+
+            if (renterUUID != null && land.AutoPay && rentable.AllowAutoPay) {
 
                 Double money = 0D;
                 if (plugin.getConfigManager().isDeductFromBankThenPlayer()) {
                     money += res.getBank().getStoredMoneyD();
-                    money += plugin.getEconomyManager().getBalance(land.player);
+                    money += plugin.getEconomyManager().getBalance(renterUUID);
                 } else if (plugin.getConfigManager().isDeductFromBank()) {
                     money += res.getBank().getStoredMoneyD();
                 } else {
-                    money += plugin.getEconomyManager().getBalance(land.player);
+                    money += plugin.getEconomyManager().getBalance(renterUUID);
                 }
 
                 if (money < rentable.cost) {
@@ -702,11 +708,11 @@ public class RentManager implements MarketRentInterface {
                         }
                         leftInBank = leftInBank < 0 ? 0 : leftInBank;
 
-                        if (plugin.getEconomyManager().getBalance(land.player) < deductFromPlayer) {
+                        if (plugin.getEconomyManager().getBalance(renterUUID) < deductFromPlayer) {
                             updatedTime = false;
                         } else {
-                            if (deductFromPlayer == 0D || plugin.getEconomyManager().subtract(land.player, deductFromPlayer)) {
-                                plugin.getEconomyManager().add(res.getPermissions().getOwner(), rentable.cost);
+                            if (deductFromPlayer == 0D || plugin.getEconomyManager().subtract(renterUUID, deductFromPlayer)) {
+                                plugin.getEconomyManager().add(res.getPermissions().getOwnerUUID(), rentable.cost);
                                 res.getBank().setStoredMoney(leftInBank);
                                 updatedTime = true;
                             }
@@ -718,11 +724,11 @@ public class RentManager implements MarketRentInterface {
                             updatedTime = false;
                         } else {
                             res.getBank().setStoredMoney(leftInBank - deductFromPlayer);
-                            plugin.getEconomyManager().add(res.getPermissions().getOwner(), rentable.cost);
+                            plugin.getEconomyManager().add(res.getPermissions().getOwnerUUID(), rentable.cost);
                             updatedTime = true;
                         }
                     } else {
-                        updatedTime = plugin.getEconomyManager().transfer(land.player, res.getPermissions().getOwner(), rentable.cost);
+                        updatedTime = plugin.getEconomyManager().transfer(renterUUID, res.getPermissions().getOwnerUUID(), rentable.cost);
                     }
 
                     if (!updatedTime) {
@@ -824,12 +830,12 @@ public class RentManager implements MarketRentInterface {
             return;
         }
 
-        if (!land.player.equals(player.getName()) && !resadmin) {
+        if (!land.isRenter(player) && !resadmin) {
             plugin.msg(player, lm.Residence_NotOwner);
             return;
         }
 
-        if (!land.player.equals(player.getName()) && !resadmin) {
+        if (!land.isRenter(player) && !resadmin) {
             plugin.msg(player, lm.Residence_NotOwner);
             return;
         }
@@ -865,11 +871,10 @@ public class RentManager implements MarketRentInterface {
             plugin.msg(player, lm.Rentable_StayInMarket, rentable.StayInMarket);
             plugin.msg(player, lm.Rentable_AllowAutoPay, rentable.AllowAutoPay);
             if (rented != null) {
-                plugin.msg(player, lm.Residence_RentedBy, rented.player);
+                plugin.msg(player, lm.Residence_RentedBy, rented.getRenterName());
 
-                if (rented.player.equals(player.getName()) || res.isOwner(player) || ResAdmin.isResAdmin(player))
-                    player.sendMessage((rented.AutoPay ? plugin.msg(lm.Rent_AutoPayTurnedOn) : plugin.msg(lm.Rent_AutoPayTurnedOff))
-                        + "\n");
+                if (rented.isRenter(player) || res.isOwner(player) || ResAdmin.isResAdmin(player))
+                    player.sendMessage((rented.AutoPay ? plugin.msg(lm.Rent_AutoPayTurnedOn) : plugin.msg(lm.Rent_AutoPayTurnedOff)) + "\n");
                 plugin.msg(player, lm.Rent_Expire, GetTime.getTime(rented.endTime));
             } else {
                 plugin.msg(player, lm.General_Status, plugin.msg(lm.General_Available));
@@ -908,7 +913,7 @@ public class RentManager implements MarketRentInterface {
             String hover = "";
             if (rented) {
                 RentedLand rent = res.getRentedLand();
-                rentedBy = plugin.msg(lm.Residence_RentedBy, rent.player);
+                rentedBy = plugin.msg(lm.Residence_RentedBy, rent.getRenterName());
                 hover = GetTime.getTime(rent.endTime);
             }
 
@@ -929,10 +934,31 @@ public class RentManager implements MarketRentInterface {
     }
 
     @Override
+    public int getRentCount(UUID playerUUID) {
+        int count = 0;
+        for (ClaimedResidence res : rentedLand) {
+            if (res.getRentedLand().isRenter(playerUUID))
+                count++;
+        }
+        return count;
+    }
+
+    @Override
+    @Deprecated
     public int getRentCount(String player) {
         int count = 0;
         for (ClaimedResidence res : rentedLand) {
-            if (res.getRentedLand().player.equalsIgnoreCase(player))
+            if (res.getRentedLand().isRenter(player))
+                count++;
+        }
+        return count;
+    }
+
+    @Override
+    public int getRentableCount(UUID playerUUID) {
+        int count = 0;
+        for (ClaimedResidence res : rentableLand) {
+            if (res != null && res.isOwner(playerUUID))
                 count++;
         }
         return count;
@@ -942,9 +968,8 @@ public class RentManager implements MarketRentInterface {
     public int getRentableCount(String player) {
         int count = 0;
         for (ClaimedResidence res : rentableLand) {
-            if (res != null)
-                if (res.isOwner(player))
-                    count++;
+            if (res != null && res.isOwner(player))
+                count++;
         }
         return count;
     }
@@ -976,7 +1001,7 @@ public class RentManager implements MarketRentInterface {
         }
         Map<String, Object> rented = (Map<String, Object>) root.get("Rented");
         for (Entry<String, Object> rent : rented.entrySet()) {
-            RentedLand one = loadRented((Map<String, Object>) rent.getValue());
+            RentedLand one = RentedLand.loadRented((Map<String, Object>) rent.getValue());
             ClaimedResidence res = plugin.getResidenceManager().getByName(rent.getKey());
             if (res != null) {
                 res.setRented(one);
@@ -1013,15 +1038,6 @@ public class RentManager implements MarketRentInterface {
             newland.StayInMarket = (Boolean) map.get("StayInMarket");
         if (map.containsKey("AllowAutoPay"))
             newland.AllowAutoPay = (Boolean) map.get("AllowAutoPay");
-        return newland;
-    }
-
-    private static RentedLand loadRented(Map<String, Object> map) {
-        RentedLand newland = new RentedLand();
-        newland.player = (String) map.get("Player");
-        newland.startTime = (Long) map.get("StartTime");
-        newland.endTime = (Long) map.get("EndTime");
-        newland.AutoPay = (Boolean) map.get("AutoRefresh");
         return newland;
     }
 

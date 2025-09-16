@@ -151,10 +151,10 @@ public class ResidenceManager implements ResidenceInterface {
         if (split.length == 1) {
             return residences.get(name.toLowerCase());
         }
-        
+
         if (split.length == 0)
             return null;
-        
+
         ClaimedResidence res = residences.get(split[0].toLowerCase());
         for (int i = 1; i < split.length; i++) {
             if (res != null) {
@@ -595,11 +595,11 @@ public class ResidenceManager implements ResidenceInterface {
         if (plugin.getConfigManager().isRentPreventRemoval() && !resadmin) {
             ClaimedResidence rented = res.getRentedSubzone();
             if (rented != null) {
-                plugin.msg(player, lm.Residence_CantRemove, res.getName(), rented.getName(), rented.getRentedLand().player);
+                plugin.msg(player, lm.Residence_CantRemove, res.getName(), rented.getName(), rented.getRentedLand().getRenterName());
                 return;
             }
-            if (player != null && res.isRented() && !player.getName().equalsIgnoreCase(res.getRentedLand().player)) {
-                plugin.msg(player, lm.Residence_CantRemove, res.getName(), res.getName(), res.getRentedLand().player);
+            if (player != null && res.isRented() && !player.getName().equalsIgnoreCase(res.getRentedLand().getRenterName())) {
+                plugin.msg(player, lm.Residence_CantRemove, res.getName(), res.getName(), res.getRentedLand().getRenterName());
                 return;
             }
         }
@@ -651,17 +651,17 @@ public class ResidenceManager implements ResidenceInterface {
             if (parent == null && plugin.getConfigManager().enableEconomy() && plugin.getConfigManager().useResMoneyBack()) {
                 double chargeamount = res.getWorth();
                 if (!res.isOwner(player)) {
-                    plugin.getTransactionManager().giveEconomyMoney(res.getOwner(), chargeamount);
+                    plugin.getTransactionManager().giveEconomyMoney(res.getOwnerUUID(), chargeamount);
                 } else {
                     if (player != null)
                         plugin.getTransactionManager().giveEconomyMoney(player, chargeamount);
                     else if (rPlayer != null)
-                        plugin.getTransactionManager().giveEconomyMoney(rPlayer.getPlayerName(), chargeamount);
+                        plugin.getTransactionManager().giveEconomyMoney(rPlayer.getUniqueId(), chargeamount);
                 }
             }
 
             if (res.getBank().getStoredMoneyD() > 0 && plugin.getConfigManager().isResBankBack()) {
-                plugin.getTransactionManager().giveEconomyMoney(res.getOwner(), res.getBank().getStoredMoneyD());
+                plugin.getTransactionManager().giveEconomyMoney(res.getOwnerUUID(), res.getBank().getStoredMoneyD());
             }
         }
 
@@ -722,7 +722,7 @@ public class ResidenceManager implements ResidenceInterface {
                 }
             }
             for (Location one : locations) {
-                CMIScheduler.runAtLocation(one, () -> one.getBlock().setType(Material.AIR));
+                CMIScheduler.runAtLocation(plugin, one, () -> one.getBlock().setType(Material.AIR));
             }
         });
     }
@@ -869,9 +869,8 @@ public class ResidenceManager implements ResidenceInterface {
             StringBuilder rentableString = new StringBuilder();
             if (rented != null) {
                 rentableString.append(plugin.msg(lm.Rent_Expire, GetTime.getTime(rented.endTime)) + "\n");
-                if (rented.player.equals(sender.getName()) || resadmin || res.isOwner(sender))
-                    rentableString.append((rented.AutoPay ? plugin.msg(lm.Rent_AutoPayTurnedOn) : plugin.msg(lm.Rent_AutoPayTurnedOff))
-                        + "\n");
+                if (rented.isRenter(sender) || resadmin || res.isOwner(sender))
+                    rentableString.append((rented.AutoPay ? plugin.msg(lm.Rent_AutoPayTurnedOn) : plugin.msg(lm.Rent_AutoPayTurnedOff)) + "\n");
             }
 
             if (rentable != null) {

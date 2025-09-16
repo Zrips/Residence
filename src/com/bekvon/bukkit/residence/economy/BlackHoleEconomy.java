@@ -1,5 +1,7 @@
 package com.bekvon.bukkit.residence.economy;
 
+import java.util.UUID;
+
 import org.bukkit.entity.Player;
 
 public class BlackHoleEconomy implements EconomyInterface {
@@ -50,6 +52,36 @@ public class BlackHoleEconomy implements EconomyInterface {
     @Override
     public String format(double amount) {
         return String.valueOf(Math.round(amount * 100) / 100D);
+    }
+
+    @Override
+    public double getBalance(UUID player) {
+        return 0;
+    }
+
+    @Override
+    public boolean canAfford(UUID player, double amount) {
+        return false;
+    }
+
+    @Override
+    public boolean add(UUID playerName, double amount) {
+        return false;
+    }
+
+    @Override
+    public boolean subtract(UUID playerName, double amount) {
+        return false;
+    }
+
+    @Override
+    public boolean transfer(UUID playerFrom, UUID playerTo, double amount) {
+        return false;
+    }
+
+    @Override
+    public boolean subtract(Player player, double amount) {
+        return false;
     }
 
 }

@@ -2,7 +2,6 @@ package com.bekvon.bukkit.residence.pl3xmap;
 
 import com.bekvon.bukkit.residence.Residence;
 
-import libs.org.wildfly.common.annotation.NotNull;
 import net.pl3x.map.core.markers.layer.WorldLayer;
 import net.pl3x.map.core.world.World;
 
@@ -10,7 +9,7 @@ public class Pl3xMapLayer extends WorldLayer {
 
     public static final String ID = "Residence";
 
-    public Pl3xMapLayer(@NotNull World world) {
+    public Pl3xMapLayer(World world) {
         super(ID, world, () -> ID);
 
         setShowControls(true);
@@ -18,5 +17,4 @@ public class Pl3xMapLayer extends WorldLayer {
         setPriority(4);
         setZIndex(63);
     }
-
 }

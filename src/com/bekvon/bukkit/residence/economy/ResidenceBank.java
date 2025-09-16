@@ -75,12 +75,12 @@ public class ResidenceBank {
             return;
         }
 
-        if (!resadmin && res.isRented() && !res.getRentedLand().player.equalsIgnoreCase(sender.getName())) {
+        if (!resadmin && res.isRented() && !res.getRentedLand().isRenter(player)) {
             Residence.getInstance().msg(sender, lm.Bank_rentedWithdraw, res.getName());
             return;
         }
 
-        if (sender instanceof Player && Residence.getInstance().getEconomyManager().add(sender.getName(), amount) || !(sender instanceof Player)) {
+        if (sender instanceof Player && Residence.getInstance().getEconomyManager().add(player.getUniqueId(), amount) || !(sender instanceof Player)) {
             this.subtract(amount);
             Residence.getInstance().msg(sender, lm.Bank_Withdraw, String.format("%.2f", amount));
         }
@@ -94,6 +94,7 @@ public class ResidenceBank {
     public void deposit(CommandSender sender, double amount, boolean resadmin) {
         if (!(sender instanceof Player))
             return;
+        
         Player player = (Player) sender;
         if (!Residence.getInstance().getConfigManager().enableEconomy()) {
             Residence.getInstance().msg(sender, lm.Economy_MarketDisabled);
@@ -102,7 +103,7 @@ public class ResidenceBank {
             Residence.getInstance().msg(sender, lm.Bank_NoAccess);
             return;
         }
-        if (sender instanceof Player && !Residence.getInstance().getEconomyManager().canAfford(sender.getName(), amount)) {
+        if (!Residence.getInstance().getEconomyManager().canAfford(player, amount)) {
             Residence.getInstance().msg(sender, lm.Economy_NotEnoughMoney);
             return;
         }
@@ -115,7 +116,7 @@ public class ResidenceBank {
             }
         }
 
-        if (sender instanceof Player && Residence.getInstance().getEconomyManager().subtract(sender.getName(), amount) || !(sender instanceof Player)) {
+        if (Residence.getInstance().getEconomyManager().subtract(player, amount)) {
             this.add(amount);
             Residence.getInstance().msg(sender, lm.Bank_Deposit, Residence.getInstance().getEconomyManager().format(amount));
         }

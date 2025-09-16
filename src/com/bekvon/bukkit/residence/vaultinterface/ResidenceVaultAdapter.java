@@ -1,10 +1,13 @@
 package com.bekvon.bukkit.residence.vaultinterface;
 
+import java.util.UUID;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.economy.EconomyInterface;
 import com.bekvon.bukkit.residence.permissions.PermissionsInterface;
 
@@ -84,6 +87,11 @@ public class ResidenceVaultAdapter implements EconomyInterface, PermissionsInter
         return economy.getBalance(player);
     }
 
+    @Override
+    public double getBalance(UUID playerUUID) {
+        return economy.getBalance(Residence.getInstance().getOfflinePlayer(playerUUID));
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public double getBalance(String playerName) {
@@ -92,7 +100,16 @@ public class ResidenceVaultAdapter implements EconomyInterface, PermissionsInter
 
     @Override
     public boolean canAfford(Player player, double amount) {
-        return canAfford(player.getName(), amount);
+        if (amount < 0)
+            return false;
+        return economy.has(player, amount);
+    }
+
+    @Override
+    public boolean canAfford(UUID playerUUID, double amount) {
+        if (amount < 0)
+            return false;
+        return economy.has(Residence.getInstance().getOfflinePlayer(playerUUID), amount);
     }
 
     @SuppressWarnings("deprecation")
@@ -111,12 +128,31 @@ public class ResidenceVaultAdapter implements EconomyInterface, PermissionsInter
         return economy.depositPlayer(playerName, amount).transactionSuccess();
     }
 
+    @Override
+    public boolean add(UUID playerUUID, double amount) {
+        if (amount < 0)
+            return false;
+        return economy.depositPlayer(Residence.getInstance().getOfflinePlayer(playerUUID), amount).transactionSuccess();
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public boolean subtract(String playerName, double amount) {
         if (amount < 0)
             return false;
         return economy.withdrawPlayer(playerName, amount).transactionSuccess();
+    }
+
+    @Override
+    public boolean subtract(Player player, double amount) {
+        return subtract(player.getUniqueId(), amount);
+    }
+
+    @Override
+    public boolean subtract(UUID playerUUID, double amount) {
+        if (amount < 0)
+            return false;
+        return economy.withdrawPlayer(Residence.getInstance().getOfflinePlayer(playerUUID), amount).transactionSuccess();
     }
 
     @SuppressWarnings("deprecation")
@@ -129,6 +165,20 @@ public class ResidenceVaultAdapter implements EconomyInterface, PermissionsInter
                 return true;
             }
             economy.depositPlayer(playerFrom, amount);
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean transfer(UUID playerFrom, UUID playerTo, double amount) {
+        if (amount < 0)
+            return false;
+        if (economy.withdrawPlayer(Residence.getInstance().getOfflinePlayer(playerFrom), amount).transactionSuccess()) {
+            if (economy.depositPlayer(Residence.getInstance().getOfflinePlayer(playerTo), amount).transactionSuccess()) {
+                return true;
+            }
+            economy.depositPlayer(Residence.getInstance().getOfflinePlayer(playerFrom), amount);
             return false;
         }
         return false;
