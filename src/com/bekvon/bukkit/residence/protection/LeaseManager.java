@@ -75,15 +75,13 @@ public class LeaseManager {
 
     public void setExpireTime(Player player, ClaimedResidence res, int days) {
         if (res == null) {
-            if (player != null)
-                plugin.msg(player, lm.Invalid_Area);
+            lm.Invalid_Area.sendMessage(player);
             return;
         }
 
         res.setLeaseExpireTime(daysToMs(days) + System.currentTimeMillis());
         leaseExpireTime.add(res);
-        if (player != null)
-            plugin.msg(player, lm.Economy_LeaseRenew, getExpireTime(res));
+        lm.Economy_LeaseRenew.sendMessage(player, getExpireTime(res));
     }
 
     @Deprecated
@@ -105,7 +103,7 @@ public class LeaseManager {
         if (res == null)
             return;
         if (!isLeased(res)) {
-            plugin.msg(player, lm.Economy_LeaseNotExpire);
+            lm.Economy_LeaseNotExpire.sendMessage(player);
             return;
         }
 
@@ -116,7 +114,7 @@ public class LeaseManager {
         int rem = daysRemaining(res);
 
         if (rem >= max) {
-            plugin.msg(player, lm.Economy_LeaseRenew, getExpireTime(res));
+            lm.Economy_LeaseRenew.sendMessage(player, getExpireTime(res));
             return;
         }
 
@@ -129,9 +127,9 @@ public class LeaseManager {
                     econ.subtract(player, amount);
                     econ.add("Lease Money", amount);
                     if (amount != 0D)
-                        plugin.msg(player, lm.Economy_MoneyCharged, plugin.getEconomyManager().format(amount), econ.getName());
+                        lm.Economy_MoneyCharged.sendMessage(player, plugin.getEconomyManager().format(amount), econ.getName());
                 } else {
-                    plugin.msg(player, lm.Economy_NotEnoughMoney);
+                    lm.Economy_NotEnoughMoney.sendMessage(player);
                     return;
                 }
             }
@@ -139,7 +137,7 @@ public class LeaseManager {
 
         if (rem + add > max) {
             setExpireTime(player, res, max);
-            plugin.msg(player, lm.Economy_LeaseRenewMax);
+            lm.Economy_LeaseRenewMax.sendMessage(player);
             return;
         }
         long get = res.getLeaseExpireTime();
@@ -152,7 +150,7 @@ public class LeaseManager {
             res.setLeaseExpireTime(daysToMs(add));
             leaseExpireTime.add(res);
         }
-        plugin.msg(player, lm.Economy_LeaseRenew, getExpireTime(res));
+        lm.Economy_LeaseRenew.sendMessage(player, getExpireTime(res));
     }
 
 //    @Deprecated

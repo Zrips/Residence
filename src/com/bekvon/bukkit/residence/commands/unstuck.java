@@ -31,13 +31,13 @@ public class unstuck implements cmd {
         PermissionGroup group = rPlayer.getGroup();
 
         if (!group.hasUnstuckAccess() && !ResAdmin.isResAdmin(player)) {
-            plugin.msg(player, lm.General_NoPermission);
+            lm.General_NoPermission.sendMessage(sender);
             return true;
         }
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
 
         if (res == null) {
-            plugin.msg(player, lm.Residence_NotIn);
+            lm.Residence_NotIn.sendMessage(sender);
             return true;
         }
 

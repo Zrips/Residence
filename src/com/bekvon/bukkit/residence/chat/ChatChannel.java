@@ -24,69 +24,67 @@ public class ChatChannel {
     protected CMIChatColor ChannelColor = CMIChatColor.WHITE;
 
     public ChatChannel(String channelName, String ChatPrefix, CMIChatColor chatColor) {
-	this.channelName = channelName;
-	this.ChatPrefix = ChatPrefix;
-	this.ChannelColor = chatColor;
-	members = new ArrayList<String>();
+        this.channelName = channelName;
+        this.ChatPrefix = ChatPrefix;
+        this.ChannelColor = chatColor;
+        members = new ArrayList<String>();
     }
 
     public String getChannelName() {
-	return channelName;
+        return channelName;
     }
 
     public void setChatPrefix(String ChatPrefix) {
-	this.ChatPrefix = ChatPrefix;
+        this.ChatPrefix = ChatPrefix;
     }
 
     public void setChannelColor(CMIChatColor ChannelColor) {
-	this.ChannelColor = ChannelColor;
+        this.ChannelColor = ChannelColor;
     }
 
     public void chat(String sourcePlayer, String message) {
         CMIScheduler.runTask(Residence.getInstance(), () -> {
-	    Server serv = Residence.getInstance().getServ();
-	    ResidenceChatEvent cevent = new ResidenceChatEvent(Residence.getInstance().getResidenceManager().getByName(channelName), serv.getPlayer(sourcePlayer), this.ChatPrefix, message,
-		this.ChannelColor);
-	    Residence.getInstance().getServ().getPluginManager().callEvent(cevent);
-	    if (cevent.isCancelled())
-		return;
-	    for (String member : members) {
-		Player player = serv.getPlayer(member);
+            Server serv = Residence.getInstance().getServ();
+            ResidenceChatEvent cevent = new ResidenceChatEvent(Residence.getInstance().getResidenceManager().getByName(channelName), serv.getPlayer(sourcePlayer), this.ChatPrefix, message,
+                this.ChannelColor);
+            Residence.getInstance().getServ().getPluginManager().callEvent(cevent);
+            if (cevent.isCancelled())
+                return;
+            for (String member : members) {
+                Player player = serv.getPlayer(member);
 
-		Residence.getInstance().msg(player, lm.Chat_ChatMessage, cevent.getChatprefix(), Residence.getInstance().getConfigManager().getChatColor(), sourcePlayer, cevent.getColor(), cevent
-		    .getChatMessage());
-	    }
+                lm.Chat_ChatMessage.sendMessage(player, cevent.getChatprefix(), Residence.getInstance().getConfigManager().getChatColor(), sourcePlayer, cevent.getColor(), cevent.getChatMessage());
+            }
 
-	    if (Residence.getInstance().getConfigManager().isChatListening()) {
-		cevent.getResidence().getPlayersInResidence().forEach((v) -> {
-		    if (members.contains(v.getName()))
-			return;
-		    if (!cevent.getResidence().isOwner(v) && !cevent.getResidence().getPermissions().playerHas(v, Flags.chat, FlagCombo.OnlyTrue))
-			return; 
-		    Residence.getInstance().msg(v, lm.Chat_ChatListeningMessage, cevent.getChatprefix(), Residence.getInstance().getConfigManager().getChatColor(), sourcePlayer, cevent.getColor(), cevent
-			.getChatMessage(), channelName);
-		});
-	    }
+            if (Residence.getInstance().getConfigManager().isChatListening()) {
+                cevent.getResidence().getPlayersInResidence().forEach((v) -> {
+                    if (members.contains(v.getName()))
+                        return;
+                    if (!cevent.getResidence().isOwner(v) && !cevent.getResidence().getPermissions().playerHas(v, Flags.chat, FlagCombo.OnlyTrue))
+                        return;
+                    lm.Chat_ChatListeningMessage.sendMessage(v, cevent.getChatprefix(), Residence.getInstance().getConfigManager().getChatColor(), sourcePlayer, cevent.getColor(), cevent
+                        .getChatMessage(), channelName);
+                });
+            }
 
-		
-	    Bukkit.getConsoleSender().sendMessage("ResidentialChat[" + channelName + "] - " + sourcePlayer + ": " + CMIChatColor.stripColor(cevent.getChatMessage()));
-	});
+            Bukkit.getConsoleSender().sendMessage("ResidentialChat[" + channelName + "] - " + sourcePlayer + ": " + CMIChatColor.stripColor(cevent.getChatMessage()));
+        });
     }
 
     public void join(String player) {
-	if (!members.contains(player))
-	    members.add(player);
+        if (!members.contains(player))
+            members.add(player);
     }
 
     public void leave(String player) {
-	members.remove(player);
+        members.remove(player);
     }
 
     public boolean hasMember(String player) {
-	return members.contains(player);
+        return members.contains(player);
     }
 
     public int memberCount() {
-	return members.size();
+        return members.size();
     }
 }

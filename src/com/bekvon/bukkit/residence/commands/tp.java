@@ -35,17 +35,17 @@ public class tp implements cmd {
         }
 
         if (res == null) {
-            plugin.msg(player, lm.Invalid_Residence);
+            lm.Invalid_Residence.sendMessage(sender);
             return true;
         }
 
         if (res.getRaid().isRaidInitialized() && res.getRaid().isAttacker(player)) {
-            plugin.msg(player, lm.Raid_cantDo);
+            lm.Raid_cantDo.sendMessage(sender);
             return true;
         }
 
         if (plugin.getConfigManager().getTeleportBlockedWorlds().contains(res.getPermissions().getWorldName().toLowerCase())) {
-            plugin.msg(player, lm.Residence_TeleportBlockedWorlds);
+            lm.Residence_TeleportBlockedWorlds.sendMessage(sender);
             return true;
         }
 

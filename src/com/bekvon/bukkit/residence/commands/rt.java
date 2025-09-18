@@ -52,7 +52,7 @@ public class rt implements cmd {
         }
 
         if (args.length > 0 && wname == null && tPlayer == null) {
-            plugin.msg(sender, lm.Invalid_World);
+            lm.Invalid_World.sendMessage(sender);
             String worlds = "";
             for (RandomTeleport one : plugin.getConfigManager().getRandomTeleport()) {
                 if (!worlds.isEmpty())
@@ -60,7 +60,7 @@ public class rt implements cmd {
                 worlds += one.getCenter().getWorld().getName();
                 break;
             }
-            plugin.msg(sender, lm.RandomTeleport_WorldList, worlds);
+            lm.RandomTeleport_WorldList.sendMessage(sender, worlds);
             return true;
         }
 
@@ -71,7 +71,7 @@ public class rt implements cmd {
             wname = tPlayer.getLocation().getWorld();
 
         if (wname == null && tPlayer == null) {
-            plugin.msg(sender, lm.Invalid_World);
+            lm.Invalid_World.sendMessage(sender);
             String worlds = "";
             for (RandomTeleport one : plugin.getConfigManager().getRandomTeleport()) {
                 if (!worlds.isEmpty())
@@ -79,7 +79,7 @@ public class rt implements cmd {
                 worlds += one.getCenter().getWorld().getName();
                 break;
             }
-            plugin.msg(sender, lm.RandomTeleport_WorldList, worlds);
+            lm.RandomTeleport_WorldList.sendMessage(sender, worlds);
             return true;
         }
 
@@ -93,12 +93,12 @@ public class rt implements cmd {
         if (plugin.getRandomTeleportMap().containsKey(tPlayer.getName()) && !resadmin && !ResPerm.randomtp_cooldownbypass.hasPermission(sender, false)) {
             if (plugin.getRandomTeleportMap().get(tPlayer.getName()) + (sec * 1000) > System.currentTimeMillis()) {
                 int left = (int) (sec - ((System.currentTimeMillis() - plugin.getRandomTeleportMap().get(tPlayer.getName())) / 1000));
-                plugin.msg(tPlayer, lm.RandomTeleport_TpLimit, left);
+                lm.RandomTeleport_TpLimit.sendMessage(tPlayer, left);
                 return true;
             }
         }
         if (!plugin.getRandomTpManager().isDefinedRnadomTp(wname)) {
-            plugin.msg(sender, lm.RandomTeleport_Disabled);
+            lm.RandomTeleport_Disabled.sendMessage(sender);
             return true;
         }
 
@@ -123,13 +123,13 @@ public class rt implements cmd {
         Residence.getInstance().getRandomTeleportMap().put(player.getName(), System.currentTimeMillis());
 
         if (lc == null) {
-            Residence.getInstance().msg(sender, lm.RandomTeleport_IncorrectLocation, sec);
+            lm.RandomTeleport_IncorrectLocation.sendMessage(sender, sec);
             return true;
         }
 
         CMIScheduler.runAtLocationLater(Residence.getInstance(), lc, () -> {
             if (Residence.getInstance().getConfigManager().getTeleportDelay() > 0 && !resadmin && !ResPerm.randomtp_delaybypass.hasPermission(sender, false)) {
-                Residence.getInstance().msg(player, lm.RandomTeleport_TeleportStarted, lc.getX(), lc.getY(), lc.getZ(), Residence.getInstance().getConfigManager().getTeleportDelay());
+                lm.RandomTeleport_TeleportStarted.sendMessage(player, lc.getX(), lc.getY(), lc.getZ(), Residence.getInstance().getConfigManager().getTeleportDelay());
                 Residence.getInstance().getRandomTpManager().performDelaydTp(lc, player);
             } else
                 Residence.getInstance().getRandomTpManager().performInstantTp(lc, player);

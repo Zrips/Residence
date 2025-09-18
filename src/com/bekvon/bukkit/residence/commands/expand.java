@@ -15,8 +15,6 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
-import net.Zrips.CMILib.Logs.CMIDebug;
-import net.Zrips.CMILib.Version.Version;
 
 public class expand implements cmd {
 
@@ -37,12 +35,12 @@ public class expand implements cmd {
             return false;
 
         if (res == null) {
-            plugin.msg(player, lm.Invalid_Residence);
+            lm.Invalid_Residence.sendMessage(sender);
             return true;
         }
 
         if (res.getRaid().isRaidInitialized()) {
-            plugin.msg(sender, lm.Raid_cantDo);
+            lm.Raid_cantDo.sendMessage(sender);
             return true;
         }
 
@@ -67,9 +65,9 @@ public class expand implements cmd {
         if (area != null) {
             plugin.getSelectionManager().placeLoc1(player, area.getHighLocation(), false);
             plugin.getSelectionManager().placeLoc2(player, area.getLowLocation(), false);
-            plugin.msg(player, lm.Select_Area, areaName, resName);
+            lm.Select_Area.sendMessage(sender, areaName, resName);
         } else {
-            plugin.msg(player, lm.Area_NonExist);
+            lm.Area_NonExist.sendMessage(sender);
             return true;
         }
         int amount = -1;
@@ -79,12 +77,12 @@ public class expand implements cmd {
             else if (args.length == 2)
                 amount = Integer.parseInt(args[1]);
         } catch (Exception ex) {
-            plugin.msg(player, lm.Invalid_Amount);
+            lm.Invalid_Amount.sendMessage(sender);
             return true;
         }
 
         if (amount > 100) {
-            plugin.msg(player, lm.Invalid_Amount);
+            lm.Invalid_Amount.sendMessage(sender);
             return true;
         }
 
@@ -101,7 +99,7 @@ public class expand implements cmd {
             res.replaceArea(player, plugin.getSelectionManager().getSelectionCuboid(player), areaName, resadmin);
             return true;
         }
-        plugin.msg(player, lm.Select_Points);
+        lm.Select_Points.sendMessage(sender);
 
         return false;
     }

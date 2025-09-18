@@ -19,10 +19,8 @@ import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.bekvon.bukkit.residence.utils.GetTime;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
-import net.Zrips.CMILib.Version.Schedulers.CMITask;
 import net.pl3x.map.core.Pl3xMap;
 import net.pl3x.map.core.markers.Point;
 import net.pl3x.map.core.markers.layer.Layer;
@@ -75,7 +73,7 @@ public class Pl3xMapManager {
             return null;
         String v =
             "<div class=\"regioninfo\"><div class=\"infowindow\"><span style=\"font-size:140%;font-weight:bold;\">%regionname%</span><br /> "
-                + CMIChatColor.stripColor(plugin.msg(lm.General_Owner, "")) + "<span style=\"font-weight:bold;\">%playerowners%</span><br />";
+                + CMIChatColor.stripColor(lm.General_Owner.getMessage("")) + "<span style=\"font-weight:bold;\">%playerowners%</span><br />";
 
         if (plugin.getConfigManager().Pl3xMapShowFlags) {
 
@@ -93,7 +91,7 @@ public class Pl3xMapManager {
             }
 
             if (!flgs.toString().isEmpty()) {
-                v += CMIChatColor.stripColor(plugin.msg(lm.General_ResidenceFlags, "")) + "<br /><span style=\"font-weight:bold;\">%flags%</span>";
+                v += CMIChatColor.stripColor(lm.General_ResidenceFlags.getMessage("")) + "<br /><span style=\"font-weight:bold;\">%flags%</span>";
                 v = v.replace("%flags%", flgs.toString());
             }
         }
@@ -102,20 +100,20 @@ public class Pl3xMapManager {
 
         if (plugin.getRentManager().isForRent(res.getName()))
             v = "<div class=\"regioninfo\"><div class=\"infowindow\">"
-                + CMIChatColor.stripColor(plugin.msg(lm.Rentable_Land, "")) + "<span style=\"font-size:140%;font-weight:bold;\">%regionname%</span><br />"
-                + CMIChatColor.stripColor(plugin.msg(lm.General_Owner, "")) + "<span style=\"font-weight:bold;\">%playerowners%</span><br />"
-                + CMIChatColor.stripColor(plugin.msg(lm.Residence_RentedBy, "")) + "<span style=\"font-weight:bold;\">%renter%</span><br /> "
-                + CMIChatColor.stripColor(plugin.msg(lm.General_LandCost, "")) + "<span style=\"font-weight:bold;\">%rent%</span><br /> "
-                + CMIChatColor.stripColor(plugin.msg(lm.Rent_Days, "")) + "<span style=\"font-weight:bold;\">%rentdays%</span><br /> "
-                + CMIChatColor.stripColor(plugin.msg(lm.Rentable_AllowRenewing, "")) + "<span style=\"font-weight:bold;\">%renew%</span><br /> "
-                + CMIChatColor.stripColor(plugin.msg(lm.Rent_Expire, "")) + "<span style=\"font-weight:bold;\">%expire%</span></div></div>";
+                + CMIChatColor.stripColor(lm.Rentable_Land.getMessage("")) + "<span style=\"font-size:140%;font-weight:bold;\">%regionname%</span><br />"
+                + CMIChatColor.stripColor(lm.General_Owner.getMessage("")) + "<span style=\"font-weight:bold;\">%playerowners%</span><br />"
+                + CMIChatColor.stripColor(lm.Residence_RentedBy.getMessage("")) + "<span style=\"font-weight:bold;\">%renter%</span><br /> "
+                + CMIChatColor.stripColor(lm.General_LandCost.getMessage("")) + "<span style=\"font-weight:bold;\">%rent%</span><br /> "
+                + CMIChatColor.stripColor(lm.Rent_Days.getMessage("")) + "<span style=\"font-weight:bold;\">%rentdays%</span><br /> "
+                + CMIChatColor.stripColor(lm.Rentable_AllowRenewing.getMessage("")) + "<span style=\"font-weight:bold;\">%renew%</span><br /> "
+                + CMIChatColor.stripColor(lm.Rent_Expire.getMessage("")) + "<span style=\"font-weight:bold;\">%expire%</span></div></div>";
 
         if (plugin.getTransactionManager().isForSale(res.getName()))
             v = "<div class=\"regioninfo\"><div class=\"infowindow\">"
-                + CMIChatColor.stripColor(plugin.msg(lm.Economy_LandForSale, " "))
+                + CMIChatColor.stripColor(lm.Economy_LandForSale.getMessage(" "))
                 + "<span style=\"font-size:140%;font-weight:bold;\">%regionname%</span><br /> "
-                + CMIChatColor.stripColor(plugin.msg(lm.General_Owner, "")) + "<span style=\"font-weight:bold;\">%playerowners%</span><br />"
-                + CMIChatColor.stripColor(plugin.msg(lm.Economy_SellAmount, "")) + "<span style=\"font-weight:bold;\">%price%</span><br /></div></div>";
+                + CMIChatColor.stripColor(lm.General_Owner.getMessage("")) + "<span style=\"font-weight:bold;\">%playerowners%</span><br />"
+                + CMIChatColor.stripColor(lm.Economy_SellAmount.getMessage("")) + "<span style=\"font-weight:bold;\">%price%</span><br /></div></div>";
 
         v = v.replace("%regionname%", resName);
         v = v.replace("%playerowners%", res.getOwner());

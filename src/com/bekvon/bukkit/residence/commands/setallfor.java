@@ -21,49 +21,49 @@ public class setallfor implements cmd {
     @Override
     @CommandAnnotation(simple = true, priority = 700)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
-	if (args.length != 3)
-	    return false;
+        if (args.length != 3)
+            return false;
 
-	String playerName = args[0];
-	String flag = args[1];
+        String playerName = args[0];
+        String flag = args[1];
 
-	Flags f = Flags.getFlag(flag);
-	if (f != null)
-	    flag = f.toString();
-	
-	FlagState state = FlagPermissions.stringToFlagState(args[2]);
-	ResidencePlayer resPlayer = plugin.getPlayerManager().getResidencePlayer(playerName);
-	if (resPlayer == null)
-	    return false;
-	FlagPermissions GlobalFlags = Residence.getInstance().getPermissionManager().getAllFlags();
+        Flags f = Flags.getFlag(flag);
+        if (f != null)
+            flag = f.toString();
 
-	if (flag == null || !GlobalFlags.checkValidFlag(flag.toLowerCase(), true)) {
-	    plugin.msg(sender, lm.Invalid_Flag);
-	    return true;
-	}
+        FlagState state = FlagPermissions.stringToFlagState(args[2]);
+        ResidencePlayer resPlayer = plugin.getPlayerManager().getResidencePlayer(playerName);
+        if (resPlayer == null)
+            return false;
+        FlagPermissions GlobalFlags = Residence.getInstance().getPermissionManager().getAllFlags();
 
-	if (state.equals(FlagState.INVALID)) {
-	    plugin.msg(sender, lm.Invalid_FlagState);
-	    return true;
-	}
+        if (flag == null || !GlobalFlags.checkValidFlag(flag.toLowerCase(), true)) {
+            lm.Invalid_Flag.sendMessage(sender);
+            return true;
+        }
 
-	int count = 0;
+        if (state.equals(FlagState.INVALID)) {
+            lm.Invalid_FlagState.sendMessage(sender);
+            return true;
+        }
 
-	for (ClaimedResidence one : resPlayer.getResList()) {
-	    if (one.getPermissions().setFlag(sender, flag, state, true, false))
-		count++;
-	}
+        int count = 0;
 
-	plugin.msg(sender, lm.Flag_ChangedForOne, count, resPlayer.getName());
+        for (ClaimedResidence one : resPlayer.getResList()) {
+            if (one.getPermissions().setFlag(sender, flag, state, true, false))
+                count++;
+        }
 
-	return true;
+        lm.Flag_ChangedForOne.sendMessage(sender, count, resPlayer.getName());
+
+        return true;
     }
 
     @Override
     public void getLocale() {
-	ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
-	c.get("Description", "Set general flags on all residences owned by particular player");
-	c.get("Info", Arrays.asList("&eUsage: &6/res setallfor [playerName] [flag] [true/false/remove]"));
-	LocaleManager.addTabCompleteMain(this, "[playername]", "[flag]", "true%%false%%remove");
+        ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
+        c.get("Description", "Set general flags on all residences owned by particular player");
+        c.get("Info", Arrays.asList("&eUsage: &6/res setallfor [playerName] [flag] [true/false/remove]"));
+        LocaleManager.addTabCompleteMain(this, "[playername]", "[flag]", "true%%false%%remove");
     }
 }

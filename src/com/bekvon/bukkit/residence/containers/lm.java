@@ -2,10 +2,14 @@ package com.bekvon.bukkit.residence.containers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.Residence;
+
+import net.Zrips.CMILib.Colors.CMIChatColor;
 
 public enum lm {
     Invalid_Player("&cInvalid player name..."),
@@ -126,6 +130,8 @@ public enum lm {
     Raid_noRemoval("&cCan't remove residence during raid"),
     Raid_immune("&eImmune for next %1"),
     Raid_notImmune("&eNo longer immune"),
+    Raid_cantStart("&cCan't start raid"),
+    Raid_cantJoin("&cCan't join raid"),
 
     Raid_notInRaid("&ePlayer isn't in raid"),
 
@@ -137,7 +143,7 @@ public enum lm {
     Raid_attack_isOffline("&cCan't raid while owner is offline!"),
     Raid_attack_noSubzones("&cCan't raid subzones!"),
     Raid_attack_noSelf("&cCan't raid your own residence!"),
-    Raid_attack_alreadyInAnother("&cCan't join this rais, you are in another one already (%1)"),
+    Raid_attack_alreadyInAnother("&cCan't join this raid, you are in another one already (%1)"),
 
     Raid_defend_Joined("&7Joined &2%1 &7defence forces!"),
     Raid_defend_Sent("&7Request to join raid defence is sent, wait for confirmation"),
@@ -601,6 +607,10 @@ public enum lm {
         return Residence.getInstance().getLM().getMessage(this, variables);
     }
 
+    public List<String> getMessageList() {
+        return Residence.getInstance().getLM().getMessageList(this);
+    }
+
     public void sendMessage(CommandSender sender, Object... variables) {
 
         if (sender == null)
@@ -613,7 +623,37 @@ public enum lm {
         } else {
             String msg = getPath();
             if (msg.length() > 0)
-                sender.sendMessage(getPath());
+                sender.sendMessage(msg);
         }
     }
+
+    public static String getMessageByPath(String path) {
+        return Residence.getInstance().getLM().getMessage(path);
+    }
+
+    public static void showMessage(CommandSender sender, String text) {
+        if (sender != null && text.length() > 0)
+            sender.sendMessage(CMIChatColor.translate(text));
+    }
+
+//    public static void msg(Player player, String text) {
+//        if (player != null && !text.isEmpty())
+//            player.sendMessage(CMIChatColor.translate(text));
+//    }
+//
+//    public void msg(CommandSender sender, lm lm, Object... variables) {
+//
+//        if (sender == null)
+//            return;
+//
+//        if (getLM().containsKey(lm.getPath())) {
+//            String msg = getLM().getMessage(lm, variables);
+//            if (msg.length() > 0)
+//                sender.sendMessage(msg);
+//        } else {
+//            String msg = lm.getPath();
+//            if (msg.length() > 0)
+//                sender.sendMessage(lm.getPath());
+//        }
+//    }
 }

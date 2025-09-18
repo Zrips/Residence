@@ -35,7 +35,7 @@ public class v1_8Events implements Listener {
 
         if (!perms.playerHas(player, Flags.container, perms.playerHas(player, Flags.use, true))) {
             event.setCancelled(true);
-            Residence.getInstance().msg(player, lm.Flag_Deny, Flags.container);
+            lm.Flag_Deny.sendMessage(player, Flags.container);
         }
     }
 

@@ -22,47 +22,47 @@ public class setall implements cmd {
     @Override
     @CommandAnnotation(simple = true, priority = 700)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
-	if (args.length != 2)
-	    return false;
+        if (args.length != 2)
+            return false;
 
-	String flag = args[0];
+        String flag = args[0];
 
-	Flags f = Flags.getFlag(flag);
-	if (f != null)
-	    flag = f.toString();
+        Flags f = Flags.getFlag(flag);
+        if (f != null)
+            flag = f.toString();
 
-	FlagState state = FlagPermissions.stringToFlagState(args[1]);
-	FlagPermissions GlobalFlags = Residence.getInstance().getPermissionManager().getAllFlags();
+        FlagState state = FlagPermissions.stringToFlagState(args[1]);
+        FlagPermissions GlobalFlags = Residence.getInstance().getPermissionManager().getAllFlags();
 
-	if (flag == null || !GlobalFlags.checkValidFlag(flag.toLowerCase(), true)) {
-	    plugin.msg(sender, lm.Invalid_Flag);
-	    return true;
-	}
+        if (flag == null || !GlobalFlags.checkValidFlag(flag.toLowerCase(), true)) {
+            lm.Invalid_Flag.sendMessage(sender);
+            return true;
+        }
 
-	if (state.equals(FlagState.INVALID)) {
-	    plugin.msg(sender, lm.Invalid_FlagState);
-	    return true;
-	}
+        if (state.equals(FlagState.INVALID)) {
+            lm.Invalid_FlagState.sendMessage(sender);
+            return true;
+        }
 
-	int count = 0;
-	int count2 = 0;
-	for (World oneW : Bukkit.getWorlds()) {
-	    for (ClaimedResidence one : plugin.getResidenceManager().getFromAllResidences(true, false, oneW)) {
-		count2++;
-		if (one.getPermissions().setFlag(sender, flag, state, true, false))
-		    count++;
-	    }
-	}
-	plugin.msg(sender, lm.Flag_ChangedFor, count, count2);
+        int count = 0;
+        int count2 = 0;
+        for (World oneW : Bukkit.getWorlds()) {
+            for (ClaimedResidence one : plugin.getResidenceManager().getFromAllResidences(true, false, oneW)) {
+                count2++;
+                if (one.getPermissions().setFlag(sender, flag, state, true, false))
+                    count++;
+            }
+        }
+        lm.Flag_ChangedFor.sendMessage(sender, count, count2);
 
-	return true;
+        return true;
     }
 
     @Override
     public void getLocale() {
-	ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
-	c.get("Description", "Set general flags on all residences");
-	c.get("Info", Arrays.asList("&eUsage: &6/res setall [flag] [true/false/remove]"));
-	LocaleManager.addTabCompleteMain(this, "[flag]", "true%%false%%remove");
+        ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
+        c.get("Description", "Set general flags on all residences");
+        c.get("Info", Arrays.asList("&eUsage: &6/res setall [flag] [true/false/remove]"));
+        LocaleManager.addTabCompleteMain(this, "[flag]", "true%%false%%remove");
     }
 }

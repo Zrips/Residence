@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -19,6 +20,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+
 import com.bekvon.bukkit.residence.CommentedYamlConfiguration;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.lm;
@@ -29,7 +31,7 @@ import net.Zrips.CMILib.Version.Schedulers.CMITask;
 
 public class ShopSignUtil {
 
-    List<Board> AllBoards = new ArrayList<Board>();
+    List<Board> allBoards = new ArrayList<Board>();
 
     private Residence plugin;
 
@@ -38,24 +40,24 @@ public class ShopSignUtil {
     }
 
     public void setAllSigns(List<Board> AllBoards) {
-        this.AllBoards = AllBoards;
+        this.allBoards = AllBoards;
     }
 
     public List<Board> getAllBoards() {
-        return AllBoards;
+        return allBoards;
     }
 
     public void removeBoard(Board Board) {
-        AllBoards.remove(Board);
+        allBoards.remove(Board);
     }
 
     public void addBoard(Board Board) {
-        AllBoards.add(Board);
+        allBoards.add(Board);
     }
 
     public boolean exist(Board board) {
         List<Location> loc2 = board.GetLocations();
-        for (Board one : AllBoards) {
+        for (Board one : allBoards) {
             List<Location> loc1 = one.GetLocations();
             for (Location oneL : loc1) {
                 if (!loc2.contains(oneL))
@@ -157,7 +159,7 @@ public class ShopSignUtil {
         if (shopSaveTask != null)
             return;
 
-        shopSaveTask = CMIScheduler.runLaterAsync(plugin, this::saveShopVotes, 20L * 15L); 
+        shopSaveTask = CMIScheduler.runLaterAsync(plugin, this::saveShopVotes, 20L * 15L);
     }
 
     public void forceSaveIfPending() {
@@ -173,7 +175,7 @@ public class ShopSignUtil {
 
     // Shops votes save file
     public void saveShopVotes() {
-        
+
         if (shopSaveTask != null) {
             shopSaveTask.cancel();
             shopSaveTask = null;
@@ -405,14 +407,14 @@ public class ShopSignUtil {
                     vote = getAverageVote(ShopNames.get(Start));
 
                     if (plugin.getConfigManager().isOnlyLike()) {
-                        votestat = vote.getAmount() == 0 ? "" : plugin.msg(lm.Shop_ListLiked, getLikes(ShopNames.get(Start)));
+                        votestat = vote.getAmount() == 0 ? "" : lm.Shop_ListLiked.getMessage(getLikes(ShopNames.get(Start)));
                     } else
-                        votestat = vote.getAmount() == 0 ? "" : plugin.msg(lm.Shop_SignLines_4, vote.getVote(), vote.getAmount());
+                        votestat = vote.getAmount() == 0 ? "" : lm.Shop_SignLines_4.getMessage(vote.getVote(), vote.getAmount());
                 }
 
-                sign.setLine(0, plugin.msg(lm.Shop_SignLines_1, Start + 1));
-                sign.setLine(1, plugin.msg(lm.Shop_SignLines_2, res.getName()));
-                sign.setLine(2, plugin.msg(lm.Shop_SignLines_3, res.getOwner()));
+                sign.setLine(0, lm.Shop_SignLines_1.getMessage(Start + 1));
+                sign.setLine(1, lm.Shop_SignLines_2.getMessage(res.getName()));
+                sign.setLine(2, lm.Shop_SignLines_3.getMessage(res.getOwner()));
                 sign.setLine(3, votestat);
                 sign.update();
                 board.addSignLoc(res.getName(), sign.getLocation());

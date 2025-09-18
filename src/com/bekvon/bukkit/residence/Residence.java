@@ -124,6 +124,7 @@ import com.bekvon.bukkit.residence.text.help.HelpEntry;
 import com.bekvon.bukkit.residence.text.help.InformationPager;
 import com.bekvon.bukkit.residence.utils.CrackShot;
 import com.bekvon.bukkit.residence.utils.FileCleanUp;
+import com.bekvon.bukkit.residence.utils.PlayerCache;
 import com.bekvon.bukkit.residence.utils.RandomTp;
 import com.bekvon.bukkit.residence.utils.SafeLocationCache;
 import com.bekvon.bukkit.residence.utils.Sorting;
@@ -135,6 +136,7 @@ import com.residence.zip.ZipLibrary;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -220,7 +222,7 @@ public class Residence extends JavaPlugin {
     public Map<String, String> deleteConfirm;
     public Map<String, String> UnrentConfirm = new HashMap<String, String>();
     private ConcurrentHashMap<String, OfflinePlayer> OfflinePlayerList = new ConcurrentHashMap<String, OfflinePlayer>();
-    private Map<UUID, OfflinePlayer> cachedPlayerNameUUIDs = new HashMap<UUID, OfflinePlayer>();
+//    private Map<UUID, OfflinePlayer> cachedPlayerNameUUIDs = new HashMap<UUID, OfflinePlayer>();
     private Map<UUID, String> cachedPlayerNames = new HashMap<UUID, String>();
     private com.sk89q.worldedit.bukkit.WorldEditPlugin wep = null;
     private com.sk89q.worldguard.bukkit.WorldGuardPlugin wg = null;
@@ -395,8 +397,12 @@ public class Residence extends JavaPlugin {
             } catch (Exception ex) {
                 Logger.getLogger("Minecraft").log(Level.SEVERE, "[Residence] SEVERE SAVE ERROR", ex);
             }
+
+            PlayerCache.onPluginStop();
+
             Bukkit.getConsoleSender().sendMessage(getPrefix() + " Disabled!");
         }
+        fullyLoaded = false;
     }
 
     @Override
@@ -411,6 +417,8 @@ public class Residence extends JavaPlugin {
 
             ResidenceVersion = this.getDescription().getVersion();
             authlist = this.getDescription().getAuthors();
+
+            PlayerCache.load();
 
             cmdFiller = new CommandFiller();
             cmdFiller.fillCommands();
@@ -589,30 +597,14 @@ public class Residence extends JavaPlugin {
                 }
             }
 
-            // Only fill if we need to convert player data
-            if (getConfigManager().isUUIDConvertion()) {
-                Bukkit.getConsoleSender().sendMessage(getPrefix() + " Loading (" + Bukkit.getOfflinePlayers().length + ") player data");
-                for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-                    if (player == null)
-                        continue;
-                    String name = player.getName();
-                    if (name == null)
-                        continue;
-                    this.addOfflinePlayerToChache(player);
-                }
-                Bukkit.getConsoleSender().sendMessage(getPrefix() + " Player data loaded: " + OfflinePlayerList.size());
-            } else {
-                CMIScheduler.runTaskAsynchronously(this, () -> {
-                    for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-                        if (player == null)
-                            continue;
-                        String name = player.getName();
-                        if (name == null)
-                            continue;
-                        addOfflinePlayerToChache(player);
-                    }
-                });
-            }
+//            // Only fill if we need to convert player data
+//            if (getConfigManager().isUUIDConvertion()) {
+//                Bukkit.getConsoleSender().sendMessage(getPrefix() + " Loading (" + Bukkit.getOfflinePlayers().length + ") player data");
+//                cachePlayers();
+//                Bukkit.getConsoleSender().sendMessage(getPrefix() + " Player data loaded: " + OfflinePlayerList.size());
+//            } else {
+//                CMIScheduler.runTaskAsynchronously(this, () -> cachePlayers());
+//            }
 
             rmanager = new ResidenceManager(this);
 
@@ -1455,9 +1447,9 @@ public class Residence extends JavaPlugin {
                 addShops(one.getValue());
             }
 
-            if (getConfigManager().isUUIDConvertion()) {
-                getConfigManager().ChangeConfig("Global.UUIDConvertion", false);
-            }
+//            if (getConfigManager().isUUIDConvertion()) {
+//                getConfigManager().ChangeConfig("Global.UUIDConvertion", false);
+//            }
 
             loadFile = new File(saveFolder, "forsale.yml");
             if (loadFile.isFile()) {
@@ -1714,91 +1706,6 @@ public class Residence extends JavaPlugin {
         }
     }
 
-    public boolean isPlayerExist(CommandSender sender, String name, boolean inform) {
-        if (getPlayerUUID(name) != null)
-            return true;
-        if (inform)
-            sender.sendMessage(msg(lm.Invalid_Player));
-        @SuppressWarnings("unused")
-        String a = "%%__USER__%%";
-        @SuppressWarnings("unused")
-        String b = "%%__RESOURCE__%%";
-        @SuppressWarnings("unused")
-        String c = "%%__NONCE__%%";
-        return false;
-
-    }
-
-    public UUID getPlayerUUID(String playername) {
-//	if (Residence.getConfigManager().isOfflineMode())
-//	    return null;
-        Player p = getServ().getPlayer(playername);
-        if (p == null) {
-            OfflinePlayer po = OfflinePlayerList.get(playername.toLowerCase());
-            if (po != null)
-                return po.getUniqueId();
-        } else
-            return p.getUniqueId();
-        return null;
-    }
-
-    public OfflinePlayer getOfflinePlayer(String Name) {
-        if (Name == null)
-            return null;
-        OfflinePlayer offPlayer = OfflinePlayerList.get(Name.toLowerCase());
-        if (offPlayer != null)
-            return offPlayer;
-
-        Player player = Bukkit.getPlayerExact(Name);
-        if (player != null)
-            return player;
-
-//	offPlayer = Bukkit.getOfflinePlayer(Name);
-//	if (offPlayer != null)
-//	    addOfflinePlayerToChache(offPlayer);
-        return offPlayer;
-    }
-
-    public String getPlayerUUIDString(String playername) {
-        UUID playerUUID = getPlayerUUID(playername);
-        if (playerUUID != null)
-            return playerUUID.toString();
-        return null;
-    }
-
-    public OfflinePlayer getOfflinePlayer(UUID uuid) {
-        OfflinePlayer offPlayer = cachedPlayerNameUUIDs.get(uuid);
-        if (offPlayer != null)
-            return offPlayer;
-
-        Player player = Bukkit.getPlayer(uuid);
-        if (player != null)
-            return player;
-
-//	offPlayer = Bukkit.getOfflinePlayer(uuid);
-//	if (offPlayer != null)
-//	    addOfflinePlayerToChache(offPlayer);
-        return offPlayer;
-    }
-
-    public void addOfflinePlayerToChache(OfflinePlayer player) {
-        if (player == null)
-            return;
-        if (player.getName() != null) {
-            OfflinePlayerList.put(player.getName().toLowerCase(), player);
-            cachedPlayerNames.put(player.getUniqueId(), player.getName());
-        }
-        cachedPlayerNameUUIDs.put(player.getUniqueId(), player);
-    }
-
-    public String getPlayerName(String uuid) {
-        try {
-            return getPlayerName(UUID.fromString(uuid));
-        } catch (IllegalArgumentException ex) {
-        }
-        return null;
-    }
-
     @Deprecated
     public String getServerLandname() {
         return getServerLandName();
@@ -1824,35 +1731,6 @@ public class Residence extends JavaPlugin {
 
     public UUID getEmptyUserUUID() {
         return TempUserUUID;
-    }
-
-    public String getPlayerName(UUID uuid) {
-        if (uuid == null)
-            return null;
-
-        String cache = cachedPlayerNames.get(uuid);
-        if (cache != null) {
-            return cache.equalsIgnoreCase("_UNKNOWN_") ? null : cache;
-        }
-
-        OfflinePlayer p = getServ().getPlayer(uuid);
-        if (p == null)
-            p = getOfflinePlayer(uuid);
-        if (p != null) {
-            cachedPlayerNames.put(uuid, p.getName());
-            return p.getName();
-        }
-
-        // Last attempt, slowest one
-        p = getServ().getOfflinePlayer(uuid);
-
-        if (p != null) {
-            String name = p.getName() == null ? "_UNKNOWN_" : p.getName();
-            cachedPlayerNames.put(uuid, name);
-            return p.getName();
-        }
-
-        return null;
     }
 
     public boolean isDisabledWorld(World world) {
@@ -1890,44 +1768,6 @@ public class Residence extends JavaPlugin {
         }
 
         return getConfigManager().DisabledWorldsList.contains(worldname) && getConfigManager().DisableCommands;
-    }
-
-    public String msg(String path) {
-        return getLM().getMessage(path);
-    }
-
-    public void msg(CommandSender sender, String text) {
-        if (sender != null && text.length() > 0)
-            sender.sendMessage(CMIChatColor.translate(text));
-    }
-
-    public void msg(Player player, String text) {
-        if (player != null && !text.isEmpty())
-            player.sendMessage(CMIChatColor.translate(text));
-    }
-
-    public void msg(CommandSender sender, lm lm, Object... variables) {
-
-        if (sender == null)
-            return;
-
-        if (getLM().containsKey(lm.getPath())) {
-            String msg = getLM().getMessage(lm, variables);
-            if (msg.length() > 0)
-                sender.sendMessage(msg);
-        } else {
-            String msg = lm.getPath();
-            if (msg.length() > 0)
-                sender.sendMessage(lm.getPath());
-        }
-    }
-
-    public List<String> msgL(lm lm) {
-        return getLM().getMessageList(lm);
-    }
-
-    public String msg(lm lm, Object... variables) {
-        return getLM().getMessage(lm, variables);
     }
 
     public InformationPager getInfoPageManager() {

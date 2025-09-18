@@ -55,7 +55,7 @@ public class ResidencePlayerListener1_20 implements Listener {
         if (perms.playerHas(player, Flags.build, true))
             return;
 
-        plugin.msg(player, lm.Flag_Deny, Flags.build);
+        lm.Flag_Deny.sendMessage(player, Flags.build);
         event.setCancelled(true);
     }
 
@@ -83,9 +83,9 @@ public class ResidencePlayerListener1_20 implements Listener {
         event.setCancelled(true);
 
         if (!hasuse)
-            plugin.msg(player, lm.Flag_Deny, Flags.use);
+            lm.Flag_Deny.sendMessage(player, Flags.use);
         else
-            plugin.msg(player, lm.Flag_Deny, Flags.build);
+            lm.Flag_Deny.sendMessage(player, Flags.build);
 
     }
 

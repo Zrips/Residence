@@ -94,7 +94,7 @@ public class ResidencePlayerListener1_17 implements Listener {
 
         if (!perms.playerHas(player, Flags.animalkilling, FlagCombo.TrueOrNone)) {
             event.setCancelled(true);
-            Residence.getInstance().msg(player, lm.Flag_Deny, Flags.animalkilling);
+            lm.Flag_Deny.sendMessage(player, Flags.animalkilling);
         }
     }
 
@@ -143,7 +143,7 @@ public class ResidencePlayerListener1_17 implements Listener {
         if ((CMIMaterial.get(item).equals(CMIMaterial.HONEYCOMB) && !waxed || item.getType().toString().contains("_AXE") && CMIMaterial.getCopperStage(mat) > 1) &&
             !res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.copper, FlagCombo.TrueOrNone) && !ResAdmin.isResAdmin(player)) {
 
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.copper, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.copper, res.getName());
             event.setCancelled(true);
         }
     }

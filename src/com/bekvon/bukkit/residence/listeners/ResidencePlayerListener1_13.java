@@ -128,7 +128,7 @@ public class ResidencePlayerListener1_13 implements Listener {
         }
         e.setCancelled(true);
 
-        plugin.msg(player, lm.Flag_Deny, result);
+        lm.Flag_Deny.sendMessage(player, result);
 
         if (e.getEntity() instanceof Arrow)
             e.getEntity().remove();

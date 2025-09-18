@@ -61,11 +61,9 @@ public class CrackShot implements Listener {
         Entity entity = event.getVictim();
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
 
-        if (Utils.isAnimal(entity)) {
-            if (res != null && res.getPermissions().playerHas(cause, Flags.animalkilling, FlagCombo.OnlyFalse)) {
-                cause.sendMessage(plugin.msg(lm.Residence_FlagDeny, Flags.animalkilling, res.getName()));
-                event.setCancelled(true);
-            }
+        if (Utils.isAnimal(entity) && res != null && res.getPermissions().playerHas(cause, Flags.animalkilling, FlagCombo.OnlyFalse)) {
+            lm.Residence_FlagDeny.sendMessage(cause, Flags.animalkilling, res.getName());
+            event.setCancelled(true);
         }
     }
 
@@ -96,7 +94,7 @@ public class CrackShot implements Listener {
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
         if (res != null && res.getPermissions().playerHas(player, Flags.container, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.container, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.container, res.getName());
         }
 
     }
@@ -130,7 +128,7 @@ public class CrackShot implements Listener {
         }
 
         if (!srcpvp) {
-            damager.sendMessage(plugin.msg(lm.General_NoPVPZone));
+            lm.General_NoPVPZone.sendMessage(damager);
             event.setCancelled(true);
             return;
         }
@@ -138,13 +136,13 @@ public class CrackShot implements Listener {
         if (area == null) {
             /* World PvP */
             if (!plugin.getWorldFlags().getPerms(damager.getWorld().getName()).has(Flags.pvp, true)) {
-                damager.sendMessage(plugin.msg(lm.General_WorldPVPDisabled));
+                lm.General_WorldPVPDisabled.sendMessage(damager);
                 event.setCancelled(true);
             }
         } else {
             /* Normal PvP */
             if (!area.getPermissions().has(Flags.pvp, true)) {
-                damager.sendMessage(plugin.msg(lm.General_NoPVPZone));
+                lm.General_NoPVPZone.sendMessage(damager);
                 event.setCancelled(true);
             }
         }

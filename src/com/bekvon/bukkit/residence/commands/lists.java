@@ -71,7 +71,7 @@ public class lists implements cmd {
             if (list == null)
                 return false;
             list.setGroupFlag(args[2], args[3], FlagPermissions.stringToFlagState(args[4]));
-            plugin.msg(player, lm.Flag_Set, args[2], args[1], FlagPermissions.stringToFlagState(args[3]));
+            lm.Flag_Set.sendMessage(sender, args[2], args[1], FlagPermissions.stringToFlagState(args[3]));
             break;
         case list:
             plugin.getPermissionListManager().printLists(player);
@@ -83,7 +83,7 @@ public class lists implements cmd {
                 return false;
 
             list.setPlayerFlag(args[2], args[3], FlagPermissions.stringToFlagState(args[4]));
-            plugin.msg(player, lm.Flag_Set, args[2], listName, FlagPermissions.stringToFlagState(args[3]));
+            lm.Flag_Set.sendMessage(sender, args[2], listName, FlagPermissions.stringToFlagState(args[3]));
             break;
         case remove:
             if (listName == null)
@@ -99,7 +99,7 @@ public class lists implements cmd {
                 return false;
 
             list.setFlag(args[2], FlagPermissions.stringToFlagState(args[3]));
-            plugin.msg(player, lm.Flag_Set, args[2], listName, FlagPermissions.stringToFlagState(args[3]));
+            lm.Flag_Set.sendMessage(sender, args[2], listName, FlagPermissions.stringToFlagState(args[3]));
             break;
         case view:
             if (listName == null)

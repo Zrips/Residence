@@ -344,7 +344,7 @@ public class ResidencePlayerListener implements Listener {
                 if (rentedland.AutoPay)
                     continue;
                 if (rentedland.endTime - System.currentTimeMillis() < plugin.getConfigManager().getRentInformBefore() * 60 * 24 * 7) {
-                    plugin.msg(player, lm.Residence_EndingRent, one, GetTime.getTime(rentedland.endTime));
+                    lm.Residence_EndingRent.sendMessage(player, one, GetTime.getTime(rentedland.endTime));
                 }
             }
         }, plugin.getConfigManager().getRentInformDelay() * 20L);
@@ -369,7 +369,7 @@ public class ResidencePlayerListener implements Listener {
             if (perm.has(Flags.hook, FlagCombo.OnlyFalse)) {
                 event.setCancelled(true);
                 if (res != null)
-                    plugin.msg(player, lm.Residence_FlagDeny, Flags.hook, res.getName());
+                    lm.Residence_FlagDeny.sendMessage(player, Flags.hook, res.getName());
             }
         }
     }
@@ -682,7 +682,7 @@ public class ResidencePlayerListener implements Listener {
             if (canUseCommand(msg, globalPerm.getCMDWhiteList(), globalPerm.getCMDBlackList()))
                 return;
             event.setCancelled(true);
-            plugin.msg(player, lm.Residence_BaseFlagDeny, Flags.command);
+            lm.Residence_BaseFlagDeny.sendMessage(player, Flags.command);
             return;
         }
 
@@ -704,7 +704,7 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         event.setCancelled(true);
-        plugin.msg(player, lm.Residence_FlagDeny, Flags.command, res.getName());
+        lm.Residence_FlagDeny.sendMessage(player, Flags.command, res.getName());
 
     }
 
@@ -771,7 +771,7 @@ public class ResidencePlayerListener implements Listener {
 
         Sign sign = (Sign) block.getState();
 
-        if (!CMIChatColor.stripColor(event.getLine(0)).equalsIgnoreCase(plugin.msg(lm.Sign_TopLine)))
+        if (!CMIChatColor.stripColor(event.getLine(0)).equalsIgnoreCase(lm.Sign_TopLine.getMessage()))
             return;
 
         Signs signInfo = new Signs();
@@ -793,7 +793,7 @@ public class ResidencePlayerListener implements Listener {
             res = plugin.getResidenceManager().getByName(resname);
 
             if (res == null) {
-                plugin.msg(player, lm.Invalid_Residence);
+                lm.Invalid_Residence.sendMessage(player);
                 return;
             }
         } else {
@@ -801,7 +801,7 @@ public class ResidencePlayerListener implements Listener {
         }
 
         if (res == null) {
-            plugin.msg(player, lm.Invalid_Residence);
+            lm.Invalid_Residence.sendMessage(player);
             return;
         }
 
@@ -858,7 +858,6 @@ public class ResidencePlayerListener implements Listener {
 
         plugin.getChatManager().removeFromChannel(player.getName());
         plugin.getPlayerListener().removePlayerResidenceChat(player);
-        plugin.addOfflinePlayerToChache(player);
         plugin.getAutoSelectionManager().getList().remove(uuid);
 
         playerPersistentData.remove(uuid);
@@ -902,11 +901,11 @@ public class ResidencePlayerListener implements Listener {
                 if (location.getBlockY() <= 0) {
                     player.setFlying(false);
                     player.setAllowFlight(false);
-                    plugin.msg(player, lm.Residence_FlagDeny, Flags.nofly, location.getWorld().getName());
+                    lm.Residence_FlagDeny.sendMessage(player, Flags.nofly, location.getWorld().getName());
                     return;
                 }
             }
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.nofly, location.getWorld().getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.nofly, location.getWorld().getName());
             player.closeInventory();
             PaperLib.teleportAsync(player, location);
 
@@ -961,7 +960,7 @@ public class ResidencePlayerListener implements Listener {
             res.kickFromResidence(player);
         }
 
-        plugin.msg(player, lm.General_NoSpawn);
+        lm.General_NoSpawn.sendMessage(player);
         if (loc != null)
             event.setRespawnLocation(loc);
 
@@ -1137,7 +1136,7 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         event.setCancelled(true);
-        plugin.msg(player, lm.Flag_Deny, Flags.build);
+        lm.Flag_Deny.sendMessage(player, Flags.build);
         return;
     }
 
@@ -1189,7 +1188,7 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         event.setCancelled(true);
-        plugin.msg(player, lm.Flag_Deny, Flags.build);
+        lm.Flag_Deny.sendMessage(player, Flags.build);
         return;
     }
 
@@ -1228,7 +1227,7 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         event.setCancelled(true);
-        plugin.msg(player, lm.Flag_Deny, Flags.build);
+        lm.Flag_Deny.sendMessage(player, Flags.build);
         return;
     }
 
@@ -1301,12 +1300,12 @@ public class ResidencePlayerListener implements Listener {
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 Location loc = block.getLocation();
                 plugin.getSelectionManager().placeLoc1(player, loc, true);
-                plugin.msg(player, lm.Select_PrimaryPoint, plugin.msg(lm.General_CoordsTop, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+                lm.Select_PrimaryPoint.sendMessage(player, lm.General_CoordsTop.getMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
                 event.setCancelled(true);
             } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && Utils.isMainHand(event)) {
                 Location loc = block.getLocation();
                 plugin.getSelectionManager().placeLoc2(player, loc, true);
-                plugin.msg(player, lm.Select_SecondaryPoint, plugin.msg(lm.General_CoordsBottom, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+                lm.Select_SecondaryPoint.sendMessage(player, lm.General_CoordsBottom.getMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
                 event.setCancelled(true);
             }
 
@@ -1348,9 +1347,9 @@ public class ResidencePlayerListener implements Listener {
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
         if (res != null)
-            plugin.getResidenceManager().printAreaInfo(res.getName(), player, false);
+            plugin.getResidenceManager().printAreaInfo(res, player, false);
         else
-            plugin.msg(player, lm.Residence_NoResHere);
+            lm.Residence_NoResHere.sendMessage(player);
 
         event.setCancelled(true);
 
@@ -1400,7 +1399,7 @@ public class ResidencePlayerListener implements Listener {
         FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
 
         if (!perms.playerHas(player, Flags.harvest, true)) {
-            plugin.msg(player, lm.Flag_Deny, Flags.harvest);
+            lm.Flag_Deny.sendMessage(player, Flags.harvest);
             event.setCancelled(true);
         }
     }
@@ -1439,7 +1438,7 @@ public class ResidencePlayerListener implements Listener {
 
         if (!heldItem.isNone() && heldItem.isValidItem() && !plugin.getItemManager().isAllowed(heldItem.getMaterial(), plugin.getPlayerManager().getResidencePlayer(player).getGroup(), player.getWorld()
             .getName())) {
-            plugin.msg(player, lm.General_ItemBlacklisted);
+            lm.General_ItemBlacklisted.sendMessage(player);
             event.setCancelled(true);
             return;
         }
@@ -1468,7 +1467,7 @@ public class ResidencePlayerListener implements Listener {
                     heldItem == CMIMaterial.COCOA_BEANS && blockM == CMIMaterial.JUNGLE_WOOD) {
                     FlagPermissions tperms = plugin.getPermsByLocForPlayer(block.getRelative(event.getBlockFace()).getLocation(), player);
                     if (!tperms.playerHas(player, Flags.build, true)) {
-                        plugin.msg(player, lm.Flag_Deny, Flags.build);
+                        lm.Flag_Deny.sendMessage(player, Flags.build);
                         event.setCancelled(true);
                         return;
                     }
@@ -1477,20 +1476,20 @@ public class ResidencePlayerListener implements Listener {
             if (heldItem.equals(CMIMaterial.ARMOR_STAND) || heldItem.isBoat()) {
                 FlagPermissions tperms = plugin.getPermsByLocForPlayer(block.getRelative(event.getBlockFace()).getLocation(), player);
                 if (!tperms.playerHas(player, Flags.build, true)) {
-                    plugin.msg(player, lm.Flag_Deny, Flags.build);
+                    lm.Flag_Deny.sendMessage(player, Flags.build);
                     event.setCancelled(true);
                     return;
                 }
             }
             if (placingMinecart(block, iih) && !perms.playerHas(player, Flags.build, true)) {
-                plugin.msg(player, lm.Flag_Deny, Flags.build);
+                lm.Flag_Deny.sendMessage(player, Flags.build);
                 event.setCancelled(true);
                 return;
 
             }
 
             if (btype.isSign() && !perms.playerHas(player, Flags.use, true)) {
-                plugin.msg(player, lm.Flag_Deny, Flags.use);
+                lm.Flag_Deny.sendMessage(player, Flags.use);
                 event.setCancelled(true);
                 return;
 
@@ -1499,7 +1498,7 @@ public class ResidencePlayerListener implements Listener {
             if (heldItem.equals(CMIMaterial.BRUSH)) {
                 ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
                 if (res != null && !res.getPermissions().playerHas(player, Flags.brush, FlagCombo.OnlyTrue)) {
-                    plugin.msg(player, lm.Flag_Deny, Flags.brush);
+                    lm.Flag_Deny.sendMessage(player, Flags.brush);
                     event.setCancelled(true);
                     return;
 
@@ -1518,7 +1517,7 @@ public class ResidencePlayerListener implements Listener {
                 Flags result = FlagPermissions.getMaterialUseFlagList().get(mat);
                 if (result != null && result.equals(Flags.container)) {
                     event.setCancelled(true);
-                    plugin.msg(player, lm.Raid_cantDo);
+                    lm.Raid_cantDo.sendMessage(player);
                     return;
                 }
             }
@@ -1537,7 +1536,7 @@ public class ResidencePlayerListener implements Listener {
                             }
                             if (!ResPerm.bypass_container.hasPermission(player, 10000L)) {
                                 event.setCancelled(true);
-                                plugin.msg(player, lm.Flag_Deny, result);
+                                lm.Flag_Deny.sendMessage(player, result);
                             }
                             return;
                         }
@@ -1559,7 +1558,7 @@ public class ResidencePlayerListener implements Listener {
                                 break;
                             }
                             event.setCancelled(true);
-                            plugin.msg(player, lm.Flag_Deny, result);
+                            lm.Flag_Deny.sendMessage(player, result);
                             return;
                         }
 
@@ -1569,7 +1568,7 @@ public class ResidencePlayerListener implements Listener {
                                 break main;
                             }
                             event.setCancelled(true);
-                            plugin.msg(player, lm.Flag_Deny, result);
+                            lm.Flag_Deny.sendMessage(player, result);
                         }
                         return;
                     }
@@ -1580,19 +1579,19 @@ public class ResidencePlayerListener implements Listener {
                 if (!perms.playerHas(player, Flags.container, hasuse)
                     || !ResPerm.bypass_container.hasPermission(player, 10000L)) {
                     event.setCancelled(true);
-                    plugin.msg(player, lm.Flag_Deny, Flags.container);
+                    lm.Flag_Deny.sendMessage(player, Flags.container);
                     return;
                 }
             }
 
             if (plugin.getConfigManager().getCustomBothClick().contains(mat) && !hasuse) {
                 event.setCancelled(true);
-                plugin.msg(player, lm.Flag_Deny, Flags.use);
+                lm.Flag_Deny.sendMessage(player, Flags.use);
                 return;
             }
             if (plugin.getConfigManager().getCustomRightClick().contains(mat) && event.getAction() == Action.RIGHT_CLICK_BLOCK && !hasuse) {
                 event.setCancelled(true);
-                plugin.msg(player, lm.Flag_Deny, Flags.use);
+                lm.Flag_Deny.sendMessage(player, Flags.use);
             }
         }
 
@@ -1616,7 +1615,7 @@ public class ResidencePlayerListener implements Listener {
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
 
         if (res != null && res.getPermissions().playerHas(player, Flags.trade, FlagCombo.OnlyFalse)) {
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.trade, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.trade, res.getName());
             event.setCancelled(true);
         }
     }
@@ -1688,7 +1687,7 @@ public class ResidencePlayerListener implements Listener {
         boolean hasContainerBypass = ResPerm.bypass_container.hasPermission(player, 10000L);
 
         if (!hasContainerBypass && !res.isOwner(player) && res.getPermissions().playerHas(player, Flags.container, FlagCombo.OnlyFalse) && player.isSneaking()) {
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.container, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.container, res.getName());
             event.setCancelled(true);
         }
     }
@@ -1715,7 +1714,7 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.riding, FlagCombo.TrueOrNone)) {
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.riding, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.riding, res.getName());
             event.setCancelled(true);
         }
     }
@@ -1751,7 +1750,7 @@ public class ResidencePlayerListener implements Listener {
         boolean hasContainerBypass = ResPerm.bypass_container.hasPermission(player, 10000L);
 
         if (!hasContainerBypass && !res.isOwner(player) && res.getPermissions().playerHas(player, Flags.container, FlagCombo.OnlyFalse)) {
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.container, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.container, res.getName());
             event.setCancelled(true);
         }
     }
@@ -1777,7 +1776,7 @@ public class ResidencePlayerListener implements Listener {
         if (res == null)
             return;
         if (!res.isOwner(player) && res.getPermissions().playerHas(player, Flags.riding, FlagCombo.OnlyFalse)) {
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.riding, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.riding, res.getName());
             event.setCancelled(true);
         }
     }
@@ -1810,7 +1809,7 @@ public class ResidencePlayerListener implements Listener {
             if (iih != null && !CMIMaterial.isDye(iih.getType()) && iiho != null && !CMIMaterial.isDye(iiho.getType()))
                 return;
 
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.dye, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.dye, res.getName());
             event.setCancelled(true);
         }
     }
@@ -1843,7 +1842,7 @@ public class ResidencePlayerListener implements Listener {
                 return;
             if (iih != null && !CMIMaterial.SHEARS.equals(iih.getType()) && iiho != null && !CMIMaterial.SHEARS.equals(iiho.getType()))
                 return;
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.shear, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.shear, res.getName());
             event.setCancelled(true);
         }
 
@@ -1873,7 +1872,7 @@ public class ResidencePlayerListener implements Listener {
 
         if (perms.playerHas(player, Flags.nametag, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
-            Residence.getInstance().msg(player, lm.Flag_Deny, Flags.nametag);
+            lm.Flag_Deny.sendMessage(player, Flags.nametag);
         }
     }
 
@@ -1909,7 +1908,7 @@ public class ResidencePlayerListener implements Listener {
         PermissionGroup group = resPlayer.getGroup();
 
         if (!plugin.getItemManager().isAllowed(heldItem, group, world)) {
-            plugin.msg(player, lm.General_ItemBlacklisted);
+            lm.General_ItemBlacklisted.sendMessage(player);
             event.setCancelled(true);
             return;
         }
@@ -1918,7 +1917,7 @@ public class ResidencePlayerListener implements Listener {
 //
         if (!hasContainerBypass && !perms.playerHas(player, Flags.container, perms.playerHas(player, Flags.use, true))) {
             event.setCancelled(true);
-            plugin.msg(player, lm.Flag_Deny, Flags.container);
+            lm.Flag_Deny.sendMessage(player, Flags.container);
         }
     }
 
@@ -1951,7 +1950,7 @@ public class ResidencePlayerListener implements Listener {
         if (res != null) {
             if (plugin.getConfigManager().preventRentModify() && plugin.getConfigManager().enabledRentSystem()) {
                 if (plugin.getRentManager().isRented(res.getName())) {
-                    plugin.msg(player, lm.Rent_ModifyDeny);
+                    lm.Rent_ModifyDeny.sendMessage(player);
                     event.setCancelled(true);
                     return;
                 }
@@ -1961,7 +1960,7 @@ public class ResidencePlayerListener implements Listener {
             if ((res.getPermissions().playerHas(player, Flags.build, FlagCombo.OnlyFalse))
                 && plugin.getConfigManager().getNoPlaceWorlds().contains(loc.getWorld().getName())) {
                 if (mat == Material.LAVA_BUCKET || mat == Material.WATER_BUCKET) {
-                    plugin.msg(player, lm.Flag_Deny, Flags.build);
+                    lm.Flag_Deny.sendMessage(player, Flags.build);
                     event.setCancelled(true);
                     return;
                 }
@@ -1970,7 +1969,7 @@ public class ResidencePlayerListener implements Listener {
 
         FlagPermissions perms = plugin.getPermsByLocForPlayer(loc, player);
         if (!perms.playerHas(player, Flags.build, true)) {
-            plugin.msg(player, lm.Flag_Deny, Flags.build);
+            lm.Flag_Deny.sendMessage(player, Flags.build);
             event.setCancelled(true);
             return;
         }
@@ -1980,8 +1979,7 @@ public class ResidencePlayerListener implements Listener {
         if (res == null && plugin.getConfigManager().isNoLavaPlace() && loc.getBlockY() >= level - 1 && plugin.getConfigManager()
             .getNoPlaceWorlds().contains(loc.getWorld().getName())) {
             if (mat == Material.LAVA_BUCKET) {
-                if (!plugin.msg(lm.General_CantPlaceLava).equalsIgnoreCase(""))
-                    plugin.msg(player, lm.General_CantPlaceLava, level);
+                lm.General_CantPlaceLava.sendMessage(player, level);
                 event.setCancelled(true);
                 return;
             }
@@ -1989,8 +1987,7 @@ public class ResidencePlayerListener implements Listener {
 
         if (res == null && plugin.getConfigManager().isNoWaterPlace() && loc.getBlockY() >= level - 1 && plugin.getConfigManager()
             .getNoPlaceWorlds().contains(loc.getWorld().getName()) && mat == Material.WATER_BUCKET) {
-            if (!plugin.msg(lm.General_CantPlaceWater).equalsIgnoreCase(""))
-                plugin.msg(player, lm.General_CantPlaceWater, level);
+            lm.General_CantPlaceWater.sendMessage(player, level);
             event.setCancelled(true);
         }
     }
@@ -2006,7 +2003,7 @@ public class ResidencePlayerListener implements Listener {
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(event.getBlockClicked().getLocation());
         if (res != null && plugin.getConfigManager().preventRentModify() && plugin.getConfigManager().enabledRentSystem() && plugin.getRentManager().isRented(res.getName())) {
-            plugin.msg(player, lm.Rent_ModifyDeny);
+            lm.Rent_ModifyDeny.sendMessage(player);
             event.setCancelled(true);
             return;
         }
@@ -2014,7 +2011,7 @@ public class ResidencePlayerListener implements Listener {
         FlagPermissions perms = plugin.getPermsByLocForPlayer(event.getBlockClicked().getLocation(), player);
         boolean hasdestroy = perms.playerHas(player, Flags.destroy, perms.playerHas(player, Flags.build, true));
         if (!hasdestroy) {
-            plugin.msg(player, lm.Flag_Deny, Flags.destroy);
+            lm.Flag_Deny.sendMessage(player, Flags.destroy);
             event.setCancelled(true);
         }
     }
@@ -2045,25 +2042,25 @@ public class ResidencePlayerListener implements Listener {
             if (res.getPermissions().playerHas(player, Flags.move, FlagCombo.OnlyFalse) && !res.isOwner(player)
                 && !ResPerm.bypass_tp.hasPermission(player, 10000L) && !ResPerm.admin_move.hasPermission(player, 10000L)) {
                 event.setCancelled(true);
-                plugin.msg(player, lm.Residence_MoveDeny, res.getName());
+                lm.Residence_MoveDeny.sendMessage(player, res.getName());
                 return;
             }
         } else if (event.getCause() == TeleportCause.ENDER_PEARL && (res.getPermissions().playerHas(player, Flags.enderpearl, FlagCombo.OnlyFalse) || res.getPermissions().playerHas(player, Flags.move,
             FlagCombo.OnlyFalse))) {
             event.setCancelled(true);
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.enderpearl, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.enderpearl, res.getName());
             return;
         }
         if ((event.getCause() == TeleportCause.PLUGIN || event.getCause() == TeleportCause.COMMAND) && plugin.getConfigManager().isBlockAnyTeleportation() && !res.isOwner(player) && res.getPermissions()
             .playerHas(player, Flags.tp, FlagCombo.OnlyFalse) && !ResPerm.admin_tp.hasPermission(player)) {
             event.setCancelled(true);
-            plugin.msg(player, lm.General_TeleportDeny, res.getName());
+            lm.General_TeleportDeny.sendMessage(player, res.getName());
             return;
         }
         if (Utils.isChorusTeleport(event.getCause()) && !res.isOwner(player) && res.getPermissions().playerHas(player, Flags.chorustp, FlagCombo.OnlyFalse) && !ResPerm.admin_tp.hasPermission(
             player)) {
             event.setCancelled(true);
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.chorustp, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.chorustp, res.getName());
             return;
         }
 
@@ -2352,7 +2349,7 @@ public class ResidencePlayerListener implements Listener {
 
         Teleporting.cancelTeleportDelay(player.getUniqueId());
 
-        plugin.msg(player, lm.General_TeleportCanceled);
+        lm.General_TeleportCanceled.sendMessage(player);
         if (plugin.getConfigManager().isTeleportTitleMessage())
             CMITitleMessage.send(player, "", "");
     }
@@ -2408,7 +2405,7 @@ public class ResidencePlayerListener implements Listener {
                 continue;
 
             Teleporting.cancelTeleportDelay(player.getUniqueId());
-            plugin.msg(player, lm.General_TeleportCanceled);
+            lm.General_TeleportCanceled.sendMessage(player);
             if (plugin.getConfigManager().isTeleportTitleMessage())
                 CMITitleMessage.send(player, "", "");
         }
@@ -2439,7 +2436,7 @@ public class ResidencePlayerListener implements Listener {
             || res.isOwner(player) || ResPerm.bypass_nofly.hasPermission(player, 10000L))
             return;
 
-        plugin.msg(player, lm.Residence_FlagDeny, Flags.nofly, res.getName());
+        lm.Residence_FlagDeny.sendMessage(player, Flags.nofly, res.getName());
         event.setCancelled(true);
     }
 
@@ -2483,12 +2480,12 @@ public class ResidencePlayerListener implements Listener {
 
             player.setFlying(false);
 
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.nofly, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.nofly, res.getName());
 
             return teleported;
         }
 
-        plugin.msg(player, lm.Residence_FlagDeny, Flags.nofly, res.getName());
+        lm.Residence_FlagDeny.sendMessage(player, Flags.nofly, res.getName());
 
         player.closeInventory();
         player.setFlying(false);
@@ -2513,10 +2510,10 @@ public class ResidencePlayerListener implements Listener {
         case TitleBar:
             FlagPermissions perms = res.getPermissions();
             if (perms.has(Flags.title, FlagCombo.TrueOrNone))
-                CMIActionBar.send(player, plugin.msg(lm.Residence_MoveDeny, res.getName()));
+                CMIActionBar.send(player, lm.Residence_MoveDeny.getMessage(res.getName()));
             break;
         case ChatBox:
-            plugin.msg(player, lm.Residence_MoveDeny, res.getName());
+            lm.Residence_MoveDeny.sendMessage(player, res.getName());
             break;
         default:
             break;
@@ -2657,7 +2654,7 @@ public class ResidencePlayerListener implements Listener {
                             .toString());
                         break;
                     case ChatBox:
-                        plugin.msg(player, ChatColor.YELLOW + this.insertMessages(player, res, message));
+                        lm.showMessage(player, ChatColor.YELLOW + this.insertMessages(player, res, message));
                         break;
                     case TitleBar:
                         String title = ChatColor.YELLOW + insertMessages(player, res, message);
@@ -2688,10 +2685,10 @@ public class ResidencePlayerListener implements Listener {
             if (plugin.getRentManager().isForRent(from) && !plugin.getRentManager().isRented(from)) {
                 RentableLand rentable = plugin.getRentManager().getRentableLand(from);
                 if (rentable != null)
-                    CMIActionBar.send(player, plugin.msg(lm.Residence_CanBeRented, from.getName(), rentable.cost, rentable.days));
+                    CMIActionBar.send(player, lm.Residence_CanBeRented.getMessage(from.getName(), rentable.cost, rentable.days));
             } else if (plugin.getTransactionManager().isForSale(from) && !res.isOwner(player)) {
                 int sale = plugin.getTransactionManager().getSaleAmount(from);
-                CMIActionBar.send(player, plugin.msg(lm.Residence_CanBeBought, from.getName(), sale));
+                CMIActionBar.send(player, lm.Residence_CanBeBought.getMessage(from.getName(), sale));
             }
         }
     }
@@ -2899,7 +2896,7 @@ public class ResidencePlayerListener implements Listener {
 
     public void tooglePlayerResidenceChat(Player player, String residence) {
         playerPersistentData.get(player).setChatEnabled(false);
-        plugin.msg(player, lm.Chat_ChatChannelChange, residence);
+        lm.Chat_ChatChannelChange.sendMessage(player, residence);
     }
 
     @Deprecated
@@ -2911,7 +2908,7 @@ public class ResidencePlayerListener implements Listener {
         if (player == null)
             return;
         playerPersistentData.get(player).setChatEnabled(true);
-        plugin.msg(player, lm.Chat_ChatChannelLeave);
+        lm.Chat_ChatChannelLeave.sendMessage(player);
     }
 
     @Deprecated

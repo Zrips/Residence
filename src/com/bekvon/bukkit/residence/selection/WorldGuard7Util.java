@@ -66,7 +66,7 @@ public class WorldGuard7Util implements WorldGuardInterface {
         if (Region == null)
             return false;
 
-        plugin.msg(player, lm.Select_WorldGuardOverlap, Region.getId());
+        lm.Select_WorldGuardOverlap.sendMessage(player, Region.getId());
         Location lowLoc = new Location(plugin.getSelectionManager().getPlayerLoc1(player).getWorld(), Region.getMinimumPoint().getBlockX(),
             Region.getMinimumPoint().getBlockY(), Region.getMinimumPoint().getBlockZ());
         Location highLoc = new Location(plugin.getSelectionManager().getPlayerLoc1(player).getWorld(), Region.getMaximumPoint().getBlockX(),

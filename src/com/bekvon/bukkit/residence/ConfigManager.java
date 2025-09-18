@@ -160,8 +160,7 @@ public class ConfigManager {
     protected boolean chatEnable;
     private boolean chatListening;
     private ELMessageType EnterLeaveMessageType;
-//    protected boolean actionBar;
-//    protected boolean titleMessage;
+
     protected boolean ActionBarOnSelection;
     protected boolean visualizer;
     protected int minMoveUpdate;
@@ -199,8 +198,7 @@ public class ConfigManager {
     protected boolean Couldroncompatibility;
     protected boolean enableDebug = false;
     protected boolean versionCheck = true;
-    protected boolean UUIDConvertion = true;
-    protected boolean OfflineMode = false;
+
     protected boolean SelectionIgnoreY = false;
     protected boolean SelectionIgnoreYInSubzone = false;
     private int SelectionNetherHeight = 128;
@@ -634,16 +632,6 @@ public class ConfigManager {
         c.copyDefaults(true);
 
         c.addComment("Global", "These are Global Settings for Residence.");
-
-        c.addComment("Global.UUIDConvertion", "Starts UUID conversion on plugin startup", "DON'T change this if you are not sure what you doing");
-        UUIDConvertion = c.get("Global.UUIDConvertion", true);
-
-        if (c.getC().isBoolean("Global.OfflineMode")) {
-            c.addComment("Global.OfflineMode",
-                "STRONGLY recomended to keep it set to false. Only enable if you are sure you want to use outdated methods",
-                "Suggestion is to keep this at false so that residence ownership gets determined by UUID and not by players name");
-            OfflineMode = c.get("Global.OfflineMode", false);
-        }
 
         c.addComment("Global.versionCheck", "Players with residence.versioncheck permission node will be noticed about new residence version on login");
         versionCheck = c.get("Global.versionCheck", true);
@@ -2153,13 +2141,13 @@ public class ConfigManager {
         return versionCheck;
     }
 
-    public boolean isUUIDConvertion() {
-        return UUIDConvertion;
-    }
-
-    public boolean isOfflineMode() {
-        return OfflineMode;
-    }
+//    public boolean isUUIDConvertion() {
+//        return UUIDConvertion;
+//    }
+//
+//    public boolean isOfflineMode() {
+//        return OfflineMode;
+//    }
 
     public List<Material> getCustomContainers() {
         return customContainers;

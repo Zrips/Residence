@@ -15,7 +15,7 @@ import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 public class RentedLand {
 
     @Deprecated
-    public String player = "";
+    public String player = null;
     private UUID uuid = null;
     public long startTime = 0L;
     public long endTime = 0L;

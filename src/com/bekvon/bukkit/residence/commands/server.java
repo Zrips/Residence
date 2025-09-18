@@ -18,33 +18,31 @@ public class server implements cmd {
     @Override
     @CommandAnnotation(simple = false, priority = 5400)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
-	if (!(sender instanceof Player))
-	    return false;
+        if (!(sender instanceof Player))
+            return false;
 
-	Player player = (Player) sender;
+        if (!resadmin) {
+            lm.General_NoPermission.sendMessage(sender);
+            return true;
+        }
+        if (args.length != 1 || plugin.getResidenceManager().getByName(args[0]) == null) {
+            lm.Invalid_Residence.sendMessage(sender);
+            return true;
+        }
 
-	if (!resadmin) {
-	    plugin.msg(player, lm.General_NoPermission);
-	    return true;
-	}
-	if (args.length != 1 || plugin.getResidenceManager().getByName(args[0]) == null) {
-	    plugin.msg(player, lm.Invalid_Residence);
-	    return true;
-	}
-
-	ClaimedResidence res = plugin.getResidenceManager().getByName(args[0]);
-	res.getPermissions().setOwner(plugin.getServerLandName(), false);
-	plugin.msg(player, lm.Residence_OwnerChange, args[0], plugin.getServerLandName());
-	return true;
+        ClaimedResidence res = plugin.getResidenceManager().getByName(args[0]);
+        res.getPermissions().setOwner(plugin.getServerLandName(), false);
+        lm.Residence_OwnerChange.sendMessage(sender, args[0], plugin.getServerLandName());
+        return true;
 
     }
 
     @Override
     public void getLocale() {
-	ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
+        ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
 
-	c.get("Description", "Make land server owned.");
-	c.get("Info", Arrays.asList("&eUsage: &6/resadmin server [residence]", "Make a residence server owned."));
-	LocaleManager.addTabCompleteMain(this, "[cresidence]");
+        c.get("Description", "Make land server owned.");
+        c.get("Info", Arrays.asList("&eUsage: &6/resadmin server [residence]", "Make a residence server owned."));
+        LocaleManager.addTabCompleteMain(this, "[cresidence]");
     }
 }

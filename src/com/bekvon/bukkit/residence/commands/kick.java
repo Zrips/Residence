@@ -18,7 +18,6 @@ import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
-import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class kick implements cmd {
 
@@ -35,7 +34,7 @@ public class kick implements cmd {
 
         Player targetplayer = Bukkit.getPlayer(args[0]);
         if (targetplayer == null || !player.canSee(targetplayer)) {
-            plugin.msg(player, lm.General_NotOnline);
+            lm.General_NotOnline.sendMessage(sender);
             return true;
         }
 
@@ -44,14 +43,14 @@ public class kick implements cmd {
         PermissionGroup group = rPlayer.getGroup();
 
         if (!group.hasKickAccess() && !resadmin) {
-            plugin.msg(player, lm.General_NoPermission);
+            lm.General_NoPermission.sendMessage(sender);
             return true;
         }
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(targetplayer.getLocation());
 
         if (res == null || !res.isOwner(player) && !resadmin && !res.getPermissions().playerHas(player, Flags.admin, false)) {
-            plugin.msg(player, lm.Residence_PlayerNotIn);
+            lm.Residence_PlayerNotIn.sendMessage(sender);
             return true;
         }
 
@@ -59,7 +58,7 @@ public class kick implements cmd {
             return false;
 
         if (res.getRaid().isRaidInitialized()) {
-            plugin.msg(sender, lm.Raid_cantDo);
+            lm.Raid_cantDo.sendMessage(sender);
             return true;
         }
 
@@ -67,7 +66,7 @@ public class kick implements cmd {
             return false;
 
         if (ResPerm.command_kick_bypass.hasPermission(targetplayer)) {
-            plugin.msg(sender, lm.Residence_CantKick);
+            lm.Residence_CantKick.sendMessage(sender);
             return true;
         }
         res.kickFromResidence(targetplayer);

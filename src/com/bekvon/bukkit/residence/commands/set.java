@@ -26,11 +26,11 @@ public class set implements cmd {
 	    Player player = (Player) sender;
 	    ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
 	    if (res == null) {
-		plugin.msg(sender, lm.Invalid_Residence);
+		lm.Invalid_Residence.sendMessage(sender);
 		return true;
 	    }
 	    if (!res.isOwner(player) && !resadmin && !res.getPermissions().playerHas(player, Flags.admin, false)) {
-		plugin.msg(sender, lm.General_NoPermission);
+		lm.General_NoPermission.sendMessage(sender);
 		return true;
 	    }
 	    res.getPermissions().setFlag(sender, args[0], args[1], resadmin);
@@ -38,11 +38,11 @@ public class set implements cmd {
 	} else if (args.length == 3) {
 	    ClaimedResidence res = plugin.getResidenceManager().getByName(args[0]);
 	    if (res == null) {
-		plugin.msg(sender, lm.Invalid_Residence);
+		lm.Invalid_Residence.sendMessage(sender);
 		return true;
 	    }
 	    if (!res.isOwner(sender) && !resadmin && !res.getPermissions().playerHas(sender, Flags.admin, false)) {
-		plugin.msg(sender, lm.General_NoPermission);
+		lm.General_NoPermission.sendMessage(sender);
 		return true;
 	    }
 	    res.getPermissions().setFlag(sender, args[1], args[2], resadmin);
@@ -56,11 +56,11 @@ public class set implements cmd {
 	    else
 		res = plugin.getResidenceManager().getByName(args[0]);
 	    if (res == null) {
-		plugin.msg(sender, lm.Invalid_Residence);
-		return true;
+                lm.Invalid_Residence.sendMessage(sender);
+                return true;
 	    }
 	    if (!res.isOwner(player) && !resadmin && !res.getPermissions().playerHas(player, Flags.admin, false)) {
-		plugin.msg(sender, lm.General_NoPermission);
+		lm.General_NoPermission.sendMessage(sender);
 		return true;
 	    }
 

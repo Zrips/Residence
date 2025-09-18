@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Player;
@@ -23,7 +22,6 @@ import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.BossBar.BossBarInfo;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
-import net.Zrips.CMILib.Version.Teleporters.CMITeleporter;
 
 public class ResidenceRaid {
 
@@ -196,13 +194,13 @@ public class ResidenceRaid {
             barInfo = new BossBarInfo(rPlayer.getPlayer(), isUnderRaid() ? bossBarRaidIdent : bossBarPreRaidIdent) {
                 @Override
                 public void updateCycle() {
-                    setTitleOfBar(Residence.getInstance().msg(msg, getDefenders().size(), getAttackers().size()));
+                    setTitleOfBar(msg.getMessage(getDefenders().size(), getAttackers().size()));
                 }
             };
             Double secLeft = ((isUnderRaid() ? getEndsAt() : getStartsAt()) - System.currentTimeMillis()) / 1000D;
             barInfo.setKeepForTicks(22);
             barInfo.setColor(color);
-            barInfo.setTitleOfBar(Residence.getInstance().msg(msg, getDefenders().size(), getAttackers().size()));
+            barInfo.setTitleOfBar(msg.getMessage(getDefenders().size(), getAttackers().size()));
             barInfo.setAdjustPerc(-(1D / secLeft));
             barInfo.setPercentage(secLeft, secLeft);
             barInfo.setStyle(BarStyle.SEGMENTED_20);
@@ -238,7 +236,7 @@ public class ResidenceRaid {
             Player player = Bukkit.getPlayer(one.getKey());
             if (player == null)
                 continue;
-            Residence.getInstance().msg(player, lm.Raid_Ended, res.getName());
+            lm.Raid_Ended.sendMessage(player, res.getName());
 
             res.kickFromResidence(player);
 

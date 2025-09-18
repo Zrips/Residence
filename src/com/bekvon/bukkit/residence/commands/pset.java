@@ -5,9 +5,6 @@ import java.util.Arrays;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.Zrips.CMILib.FileHandler.ConfigReader;
-import net.Zrips.CMILib.Logs.CMIDebug;
-
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
@@ -18,6 +15,8 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
+
+import net.Zrips.CMILib.FileHandler.ConfigReader;
 
 public class pset implements cmd {
 
@@ -94,20 +93,20 @@ public class pset implements cmd {
         }
 
         if (rplayer == null && sender instanceof Player) {
-            rplayer = Residence.getInstance().getPlayerManager().getResidencePlayer((Player) sender);
+            rplayer = ResidencePlayer.get((Player) sender);
         }
 
         if (residence == null && sender instanceof Player) {
-            residence = plugin.getResidenceManager().getByLoc(((Player) sender).getLocation());
+            residence = plugin.getResidenceManager().getByLoc(((Player) sender));
         }
 
         if (residence == null) {
-            plugin.msg(sender, lm.Invalid_Residence);
+            lm.Invalid_Residence.sendMessage(sender);
             return null;
         }
 
         if (rplayer == null) {
-            plugin.msg(sender, lm.Invalid_Player);
+            lm.Invalid_Player.sendMessage(sender);
             return true;
         }
 
@@ -118,10 +117,10 @@ public class pset implements cmd {
         case pset:
             if (!state.equals(FlagState.INVALID) && (flag != null || flagGroup != null)) {
                 if (!residence.isOwner(sender) && !resadmin && !residence.getPermissions().playerHas(sender, Flags.admin, false)) {
-                    plugin.msg(sender, lm.General_NoPermission);
+                    lm.General_NoPermission.sendMessage(sender);
                     return true;
                 }
-                residence.getPermissions().setPlayerFlag(sender, rplayer.getName(), flag != null ? flag : flagGroup, state.getName(), resadmin, true);
+                residence.getPermissions().setPlayerFlag(sender, rplayer.getUniqueId(), flag != null ? flag : flagGroup, state.getName(), resadmin, true);
                 return true;
             }
 
@@ -132,11 +131,11 @@ public class pset implements cmd {
             player.closeInventory();
 
             if (!residence.isOwner(sender) && !resadmin && !residence.getPermissions().playerHas(sender, Flags.admin, false)) {
-                plugin.msg(sender, lm.General_NoPermission);
+                lm.General_NoPermission.sendMessage(sender);
                 return true;
             }
 
-            plugin.getFlagUtilManager().openPsetFlagGui(player, rplayer.getName(), residence, resadmin, 1);
+            plugin.getFlagUtilManager().openPsetFlagGui(player, rplayer.getUniqueId(), residence, resadmin, 1);
 
             return true;
         case removeall:

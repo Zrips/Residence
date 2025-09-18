@@ -21,6 +21,7 @@ import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.raid.ResidenceRaid;
+import com.bekvon.bukkit.residence.utils.PlayerCache;
 
 public class ResidencePlayer {
 
@@ -40,14 +41,13 @@ public class ResidencePlayer {
             return;
         this.uuid = off.getUniqueId();
         this.userName = off.getName();
-        Residence.getInstance().addOfflinePlayerToChache(off);
+        PlayerCache.addToCache(userName, uuid);
         this.updatePlayer();
     }
 
     public ResidencePlayer(Player player) {
         if (player == null)
             return;
-        Residence.getInstance().addOfflinePlayerToChache(player);
         this.updatePlayer(player);
     }
 
@@ -120,11 +120,6 @@ public class ResidencePlayer {
                 getMaxData().setMaxRes(maxValue);
                 return;
             }
-        } else if (Residence.getInstance().getOfflinePlayer(this.getUniqueId()) != null &&
-            Residence.getInstance().getPermissionManager().getPermissionsPlugin().hasPermission(Residence.getInstance().getOfflinePlayer(this.getUniqueId()), ResPerm.max_res_unlimited.getPermission(),
-                Residence.getInstance().getConfigManager().getDefaultWorld())) {
-            getMaxData().setMaxRes(maxValue);
-            return;
         }
 
         int m = this.getGroup().getMaxZones();
@@ -137,13 +132,6 @@ public class ResidencePlayer {
 
         if (getPlayer() != null) {
             if (ResPerm.max_rents_unlimited.hasSetPermission(getPlayer())) {
-                getMaxData().setMaxRents(maxValue);
-                return;
-            }
-        } else {
-            if (Residence.getInstance().getOfflinePlayer(this.getUniqueId()) != null &&
-                Residence.getInstance().getPermissionManager().getPermissionsPlugin().hasPermission(Residence.getInstance().getOfflinePlayer(this.getUniqueId()), ResPerm.max_rents_unlimited
-                    .getPermission(), Residence.getInstance().getConfigManager().getDefaultWorld())) {
                 getMaxData().setMaxRents(maxValue);
                 return;
             }
@@ -167,13 +155,6 @@ public class ResidencePlayer {
                 getMaxData().setMaxSubzones(maxValue);
                 return;
             }
-        } else {
-            if (Residence.getInstance().getOfflinePlayer(this.getUniqueId()) != null &&
-                Residence.getInstance().getPermissionManager().getPermissionsPlugin().hasPermission(Residence.getInstance().getOfflinePlayer(this.getUniqueId()), ResPerm.max_subzones_unlimited
-                    .getPermission(), Residence.getInstance().getConfigManager().getDefaultWorld())) {
-                getMaxData().setMaxSubzones(maxValue);
-                return;
-            }
         }
 
         int m = this.getGroup().getMaxSubzones();
@@ -190,13 +171,6 @@ public class ResidencePlayer {
 
         if (getPlayer() != null) {
             if (ResPerm.max_subzonedepth_unlimited.hasSetPermission(getPlayer())) {
-                getMaxData().setMaxSubzoneDepth(maxValue);
-                return;
-            }
-        } else {
-            if (Residence.getInstance().getOfflinePlayer(this.getUniqueId()) != null &&
-                Residence.getInstance().getPermissionManager().getPermissionsPlugin().hasPermission(Residence.getInstance().getOfflinePlayer(this.getUniqueId()), ResPerm.max_subzonedepth_unlimited
-                    .getPermission(), Residence.getInstance().getConfigManager().getDefaultWorld())) {
                 getMaxData().setMaxSubzoneDepth(maxValue);
                 return;
             }
@@ -277,6 +251,7 @@ public class ResidencePlayer {
             updated = true;
         this.uuid = player.getUniqueId();
         this.userName = player.getName();
+        PlayerCache.addToCache(player);
         return this;
     }
 
@@ -314,10 +289,7 @@ public class ResidencePlayer {
             return;
         }
 
-        if (Residence.getInstance().getOfflinePlayer(this.getUniqueId()) != null) {
-            // Update the userName from cache, avoid reading NBT cost
-            this.userName = Residence.getInstance().getPlayerName(this.getUniqueId());
-        }
+        this.userName = PlayerCache.getName(this.getUniqueId());
     }
 
     public synchronized void addResidence(ClaimedResidence residence) {

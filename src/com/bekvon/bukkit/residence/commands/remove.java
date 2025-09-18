@@ -33,7 +33,7 @@ public class remove implements cmd {
         }
 
         if (res == null) {
-            plugin.msg(sender, lm.Invalid_Residence);
+            lm.Invalid_Residence.sendMessage(sender);
             return true;
         }
 
@@ -66,7 +66,7 @@ public class remove implements cmd {
         }
 
         if (res.getRaid().isRaidInitialized() && !resadmin) {
-            plugin.msg(sender, lm.Raid_noRemoval);
+            lm.Raid_noRemoval.sendMessage(sender);
             return true;
         }
 
@@ -81,21 +81,21 @@ public class remove implements cmd {
             if (sender instanceof Player) {
                 RawMessage rm = new RawMessage();
                 if (res.isSubzone()) {
-                    rm.addText(plugin.msg(lm.Subzone_DeleteConfirm, res.getResidenceName())).addHover(plugin.msg(lm.info_clickToConfirm)).addCommand(cmd + " confirm");
+                    rm.addText(lm.Subzone_DeleteConfirm.getMessage(res.getResidenceName())).addHover(lm.info_clickToConfirm.getMessage()).addCommand(cmd + " confirm");
                 } else {
-                    rm.addText(plugin.msg(lm.Residence_DeleteConfirm, res.getResidenceName())).addHover(plugin.msg(lm.info_clickToConfirm)).addCommand(cmd + " confirm");
+                    rm.addText(lm.Residence_DeleteConfirm.getMessage(res.getResidenceName())).addHover(lm.info_clickToConfirm.getMessage()).addCommand(cmd + " confirm");
                 }
-                if (plugin.msg(lm.Subzone_DeleteConfirm, res.getResidenceName()).length() > 0)
+                if (lm.Subzone_DeleteConfirm.getMessage(res.getResidenceName()).length() > 0)
                     rm.show(sender);
             } else {
                 if (res.isSubzone())
-                    plugin.msg(sender, lm.Subzone_DeleteConfirm, res.getResidenceName());
+                    lm.Subzone_DeleteConfirm.sendMessage(sender, res.getResidenceName());
                 else
-                    plugin.msg(sender, lm.Residence_DeleteConfirm, res.getResidenceName());
+                    lm.Residence_DeleteConfirm.sendMessage(sender, res.getResidenceName());
             }
             plugin.deleteConfirm.put(senderName, resname);
         } else {
-            plugin.getResidenceManager().removeResidence(sender, resname, resadmin);
+            plugin.getResidenceManager().removeResidence(sender, res, resadmin);
         }
         return true;
     }

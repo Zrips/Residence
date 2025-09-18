@@ -22,11 +22,11 @@ public class current implements cmd {
 
 	ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
 	if (res == null) {
-	    plugin.msg(player, lm.Residence_NotIn);
+	    lm.Residence_NotIn.sendMessage(sender);
 	    return true;
-	}
-	
-	plugin.msg(player, lm.Residence_In, res.getName());
+        }
+
+	lm.Residence_In.sendMessage(sender, res.getName());
 
 	return true;
     }

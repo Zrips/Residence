@@ -20,48 +20,48 @@ public class leaveraid implements cmd {
     @Override
     @CommandAnnotation(simple = true, priority = 3100)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
-	if (!(sender instanceof Player))
-	    return false;
+        if (!(sender instanceof Player))
+            return false;
 
-	final Player player = (Player) sender;
+        final Player player = (Player) sender;
 
-	if (args.length != 0 && args.length != 1)
-	    return false;
+        if (args.length != 0 && args.length != 1)
+            return false;
 
-	if (!ConfigManager.RaidEnabled) {
-	    plugin.msg(player, lm.Raid_NotEnabled);
-	    return true;
-	}
+        if (!ConfigManager.RaidEnabled) {
+            lm.Raid_NotEnabled.sendMessage(sender);
+            return true;
+        }
 
-	ResidencePlayer owner = plugin.getPlayerManager().getResidencePlayer(player);
+        ResidencePlayer owner = plugin.getPlayerManager().getResidencePlayer(player);
 
-	ResidenceRaid raid = owner.getJoinedRaid();
+        ResidenceRaid raid = owner.getJoinedRaid();
 
-	if (raid == null || !raid.getRes().getRaid().isUnderRaid() && !raid.getRes().getRaid().isInPreRaid()) {
-	    plugin.msg(player, lm.Raid_NotIn);
-	    return true;
-	}
+        if (raid == null || !raid.getRes().getRaid().isUnderRaid() && !raid.getRes().getRaid().isInPreRaid()) {
+            lm.Raid_NotIn.sendMessage(sender);
+            return true;
+        }
 
-	if (raid.getRes().isOwner(player)) {
-	    plugin.msg(player, lm.Raid_CantLeave, raid.getRes().getName());
-	    return true;
-	}
+        if (raid.getRes().isOwner(player)) {
+            lm.Raid_CantLeave.sendMessage(sender, raid.getRes().getName());
+            return true;
+        }
 
-	raid.removeAttacker(player);
-	raid.removeDefender(player);
-	raid.getRes().kickFromResidence(player);
+        raid.removeAttacker(player);
+        raid.removeDefender(player);
+        raid.getRes().kickFromResidence(player);
 
-	plugin.msg(player, lm.Raid_left, raid.getRes().getName());
+        lm.Raid_left.sendMessage(sender, raid.getRes().getName());
 
-	return false;
+        return false;
     }
 
     @Override
     public void getLocale() {
-	ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
-	c.get("Description", "Leave raid");
-	c.get("Info", Arrays.asList("&eUsage: &6/res leaveraid"));
-	LocaleManager.addTabCompleteMain(this, "[cresidence]%%[playername]");
+        ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
+        c.get("Description", "Leave raid");
+        c.get("Info", Arrays.asList("&eUsage: &6/res leaveraid"));
+        LocaleManager.addTabCompleteMain(this, "[cresidence]%%[playername]");
     }
 
 }

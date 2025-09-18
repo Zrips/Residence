@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,9 +27,11 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.GetTime;
+import com.bekvon.bukkit.residence.utils.PlayerCache;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
@@ -48,12 +51,13 @@ public class InformationPager {
         PageInfo pi = new PageInfo(6, lines.size(), page);
 
         if (!pi.isPageOk()) {
-            sender.sendMessage(ChatColor.RED + plugin.msg(lm.Invalid_Page));
+            lm.Invalid_Page.sendMessage(sender);
             return;
         }
-        plugin.msg(sender, lm.InformationPage_TopSingle, title);
-        plugin.msg(sender, lm.InformationPage_Page, plugin.msg(lm.General_GenericPages, String.format("%d", page),
-            pi.getTotalPages(), lines.size()));
+        lm.InformationPage_TopSingle.sendMessage(sender, title);
+
+        lm.InformationPage_Page.sendMessage(sender, lm.General_GenericPages.getMessage(String.format("%d", page), pi.getTotalPages(), lines.size()));
+
         for (int i = pi.getStart(); i <= pi.getEnd(); i++) {
             if (lines.size() > i)
                 sender.sendMessage(ChatColor.GREEN + lines.get(i));
@@ -63,14 +67,23 @@ public class InformationPager {
 
     }
 
+    @Deprecated
     public void printListInfo(CommandSender sender, String targetPlayer, TreeMap<String, ClaimedResidence> ownedResidences, int page, boolean resadmin, World world) {
+        printListInfo(sender, PlayerCache.getUUID(targetPlayer), ownedResidences, page, resadmin, world);
+    }
+
+    public void printListInfo(CommandSender sender, UUID uuid, TreeMap<String, ClaimedResidence> ownedResidences, int page, boolean resadmin, World world) {
 
         int perPage = 20;
         if (sender instanceof Player)
             perPage = 10;
 
+        String targetPlayer = null;
+        if (uuid != null)
+            targetPlayer = PlayerCache.getName(uuid);
+
         if (ownedResidences.isEmpty()) {
-            plugin.msg(sender, lm.Residence_DontOwn, targetPlayer);
+            lm.Residence_DontOwn.sendMessage(sender, targetPlayer);
             return;
         }
 
@@ -86,13 +99,12 @@ public class InformationPager {
         }
 
         if (!pi.isPageOk()) {
-            sender.sendMessage(ChatColor.RED + plugin.msg(lm.Invalid_Page));
+            lm.Invalid_Page.sendMessage(sender);
             return;
         }
 
         if (targetPlayer != null)
-            plugin.msg(sender, lm.InformationPage_Top, plugin.msg(lm.General_Residences), targetPlayer);
-//	plugin.msg(sender, lm.InformationPage_Page, plugin.msg(lm.General_GenericPages, String.format("%d", page),  pi.getTotalPages(), ownedResidences.size()));
+            lm.InformationPage_Top.sendMessage(sender, lm.General_Residences.getMessage(), targetPlayer);
 
         String cmd = "res";
         if (resadmin)
@@ -109,49 +121,49 @@ public class InformationPager {
 
             ClaimedResidence res = resT.getValue();
             StringBuilder StringB = new StringBuilder();
-            StringB.append(plugin.msg(lm.General_Owner, res.getOwner()));
+            StringB.append(lm.General_Owner.getMessage(res.getOwner()));
 
             if (res.getAreaArray().length > 0 && (res.getPermissions().has(Flags.hidden, FlagCombo.FalseOrNone) && res.getPermissions().has(Flags.coords, FlagCombo.TrueOrNone) || resadmin)) {
                 StringB.append("\n");
                 CuboidArea area = res.getAreaArray()[0];
-                String cord1 = plugin.msg(lm.General_CoordsTop, area.getHighVector().getBlockX(), area.getHighVector().getBlockY(), area.getHighVector().getBlockZ());
-                String cord2 = plugin.msg(lm.General_CoordsBottom, area.getLowVector().getBlockX(), area.getLowVector().getBlockY(), area.getLowVector().getBlockZ());
-                String worldInfo = CMIChatColor.translate(plugin.msg(lm.General_CoordsLiner, cord1, cord2));
+                String cord1 = lm.General_CoordsTop.getMessage(area.getHighVector().getBlockX(), area.getHighVector().getBlockY(), area.getHighVector().getBlockZ());
+                String cord2 = lm.General_CoordsBottom.getMessage(area.getLowVector().getBlockX(), area.getLowVector().getBlockY(), area.getLowVector().getBlockZ());
+                String worldInfo = lm.General_CoordsLiner.getMessage(cord1, cord2);
                 StringB.append(worldInfo);
             }
 
-            StringB.append("\n").append(plugin.msg(lm.General_CreatedOn, GetTime.getTime(res.getCreateTime())));
+            StringB.append("\n").append(lm.General_CreatedOn.getMessage(GetTime.getTime(res.getCreateTime())));
 
             String ExtraString = "";
             if (res.isForRent()) {
                 if (res.isRented()) {
-                    ExtraString = " " + plugin.msg(lm.Residence_IsRented);
-                    StringB.append("\n").append(plugin.msg(lm.Residence_RentedBy, res.getRentedLand().getRenterName()));
+                    ExtraString = " " + lm.Residence_IsRented.getMessage();
+                    StringB.append("\n").append(lm.Residence_RentedBy.getMessage(res.getRentedLand().getRenterName()));
                 } else {
-                    ExtraString = " " + plugin.msg(lm.Residence_IsForRent);
+                    ExtraString = " " + lm.Residence_IsForRent.getMessage();
                 }
                 RentableLand rentable = res.getRentable();
-                StringB.append("\n").append(plugin.msg(lm.General_Cost, rentable.cost, rentable.days));
-                StringB.append("\n").append(plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing));
-                StringB.append("\n").append(plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket));
-                StringB.append("\n").append(plugin.msg(lm.Rentable_AllowAutoPay, rentable.AllowAutoPay));
+                StringB.append("\n").append(lm.General_Cost.getMessage(rentable.cost, rentable.days));
+                StringB.append("\n").append(lm.Rentable_AllowRenewing.getMessage(rentable.AllowRenewing));
+                StringB.append("\n").append(lm.Rentable_StayInMarket.getMessage(rentable.StayInMarket));
+                StringB.append("\n").append(lm.Rentable_AllowAutoPay.getMessage(rentable.AllowAutoPay));
             }
 
             if (res.isForSell()) {
-                ExtraString = " " + plugin.msg(lm.Residence_IsForSale);
-                StringB.append("\n " + plugin.msg(lm.Economy_LandForSale) + " " + res.getSellPrice());
+                ExtraString = " " + lm.Residence_IsForSale.getMessage();
+                StringB.append("\n " + lm.Economy_LandForSale.getMessage() + " " + res.getSellPrice());
             }
 
             String tpFlag = "";
             String moveFlag = "";
-            String msg = plugin.msg(lm.Residence_ResList, y + 1, res.getName(), res.getWorld(), tpFlag + moveFlag, ExtraString);
+            String msg = lm.Residence_ResList.getMessage(y + 1, res.getName(), res.getWorld(), tpFlag + moveFlag, ExtraString);
 
             if (sender instanceof Player && !res.isOwner(sender)) {
-                tpFlag = res.getPermissions().playerHas((Player) sender, Flags.tp, true) ? plugin.msg(lm.General_AllowedTeleportIcon) : plugin.msg(lm.General_BlockedTeleportIcon);
-                moveFlag = res.getPermissions().playerHas(sender.getName(), Flags.move, true) ? plugin.msg(lm.General_AllowedMovementIcon) : plugin.msg(lm.General_BlockedMovementIcon);
+                tpFlag = res.getPermissions().playerHas((Player) sender, Flags.tp, true) ? lm.General_AllowedTeleportIcon.getMessage() : lm.General_BlockedTeleportIcon.getMessage();
+                moveFlag = res.getPermissions().playerHas(sender.getName(), Flags.move, true) ? lm.General_AllowedMovementIcon.getMessage() : lm.General_BlockedMovementIcon.getMessage();
 
                 if (res.isTrusted((Player) sender))
-                    msg = plugin.msg(lm.Residence_TrustedResList, y + 1, res.getName(), res.getWorld(), tpFlag + moveFlag, ExtraString);
+                    msg = lm.Residence_TrustedResList.getMessage(y + 1, res.getName(), res.getWorld(), tpFlag + moveFlag, ExtraString);
             }
 
             RawMessage rm = new RawMessage();
@@ -189,39 +201,39 @@ public class InformationPager {
 
             ClaimedResidence res = resT.getValue();
             StringBuilder StringB = new StringBuilder();
-            StringB.append(plugin.msg(lm.General_Owner, res.getOwner()));
+            StringB.append(lm.General_Owner.getMessage(res.getOwner()));
 
             if (res.getAreaArray().length > 0 && (res.getPermissions().has(Flags.hidden, FlagCombo.FalseOrNone) && res.getPermissions().has(Flags.coords, FlagCombo.TrueOrNone) || resadmin)) {
                 CuboidArea area = res.getAreaArray()[0];
-                String cord1 = plugin.msg(lm.General_CoordsTop, area.getHighVector().getBlockX(), area.getHighVector().getBlockY(), area.getHighVector().getBlockZ());
-                String cord2 = plugin.msg(lm.General_CoordsBottom, area.getLowVector().getBlockX(), area.getLowVector().getBlockY(), area.getLowVector().getBlockZ());
-                String worldInfo = CMIChatColor.translate(plugin.msg(lm.General_CoordsLiner, cord1, cord2));
+                String cord1 = lm.General_CoordsTop.getMessage(area.getHighVector().getBlockX(), area.getHighVector().getBlockY(), area.getHighVector().getBlockZ());
+                String cord2 = lm.General_CoordsBottom.getMessage(area.getLowVector().getBlockX(), area.getLowVector().getBlockY(), area.getLowVector().getBlockZ());
+                String worldInfo = CMIChatColor.translate(lm.General_CoordsLiner.getMessage(cord1, cord2));
                 StringB.append("\n" + worldInfo);
             }
 
-            StringB.append("\n" + plugin.msg(lm.General_CreatedOn, GetTime.getTime(res.getCreateTime())));
+            StringB.append("\n" + lm.General_CreatedOn.getMessage(GetTime.getTime(res.getCreateTime())));
 
             String ExtraString = "";
             if (res.isForRent()) {
                 if (res.isRented()) {
-                    ExtraString = " " + plugin.msg(lm.Residence_IsRented);
-                    StringB.append("\n " + plugin.msg(lm.Residence_RentedBy, res.getRentedLand().getRenterName()));
+                    ExtraString = " " + lm.Residence_IsRented.getMessage();
+                    StringB.append("\n " + lm.Residence_RentedBy.getMessage(res.getRentedLand().getRenterName()));
                 } else {
-                    ExtraString = " " + plugin.msg(lm.Residence_IsForRent);
+                    ExtraString = " " + lm.Residence_IsForRent.getMessage();
                 }
                 RentableLand rentable = res.getRentable();
-                StringB.append("\n" + plugin.msg(lm.General_Cost, rentable.cost, rentable.days));
-                StringB.append("\n" + plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing));
-                StringB.append("\n" + plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket));
-                StringB.append("\n" + plugin.msg(lm.Rentable_AllowAutoPay, rentable.AllowAutoPay));
+                StringB.append("\n" + lm.General_Cost.getMessage(rentable.cost, rentable.days));
+                StringB.append("\n" + lm.Rentable_AllowRenewing.getMessage(rentable.AllowRenewing));
+                StringB.append("\n" + lm.Rentable_StayInMarket.getMessage(rentable.StayInMarket));
+                StringB.append("\n" + lm.Rentable_AllowAutoPay.getMessage(rentable.AllowAutoPay));
             }
 
             if (res.isForSell()) {
-                ExtraString = " " + plugin.msg(lm.Residence_IsForSale);
-                StringB.append("\n" + plugin.msg(lm.Economy_LandForSale) + " " + res.getSellPrice());
+                ExtraString = " " + lm.Residence_IsForSale.getMessage();
+                StringB.append("\n" + lm.Economy_LandForSale.getMessage() + " " + res.getSellPrice());
             }
 
-            String msg = plugin.msg(lm.Residence_ResList, i, res.getName(), res.getWorld(), "", ExtraString);
+            String msg = lm.Residence_ResList.getMessage(i, res.getName(), res.getWorld(), "", ExtraString);
 
             msg = CMIChatColor.stripColor(msg + " " + StringB.toString().replace("\n", ""));
             msg = msg.replaceAll("\\s{2}", " ");
@@ -249,39 +261,39 @@ public class InformationPager {
 
                 ClaimedResidence res = resT.getValue();
                 StringBuilder StringB = new StringBuilder();
-                StringB.append(" " + plugin.msg(lm.General_Owner, res.getOwner()));
+                StringB.append(" " + lm.General_Owner.getMessage(res.getOwner()));
 
                 if (res.getAreaArray().length > 0 && (res.getPermissions().has(Flags.hidden, FlagCombo.FalseOrNone) && res.getPermissions().has(Flags.coords, FlagCombo.TrueOrNone) || resadmin)) {
                     CuboidArea area = res.getAreaArray()[0];
-                    String cord1 = plugin.msg(lm.General_CoordsTop, area.getHighVector().getBlockX(), area.getHighVector().getBlockY(), area.getHighVector().getBlockZ());
-                    String cord2 = plugin.msg(lm.General_CoordsBottom, area.getLowVector().getBlockX(), area.getLowVector().getBlockY(), area.getLowVector().getBlockZ());
-                    String worldInfo = CMIChatColor.translate(plugin.msg(lm.General_CoordsLiner, cord1, cord2));
+                    String cord1 = lm.General_CoordsTop.getMessage(area.getHighVector().getBlockX(), area.getHighVector().getBlockY(), area.getHighVector().getBlockZ());
+                    String cord2 = lm.General_CoordsBottom.getMessage(area.getLowVector().getBlockX(), area.getLowVector().getBlockY(), area.getLowVector().getBlockZ());
+                    String worldInfo = CMIChatColor.translate(lm.General_CoordsLiner.getMessage(cord1, cord2));
                     StringB.append("\n" + worldInfo);
                 }
 
-                StringB.append("\n " + plugin.msg(lm.General_CreatedOn, GetTime.getTime(res.getCreateTime())));
+                StringB.append("\n " + lm.General_CreatedOn.getMessage(GetTime.getTime(res.getCreateTime())));
 
                 String ExtraString = "";
                 if (res.isForRent()) {
                     if (res.isRented()) {
-                        ExtraString = " " + plugin.msg(lm.Residence_IsRented);
-                        StringB.append("\n " + plugin.msg(lm.Residence_RentedBy, res.getRentedLand().getRenterName()));
+                        ExtraString = " " + lm.Residence_IsRented.getMessage();
+                        StringB.append("\n " + lm.Residence_RentedBy.getMessage(res.getRentedLand().getRenterName()));
                     } else {
-                        ExtraString = " " + plugin.msg(lm.Residence_IsForRent);
+                        ExtraString = " " + lm.Residence_IsForRent.getMessage();
                     }
                     RentableLand rentable = res.getRentable();
-                    StringB.append("\n " + plugin.msg(lm.General_Cost, rentable.cost, rentable.days));
-                    StringB.append("\n " + plugin.msg(lm.Rentable_AllowRenewing, rentable.AllowRenewing));
-                    StringB.append("\n " + plugin.msg(lm.Rentable_StayInMarket, rentable.StayInMarket));
-                    StringB.append("\n " + plugin.msg(lm.Rentable_AllowAutoPay, rentable.AllowAutoPay));
+                    StringB.append("\n " + lm.General_Cost.getMessage(rentable.cost, rentable.days));
+                    StringB.append("\n " + lm.Rentable_AllowRenewing.getMessage(rentable.AllowRenewing));
+                    StringB.append("\n " + lm.Rentable_StayInMarket.getMessage(rentable.StayInMarket));
+                    StringB.append("\n " + lm.Rentable_AllowAutoPay.getMessage(rentable.AllowAutoPay));
                 }
 
                 if (res.isForSell()) {
-                    ExtraString = " " + plugin.msg(lm.Residence_IsForSale);
-                    StringB.append("\n " + plugin.msg(lm.Economy_LandForSale) + " " + res.getSellPrice());
+                    ExtraString = " " + lm.Residence_IsForSale.getMessage();
+                    StringB.append("\n " + lm.Economy_LandForSale.getMessage() + " " + res.getSellPrice());
                 }
 
-                String msg = plugin.msg(lm.Residence_ResList, y, res.getName(), res.getWorld(), "", ExtraString);
+                String msg = lm.Residence_ResList.getMessage(y, res.getName(), res.getWorld(), "", ExtraString);
 
                 msg = CMIChatColor.stripColor(msg + " " + StringB.toString().replace("\n", ""));
                 msg = msg.replaceAll("\\s{2}", " ");

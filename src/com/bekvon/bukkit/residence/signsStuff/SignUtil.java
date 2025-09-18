@@ -213,12 +213,12 @@ public class SignUtil {
                     shortName = lines[0];
                     secondLine = lines[1];
                 }
-                sign.setLine(0, plugin.msg(lm.Sign_ResName, shortName));
+                sign.setLine(0, lm.Sign_ResName.getMessage(shortName));
                 if (secondLine != null)
-                    sign.setLine(1, plugin.msg(lm.Sign_ResName, secondLine));
+                    sign.setLine(1, lm.Sign_ResName.getMessage(secondLine));
                 sign.setLine(2, "");
                 sign.setLine(3, "");
-                sign.setLine(secondLine == null ? 1 : 2, plugin.msg(lm.Sign_Owner, res.getOwner()));
+                sign.setLine(secondLine == null ? 1 : 2, lm.Sign_Owner.getMessage(res.getOwner()));
                 sign.update();
 
                 return;
@@ -233,7 +233,7 @@ public class SignUtil {
                 if (rentedPlace != null)
                     time = rentedPlace.endTime;
 
-                SimpleDateFormat formatter = new SimpleDateFormat(plugin.msg(lm.Sign_DateFormat));
+                SimpleDateFormat formatter = new SimpleDateFormat(lm.Sign_DateFormat.getMessage());
                 formatter.setTimeZone(TimeZone.getTimeZone(plugin.getConfigManager().getTimeZone()));
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(time);
@@ -244,22 +244,23 @@ public class SignUtil {
                     endDate = "Unknown";
 
                 if (plugin.getRentManager().getRentedAutoRepeats(res))
-                    endDate = plugin.msg(lm.Sign_RentedAutorenewTrue, endDate);
+                    endDate = lm.Sign_RentedAutorenewTrue.getMessage(endDate);
                 else
-                    endDate = plugin.msg(lm.Sign_RentedAutorenewFalse, endDate);
+                    endDate = lm.Sign_RentedAutorenewFalse.getMessage(endDate);
 
-                String TopLine = rented ? plugin.msg(lm.Sign_RentedTopLine, endDate) : plugin.msg(lm.Sign_ForRentTopLine);
+                String TopLine = rented ? lm.Sign_RentedTopLine.getMessage(endDate) : lm.Sign_ForRentTopLine.getMessage();
                 sign.setLine(0, TopLine);
 
-                String infoLine = plugin.msg(rented ? lm.Sign_RentedPriceLine : lm.Sign_ForRentPriceLine, plugin.getRentManager().getCostOfRent(res), plugin
-                    .getRentManager().getRentDays(res), plugin.getRentManager().getRentableRepeatable(res));
+                String infoLine = rented ? lm.Sign_RentedPriceLine.getMessage(plugin.getRentManager().getCostOfRent(res), plugin
+                    .getRentManager().getRentDays(res), plugin.getRentManager().getRentableRepeatable(res)) : lm.Sign_ForRentPriceLine.getMessage(plugin.getRentManager().getCostOfRent(res), plugin
+                        .getRentManager().getRentDays(res), plugin.getRentManager().getRentableRepeatable(res));
 
                 sign.setLine(1, infoLine);
                 String shortName = fixResName(landName);
-                sign.setLine(2, rented ? plugin.msg(lm.Sign_RentedResName, shortName)
-                    : plugin.msg(lm.Sign_RentedResName, shortName));
-                sign.setLine(3, rented ? plugin.msg(lm.Sign_RentedBottomLine, plugin.getRentManager().getRentingPlayer(landName))
-                    : plugin.msg(lm.Sign_ForRentBottomLine));
+                sign.setLine(2, rented ? lm.Sign_RentedResName.getMessage(shortName)
+                    : lm.Sign_RentedResName.getMessage(shortName));
+                sign.setLine(3, rented ? lm.Sign_RentedBottomLine.getMessage(plugin.getRentManager().getRentingPlayer(landName))
+                    : lm.Sign_ForRentBottomLine.getMessage());
                 sign.update();
             }
 
@@ -272,15 +273,15 @@ public class SignUtil {
                     secondLine = lines[1];
                 }
 
-                sign.setLine(0, plugin.msg(lm.Sign_ForSaleTopLine));
-                String infoLine = plugin.msg(lm.Sign_ForSalePriceLine, res.getSellPrice());
+                sign.setLine(0, lm.Sign_ForSaleTopLine.getMessage());
+                String infoLine = lm.Sign_ForSalePriceLine.getMessage( res.getSellPrice());
                 sign.setLine(1, infoLine);
-                sign.setLine(2, plugin.msg(lm.Sign_RentedResName, shortName));
+                sign.setLine(2, lm.Sign_RentedResName.getMessage( shortName));
 
                 if (secondLine != null)
-                    sign.setLine(3, plugin.msg(lm.Sign_RentedResName, secondLine));
+                    sign.setLine(3, lm.Sign_RentedResName.getMessage(secondLine));
                 else
-                    sign.setLine(3, plugin.msg(lm.Sign_ForSaleBottom, res.getTotalSize()));
+                    sign.setLine(3, lm.Sign_ForSaleBottom.getMessage( res.getTotalSize()));
                 sign.update();
             }
         });

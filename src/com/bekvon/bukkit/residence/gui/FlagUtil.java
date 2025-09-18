@@ -1,6 +1,7 @@
 package com.bekvon.bukkit.residence.gui;
 
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -8,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import com.bekvon.bukkit.residence.utils.PlayerCache;
 
 import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Container.PageInfo;
@@ -67,7 +69,7 @@ public class FlagUtil {
         }
     }
 
-    public void openPsetFlagGui(Player player, String targetPlayer, ClaimedResidence res, boolean resadmin, int page) {
+    public void openPsetFlagGui(Player player, UUID targetPlayer, ClaimedResidence res, boolean resadmin, int page) {
         if (player == null || !player.isOnline())
             return;
 
@@ -75,9 +77,9 @@ public class FlagUtil {
         flag.recalculate();
 
         PageInfo pi = new PageInfo(45, flag.getButtons().size(), page);
-        openUI(flag, pi, player, Residence.getInstance().msg(lm.Gui_Pset_Title, res.getName(), targetPlayer));
+        openUI(flag, pi, player, lm.Gui_Pset_Title.getMessage(res.getName(), PlayerCache.getName(targetPlayer)));
         return;
-    }
+    } 
 
     private void openUI(setFlagInfo flag, PageInfo pi, Player player, String title) {
 
@@ -110,7 +112,7 @@ public class FlagUtil {
         setFlagInfo flag = new setFlagInfo(res, player, resadmin);
         flag.recalculate();
         PageInfo pi = new PageInfo(45, flag.getButtons().size(), page);
-        openUI(flag, pi, player, plugin.msg(lm.Gui_Set_Title, res.getName()));
+        openUI(flag, pi, player, lm.Gui_Set_Title.getMessage(res.getName()));
     }
 
     public FlagData getFlagData() {

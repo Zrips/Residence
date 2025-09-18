@@ -46,7 +46,7 @@ public class SlimeFunResidenceModule implements ProtectionModule {
             if (res != null) {
                 boolean allow = res.getPermissions().playerHas(ResidencePlayer.get(op.getUniqueId()), Flags.container, false);
                 if (!allow)
-                    residence.msg(op.getPlayer(), lm.Flag_Deny, Flags.container);
+                    lm.Flag_Deny.sendMessage(op.getPlayer(), Flags.container);
                 return allow;
             }
             break;

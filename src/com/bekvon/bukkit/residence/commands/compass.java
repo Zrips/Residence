@@ -7,9 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.Zrips.CMILib.FileHandler.ConfigReader;
-import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
-
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
@@ -18,6 +15,9 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
+
+import net.Zrips.CMILib.FileHandler.ConfigReader;
+import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class compass implements cmd {
 
@@ -29,7 +29,7 @@ public class compass implements cmd {
 
         if (args.length != 1) {
             player.setCompassTarget(player.getWorld().getSpawnLocation());
-            plugin.msg(player, lm.General_CompassTargetReset);
+            lm.General_CompassTargetReset.sendMessage(sender);
             return true;
         }
 
@@ -38,8 +38,8 @@ public class compass implements cmd {
 
         ClaimedResidence res = plugin.getResidenceManager().getByName(args[0]);
 
-        if (res == null || !res.getWorld().equalsIgnoreCase(player.getWorld().getName())) {
-            plugin.msg(player, lm.Invalid_Residence);
+        if (res == null || !res.getWorldName().equalsIgnoreCase(player.getWorld().getName())) {
+            lm.Invalid_Residence.sendMessage(sender);
             return null;
         }
 
@@ -52,7 +52,7 @@ public class compass implements cmd {
 
         future.thenAccept(loc1 -> {
             CMIScheduler.runAtEntity(Residence.getInstance(), player, () -> player.setCompassTarget(loc1));
-            plugin.msg(player, lm.General_CompassTargetSet, args[0]);
+            lm.General_CompassTargetSet.sendMessage(sender, args[0]);
         });
 
         return true;

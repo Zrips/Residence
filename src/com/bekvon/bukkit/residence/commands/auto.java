@@ -99,7 +99,7 @@ public class auto implements cmd {
         ClaimedResidence collision = Residence.getInstance().getResidenceManager().collidesWithResidence(plugin.getSelectionManager().getSelectionCuboid(player));
 
         if (collision != null) {
-            Residence.getInstance().msg(player, lm.Area_Collision, collision.getResidenceName());
+            lm.Area_Collision.sendMessage(player, collision.getResidenceName());
             return null;
         }
 
@@ -114,7 +114,7 @@ public class auto implements cmd {
                 Visualizer v = new Visualizer(player);
                 v.setErrorAreas(collision);
                 Residence.getInstance().getSelectionManager().showBounds(player, v);
-                Residence.getInstance().msg(player, lm.Area_TooClose, gap, collision.getName());
+                lm.Area_TooClose.sendMessage(player, gap, collision.getName());
                 return null;
             }
         }
@@ -182,13 +182,13 @@ public class auto implements cmd {
 
         if (maxRatio > plugin.getConfigManager().getARCRatioValue()) {
             if (plugin.getConfigManager().isARCRatioInform()) {
-                Residence.getInstance().msg(player, lm.Area_WeirdShape, maxSide, (int) (maxRatio * 100) / 100D, minSide);
+                lm.Area_WeirdShape.sendMessage(player, maxSide, (int) (maxRatio * 100) / 100D, minSide);
             }
 
             if (plugin.getConfigManager().isARCRatioConfirmation()) {
                 RawMessage rm = new RawMessage();
-                rm.addText(Residence.getInstance().msg(lm.info_clickToConfirm));
-                rm.addHover(Residence.getInstance().msg(lm.info_clickToConfirm));
+                rm.addText(lm.info_clickToConfirm.getMessage());
+                rm.addHover(lm.info_clickToConfirm.getMessage());
                 rm.addCommand((resadmin ? "resadmin" : "res") + " create " + resName);
                 rm.show(sender);
                 return true;
@@ -360,7 +360,7 @@ public class auto implements cmd {
                 cost = c.getCost(group);
 
                 if (!Residence.getInstance().getEconomyManager().canAfford(player, cost)) {
-                    plugin.msg(player, lm.Economy_NotEnoughMoney);
+                    lm.Economy_NotEnoughMoney.sendMessage(player);
                     return failReason.money;
                 }
             }
@@ -715,7 +715,7 @@ public class auto implements cmd {
             }
 
             if (checkBalance && plugin.getConfigManager().enableEconomy() && !Residence.getInstance().getEconomyManager().canAfford(player, c.getCost(group))) {
-                plugin.msg(player, lm.Economy_NotEnoughMoneyAmount, Residence.getInstance().getEconomyManager().format(c.getCost(group)));
+                lm.Economy_NotEnoughMoneyAmount.sendMessage(player, Residence.getInstance().getEconomyManager().format(c.getCost(group)));
                 return failReason.money;
             }
 
@@ -731,16 +731,16 @@ public class auto implements cmd {
         cuboid = plugin.getSelectionManager().getSelectionCuboid(player);
 
         if (cuboid.getXSize() > groupMaxX)
-            plugin.msg(player, lm.Area_ToBigX, cuboid.getXSize(), groupMaxX);
+            lm.Area_ToBigX.sendMessage(player, cuboid.getXSize(), groupMaxX);
 
         if (cuboid.getYSize() > groupMaxY)
-            plugin.msg(player, lm.Area_ToBigY, cuboid.getYSize(), groupMaxY);
+            lm.Area_ToBigY.sendMessage(player, cuboid.getYSize(), groupMaxY);
 
         if (cuboid.getZSize() > groupMaxZ)
-            plugin.msg(player, lm.Area_ToBigZ, cuboid.getZSize(), groupMaxZ);
+            lm.Area_ToBigZ.sendMessage(player, cuboid.getZSize(), groupMaxZ);
 
         if (cuboid.getXSize() > groupMaxX || cuboid.getYSize() > groupMaxY || cuboid.getZSize() > groupMaxZ) {
-            plugin.msg(player, lm.Area_SizeLimit);
+            lm.Area_SizeLimit.sendMessage(player);
             return failReason.area;
         }
 

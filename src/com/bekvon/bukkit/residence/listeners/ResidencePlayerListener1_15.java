@@ -24,61 +24,61 @@ public class ResidencePlayerListener1_15 implements Listener {
     private Residence plugin;
 
     public ResidencePlayerListener1_15(Residence plugin) {
-	this.plugin = plugin;
+        this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractBeeHive(PlayerInteractEvent event) {
 
-	if (event.getPlayer() == null)
-	    return;
-	// disabling event on world
-	if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-	    return;
+        if (event.getPlayer() == null)
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
+            return;
 
-	if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
-	    return;
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
 
-	Player player = event.getPlayer();
+        Player player = event.getPlayer();
 
-	Block block = event.getClickedBlock();
-	if (block == null)
-	    return;
+        Block block = event.getClickedBlock();
+        if (block == null)
+            return;
 
-	Material mat = block.getType();
+        Material mat = block.getType();
 
-	if (!mat.equals(Material.BEE_NEST) && !mat.equals(Material.BEEHIVE))
-	    return;
+        if (!mat.equals(Material.BEE_NEST) && !mat.equals(Material.BEEHIVE))
+            return;
 
-	ItemStack iih = event.getItem();
-	CMIMaterial heldItem = CMIMaterial.get(iih);
+        ItemStack iih = event.getItem();
+        CMIMaterial heldItem = CMIMaterial.get(iih);
 
-	if (heldItem.equals(CMIMaterial.GLASS_BOTTLE)) {
-	    if (CMILib.getInstance().getReflectionManager().getHoneyLevel(block) < CMILib.getInstance().getReflectionManager().getMaxHoneyLevel(block)) {
-		return;
-	    }
-	    ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-	    if (res == null)
-		return;
-	    if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.honey, FlagCombo.TrueOrNone)) {
-		plugin.msg(player, lm.Residence_FlagDeny, Flags.honey, res.getName());
-		event.setCancelled(true);
-		return;
-	    }
-	}
+        if (heldItem.equals(CMIMaterial.GLASS_BOTTLE)) {
+            if (CMILib.getInstance().getReflectionManager().getHoneyLevel(block) < CMILib.getInstance().getReflectionManager().getMaxHoneyLevel(block)) {
+                return;
+            }
+            ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
+            if (res == null)
+                return;
+            if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.honey, FlagCombo.TrueOrNone)) {
+                lm.Residence_FlagDeny.sendMessage(player, Flags.honey, res.getName());
+                event.setCancelled(true);
+                return;
+            }
+        }
 
-	if (heldItem.equals(CMIMaterial.SHEARS)) {
-	    if (CMILib.getInstance().getReflectionManager().getHoneyLevel(block) < CMILib.getInstance().getReflectionManager().getMaxHoneyLevel(block)) {
-		return;
-	    }
-	    ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-	    if (res == null)
-		return;
-	    if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.honeycomb, FlagCombo.TrueOrNone)) {
-		plugin.msg(player, lm.Residence_FlagDeny, Flags.honeycomb, res.getName());
-		event.setCancelled(true);
-		return;
-	    }
-	}
+        if (heldItem.equals(CMIMaterial.SHEARS)) {
+            if (CMILib.getInstance().getReflectionManager().getHoneyLevel(block) < CMILib.getInstance().getReflectionManager().getMaxHoneyLevel(block)) {
+                return;
+            }
+            ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
+            if (res == null)
+                return;
+            if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.honeycomb, FlagCombo.TrueOrNone)) {
+                lm.Residence_FlagDeny.sendMessage(player, Flags.honeycomb, res.getName());
+                event.setCancelled(true);
+                return;
+            }
+        }
     }
 }

@@ -61,12 +61,12 @@ public class message implements cmd {
         }
 
         if (res == null) {
-            plugin.msg(sender, lm.Invalid_Residence);
+            lm.Invalid_Residence.sendMessage(sender);
             return true;
         }
 
         if (enter == null) {
-            plugin.msg(sender, lm.Invalid_MessageType);
+            lm.Invalid_MessageType.sendMessage(sender);
             return true;
         }
 

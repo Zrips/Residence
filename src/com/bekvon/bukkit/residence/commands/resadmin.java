@@ -26,10 +26,10 @@ public class resadmin implements cmd {
         Player player = (Player) sender;
         if (args[0].equalsIgnoreCase("on")) {
             ResAdmin.turnResAdmin(player, true);
-            plugin.msg(player, lm.General_AdminToggleTurnOn);
+            lm.General_AdminToggleTurnOn.sendMessage(sender);
         } else if (args[0].equalsIgnoreCase("off")) {
             ResAdmin.turnResAdmin(player, false);
-            plugin.msg(player, lm.General_AdminToggleTurnOff);
+            lm.General_AdminToggleTurnOff.sendMessage(sender);
         }
         return true;
     }

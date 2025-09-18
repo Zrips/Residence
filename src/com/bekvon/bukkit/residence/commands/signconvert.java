@@ -16,22 +16,22 @@ public class signconvert implements cmd {
     @Override
     @CommandAnnotation(simple = false, priority = 5600)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
-	if (sender instanceof Player) {
-	    Player player = (Player) sender;
-	    if (plugin.getPermissionManager().isResidenceAdmin(player)) {
-		plugin.getSignUtil().convertSigns(sender);
-	    } else
-		plugin.msg(player, lm.General_NoPermission);
-	} else {
-	    plugin.getSignUtil().convertSigns(sender);
-	}
-	return true;
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            if (plugin.getPermissionManager().isResidenceAdmin(player)) {
+                plugin.getSignUtil().convertSigns(sender);
+            } else
+                lm.General_NoPermission.sendMessage(sender);
+        } else {
+            plugin.getSignUtil().convertSigns(sender);
+        }
+        return true;
     }
 
     @Override
     public void getLocale() {
-	ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
-	c.get("Description", "Converts signs from ResidenceSign plugin");
-	c.get("Info", Arrays.asList("&eUsage: &6/res signconvert", "Will try to convert saved sign data from 3rd party plugin"));
+        ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
+        c.get("Description", "Converts signs from ResidenceSign plugin");
+        c.get("Info", Arrays.asList("&eUsage: &6/res signconvert", "Will try to convert saved sign data from 3rd party plugin"));
     }
 }

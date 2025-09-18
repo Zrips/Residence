@@ -15,18 +15,18 @@ public class signupdate implements cmd {
     @Override
     @CommandAnnotation(simple = false, priority = 5700)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
-	if (!resadmin) {
-	    plugin.msg(sender, lm.General_NoPermission);
-	    return true;
-	}
-	plugin.msg(sender, lm.Sign_Updated, plugin.getSignUtil().updateAllSigns());
-	return true;
+        if (!resadmin) {
+            lm.General_NoPermission.sendMessage(sender);
+            return true;
+        }
+        lm.Sign_Updated.sendMessage(sender, plugin.getSignUtil().updateAllSigns());
+        return true;
     }
 
     @Override
     public void getLocale() {
-	ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
-	c.get("Description", "Updated residence signs");
-	c.get("Info", Arrays.asList("&eUsage: &6/res signupdate"));
+        ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
+        c.get("Description", "Updated residence signs");
+        c.get("Info", Arrays.asList("&eUsage: &6/res signupdate"));
     }
 }

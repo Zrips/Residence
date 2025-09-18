@@ -168,7 +168,7 @@ public class SelectionManager {
                 sky(resadmin);
                 bedrock(resadmin);
             } else {
-                plugin.msg(player, lm.Select_Points);
+                lm.Select_Points.sendMessage(player);
             }
         }
 
@@ -209,9 +209,9 @@ public class SelectionManager {
                 loc2 = base.getHighLocation();
                 loc2.setY(newy);
 
-                plugin.msg(player, lm.Select_Sky);
+                lm.Select_Sky.sendMessage(player);
             } else {
-                plugin.msg(player, lm.Select_Points);
+                lm.Select_Points.sendMessage(player);
             }
         }
 
@@ -239,9 +239,9 @@ public class SelectionManager {
                 loc2 = base.getHighLocation();
                 loc1.setY(newy);
 
-                plugin.msg(player, lm.Select_Bedrock);
+                lm.Select_Bedrock.sendMessage(player);
             } else {
-                plugin.msg(player, lm.Select_Points);
+                lm.Select_Points.sendMessage(player);
             }
         }
 
@@ -254,7 +254,7 @@ public class SelectionManager {
 
             this.setBaseLoc1(new Location(player.getWorld(), xcoord, this.getMinYAllowed(), zcoord));
             this.setBaseLoc2(new Location(player.getWorld(), xmax, this.getMaxYAllowed(), zmax));
-            plugin.msg(player, lm.Select_Success);
+            lm.Select_Success.sendMessage(player);
         }
 
         public boolean hasPlacedBoth() {
@@ -278,7 +278,7 @@ public class SelectionManager {
         public CuboidArea getResizedArea() {
 
             CuboidArea area = this.getBaseArea();
-            
+
             switch (getSelectionRestrictions()) {
             case noLimits:
                 break;
@@ -494,12 +494,12 @@ public class SelectionManager {
 
         CuboidArea cuboidArea = this.getSelectionCuboid(player);
 
-        String Message = plugin.msg(lm.Select_TotalSize, cuboidArea.getSize());
+        String Message = lm.Select_TotalSize.getMessage(cuboidArea.getSize());
 
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
         if (plugin.getConfigManager().enableEconomy())
-            Message += " " + plugin.msg(lm.General_LandCost, cuboidArea.getCost(group));
+            Message += " " + lm.General_LandCost.getMessage(cuboidArea.getCost(group));
 
         CMIActionBar.send(player, Message);
 
@@ -507,24 +507,24 @@ public class SelectionManager {
 
     public void showSelectionInfo(Player player) {
         if (hasPlacedBoth(player)) {
-            plugin.msg(player, lm.General_Separator);
+            lm.General_Separator.sendMessage(player);
             CuboidArea cuboidArea = this.getSelectionCuboid(player);
-            plugin.msg(player, lm.Select_TotalSize, cuboidArea.getSize());
+            lm.Select_TotalSize.sendMessage(player, cuboidArea.getSize());
 
             ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
             PermissionGroup group = rPlayer.getGroup();
 
             if (plugin.getConfigManager().enableEconomy())
-                plugin.msg(player, lm.General_LandCost, cuboidArea.getCost(group));
-            player.sendMessage(ChatColor.YELLOW + "X" + plugin.msg(lm.General_Size, cuboidArea.getXSize()));
-            player.sendMessage(ChatColor.YELLOW + "Y" + plugin.msg(lm.General_Size, cuboidArea.getYSize()));
-            player.sendMessage(ChatColor.YELLOW + "Z" + plugin.msg(lm.General_Size, cuboidArea.getZSize()));
-            plugin.msg(player, lm.General_Separator);
+                lm.General_LandCost.sendMessage(player, cuboidArea.getCost(group));
+            lm.showMessage(player, ChatColor.YELLOW + "X" + lm.General_Size.getMessage(cuboidArea.getXSize()));
+            lm.showMessage(player, ChatColor.YELLOW + "Y" + lm.General_Size.getMessage(cuboidArea.getYSize()));
+            lm.showMessage(player, ChatColor.YELLOW + "Z" + lm.General_Size.getMessage(cuboidArea.getZSize()));
+            lm.General_Separator.sendMessage(player);
             Visualizer v = new Visualizer(player);
             v.setAreas(this.getSelectionCuboid(player));
             this.showBounds(player, v);
         } else
-            plugin.msg(player, lm.Select_Points);
+            lm.Select_Points.sendMessage(player);
     }
 
     public void showBounds(final Player player, final Visualizer v) {
@@ -867,7 +867,7 @@ public class SelectionManager {
 
             CMIEffect ef = new CMIEffect(effect);
 
-            CMILib.getInstance().getReflectionManager().playEffect(player, l, ef);
+            ef.show(player, l);
         }
     }
 
@@ -876,7 +876,7 @@ public class SelectionManager {
             this.sky(player, resadmin);
             this.bedrock(player, resadmin);
         } else {
-            plugin.msg(player, lm.Select_Points);
+            lm.Select_Points.sendMessage(player);
         }
     }
 
@@ -901,12 +901,12 @@ public class SelectionManager {
     }
 
     public boolean worldEdit(Player player) {
-        plugin.msg(player, lm.General_WorldEditNotFound);
+        lm.General_WorldEditNotFound.sendMessage(player);
         return false;
     }
 
     public boolean worldEditUpdate(Player player) {
-        plugin.msg(player, lm.General_WorldEditNotFound);
+        lm.General_WorldEditNotFound.sendMessage(player);
         return false;
     }
 
@@ -933,7 +933,7 @@ public class SelectionManager {
 //	selection.updateShadowArea();
 
         this.afterSelectionUpdate(player);
-        plugin.msg(player, lm.Select_Success);
+        lm.Select_Success.sendMessage(player);
         showSelectionInfo(player);
     }
 
@@ -944,12 +944,12 @@ public class SelectionManager {
 
     public void modify(Player player, boolean shift, int amount) {
         if (!hasPlacedBoth(player)) {
-            plugin.msg(player, lm.Select_Points);
+            lm.Select_Points.sendMessage(player);
             return;
         }
         Direction d = getDirection(player);
         if (d == null) {
-            plugin.msg(player, lm.Invalid_Direction);
+            lm.Invalid_Direction.sendMessage(player);
             return;
         }
         CuboidArea area = this.getSelectionCuboid(player);
@@ -966,15 +966,15 @@ public class SelectionManager {
             int oldy = area.getLowVector().getBlockY() - amount;
 
             if (oldy < MIN_HEIGHT) {
-                plugin.msg(player, lm.Select_TooLow);
+                lm.Select_TooLow.sendMessage(player);
                 oldy = MIN_HEIGHT;
             }
             area.getLowVector().setY(oldy);
             if (shift) {
                 area.getHighVector().setY(area.getHighVector().getBlockY() - amount);
-                plugin.msg(player, lm.Shifting_Down, amount);
+                lm.Shifting_Down.sendMessage(player, amount);
             } else
-                plugin.msg(player, lm.Expanding_Down, amount);
+                lm.Expanding_Down.sendMessage(player, amount);
             break;
         case MINUSX:
             area.getLowVector().setX(area.getLowVector().getBlockX() - amount);
@@ -982,46 +982,46 @@ public class SelectionManager {
                 double oldx2 = area.getHighVector().getBlockX();
                 oldx2 = oldx2 - amount;
                 area.getHighVector().setX(oldx2);
-                plugin.msg(player, lm.Shifting_West, amount);
+                lm.Shifting_West.sendMessage(player, amount);
             } else
-                plugin.msg(player, lm.Expanding_West, amount);
+                lm.Expanding_West.sendMessage(player, amount);
             break;
         case MINUSZ:
             area.getLowVector().setZ(area.getLowVector().getBlockZ() - amount);
             if (shift) {
                 area.getHighVector().setZ(area.getHighVector().getBlockZ() - amount);
-                plugin.msg(player, lm.Shifting_North, amount);
+                lm.Shifting_North.sendMessage(player, amount);
             } else
-                plugin.msg(player, lm.Expanding_North, amount);
+                lm.Expanding_North.sendMessage(player, amount);
             break;
         case PLUSX:
             area.getHighVector().setX(area.getHighVector().getBlockX() + amount);
             if (shift) {
                 area.getLowVector().setX(area.getLowVector().getBlockX() + amount);
-                plugin.msg(player, lm.Shifting_East, amount);
+                lm.Shifting_East.sendMessage(player, amount);
             } else
-                plugin.msg(player, lm.Expanding_East, amount);
+                lm.Expanding_East.sendMessage(player, amount);
             break;
         case PLUSZ:
             area.getHighVector().setZ(area.getHighVector().getBlockZ() + amount);
             if (shift) {
                 area.getLowVector().setZ(area.getLowVector().getBlockZ() + amount);
-                plugin.msg(player, lm.Shifting_South, amount);
+                lm.Shifting_South.sendMessage(player, amount);
             } else
-                plugin.msg(player, lm.Expanding_South, amount);
+                lm.Expanding_South.sendMessage(player, amount);
             break;
         case UP:
             oldy = area.getHighVector().getBlockY() + amount;
             if (oldy > getMaxWorldHeight(player.getLocation().getWorld())) {
-                plugin.msg(player, lm.Select_TooHigh);
+                lm.Select_TooHigh.sendMessage(player);
                 oldy = getMaxWorldHeight(player.getLocation().getWorld());
             }
             area.getHighVector().setY(oldy);
             if (shift) {
                 area.getLowVector().setY(area.getLowVector().getBlockY() + amount);
-                plugin.msg(player, lm.Shifting_Up, amount);
+                lm.Shifting_Up.sendMessage(player, amount);
             } else
-                plugin.msg(player, lm.Expanding_Up, amount);
+                lm.Expanding_Up.sendMessage(player, amount);
             break;
         default:
             break;
@@ -1042,12 +1042,12 @@ public class SelectionManager {
 
     public boolean contract(Player player, int amount) {
         if (!hasPlacedBoth(player)) {
-            plugin.msg(player, lm.Select_Points);
+            lm.Select_Points.sendMessage(player);
             return false;
         }
         Direction d = getDirection(player);
         if (d == null) {
-            plugin.msg(player, lm.Invalid_Direction);
+            lm.Invalid_Direction.sendMessage(player);
             return false;
         }
         d = d.getOpposite();
@@ -1057,27 +1057,27 @@ public class SelectionManager {
         case UP:
             double oldy = area.getHighVector().getBlockY() - amount;
             if (oldy > getMaxWorldHeight(player.getLocation().getWorld())) {
-                plugin.msg(player, lm.Select_TooHigh);
+                lm.Select_TooHigh.sendMessage(player);
                 oldy = getMaxWorldHeight(player.getLocation().getWorld());
             }
             area.getHighVector().setY(oldy);
-            plugin.msg(player, lm.Contracting_Down, amount);
+            lm.Contracting_Down.sendMessage(player, amount);
             break;
         case PLUSX:
             area.getHighVector().setX(area.getHighVector().getBlockX() - amount);
-            plugin.msg(player, lm.Contracting_West, amount);
+            lm.Contracting_West.sendMessage(player, amount);
             break;
         case PLUSZ:
             area.getHighVector().setZ(area.getHighVector().getBlockZ() - amount);
-            plugin.msg(player, lm.Contracting_North, amount);
+            lm.Contracting_North.sendMessage(player, amount);
             break;
         case MINUSX:
             area.getLowVector().setX(area.getLowVector().getBlockX() + amount);
-            plugin.msg(player, lm.Contracting_East, amount);
+            lm.Contracting_East.sendMessage(player, amount);
             break;
         case MINUSZ:
             area.getLowVector().setZ(area.getLowVector().getBlockZ() + amount);
-            plugin.msg(player, lm.Contracting_South, amount);
+            lm.Contracting_South.sendMessage(player, amount);
             break;
         case DOWN:
 
@@ -1089,11 +1089,11 @@ public class SelectionManager {
             oldy = area.getLowVector().getBlockY() + amount;
 
             if (oldy < MIN_HEIGHT) {
-                plugin.msg(player, lm.Select_TooLow);
+                lm.Select_TooLow.sendMessage(player);
                 oldy = MIN_HEIGHT;
             }
             area.getLowVector().setY(oldy);
-            plugin.msg(player, lm.Contracting_Up, amount);
+            lm.Contracting_Up.sendMessage(player, amount);
             break;
         default:
             break;

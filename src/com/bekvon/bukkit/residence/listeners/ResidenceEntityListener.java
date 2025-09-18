@@ -54,7 +54,6 @@ import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
-import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -74,13 +73,10 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
-import net.Zrips.CMILib.Effects.CMIEffect;
-import net.Zrips.CMILib.Effects.CMIEffectManager.CMIParticle;
 import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceEntityListener implements Listener {
@@ -235,7 +231,7 @@ public class ResidenceEntityListener implements Listener {
             return;
 
         if (res.getPermissions().playerHas(cause, Flags.animalkilling, FlagCombo.OnlyFalse)) {
-            plugin.msg(cause, lm.Residence_FlagDeny, Flags.animalkilling, res.getName());
+            lm.Residence_FlagDeny.sendMessage(cause, Flags.animalkilling, res.getName());
             attackevent.setCancelled(true);
             if (damager instanceof Arrow)
                 damager.remove();
@@ -288,7 +284,7 @@ public class ResidenceEntityListener implements Listener {
             return;
 
         if (res.getPermissions().playerHas(cause, Flags.animalkilling, FlagCombo.OnlyFalse)) {
-            plugin.msg(cause, lm.Residence_FlagDeny, Flags.animalkilling, res.getName());
+            lm.Residence_FlagDeny.sendMessage(cause, Flags.animalkilling, res.getName());
             event.setCancelled(true);
         }
     }
@@ -424,7 +420,7 @@ public class ResidenceEntityListener implements Listener {
             return true;
 
         if (res.getPermissions().playerHas(cause, Flags.vehicledestroy, FlagCombo.OnlyFalse)) {
-            plugin.msg(cause, lm.Residence_FlagDeny, Flags.vehicledestroy, res.getName());
+            lm.Residence_FlagDeny.sendMessage(cause, Flags.vehicledestroy, res.getName());
             return false;
         }
 
@@ -475,7 +471,7 @@ public class ResidenceEntityListener implements Listener {
             return;
 
         if (res.getPermissions().playerHas(cause, Flags.mobkilling, FlagCombo.OnlyFalse)) {
-            plugin.msg(cause, lm.Residence_FlagDeny, Flags.mobkilling, res.getName());
+            lm.Residence_FlagDeny.sendMessage(cause, Flags.mobkilling, res.getName());
             event.setCancelled(true);
             if (damager instanceof Arrow)
                 damager.remove();
@@ -505,7 +501,7 @@ public class ResidenceEntityListener implements Listener {
         if (res == null)
             return;
         if (res.getPermissions().playerHas(player, Flags.leash, FlagCombo.OnlyFalse)) {
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.leash, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.leash, res.getName());
             event.setCancelled(true);
         }
     }
@@ -555,7 +551,7 @@ public class ResidenceEntityListener implements Listener {
             return;
 
         if (res.getPermissions().playerHas(player, Flags.leash, FlagCombo.OnlyFalse)) {
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.leash, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.leash, res.getName());
             event.setCancelled(true);
         }
     }
@@ -718,7 +714,7 @@ public class ResidenceEntityListener implements Listener {
         FlagPermissions perms = plugin.getPermsByLocForPlayer(event.getEntity().getLocation(), player);
         if (!perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true))) {
             event.setCancelled(true);
-            plugin.msg(player, lm.Flag_Deny, Flags.place);
+            lm.Flag_Deny.sendMessage(player, Flags.place);
             player.updateInventory();
         }
     }
@@ -744,7 +740,7 @@ public class ResidenceEntityListener implements Listener {
         if (perms.has(Flags.shoot, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
             if (event.getEntity().getShooter() instanceof Player)
-                plugin.msg((Player) event.getEntity().getShooter(), lm.Flag_Deny, Flags.shoot);
+                lm.Flag_Deny.sendMessage((Player) event.getEntity().getShooter(), Flags.shoot);
         }
     }
 
@@ -771,7 +767,7 @@ public class ResidenceEntityListener implements Listener {
         FlagPermissions perms = plugin.getPermsByLocForPlayer(ent.getLocation(), player);
         if (!perms.playerHas(player, Flags.destroy, perms.playerHas(player, Flags.build, true))) {
             event.setCancelled(true);
-            plugin.msg(player, lm.Flag_Deny, Flags.destroy);
+            lm.Flag_Deny.sendMessage(player, Flags.destroy);
         }
     }
 
@@ -938,7 +934,7 @@ public class ResidenceEntityListener implements Listener {
             if (perms.has(Flags.pvp, FlagCombo.OnlyFalse)) {
                 ProjectileSource shooter = ((Projectile) ent).getShooter();
                 if (shooter instanceof Player)
-                    Residence.getInstance().msg((Player) shooter, lm.Flag_Deny, Flags.pvp);
+                    lm.Flag_Deny.sendMessage((Player) shooter, Flags.pvp);
 
                 Location loc = ent.getLocation();
                 ent.getWorld().spawnParticle(Particle.GUST_EMITTER_SMALL, loc, 0);
@@ -1243,7 +1239,7 @@ public class ResidenceEntityListener implements Listener {
         }
 
         if (!animalKilling && animalDamage && shooter instanceof Player) {
-            Residence.getInstance().msg((Player) shooter, lm.Flag_Deny, Flags.animalkilling);
+            lm.Flag_Deny.sendMessage((Player) shooter, Flags.animalkilling);
         }
     }
 
@@ -1522,7 +1518,7 @@ public class ResidenceEntityListener implements Listener {
             if (stack != null) {
                 if (!ResPerm.bypass_container.hasPermission(player, 10000L) && !perms.playerHas(player, Flags.container, true)) {
                     event.setCancelled(true);
-                    plugin.msg(player, lm.Flag_Deny, Flags.container);
+                    lm.Flag_Deny.sendMessage(player, Flags.container);
                 }
 
                 // Specific fix for the Itemadders plugin. 
@@ -1530,7 +1526,7 @@ public class ResidenceEntityListener implements Listener {
                 if (Version.isCurrentEqualOrHigher(Version.v1_21_R1) && event.getDamageSource() != null && event.getDamageSource().getCausingEntity() == null && !perms.playerHas(player, Flags.destroy,
                     perms.playerHas(player, Flags.build, true))) {
                     event.setCancelled(true);
-                    plugin.msg(player, lm.Flag_Deny, Flags.destroy);
+                    lm.Flag_Deny.sendMessage(player, Flags.destroy);
                 }
 
                 return;
@@ -1539,7 +1535,7 @@ public class ResidenceEntityListener implements Listener {
 
         if (!perms.playerHas(player, Flags.destroy, perms.playerHas(player, Flags.build, true))) {
             event.setCancelled(true);
-            plugin.msg(player, lm.Flag_Deny, Flags.destroy);
+            lm.Flag_Deny.sendMessage(player, Flags.destroy);
         }
     }
 
@@ -1638,7 +1634,7 @@ public class ResidenceEntityListener implements Listener {
 
             if (!srcpvp && !isSnowBall || !allowSnowBall && isSnowBall) {
                 if (attacker != null && inform)
-                    Residence.getInstance().msg(attacker, lm.General_NoPVPZone);
+                     lm.General_NoPVPZone.sendMessage(attacker);
                 if (isOnFire)
                     victim.setFireTicks(0);
                 return false;
@@ -1650,7 +1646,7 @@ public class ResidenceEntityListener implements Listener {
                 if (damager != null)
                     if (!Residence.getInstance().getWorldFlags().getPerms(damager.getWorld().getName()).has(Flags.pvp, FlagCombo.TrueOrNone)) {
                         if (attacker != null && inform)
-                            Residence.getInstance().msg(attacker, lm.General_WorldPVPDisabled);
+                             lm.General_WorldPVPDisabled.sendMessage(attacker);
                         return false;
                     }
 
@@ -1659,7 +1655,7 @@ public class ResidenceEntityListener implements Listener {
                     FlagPermissions aPerm = Residence.getInstance().getPermsByLoc(attacker.getLocation());
                     if (!aPerm.has(Flags.pvp, FlagCombo.TrueOrNone)) {
                         if (inform)
-                            Residence.getInstance().msg(attacker, lm.General_NoPVPZone);
+                             lm.General_NoPVPZone.sendMessage(attacker);
                         return false;
                     }
                 }
@@ -1668,7 +1664,7 @@ public class ResidenceEntityListener implements Listener {
                 if (!isSnowBall && !area.getPermissions().has(Flags.pvp, FlagCombo.TrueOrNone) || isSnowBall && !allowSnowBall) {
                     if (attacker != null)
                         if (inform)
-                            Residence.getInstance().msg(attacker, lm.General_NoPVPZone);
+                             lm.General_NoPVPZone.sendMessage(attacker);
                     return false;
                 }
             }
@@ -1682,9 +1678,9 @@ public class ResidenceEntityListener implements Listener {
         return true;
     }
 
-    private void process(lm lm, Player attacker, boolean isOnFire, Entity ent, EntityDamageEvent event, Entity damager) {
+    private static void process(lm lm, Player attacker, boolean isOnFire, Entity ent, EntityDamageEvent event, Entity damager) {
         if (attacker != null)
-            plugin.msg(attacker, lm);
+            lm.sendMessage(attacker);
         if (isOnFire)
             ent.setFireTicks(0);
         event.setCancelled(true);
@@ -1865,7 +1861,7 @@ public class ResidenceEntityListener implements Listener {
 
         if (!perms.playerHas(player, Flags.animalkilling, FlagCombo.TrueOrNone)) {
             event.setCancelled(true);
-            Residence.getInstance().msg(player, lm.Flag_Deny, Flags.animalkilling);
+            lm.Flag_Deny.sendMessage(player, Flags.animalkilling);
         }
     }
 }

@@ -31,15 +31,15 @@ public class lease implements cmd {
 
             if (args[0].equals("set")) {
                 if (!resadmin) {
-                    plugin.msg(player, lm.General_NoPermission);
+                    lm.General_NoPermission.sendMessage(sender);
                     return true;
                 }
                 if (args[2].equals("infinite")) {
                     if (plugin.getLeaseManager().isLeased(plugin.getResidenceManager().getByName(args[1]))) {
                         plugin.getLeaseManager().removeExpireTime(plugin.getResidenceManager().getByName(args[1]));
-                        plugin.msg(player, lm.Economy_LeaseInfinite);
+                        lm.Economy_LeaseInfinite.sendMessage(sender);
                     } else {
-                        plugin.msg(player, lm.Economy_LeaseNotExpire);
+                        lm.Economy_LeaseNotExpire.sendMessage(sender);
                     }
                     return true;
                 }
@@ -47,7 +47,7 @@ public class lease implements cmd {
                 try {
                     days = Integer.parseInt(args[2]);
                 } catch (Exception ex) {
-                    plugin.msg(player, lm.Invalid_Days);
+                    lm.Invalid_Days.sendMessage(sender);
                     return true;
                 }
                 plugin.getLeaseManager().setExpireTime(player, plugin.getResidenceManager().getByName(args[1]), days);
@@ -58,20 +58,20 @@ public class lease implements cmd {
                 if (args.length == 1) {
                     res = plugin.getResidenceManager().getByLoc(player.getLocation());
                     if (res == null) {
-                        plugin.msg(player, lm.Residence_NotIn);
+                        lm.Residence_NotIn.sendMessage(sender);
                         return true;
                     }
                 } else {
                     res = plugin.getResidenceManager().getByName(args[1]);
                     if (res == null) {
-                        plugin.msg(player, lm.Invalid_Residence);
+                        lm.Invalid_Residence.sendMessage(sender);
                         return true;
                     }
                 }
 
                 String until = plugin.getLeaseManager().getExpireTime(res);
                 if (until != null)
-                    plugin.msg(player, lm.Economy_LeaseRenew, until);
+                    lm.Economy_LeaseRenew.sendMessage(sender, until);
                 return true;
             }
             if (args[0].equals("renew")) {
@@ -120,7 +120,7 @@ public class lease implements cmd {
 
                 PageInfo pi = new PageInfo(3, list.size(), page);
 
-                plugin.msg(player, lm.General_Separator);
+                lm.General_Separator.sendMessage(sender);
                 for (ClaimedResidence one : list) {
                     if (!pi.isEntryOk())
                         continue;
@@ -129,9 +129,9 @@ public class lease implements cmd {
                         break;
 
                     if (res.isOwner(player))
-                        plugin.msg(player, lm.Economy_LeaseList, pi.getPositionForOutput(), one.getName(), plugin.getLeaseManager().getExpireTime(one), one.getOwner());
+                        lm.Economy_LeaseList.sendMessage(sender, pi.getPositionForOutput(), one.getName(), plugin.getLeaseManager().getExpireTime(one), one.getOwner());
                     else
-                        plugin.msg(player, lm.Economy_LeaseList, pi.getPositionForOutput(), one.getName(), "", "");
+                        lm.Economy_LeaseList.sendMessage(sender, pi.getPositionForOutput(), one.getName(), "", "");
                 }
 
                 pi.autoPagination(sender, "res lease list " + res.getName());
@@ -143,23 +143,23 @@ public class lease implements cmd {
                     ClaimedResidence res = plugin.getResidenceManager().getByName(args[1]);
                     if (res == null || plugin.getLeaseManager().isLeased(res)) {
                         double cost = plugin.getLeaseManager().getRenewCostD(res);
-                        plugin.msg(player, lm.Economy_LeaseRenewalCost, args[1], plugin.getEconomyManager().format(cost));
+                        lm.Economy_LeaseRenewalCost.sendMessage(sender, args[1], plugin.getEconomyManager().format(cost));
                     } else {
-                        plugin.msg(player, lm.Economy_LeaseNotExpire);
+                        lm.Economy_LeaseNotExpire.sendMessage(sender);
                     }
                     return true;
                 }
                 ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
                 if (res == null) {
-                    plugin.msg(player, lm.Invalid_Area);
+                    lm.Invalid_Area.sendMessage(sender);
                     return true;
                 }
                 String area = res.getName();
                 if (plugin.getLeaseManager().isLeased(res)) {
                     double cost = plugin.getLeaseManager().getRenewCostD(res);
-                    plugin.msg(player, lm.Economy_LeaseRenewalCost, area, plugin.getEconomyManager().format(cost));
+                    lm.Economy_LeaseRenewalCost.sendMessage(sender, area, plugin.getEconomyManager().format(cost));
                 } else {
-                    plugin.msg(player, lm.Economy_LeaseNotExpire);
+                    lm.Economy_LeaseNotExpire.sendMessage(sender);
                 }
                 return true;
             }

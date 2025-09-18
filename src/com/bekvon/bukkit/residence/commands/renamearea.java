@@ -18,28 +18,28 @@ public class renamearea implements cmd {
     @Override
     @CommandAnnotation(simple = true, priority = 2800)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
-	if (!(sender instanceof Player))
-	    return false;
+        if (!(sender instanceof Player))
+            return false;
 
-	Player player = (Player) sender;
-	if (args.length != 3)
-	    return false;
+        Player player = (Player) sender;
+        if (args.length != 3)
+            return false;
 
-	ClaimedResidence res = plugin.getResidenceManager().getByName(args[0]);
-	if (res == null) {
-	    plugin.msg(player, lm.Invalid_Residence);
-	    return true;
-	}
+        ClaimedResidence res = plugin.getResidenceManager().getByName(args[0]);
+        if (res == null) {
+            lm.Invalid_Residence.sendMessage(sender);
+            return true;
+        }
 
-	res.renameArea(player, args[1], args[2], resadmin);
-	return true;
+        res.renameArea(player, args[1], args[2], resadmin);
+        return true;
     }
 
     @Override
     public void getLocale() {
-	ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
-	c.get("Description", "Rename area name for residence");
-	c.get("Info", Arrays.asList("&eUsage: &6/res removeworld [residence] [oldAreaName] [newAreaName]"));
-	LocaleManager.addTabCompleteMain(this, "[residence]", "[carea]");
+        ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
+        c.get("Description", "Rename area name for residence");
+        c.get("Info", Arrays.asList("&eUsage: &6/res removeworld [residence] [oldAreaName] [newAreaName]"));
+        LocaleManager.addTabCompleteMain(this, "[residence]", "[carea]");
     }
 }

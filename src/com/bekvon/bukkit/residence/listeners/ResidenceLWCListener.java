@@ -128,7 +128,7 @@ public class ResidenceLWCListener implements com.griefcraft.scripting.Module {
             }
 
             if (i > 0)
-                Residence.getInstance().msg(player, lm.Residence_LwcRemoved, i, System.currentTimeMillis() - time);
+                lm.Residence_LwcRemoved.sendMessage(player, i, System.currentTimeMillis() - time);
         });
     }
 
@@ -175,7 +175,7 @@ public class ResidenceLWCListener implements com.griefcraft.scripting.Module {
         boolean hasuse = perms.playerHas(player, Flags.use, true);
         if (!perms.playerHas(player, Flags.container, hasuse) && !ResPerm.bypass_container.hasPermission(player, 10000L)) {
             event.setCancelled(true);
-            Residence.getInstance().msg(player, lm.Flag_Deny, Flags.container);
+            lm.Flag_Deny.sendMessage(player, Flags.container);
         }
     }
 

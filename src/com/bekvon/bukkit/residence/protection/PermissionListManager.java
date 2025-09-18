@@ -40,36 +40,36 @@ public class PermissionListManager {
         if (perms == null) {
             perms = new FlagPermissions();
             get.put(listname, perms);
-            plugin.msg(player, lm.General_ListCreate, listname);
+            lm.General_ListCreate.sendMessage(player, listname);
         } else {
-            plugin.msg(player, lm.General_ListExists);
+            lm.General_ListExists.sendMessage(player);
         }
     }
 
     public void removeList(Player player, String listname) {
         Map<String, FlagPermissions> get = lists.get(player.getName());
         if (get == null) {
-            plugin.msg(player, lm.Invalid_List);
+            lm.Invalid_List.sendMessage(player);
             return;
         }
         FlagPermissions list = get.get(listname);
         if (list == null) {
-            plugin.msg(player, lm.Invalid_List);
+            lm.Invalid_List.sendMessage(player);
             return;
         }
         get.remove(listname);
-        plugin.msg(player, lm.General_ListRemoved);
+        lm.General_ListRemoved.sendMessage(player);
     }
 
     public void applyListToResidence(Player player, String listname, String areaname, boolean resadmin) {
         FlagPermissions list = this.getList(player.getName(), listname);
         if (list == null) {
-            plugin.msg(player, lm.Invalid_List);
+            lm.Invalid_List.sendMessage(player);
             return;
         }
         ClaimedResidence res = plugin.getResidenceManager().getByName(areaname);
         if (res == null) {
-            plugin.msg(player, lm.Invalid_Residence);
+            lm.Invalid_Residence.sendMessage(player);
             return;
         }
         res.getPermissions().applyTemplate(player, list, resadmin);
@@ -78,11 +78,11 @@ public class PermissionListManager {
     public void printList(Player player, String listname) {
         FlagPermissions list = this.getList(player.getName(), listname);
         if (list == null) {
-            plugin.msg(player, lm.Invalid_List);
+            lm.Invalid_List.sendMessage(player);
             return;
         }
         player.sendMessage(ChatColor.LIGHT_PURPLE + "------Permission Template------");
-        plugin.msg(player, lm.General_Name, listname);
+        lm.General_Name.sendMessage(player, listname);
         list.printFlags(player);
     }
 
@@ -124,7 +124,7 @@ public class PermissionListManager {
     public void printLists(Player player) {
         StringBuilder sbuild = new StringBuilder();
         Map<String, FlagPermissions> get = lists.get(player.getName());
-        sbuild.append(plugin.msg(lm.General_Lists));
+        sbuild.append(lm.General_Lists.getMessage());
         if (get != null) {
             for (Entry<String, FlagPermissions> thislist : get.entrySet()) {
                 sbuild.append(thislist.getKey()).append(" ");

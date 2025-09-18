@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.Zrips.CMILib.FileHandler.ConfigReader;
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
@@ -14,45 +13,47 @@ import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
+import net.Zrips.CMILib.FileHandler.ConfigReader;
+
 public class check implements cmd {
 
     @Override
     @CommandAnnotation(simple = true, priority = 3500, regVar = { 2, 3 }, consoleVar = { 666 })
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
 
-	Player player = (Player) sender;
-	String pname = player.getName();
+        Player player = (Player) sender;
+        String pname = player.getName();
 
-	if (args.length == 3)
-	    pname = args[2];
+        if (args.length == 3)
+            pname = args[2];
 
-	ClaimedResidence res = plugin.getResidenceManager().getByName(args[0]);
-	if (res == null) {
-	    plugin.msg(player, lm.Invalid_Residence);
-	    return null;
-	}
+        ClaimedResidence res = plugin.getResidenceManager().getByName(args[0]);
+        if (res == null) {
+            lm.Invalid_Residence.sendMessage(sender);
+            return null;
+        }
 
-	Flags flag = Flags.getFlag(args[1]);
+        Flags flag = Flags.getFlag(args[1]);
 
-	if (flag == null) {
-	    plugin.msg(player, lm.Invalid_Flag);
-	    return null;
-	}
+        if (flag == null) {
+            lm.Invalid_Flag.sendMessage(sender);
+            return null;
+        }
 
-	if (!res.getPermissions().hasApplicableFlag(pname, args[1])) {
-	    plugin.msg(player, lm.Flag_CheckFalse, flag, pname, args[0]);
-	} else {
-	    plugin.msg(player, lm.Flag_CheckTrue, flag, pname, args[0], (res.getPermissions().playerHas(player, res.getPermissions().getWorld(), flag, false) ? plugin.msg(lm.General_True)
-		: plugin.msg(lm.General_False)));
-	}
-	return true;
+        if (!res.getPermissions().hasApplicableFlag(player.getUniqueId(), args[1])) {
+            lm.Flag_CheckFalse.sendMessage(sender, flag, pname, args[0]);
+        } else {
+            lm.Flag_CheckTrue.sendMessage(sender, flag, pname, args[0], (res.getPermissions().playerHas(player, res.getPermissions().getWorldName(), flag, false) ? lm.General_True.getMessage()
+                : lm.General_False.getMessage()));
+        }
+        return true;
     }
 
     @Override
     public void getLocale() {
-	ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
-	c.get("Description", "Check flag state for you");
-	c.get("Info", Arrays.asList("&eUsage: &6/res check [residence] [flag] (playername)"));
-	LocaleManager.addTabCompleteMain(this, "[residence]", "[flag]", "[playername]");
+        ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
+        c.get("Description", "Check flag state for you");
+        c.get("Info", Arrays.asList("&eUsage: &6/res check [residence] [flag] (playername)"));
+        LocaleManager.addTabCompleteMain(this, "[residence]", "[flag]", "[playername]");
     }
 }

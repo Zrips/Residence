@@ -75,9 +75,9 @@ public class ShopListener implements Listener {
             if (Found != null) {
                 plugin.getShopSignUtilManager().getAllBoards().remove(Found);
                 plugin.getShopSignUtilManager().saveSigns();
-                plugin.msg(player, lm.Shop_DeletedBoard);
+                lm.Shop_DeletedBoard.sendMessage(player);
             } else {
-                plugin.msg(player, lm.Shop_IncorrectBoard);
+                lm.Shop_IncorrectBoard.sendMessage(player);
             }
             Delete.remove(player.getName());
             return;
@@ -113,7 +113,7 @@ public class ShopListener implements Listener {
         case INVALID:
             break;
         case TRUE:
-            plugin.getResidenceManager().addShop(event.getResidence().getName());
+            plugin.getResidenceManager().addShop(event.getResidence());
             event.getResidence().getPermissions().setFlag("tp", FlagState.TRUE);
             event.getResidence().getPermissions().setFlag("move", FlagState.TRUE);
             event.getResidence().getPermissions().setFlag("pvp", FlagState.FALSE);
@@ -130,8 +130,6 @@ public class ShopListener implements Listener {
         if (event.getResidence().getAllShopVotes().isEmpty())
             return;
 
-        plugin.getResidenceManager().addShop(event.getResidence());
-        plugin.getResidenceManager().removeShop(event.getOldResidenceName());
         plugin.getShopSignUtilManager().saveShopVotes(true);
         plugin.getShopSignUtilManager().boardUpdateDelayed();
         plugin.getShopSignUtilManager().saveSigns();
@@ -160,7 +158,7 @@ public class ShopListener implements Listener {
 
         event.setCancelled(true);
 
-        plugin.msg(event.getPlayer(), lm.Shop_ChantChange);
+        lm.Shop_ChantChange.sendMessage(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -171,7 +169,7 @@ public class ShopListener implements Listener {
         if (!event.getResidence().getPermissions().has("shop", false))
             return;
 
-        plugin.getResidenceManager().addShop(event.getResidence().getName());
+        plugin.getResidenceManager().addShop(event.getResidence());
 
         plugin.getShopSignUtilManager().boardUpdate();
         plugin.getShopSignUtilManager().saveSigns();

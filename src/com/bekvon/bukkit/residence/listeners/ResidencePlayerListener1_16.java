@@ -80,7 +80,7 @@ public class ResidencePlayerListener1_16 implements Listener {
                 return;
 
             if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.anchor, FlagCombo.OnlyTrue) && !ResAdmin.isResAdmin(player)) {
-                plugin.msg(player, lm.Residence_FlagDeny, Flags.anchor, res.getName());
+                lm.Residence_FlagDeny.sendMessage(player, Flags.anchor, res.getName());
                 event.setCancelled(true);
             }
         } else if (mat.equals(Material.REDSTONE_WIRE)) {
@@ -90,7 +90,7 @@ public class ResidencePlayerListener1_16 implements Listener {
                 return;
 
             if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.build, FlagCombo.TrueOrNone) && !ResAdmin.isResAdmin(player)) {
-                plugin.msg(player, lm.Residence_FlagDeny, Flags.build, res.getName());
+                lm.Residence_FlagDeny.sendMessage(player, Flags.build, res.getName());
                 event.setCancelled(true);
             }
         }

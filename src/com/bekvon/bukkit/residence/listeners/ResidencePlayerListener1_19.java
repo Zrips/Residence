@@ -61,7 +61,7 @@ public class ResidencePlayerListener1_19 implements Listener {
 
         event.setCancelled(true);
 
-        plugin.msg(player, lm.Residence_FlagDeny, Flags.goathorn, res.getName());
+        lm.Residence_FlagDeny.sendMessage(player, Flags.goathorn, res.getName());
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

@@ -27,7 +27,6 @@ import com.bekvon.bukkit.residence.shopStuff.Vote;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class shop implements cmd {
@@ -55,7 +54,7 @@ public class shop implements cmd {
             if (args.length == 1) {
                 res = plugin.getResidenceManager().getByLoc(player.getLocation());
                 if (res == null) {
-                    plugin.msg(player, lm.Residence_NotIn);
+                    lm.Residence_NotIn.sendMessage(sender);
                     return true;
                 }
             } else if (args.length == 2) {
@@ -65,11 +64,11 @@ public class shop implements cmd {
                         VotePage = Integer.parseInt(args[1]);
                         res = plugin.getResidenceManager().getByLoc(player.getLocation());
                         if (res == null) {
-                            plugin.msg(player, lm.Residence_NotIn);
+                            lm.Residence_NotIn.sendMessage(sender);
                             return true;
                         }
                     } catch (Exception ex) {
-                        plugin.msg(player, lm.General_UseNumbers);
+                        lm.General_UseNumbers.sendMessage(sender);
                         return true;
                     }
                 }
@@ -77,34 +76,34 @@ public class shop implements cmd {
             } else if (args.length == 3) {
                 res = plugin.getResidenceManager().getByName(args[1]);
                 if (res == null) {
-                    plugin.msg(player, lm.Residence_NotIn);
+                    lm.Residence_NotIn.sendMessage(sender);
                     return true;
                 }
                 try {
                     VotePage = Integer.parseInt(args[2]);
                 } catch (Exception ex) {
-                    plugin.msg(player, lm.General_UseNumbers);
+                    lm.General_UseNumbers.sendMessage(sender);
                     return true;
                 }
             }
 
             if (res == null) {
-                plugin.msg(player, lm.Residence_NotIn);
+                lm.Residence_NotIn.sendMessage(sender);
                 return true;
             }
 
             List<ShopVote> VoteList = res.getAllShopVotes();
 
-            String separator = plugin.msg(lm.InformationPage_SmallSeparator);
+            String separator = lm.InformationPage_SmallSeparator.getMessage();
 
             PageInfo pi = new PageInfo(10, VoteList.size(), page);
 
             if (!pi.isPageOk()) {
-                plugin.msg(sender, lm.Shop_NoVotes);
+                lm.Shop_NoVotes.sendMessage(sender);
                 return true;
             }
 
-            plugin.msg(player, lm.Shop_VotesTopLine, separator, res.getName(), VotePage, pi.getTotalPages(), separator);
+            lm.Shop_VotesTopLine.sendMessage(sender, separator, res.getName(), VotePage, pi.getTotalPages(), separator);
 
             int position = -1;
             for (ShopVote one : VoteList) {
@@ -119,7 +118,7 @@ public class shop implements cmd {
                 ft.setTimeZone(TimeZone.getTimeZone(plugin.getConfigManager().getTimeZone()));
                 String timeString = ft.format(dNow);
 
-                String message = plugin.msg(lm.Shop_VotesList, pi.getStart() + position + 1, one.getName(), (plugin.getConfigManager().isOnlyLike()
+                String message = lm.Shop_VotesList.getMessage(pi.getStart() + position + 1, one.getName(), (plugin.getConfigManager().isOnlyLike()
                     ? "" : one.getVote()), timeString);
                 player.sendMessage(message);
             }
@@ -136,23 +135,23 @@ public class shop implements cmd {
                 try {
                     Shoppage = Integer.parseInt(args[1]);
                 } catch (Exception ex) {
-                    plugin.msg(player, lm.General_UseNumbers);
+                    lm.General_UseNumbers.sendMessage(sender);
                     return true;
                 }
             }
 
             Map<String, Double> ShopList = plugin.getShopSignUtilManager().getSortedShopList();
 
-            String separator = plugin.msg(lm.InformationPage_SmallSeparator);
+            String separator = lm.InformationPage_SmallSeparator.getMessage();
 
             PageInfo pi = new PageInfo(10, ShopList.size(), page);
 
             if (!pi.isPageOk()) {
-                plugin.msg(sender, lm.Shop_NoVotes);
+                lm.Shop_NoVotes.sendMessage(sender);
                 return true;
             }
 
-            plugin.msg(player, lm.Shop_ListTopLine, separator, Shoppage, pi.getTotalPages(), separator);
+            lm.Shop_ListTopLine.sendMessage(sender, separator, Shoppage, pi.getTotalPages(), separator);
 
             for (Entry<String, Double> one : ShopList.entrySet()) {
                 if (!pi.isEntryOk())
@@ -167,15 +166,14 @@ public class shop implements cmd {
                 String votestat = "";
 
                 if (plugin.getConfigManager().isOnlyLike()) {
-                    votestat = vote.getAmount() == 0 ? "" : plugin.msg(lm.Shop_ListLiked, plugin.getShopSignUtilManager().getLikes(one.getKey()));
+                    votestat = vote.getAmount() == 0 ? "" : lm.Shop_ListLiked.getMessage(plugin.getShopSignUtilManager().getLikes(one.getKey()));
                 } else
-                    votestat = vote.getAmount() == 0 ? "" : plugin.msg(lm.Shop_ListVoted, vote.getVote(), vote.getAmount());
+                    votestat = vote.getAmount() == 0 ? "" : lm.Shop_ListVoted.getMessage(vote.getVote(), vote.getAmount());
 
                 String owner = res.getOwner();
-                String message = plugin.msg(lm.Shop_List, pi.getPositionForOutput(), one.getKey(), owner, votestat);
+                String message = lm.Shop_List.getMessage(pi.getPositionForOutput(), one.getKey(), owner, votestat);
 
-                String desc = res.getShopDesc() == null ? plugin.msg(lm.Shop_NoDesc) : plugin.msg(
-                    lm.Shop_Desc, CMIChatColor.translate(res.getShopDesc().replace("/n", "\n")));
+                String desc = res.getShopDesc() == null ? lm.Shop_NoDesc.getMessage() : lm.Shop_Desc.getMessage(CMIChatColor.translate(res.getShopDesc().replace("/n", "\n")));
 
                 RawMessage rm = new RawMessage();
                 rm.addText(" " + message).addHover(desc).addCommand("/res tp " + one.getKey());
@@ -190,12 +188,12 @@ public class shop implements cmd {
         if (args.length == 1 && args[0].equalsIgnoreCase("deleteboard")) {
 
             if (!resadmin) {
-                plugin.msg(player, lm.General_AdminOnly);
+                lm.General_AdminOnly.sendMessage(sender);
                 return true;
             }
 
             ShopListener.Delete.add(player.getName());
-            plugin.msg(player, lm.Shop_DeleteBoard);
+            lm.Shop_DeleteBoard.sendMessage(sender);
             return true;
         }
         if (args.length > 1 && args[0].equalsIgnoreCase("setdesc")) {
@@ -206,7 +204,7 @@ public class shop implements cmd {
             if (args.length >= 1) {
                 res = plugin.getResidenceManager().getByLoc(player.getLocation());
                 if (res == null) {
-                    plugin.msg(player, lm.Residence_NotIn);
+                    lm.Residence_NotIn.sendMessage(sender);
                     return true;
                 }
                 for (int i = 2; i < args.length; i++) {
@@ -220,23 +218,23 @@ public class shop implements cmd {
                 return true;
 
             if (!res.isOwner(player) && !resadmin) {
-                plugin.msg(player, lm.Residence_NonAdmin);
+                lm.Residence_NonAdmin.sendMessage(sender);
                 return true;
             }
 
             res.setShopDesc(desc);
-            plugin.msg(player, lm.Shop_DescChange, CMIChatColor.translate(desc));
+            lm.Shop_DescChange.sendMessage(sender, CMIChatColor.translate(desc));
             return true;
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("createboard")) {
 
             if (!resadmin) {
-                plugin.msg(player, lm.General_AdminOnly);
+                lm.General_AdminOnly.sendMessage(sender);
                 return true;
             }
 
             if (!plugin.getSelectionManager().hasPlacedBoth(player)) {
-                plugin.msg(player, lm.Select_Points);
+                lm.Select_Points.sendMessage(sender);
                 return true;
             }
 
@@ -244,7 +242,7 @@ public class shop implements cmd {
             try {
                 place = Integer.parseInt(args[1]);
             } catch (Exception ex) {
-                plugin.msg(player, lm.General_UseNumbers);
+                lm.General_UseNumbers.sendMessage(sender);
                 return true;
             }
 
@@ -254,12 +252,12 @@ public class shop implements cmd {
             CuboidArea cuboid = plugin.getSelectionManager().getSelectionCuboid(player);
 
             if (cuboid.getXSize() > 16 || cuboid.getYSize() > 16 || cuboid.getZSize() > 16) {
-                plugin.msg(player, lm.Shop_ToBigSelection);
+                lm.Shop_ToBigSelection.sendMessage(sender);
                 return true;
             }
 
             if (cuboid.getXSize() != 1 && cuboid.getZSize() != 1) {
-                plugin.msg(player, lm.Shop_ToDeapSelection);
+                lm.Shop_ToDeapSelection.sendMessage(sender);
                 return true;
             }
 
@@ -267,7 +265,7 @@ public class shop implements cmd {
             Location loc2 = plugin.getSelectionManager().getSelection(player).getBaseArea().getLowLocation();
 
             if (loc1.getBlockY() < loc2.getBlockY()) {
-                plugin.msg(player, lm.Shop_InvalidSelection);
+                lm.Shop_InvalidSelection.sendMessage(sender);
                 return true;
             }
 
@@ -277,12 +275,12 @@ public class shop implements cmd {
             newTemp.setBottomLoc(loc2);
 
             if (plugin.getShopSignUtilManager().exist(newTemp)) {
-                sender.sendMessage(plugin.msg(lm.Shop_BoardExist));
+                lm.Shop_BoardExist.sendMessage(sender);
                 return true;
             }
 
             plugin.getShopSignUtilManager().addBoard(newTemp);
-            plugin.msg(player, lm.Shop_NewBoard);
+            lm.Shop_NewBoard.sendMessage(sender);
 
             plugin.getShopSignUtilManager().boardUpdate();
             plugin.getShopSignUtilManager().saveSigns();
@@ -300,7 +298,7 @@ public class shop implements cmd {
 
                     res = plugin.getResidenceManager().getByName(args[1]);
                     if (res == null) {
-                        plugin.msg(player, lm.Invalid_Residence);
+                        lm.Invalid_Residence.sendMessage(sender);
                         return true;
                     }
                     vote = plugin.getConfigManager().getVoteRangeTo();
@@ -308,46 +306,46 @@ public class shop implements cmd {
                 } else {
                     res = plugin.getResidenceManager().getByLoc(player.getLocation());
                     if (res == null) {
-                        plugin.msg(player, lm.Residence_NotIn);
+                        lm.Residence_NotIn.sendMessage(sender);
                         return true;
                     }
 
                     try {
                         vote = Integer.parseInt(args[1]);
                     } catch (Exception ex) {
-                        plugin.msg(player, lm.General_UseNumbers);
+                        lm.General_UseNumbers.sendMessage(sender);
                         return true;
                     }
                 }
             } else if (args.length == 1 && plugin.getConfigManager().isOnlyLike()) {
                 res = plugin.getResidenceManager().getByLoc(player.getLocation());
                 if (res == null) {
-                    plugin.msg(player, lm.Residence_NotIn);
+                    lm.Residence_NotIn.sendMessage(sender);
                     return true;
                 }
                 vote = plugin.getConfigManager().getVoteRangeTo();
             } else if (args.length == 3 && !plugin.getConfigManager().isOnlyLike()) {
                 res = plugin.getResidenceManager().getByName(args[1]);
                 if (res == null) {
-                    plugin.msg(player, lm.Invalid_Residence);
+                    lm.Invalid_Residence.sendMessage(sender);
                     return true;
                 }
                 try {
                     vote = Integer.parseInt(args[2]);
                 } catch (Exception ex) {
-                    plugin.msg(player, lm.General_UseNumbers);
+                    lm.General_UseNumbers.sendMessage(sender);
                     return true;
                 }
             } else if (args.length == 2 && !plugin.getConfigManager().isOnlyLike()) {
                 res = plugin.getResidenceManager().getByLoc(player.getLocation());
                 if (res == null) {
-                    plugin.msg(player, lm.Invalid_Residence);
+                    lm.Invalid_Residence.sendMessage(sender);
                     return true;
                 }
                 try {
                     vote = Integer.parseInt(args[2]);
                 } catch (Exception ex) {
-                    plugin.msg(player, lm.General_UseNumbers);
+                    lm.General_UseNumbers.sendMessage(sender);
                     return true;
                 }
             } else {
@@ -357,12 +355,12 @@ public class shop implements cmd {
             resName = res.getName();
 
             if (!res.getPermissions().has("shop", false)) {
-                plugin.msg(player, lm.Shop_CantVote);
+                lm.Shop_CantVote.sendMessage(sender);
                 return true;
             }
 
             if (vote < plugin.getConfigManager().getVoteRangeFrom() || vote > plugin.getConfigManager().getVoteRangeTo()) {
-                plugin.msg(player, lm.Shop_VotedRange, plugin.getConfigManager().getVoteRangeFrom(), plugin.getConfigManager().getVoteRangeTo());
+                lm.Shop_VotedRange.sendMessage(sender, plugin.getConfigManager().getVoteRangeFrom(), plugin.getConfigManager().getVoteRangeTo());
                 return true;
             }
 
@@ -374,10 +372,10 @@ public class shop implements cmd {
                 for (ShopVote OneVote : list) {
                     if (OneVote.getName().equalsIgnoreCase(player.getName()) || OneVote.getUuid() != null && OneVote.getUuid() == player.getUniqueId()) {
                         if (plugin.getConfigManager().isOnlyLike()) {
-                            plugin.msg(player, lm.Shop_AlreadyLiked, resName);
+                            lm.Shop_AlreadyLiked.sendMessage(sender, resName);
                             return true;
                         }
-                        plugin.msg(player, lm.Shop_VoteChanged, OneVote.getVote(), vote, resName);
+                        lm.Shop_VoteChanged.sendMessage(sender, OneVote.getVote(), vote, resName);
                         OneVote.setVote(vote);
                         OneVote.setName(player.getName());
                         OneVote.setTime(System.currentTimeMillis());
@@ -389,17 +387,17 @@ public class shop implements cmd {
                     ShopVote newVote = new ShopVote(player.getName(), player.getUniqueId(), vote, System.currentTimeMillis());
                     list.add(newVote);
                     if (plugin.getConfigManager().isOnlyLike())
-                        plugin.msg(player, lm.Shop_Liked, resName);
+                        lm.Shop_Liked.sendMessage(sender, resName);
                     else
-                        plugin.msg(player, lm.Shop_Voted, vote, resName);
+                        lm.Shop_Voted.sendMessage(sender, vote, resName);
                 }
             } else {
                 ShopVote newVote = new ShopVote(player.getName(), player.getUniqueId(), vote, System.currentTimeMillis());
                 res.addShopVote(newVote);
                 if (plugin.getConfigManager().isOnlyLike())
-                    plugin.msg(player, lm.Shop_Liked, resName);
+                    lm.Shop_Liked.sendMessage(sender, resName);
                 else
-                    plugin.msg(player, lm.Shop_Voted, vote, resName);
+                    lm.Shop_Voted.sendMessage(sender, vote, resName);
             }
             plugin.getShopSignUtilManager().saveShopVotes(true);
             plugin.getShopSignUtilManager().boardUpdate();

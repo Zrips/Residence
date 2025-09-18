@@ -26,6 +26,7 @@ import com.bekvon.bukkit.residence.event.ResidenceFlagEvent.FlagType;
 import com.bekvon.bukkit.residence.event.ResidenceOwnerChangeEvent;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
+import com.bekvon.bukkit.residence.utils.PlayerCache;
 
 public class ResidencePermissions extends FlagPermissions {
 
@@ -44,7 +45,7 @@ public class ResidencePermissions extends FlagPermissions {
     public ResidencePermissions(ClaimedResidence res, String creator, UUID creatorUUID, String inworld) {
         this(res);
         if (creatorUUID == null)
-            ownerUUID = Residence.getInstance().getPlayerUUID(creator);
+            ownerUUID = PlayerCache.getUUID(creator);
         else
             ownerUUID = creatorUUID;
         if (ownerUUID == null)
@@ -56,7 +57,7 @@ public class ResidencePermissions extends FlagPermissions {
     @Deprecated
     public ResidencePermissions(ClaimedResidence res, String creator, String inworld) {
         this(res);
-        ownerUUID = Residence.getInstance().getPlayerUUID(creator);
+        ownerUUID = PlayerCache.getUUID(creator);
         if (ownerUUID == null)
             ownerUUID = Residence.getInstance().getEmptyUserUUID();
         this.ownerLastKnownName = creator;
@@ -88,31 +89,40 @@ public class ResidencePermissions extends FlagPermissions {
         return this.playerHas(player, world, flag, def);
     }
 
+    @Override
     public boolean playerHas(Player player, Flags flag, FlagCombo f) {
+        return playerHas(player.getUniqueId(), flag, f);
+    }
+
+    public boolean playerHas(ResidencePlayer player, Flags flag, FlagCombo f) {
+        return playerHas(player.getUniqueId(), flag, f);
+    }
+
+    public boolean playerHas(UUID uuid, Flags flag, FlagCombo f) {
         switch (f) {
         case FalseOrNone:
-            return !this.playerHas(player, world, flag, false);
+            return !this.playerHas(uuid, world, flag, false);
         case OnlyFalse:
-            return !this.playerHas(player, world, flag, true);
+            return !this.playerHas(uuid, world, flag, true);
         case OnlyTrue:
-            return this.playerHas(player, world, flag, false);
+            return this.playerHas(uuid, world, flag, false);
         case TrueOrNone:
-            return this.playerHas(player, world, flag, true);
+            return this.playerHas(uuid, world, flag, true);
         default:
             return false;
         }
     }
 
-    public boolean playerHas(ResidencePlayer player, Flags flag, FlagCombo f) {
+    public boolean playerHas(UUID uuid, String flag, FlagCombo f) {
         switch (f) {
         case FalseOrNone:
-            return !this.playerHas(player, flag, false);
+            return !this.playerHas(uuid, world, flag, false);
         case OnlyFalse:
-            return !this.playerHas(player, flag, true);
+            return !this.playerHas(uuid, world, flag, true);
         case OnlyTrue:
-            return this.playerHas(player, flag, false);
+            return this.playerHas(uuid, world, flag, false);
         case TrueOrNone:
-            return this.playerHas(player, flag, true);
+            return this.playerHas(uuid, world, flag, true);
         default:
             return false;
         }
@@ -122,61 +132,58 @@ public class ResidencePermissions extends FlagPermissions {
     public boolean playerHas(ResidencePlayer player, Flags flag, boolean def) {
         if (player == null)
             return false;
-        if (!isEventCallsSuspended()) {
-            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag.toString(), FlagType.PLAYER, player.getName(), def);
+        return playerHas(player.getUniqueId(), this.world, flag, def);
+    }
+
+    public boolean playerHas(UUID uuid, String world, Flags flag, boolean def) {
+        if (uuid == null)
+            return false;
+
+        world = world == null ? this.world : world;
+
+        if (!isEventCallsSuspended() && Residence.getInstance().isFullyLoaded()) {
+            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag.toString(), FlagType.PLAYER, PlayerCache.getName(uuid), def);
             Residence.getInstance().getServ().getPluginManager().callEvent(fc);
             if (fc.isOverriden())
                 return fc.getOverrideValue();
         }
-        return super.playerHas(player, flag, def);
+        return super.playerHas(uuid, world, flag, def);
+    }
+
+    public boolean playerHas(UUID uuid, String world, String flag, boolean def) {
+        if (uuid == null)
+            return false;
+
+        world = world == null ? this.world : world;
+
+        if (!isEventCallsSuspended() && Residence.getInstance().isFullyLoaded()) {
+            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag.toString(), FlagType.PLAYER, PlayerCache.getName(uuid), def);
+            Residence.getInstance().getServ().getPluginManager().callEvent(fc);
+            if (fc.isOverriden())
+                return fc.getOverrideValue();
+        }
+        return super.playerHas(uuid, world, flag, def);
     }
 
     @Deprecated
     public boolean playerHas(String player, String flag, FlagCombo f) {
-        switch (f) {
-        case FalseOrNone:
-            return !this.playerHas(player, world, flag, false);
-        case OnlyFalse:
-            return !this.playerHas(player, world, flag, true);
-        case OnlyTrue:
-            return this.playerHas(player, world, flag, false);
-        case TrueOrNone:
-            return this.playerHas(player, world, flag, true);
-        default:
-            return false;
-        }
+        return playerHas(PlayerCache.getUUID(player), flag, f);
     }
 
     @Override
     public boolean playerHas(Player player, String world, Flags flag, boolean def) {
-        if (player == null)
-            return false;
-        if (!isEventCallsSuspended()) {
-            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag.toString(), FlagType.PLAYER, player.getName(), def);
-            Residence.getInstance().getServ().getPluginManager().callEvent(fc);
-            if (fc.isOverriden())
-                return fc.getOverrideValue();
-        }
-        return super.playerHas(player, world, flag, def);
+        return playerHas(player.getUniqueId(), world, flag, def);
     }
 
     @Override
     @Deprecated
     public boolean playerHas(String player, String world, String flag, boolean def) {
-
-        if (!isEventCallsSuspended()) {
-            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag, FlagType.PLAYER, player, def);
-            Residence.getInstance().getServ().getPluginManager().callEvent(fc);
-            if (fc.isOverriden())
-                return fc.getOverrideValue();
-        }
-
-        return super.playerHas(player, world, flag, def);
+        return playerHas(PlayerCache.getUUID(player), world, flag, def);
     }
 
     @Override
     public boolean groupHas(String group, String flag, boolean def) {
-        if (!isEventCallsSuspended()) {
+        if (!isEventCallsSuspended() && Residence.getInstance().isFullyLoaded()) {
             ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag, FlagType.GROUP, group, def);
             Residence.getInstance().getServ().getPluginManager().callEvent(fc);
             if (fc.isOverriden())
@@ -238,7 +245,7 @@ public class ResidencePermissions extends FlagPermissions {
 
     @Override
     public boolean has(String flag, boolean def, boolean checkParent) {
-        if (!isEventCallsSuspended()) {
+        if (!isEventCallsSuspended() && Residence.getInstance().isFullyLoaded()) {
             ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag, FlagType.RESIDENCE, null, def);
             Residence.getInstance().getServ().getPluginManager().callEvent(fc);
             if (fc.isOverriden())
@@ -247,35 +254,34 @@ public class ResidencePermissions extends FlagPermissions {
         return super.has(flag, def, checkParent);
     }
 
+    @Deprecated
     public boolean hasApplicableFlag(String player, String flag) {
-        return super.inheritanceIsPlayerSet(player, flag) ||
-            super.inheritanceIsGroupSet(Residence.getInstance().getPlayerManager().getResidencePlayer(player).getGroup(world).getGroupName(), flag) ||
+        return hasApplicableFlag(PlayerCache.getUUID(player), flag);
+    }
+
+    public boolean hasApplicableFlag(UUID uuid, String flag) {
+        return super.inheritanceIsPlayerSet(uuid, flag) ||
+            super.inheritanceIsGroupSet(ResidencePlayer.get(uuid).getGroup(world).getGroupName(), flag) ||
             super.inheritanceIsSet(flag);
     }
 
     public void applyTemplate(Player player, FlagPermissions list, boolean resadmin) {
         if (player != null) {
-            if (!resadmin) {
-                if (!Residence.getInstance().getConfigManager().isOfflineMode() && !player.getUniqueId().toString().equals(ownerUUID.toString())) {
-                    Residence.getInstance().msg(player, lm.General_NoPermission);
-                    return;
-                } else if (!player.getName().equalsIgnoreCase(ownerLastKnownName)) {
-                    Residence.getInstance().msg(player, lm.General_NoPermission);
-                    return;
-                }
+            if (!resadmin && !player.getUniqueId().toString().equals(ownerUUID.toString())) {
+                lm.General_NoPermission.sendMessage(player);
+                return;
             }
         } else {
             resadmin = true;
         }
-        ResidencePlayer rPlayer = Residence.getInstance().getPlayerManager().getResidencePlayer(this.getOwner());
+        ResidencePlayer rPlayer = ResidencePlayer.get(this.getOwner());
         PermissionGroup group = rPlayer.getGroup(world);
 
         for (Entry<String, Boolean> flag : list.cuboidFlags.entrySet()) {
             if (group.hasFlagAccess(flag.getKey()) || resadmin) {
                 this.cuboidFlags.put(flag.getKey(), flag.getValue());
             } else {
-                if (player != null)
-                    Residence.getInstance().msg(player, lm.Flag_SetDeny, flag.getKey());
+                lm.Flag_SetDeny.sendMessage(player, flag.getKey());
             }
         }
         for (Entry<String, Map<String, Boolean>> plists : list.playerFlags.entrySet()) {
@@ -284,8 +290,7 @@ public class ResidencePermissions extends FlagPermissions {
                 if (group.hasFlagAccess(flag.getKey()) || resadmin) {
                     map.put(flag.getKey(), flag.getValue());
                 } else {
-                    if (player != null)
-                        Residence.getInstance().msg(player, lm.Flag_SetDeny, flag.getKey());
+                    lm.Flag_SetDeny.sendMessage(player, flag.getKey());
                 }
             }
         }
@@ -296,13 +301,12 @@ public class ResidencePermissions extends FlagPermissions {
                         this.groupFlags.put(glists.getKey(), Collections.synchronizedMap(new HashMap<String, Boolean>()));
                     this.groupFlags.get(glists.getKey()).put(flag.getKey(), flag.getValue());
                 } else {
-                    if (player != null)
-                        Residence.getInstance().msg(player, lm.Flag_SetDeny, flag.getKey());
+                    lm.Flag_SetDeny.sendMessage(player, flag.getKey());
                 }
             }
         }
-        if (player != null)
-            Residence.getInstance().msg(player, lm.Residence_PermissionsApply);
+
+        lm.Residence_PermissionsApply.sendMessage(player);
     }
 
     public boolean hasResidencePermission(CommandSender sender, boolean requireOwner) {
@@ -342,88 +346,101 @@ public class ResidencePermissions extends FlagPermissions {
             flag = f.toString();
         if (!checkValidFlag(flag, globalflag)) {
             if (f != null)
-                Residence.getInstance().msg(sender, lm.Invalid_FlagType_Fail, f.getFlagMode() == FlagMode.Residence ? Residence.getInstance().getLM().getMessage(lm.Invalid_FlagType_Residence) : Residence
+                lm.Invalid_FlagType_Fail.sendMessage(sender, f.getFlagMode() == FlagMode.Residence ? Residence.getInstance().getLM().getMessage(lm.Invalid_FlagType_Residence) : Residence
                     .getInstance().getLM().getMessage(lm.Invalid_FlagType_Player));
             else
-                Residence.getInstance().msg(sender, lm.Invalid_Flag);
+                lm.Invalid_Flag.sendMessage(sender);
             return false;
         }
         if (state == FlagState.INVALID) {
-            Residence.getInstance().msg(sender, lm.Invalid_FlagState);
+            lm.Invalid_FlagState.sendMessage(sender);
             return false;
         }
         if (!resadmin) {
             if (!this.hasResidencePermission(sender, false)) {
-                Residence.getInstance().msg(sender, lm.General_NoPermission);
+                lm.General_NoPermission.sendMessage(sender);
                 return false;
             }
-            if (!hasFlagAccess(this.getOwner(), flag) && !ResPerm.flag_$1.hasPermission(sender, 10000L, flag.toLowerCase())) {
-                Residence.getInstance().msg(sender, lm.Flag_SetFailed, flag);
+            if (!hasFlagAccess(this.getOwnerUUID(), flag) && !ResPerm.flag_$1.hasPermission(sender, 10000L, flag.toLowerCase())) {
+                lm.Flag_SetFailed.sendMessage(sender, flag);
                 return false;
             }
         }
         return true;
     }
 
+    @Deprecated
     private boolean hasFlagAccess(String player, String flag) {
-        ResidencePlayer rPlayer = Residence.getInstance().getPlayerManager().getResidencePlayer(player);
+        return hasFlagAccess(PlayerCache.getUUID(player), flag);
+    }
+
+    private boolean hasFlagAccess(UUID uuid, String flag) {
+        ResidencePlayer rPlayer = ResidencePlayer.get(uuid);
         PermissionGroup group = rPlayer.getGroup(world);
         return group.hasFlagAccess(flag);
     }
 
+    @Deprecated
     public boolean setPlayerFlag(CommandSender sender, String targetPlayer, String flag, String flagstate, boolean resadmin, boolean show) {
-        if (Residence.getInstance().getPlayerUUID(targetPlayer) == null) {
+        return this.setPlayerFlag(sender, PlayerCache.getUUID(targetPlayer), flag, flagstate, resadmin, show);
+    }
+
+    public boolean setPlayerFlag(CommandSender sender, UUID targetPlayerUUID, String flag, String flagstate, boolean resadmin, boolean show) {
+
+        if (targetPlayerUUID == null) {
             sender.sendMessage("No player by this name");
             return false;
         }
 
         if (this.residence.getRaid().isRaidInitialized() && !resadmin) {
-            Residence.getInstance().msg(sender, lm.Raid_noFlagChange);
+            lm.Raid_noFlagChange.sendMessage(sender);
             return false;
         }
+
+//        String targetPlayer = PlayerCache.getName(uuid);
 
         Flags f = Flags.getFlag(flag);
         if (f != null)
             flag = f.toString();
         if (validFlagGroups.containsKey(flag)) {
-            return this.setFlagGroupOnPlayer(sender, targetPlayer, flag, flagstate, resadmin);
+            return this.setFlagGroupOnPlayer(sender, targetPlayerUUID, flag, flagstate, resadmin);
         }
 
         FlagState state = FlagPermissions.stringToFlagState(flagstate);
         if (checkCanSetFlag(sender, flag, state, false, resadmin)) {
 
             if (!isEventCallsSuspended()) {
-                ResidenceFlagChangeEvent fc = new ResidenceFlagChangeEvent(residence, sender instanceof Player ? (Player) sender : null, flag,
-                    ResidenceFlagChangeEvent.FlagType.PLAYER, state, targetPlayer);
+                ResidenceFlagChangeEvent fc = new ResidenceFlagChangeEvent(residence, sender instanceof Player ? (Player) sender : null, flag, ResidenceFlagChangeEvent.FlagType.PLAYER, state,
+                    PlayerCache.getName(targetPlayerUUID));
                 Residence.getInstance().getServ().getPluginManager().callEvent(fc);
                 if (fc.isCancelled())
                     return false;
             }
 
-            if (super.setPlayerFlag(targetPlayer, flag, state)) {
+            if (super.setPlayerFlag(targetPlayerUUID, flag, state)) {
                 if (show) {
                     switch (state) {
                     case NEITHER:
-                        Residence.getInstance().msg(sender, lm.Flag_PRemoved, flag, residence.getName(), targetPlayer);
+                        lm.Flag_PRemoved.sendMessage(sender, flag, residence.getName(), PlayerCache.getName(targetPlayerUUID));
                         break;
                     case FALSE:
                     case TRUE:
-                        Residence.getInstance().msg(sender, lm.Flag_PSet, flag, residence.getName(), flagstate, targetPlayer);
+                        lm.Flag_PSet.sendMessage(sender, flag, residence.getName(), flagstate, PlayerCache.getName(targetPlayerUUID));
                         break;
                     default:
                         break;
                     }
                 }
 
-                if ((f == null || f.isInGroup(padd.groupedFlag)) && targetPlayer != null) {
-                    boolean trusted = this.residence.isTrusted(targetPlayer);
+                if ((f == null || f.isInGroup(padd.groupedFlag))) {
+                    boolean trusted = this.residence.isTrusted(targetPlayerUUID);
                     if (!state.equals(FlagState.TRUE) && !trusted) {
-                        ResidencePlayer rplayer = Residence.getInstance().getPlayerManager().getResidencePlayer(targetPlayer);
+                        ResidencePlayer rplayer = ResidencePlayer.get(targetPlayerUUID);
                         if (rplayer != null) {
                             rplayer.removeTrustedResidence(this.residence);
                         }
                     } else if (state.equals(FlagState.TRUE) && trusted) {
-                        ResidencePlayer rplayer = Residence.getInstance().getPlayerManager().getResidencePlayer(targetPlayer);
+                        ResidencePlayer rplayer = ResidencePlayer.get(targetPlayerUUID);
                         if (rplayer != null) {
                             rplayer.addTrustedResidence(this.residence);
                         }
@@ -449,17 +466,17 @@ public class ResidencePermissions extends FlagPermissions {
             flag = f.toString();
 
         if (flag == null) {
-            Residence.getInstance().msg(player, lm.Invalid_Flag);
+            lm.Invalid_Flag.sendMessage(player);
             return false;
         }
 
         if (flagstate.equals(FlagState.INVALID)) {
-            Residence.getInstance().msg(player, lm.Invalid_FlagState);
+            lm.Invalid_FlagState.sendMessage(player);
             return false;
         }
 
         if (this.residence.getRaid().isRaidInitialized() && !resadmin) {
-            Residence.getInstance().msg(player, lm.Raid_noFlagChange);
+            lm.Raid_noFlagChange.sendMessage(player);
             return false;
         }
 
@@ -477,11 +494,11 @@ public class ResidencePermissions extends FlagPermissions {
                         return false;
                 }
                 if (super.setGroupFlag(group, flag, flagstate)) {
-                    Residence.getInstance().msg(player, lm.Flag_Set, flag, residence.getName(), flagstate);
+                    lm.Flag_Set.sendMessage(player, flag, residence.getName(), flagstate);
                     return true;
                 }
             } else {
-                Residence.getInstance().msg(player, lm.Invalid_Group);
+                lm.Invalid_Group.sendMessage(player);
                 return false;
             }
         }
@@ -504,7 +521,7 @@ public class ResidencePermissions extends FlagPermissions {
             flag = f.toString();
 
         if (this.residence.getRaid().isRaidInitialized() && !resadmin) {
-            Residence.getInstance().msg(sender, lm.Raid_noFlagChange);
+            lm.Raid_noFlagChange.sendMessage(sender);
             return false;
         }
 
@@ -524,7 +541,7 @@ public class ResidencePermissions extends FlagPermissions {
                             size++;
                     }
                     if (inform)
-                        Residence.getInstance().msg(sender, lm.Flag_ChangeDeny, flag, size);
+                        lm.Flag_ChangeDeny.sendMessage(sender, flag, size);
                     return false;
                 }
             }
@@ -542,11 +559,11 @@ public class ResidencePermissions extends FlagPermissions {
                 if (inform) {
                     switch (state) {
                     case NEITHER:
-                        Residence.getInstance().msg(sender, lm.Flag_Removed, flag, this.residence.getName(), state.getName());
+                        lm.Flag_Removed.sendMessage(sender, flag, this.residence.getName(), state.getName());
                         break;
                     case FALSE:
                     case TRUE:
-                        Residence.getInstance().msg(sender, lm.Flag_Set, flag, this.residence.getName(), state.getName());
+                        lm.Flag_Set.sendMessage(sender, flag, this.residence.getName(), state.getName());
                         break;
                     default:
                         break;
@@ -559,6 +576,10 @@ public class ResidencePermissions extends FlagPermissions {
     }
 
     public boolean removeAllPlayerFlags(CommandSender sender, String targetPlayer, boolean resadmin) {
+        return this.removeAllPlayerFlags(sender, PlayerCache.getUUID(targetPlayer), resadmin);
+    }
+
+    public boolean removeAllPlayerFlags(CommandSender sender, UUID targetPlayerUUID, boolean resadmin) {
         if (this.hasResidencePermission(sender, false) || resadmin) {
 
             if (!isEventCallsSuspended()) {
@@ -569,8 +590,8 @@ public class ResidencePermissions extends FlagPermissions {
                     return false;
                 }
             }
-            super.removeAllPlayerFlags(targetPlayer);
-            Residence.getInstance().msg(sender, lm.Flag_RemovedAll, targetPlayer, this.residence.getName());
+            super.removeAllPlayerFlags(targetPlayerUUID);
+            lm.Flag_RemovedAll.sendMessage(sender, PlayerCache.getName(targetPlayerUUID), this.residence.getName());
             return true;
         }
         return false;
@@ -586,7 +607,7 @@ public class ResidencePermissions extends FlagPermissions {
                 }
             }
             super.removeAllGroupFlags(group);
-            Residence.getInstance().msg(player, lm.Flag_RemovedGroup, group, this.residence.getName());
+            lm.Flag_RemovedGroup.sendMessage(player, group, this.residence.getName());
             return true;
         }
         return false;
@@ -615,22 +636,28 @@ public class ResidencePermissions extends FlagPermissions {
     }
 
     @Override
+    @Deprecated
     public boolean setPlayerFlag(String player, String flag, FlagState state) {
+        return setPlayerFlag(PlayerCache.getUUID(player), flag, state);
+    }
+
+    @Override
+    public boolean setPlayerFlag(UUID uuid, String flag, FlagState state) {
         if (!isEventCallsSuspended()) {
-            ResidenceFlagChangeEvent fc = new ResidenceFlagChangeEvent(residence, null, flag, ResidenceFlagChangeEvent.FlagType.PLAYER, state, player);
+            ResidenceFlagChangeEvent fc = new ResidenceFlagChangeEvent(residence, null, flag, ResidenceFlagChangeEvent.FlagType.PLAYER, state, PlayerCache.getName(uuid));
             Residence.getInstance().getServ().getPluginManager().callEvent(fc);
             if (fc.isCancelled())
                 return false;
         }
-        return super.setPlayerFlag(player, flag, state);
+        return super.setPlayerFlag(uuid, flag, state);
     }
 
     public void applyDefaultFlags(Player player, boolean resadmin) {
         if (this.hasResidencePermission(player, true) || resadmin) {
             this.applyDefaultFlags();
-            Residence.getInstance().msg(player, lm.Flag_Default);
+            lm.Flag_Default.sendMessage(player);
         } else
-            Residence.getInstance().msg(player, lm.General_NoPermission);
+            lm.General_NoPermission.sendMessage(player);
     }
 
     public void applyDefaultFlags() {
@@ -671,16 +698,22 @@ public class ResidencePermissions extends FlagPermissions {
         Map<String, Boolean> dgflags = dflags.getFlags();
         if (this.residence.rentedland == null || this.residence.rentedland.getRenterName() == null)
             return;
-        this.removeAllPlayerFlags(this.residence.rentedland.getRenterName());
-        String player = this.residence.rentedland.getRenterName();
+        UUID player = this.residence.rentedland.getUniqueId();
+        this.removeAllPlayerFlags(player);
         for (Entry<String, Boolean> entry : dgflags.entrySet()) {
             this.setPlayerFlag(player, entry.getKey(), entry.getValue() ? FlagState.TRUE : FlagState.FALSE);
         }
     }
 
     public boolean setOwner(Player player, boolean resetFlags) {
+        return setOwner(player.getUniqueId(), resetFlags);
+    }
 
-        ResidenceOwnerChangeEvent ownerchange = new ResidenceOwnerChangeEvent(residence, player);
+    public boolean setOwner(UUID uuid, boolean resetFlags) {
+
+        String name = PlayerCache.getName(uuid);
+
+        ResidenceOwnerChangeEvent ownerchange = new ResidenceOwnerChangeEvent(residence, name, uuid);
         Residence.getInstance().getServ().getPluginManager().callEvent(ownerchange);
 
         // Dont change owner if event is canceled
@@ -688,10 +721,10 @@ public class ResidencePermissions extends FlagPermissions {
             return false;
 
         Residence.getInstance().getPlayerManager().removeResFromPlayer(residence.getOwnerUUID(), residence);
-        Residence.getInstance().getPlayerManager().addResidence(player, residence);
+        Residence.getInstance().getPlayerManager().addResidence(uuid, residence);
 
-        ownerLastKnownName = player.getName();
-        ownerUUID = player.getUniqueId();
+        ownerLastKnownName = name;
+        ownerUUID = uuid;
 
         if (resetFlags)
             this.applyDefaultFlags();
@@ -721,7 +754,7 @@ public class ResidencePermissions extends FlagPermissions {
         if (ownerLastKnownName.equalsIgnoreCase("Server Land") || ownerLastKnownName.equalsIgnoreCase(Residence.getInstance().getServerLandName())) {
             ownerUUID = Residence.getInstance().getServerUUID();// the UUID for server owned land
         } else {
-            UUID playerUUID = Residence.getInstance().getPlayerUUID(ownerLastKnownName);
+            UUID playerUUID = PlayerCache.getUUID(ownerLastKnownName);
             if (playerUUID != null)
                 ownerUUID = playerUUID;
             else
@@ -733,13 +766,10 @@ public class ResidencePermissions extends FlagPermissions {
     }
 
     public String getOwner() {
-        if (Residence.getInstance().getConfigManager().isOfflineMode()) {
-            return ownerLastKnownName == null ? "Unknown" : ownerLastKnownName;
-        }
-        if (ownerUUID != null &&
-            ownerUUID.toString().equals(Residence.getInstance().getServerLandUUID())) //check for server land
+
+        if (ownerUUID != null && ownerUUID.toString().equals(Residence.getInstance().getServerLandUUID())) //check for server land
             return Residence.getInstance().getServerLandName();
-        String name = Residence.getInstance().getPlayerName(ownerUUID);//try to find the owner's name
+        String name = PlayerCache.getName(ownerUUID);//try to find the owner's name
         if (name == null)
             return ownerLastKnownName == null ? "Unknown" : ownerLastKnownName;//return last known if we cannot find it
         ownerLastKnownName = name;//update last known if we did find it
@@ -789,36 +819,28 @@ public class ResidencePermissions extends FlagPermissions {
 
             newperms.ownerLastKnownName = (String) root.get("OwnerLastKnownName");//otherwise load last known name from file
 
-            OfflinePlayer p = null;
             if (newperms.ownerLastKnownName == null)
-                p = Residence.getInstance().getOfflinePlayer(newperms.ownerUUID);
+                newperms.ownerLastKnownName = PlayerCache.getName(newperms.ownerUUID);
 
-            if (p != null)
-                newperms.ownerLastKnownName = p.getName();
+            if (newperms.ownerLastKnownName != null) {
 
-            if (newperms.ownerLastKnownName == null)
-                return newperms;
-
-            if (newperms.ownerLastKnownName.equalsIgnoreCase("Server land") || newperms.ownerLastKnownName.equalsIgnoreCase(Residence.getInstance().getServerLandName())) {
-                newperms.ownerUUID = Residence.getInstance().getServerUUID();//UUID for server land
-                newperms.ownerLastKnownName = Residence.getInstance().getServerLandName();
-            } else if (newperms.ownerUUID.toString().equals(Residence.getInstance().getTempUserUUID())) //check for fake UUID
-            {
-                UUID realUUID = Residence.getInstance().getPlayerUUID(newperms.ownerLastKnownName);//try to find the real UUID of the player if possible now
-                if (realUUID != null)
-                    newperms.ownerUUID = realUUID;
+                if (newperms.ownerLastKnownName.equalsIgnoreCase("Server land") || newperms.ownerLastKnownName.equalsIgnoreCase(Residence.getInstance().getServerLandName())) {
+                    newperms.ownerUUID = Residence.getInstance().getServerUUID();//UUID for server land
+                    newperms.ownerLastKnownName = Residence.getInstance().getServerLandName();
+                } else if (newperms.ownerUUID.toString().equals(Residence.getInstance().getTempUserUUID())) //check for fake UUID
+                {
+                    UUID realUUID = PlayerCache.getUUID(newperms.ownerLastKnownName);//try to find the real UUID of the player if possible now
+                    if (realUUID != null)
+                        newperms.ownerUUID = realUUID;
+                }
             }
-        } else if (root.containsKey("Owner")) //convert old owner name save format into uuid format
-        {
-            String owner = (String) root.get("Owner");
-            newperms.ownerLastKnownName = owner;
-            newperms.ownerUUID = Residence.getInstance().getPlayerUUID(owner);
-            if (newperms.ownerUUID == null)
-                newperms.ownerUUID = Residence.getInstance().getEmptyUserUUID();//set fake UUID until we can find real one for last known player
         } else {
             newperms.ownerUUID = Residence.getInstance().getServerUUID();//cant determine owner name or UUID... setting zero UUID which is server land
             newperms.ownerLastKnownName = Residence.getInstance().getServerLandName();
         }
+
+        PlayerCache.addToCache(newperms.ownerLastKnownName, newperms.ownerUUID);
+
         newperms.world = worldName;
 
         FlagPermissions.load(root, newperms);
@@ -839,9 +861,9 @@ public class ResidencePermissions extends FlagPermissions {
         }
         for (Entry<String, Boolean> entry : gCD.cuboidFlags.entrySet()) {
             if (entry.getValue())
-                this.setPlayerFlag(this.getOwner(), entry.getKey(), FlagState.TRUE);
+                this.setPlayerFlag(this.getOwnerUUID(), entry.getKey(), FlagState.TRUE);
             else
-                this.setPlayerFlag(this.getOwner(), entry.getKey(), FlagState.FALSE);
+                this.setPlayerFlag(this.getOwnerUUID(), entry.getKey(), FlagState.FALSE);
         }
         for (Entry<String, FlagPermissions> entry : gGD.entrySet()) {
             for (Entry<String, Boolean> flag : entry.getValue().cuboidFlags.entrySet()) {
@@ -888,6 +910,10 @@ public class ResidencePermissions extends FlagPermissions {
     }
 
     public boolean setFlagGroupOnPlayer(CommandSender sender, String target, String flaggroup, String state, boolean resadmin) {
+        return setFlagGroupOnPlayer(sender, PlayerCache.getUUID(target), flaggroup, state, resadmin);
+    }
+
+    public boolean setFlagGroupOnPlayer(CommandSender sender, UUID uuid, String flaggroup, String state, boolean resadmin) {
         if (!FlagPermissions.validFlagGroups.containsKey(flaggroup))
             return false;
 
@@ -897,7 +923,7 @@ public class ResidencePermissions extends FlagPermissions {
         StringBuilder flagString = new StringBuilder();
 
         for (String flag : flags) {
-            if (this.setPlayerFlag(sender, target, flag, state, resadmin, false)) {
+            if (this.setPlayerFlag(sender, uuid, flag, state, resadmin, false)) {
                 changed = true;
                 if (!flagString.toString().isEmpty())
                     flagString.append(lm.info_listSplitter.getMessage());
@@ -906,13 +932,13 @@ public class ResidencePermissions extends FlagPermissions {
                 changedAll = false;
         }
         if (changedAll) {
-            ResidencePlayer rplayer = Residence.getInstance().getPlayerManager().getResidencePlayer(target);
+            ResidencePlayer rplayer = ResidencePlayer.get(uuid);
             if (rplayer != null) {
                 rplayer.addTrustedResidence(this.residence);
             }
         }
         if (!flagString.toString().isEmpty())
-            Residence.getInstance().msg(sender, lm.Flag_Set, flagString, target, state);
+            lm.Flag_Set.sendMessage(sender, flagString, PlayerCache.getName(uuid), state);
         return changed;
     }
 

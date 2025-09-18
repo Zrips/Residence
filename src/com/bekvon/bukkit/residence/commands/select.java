@@ -39,17 +39,17 @@ public class select implements cmd {
         PermissionGroup group = rPlayer.getGroup();
 
         if (!group.selectCommandAccess() && !resadmin) {
-            plugin.msg(player, lm.Select_Disabled);
+            lm.Select_Disabled.sendMessage(sender);
             return true;
         }
 
         if (!group.canCreateResidences() && rPlayer.getMaxSubzones() <= 0 && !resadmin) {
-            plugin.msg(player, lm.Select_Disabled);
+            lm.Select_Disabled.sendMessage(sender);
             return true;
         }
 
         if (!ResPerm.create.hasPermission(player) && !ResPerm.select.hasPermission(player) && !resadmin) {
-            plugin.msg(player, lm.Select_Disabled);
+            lm.Select_Disabled.sendMessage(sender);
             return true;
         }
         if (args.length == 1) {
@@ -79,24 +79,22 @@ public class select implements cmd {
                 plugin.getSelectionManager().afterSelectionUpdate(player, true);
                 return true;
             case "coords":
-                plugin.msg(player, lm.General_Separator);
+                lm.General_Separator.sendMessage(sender);
 
                 if (!plugin.getSelectionManager().hasPlacedBoth(player)) {
-                    plugin.msg(player, lm.Select_Points);
+                    lm.Select_Points.sendMessage(sender);
                     return true;
                 }
 
                 Location playerLoc1 = plugin.getSelectionManager().getPlayerLoc1(player);
                 if (playerLoc1 != null) {
-                    plugin.msg(player, lm.Select_Primary, plugin.msg(lm.General_CoordsTop, playerLoc1.getBlockX(), playerLoc1
-                        .getBlockY(), playerLoc1.getBlockZ()));
+                    lm.Select_Primary.sendMessage(sender, lm.General_CoordsTop.getMessage(playerLoc1.getBlockX(), playerLoc1.getBlockY(), playerLoc1.getBlockZ()));
                 }
                 Location playerLoc2 = plugin.getSelectionManager().getPlayerLoc2(player);
                 if (playerLoc2 != null) {
-                    plugin.msg(player, lm.Select_Secondary, plugin.msg(lm.General_CoordsBottom, playerLoc2.getBlockX(),
-                        playerLoc2.getBlockY(), playerLoc2.getBlockZ()));
+                    lm.Select_Secondary.sendMessage(sender, lm.General_CoordsBottom.getMessage(playerLoc2.getBlockX(), playerLoc2.getBlockY(), playerLoc2.getBlockZ()));
                 }
-                plugin.msg(player, lm.General_Separator);
+                lm.General_Separator.sendMessage(sender);
                 plugin.getSelectionManager().afterSelectionUpdate(player, false);
                 return true;
             case "chunk":
@@ -105,7 +103,7 @@ public class select implements cmd {
                 return true;
             case "worldedit":
                 if (plugin.getSelectionManager().worldEdit(player)) {
-                    plugin.msg(player, lm.Select_Success);
+                    lm.Select_Success.sendMessage(sender);
                     plugin.getSelectionManager().afterSelectionUpdate(player, false);
                 }
                 return true;
@@ -119,7 +117,7 @@ public class select implements cmd {
                 try {
                     amount = Integer.parseInt(args[1]);
                 } catch (Exception ex) {
-                    plugin.msg(player, lm.Invalid_Amount);
+                    lm.Invalid_Amount.sendMessage(sender);
                     return true;
                 }
             }
@@ -148,7 +146,7 @@ public class select implements cmd {
                 }
                 target = Bukkit.getPlayer(args[1]);
                 if (target == null) {
-                    plugin.msg(player, lm.General_NotOnline);
+                    lm.General_NotOnline.sendMessage(sender);
                     return true;
                 }
             }
@@ -170,7 +168,7 @@ public class select implements cmd {
                 res = plugin.getResidenceManager().getByLoc(player.getLocation());
             }
             if (res == null) {
-                plugin.msg(player, lm.Invalid_Residence);
+                lm.Invalid_Residence.sendMessage(sender);
                 return true;
             }
             resName = res.getName();
@@ -185,9 +183,9 @@ public class select implements cmd {
             if (area != null) {
                 plugin.getSelectionManager().placeLoc1(player, area.getHighLocation(), false);
                 plugin.getSelectionManager().placeLoc2(player, area.getLowLocation(), true);
-                plugin.msg(player, lm.Select_Area, areaName, resName);
+                lm.Select_Area.sendMessage(sender, areaName, resName);
             } else {
-                plugin.msg(player, lm.Area_NonExist);
+                lm.Area_NonExist.sendMessage(sender);
             }
             return true;
         }
@@ -195,7 +193,7 @@ public class select implements cmd {
             plugin.getSelectionManager().selectBySize(player, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
             return true;
         } catch (Exception ex) {
-//	    plugin.msg(player, lm.Select_Fail);
+//	    lm.Select_Fail);
             return false;
         }
     }

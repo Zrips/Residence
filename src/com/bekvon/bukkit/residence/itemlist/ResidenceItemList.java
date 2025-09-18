@@ -14,32 +14,32 @@ public class ResidenceItemList extends ItemList {
     private Residence plugin;
 
     public ResidenceItemList(Residence plugin, ClaimedResidence parent, ListType type) {
-	super(type);
-	this.plugin = plugin;
-	res = parent;
+        super(type);
+        this.plugin = plugin;
+        res = parent;
     }
 
     private ResidenceItemList(Residence plugin) {
-	this.plugin = plugin;
+        this.plugin = plugin;
     }
 
     public void playerListChange(Player player, Material mat, boolean resadmin) {
 
-	ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
-	PermissionGroup group = rPlayer.getGroup();
-	if (resadmin || (res.getPermissions().hasResidencePermission(player, true) && group.itemListAccess())) {
-	    if (super.toggle(mat))
-		plugin.msg(player, lm.General_ListMaterialAdd, mat.toString(), type.toString().toLowerCase());
-	    else
-		plugin.msg(player, lm.General_ListMaterialRemove, mat.toString(), type.toString().toLowerCase());
-	} else {
-	    plugin.msg(player, lm.General_NoPermission);
-	}
+        ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
+        PermissionGroup group = rPlayer.getGroup();
+        if (resadmin || (res.getPermissions().hasResidencePermission(player, true) && group.itemListAccess())) {
+            if (super.toggle(mat))
+                lm.General_ListMaterialAdd.sendMessage(player, mat.toString(), type.toString().toLowerCase());
+            else
+                lm.General_ListMaterialRemove.sendMessage(player, mat.toString(), type.toString().toLowerCase());
+        } else {
+            lm.General_NoPermission.sendMessage(player);
+        }
     }
 
     public static ResidenceItemList load(Residence plugin, ClaimedResidence parent, Map<String, Object> map) {
-	ResidenceItemList newlist = new ResidenceItemList(plugin);
-	newlist.res = parent;
-	return (ResidenceItemList) ItemList.load(map, newlist);
+        ResidenceItemList newlist = new ResidenceItemList(plugin);
+        newlist.res = parent;
+        return (ResidenceItemList) ItemList.load(map, newlist);
     }
 }

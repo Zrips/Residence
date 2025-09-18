@@ -69,7 +69,6 @@ import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Container.CMIBlock;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceBlockListener implements Listener {
@@ -231,7 +230,7 @@ public class ResidenceBlockListener implements Listener {
         if (Residence.getInstance().getConfigManager().enabledRentSystem() && res != null) {
             if (Residence.getInstance().getConfigManager().preventRentModify() && res.isRented()) {
                 if (inform)
-                    Residence.getInstance().msg(player, lm.Rent_ModifyDeny);
+                    lm.Rent_ModifyDeny.sendMessage(player);
                 return false;
             }
         }
@@ -262,11 +261,11 @@ public class ResidenceBlockListener implements Listener {
 
         if (!hasdestroy && !ResPerm.bypass_destroy.hasPermission(player, 10000L)) {
             if (inform)
-                Residence.getInstance().msg(player, lm.Flag_Deny, Flags.destroy);
+                lm.Flag_Deny.sendMessage(player, Flags.destroy);
             return false;
         } else if (mat == Material.CHEST && !perms.playerHas(player, Flags.container, true)) {
             if (inform)
-                Residence.getInstance().msg(player, lm.Flag_Deny, Flags.container);
+                lm.Flag_Deny.sendMessage(player, Flags.container);
             return false;
         }
 
@@ -426,7 +425,7 @@ public class ResidenceBlockListener implements Listener {
         if (!ResPerm.newguyresidence.hasPermission(player))
             return;
 
-        plugin.msg(player, lm.General_NewPlayerInfo);
+        lm.General_NewPlayerInfo.sendMessage(player);
 
         MessageInformed.add(player.getName());
     }
@@ -469,7 +468,7 @@ public class ResidenceBlockListener implements Listener {
             if (!checkBlock(orRes, block.getLocation(), vector, type, player))
                 continue;
 
-            CMIActionBar.send(player, plugin.msg(lm.General_CantPlaceChest));
+            CMIActionBar.send(player, lm.General_CantPlaceChest.getMessage());
             event.setCancelled(true);
             return;
         }
@@ -642,13 +641,13 @@ public class ResidenceBlockListener implements Listener {
             String resname = res.getName();
             if (Residence.getInstance().getConfigManager().preventRentModify() && Residence.getInstance().getRentManager().isRented(resname)) {
                 if (informPlayer)
-                    Residence.getInstance().msg(player, lm.Rent_ModifyDeny);
+                    lm.Rent_ModifyDeny.sendMessage(player);
                 return false;
             }
         }
         if (!CMIMaterial.get(mat).isNone() && res != null && !res.getItemBlacklist().isAllowed(mat)) {
             if (informPlayer)
-                Residence.getInstance().msg(player, lm.General_ItemBlacklisted);
+                lm.General_ItemBlacklisted.sendMessage(player);
             return false;
         }
         FlagPermissions perms = Residence.getInstance().getPermsByLocForPlayer(block.getLocation(), player);
@@ -662,7 +661,7 @@ public class ResidenceBlockListener implements Listener {
 
         if (!hasplace && !ResPerm.bypass_build.hasPermission(player, 10000L)) {
             if (informPlayer)
-                Residence.getInstance().msg(player, lm.Flag_Deny, Flags.place);
+                lm.Flag_Deny.sendMessage(player, Flags.place);
             return false;
         }
 
@@ -675,7 +674,7 @@ public class ResidenceBlockListener implements Listener {
                 if (!hasplace
                     && !ResPerm.bypass_build.hasPermission(player, 10000L)) {
                     if (informPlayer)
-                        Residence.getInstance().msg(player, lm.Flag_Deny, Flags.place);
+                        lm.Flag_Deny.sendMessage(player, Flags.place);
                     return false;
                 }
             }
@@ -1025,7 +1024,7 @@ public class ResidenceBlockListener implements Listener {
                 if (res != null) {
                     hasBuild = res.getPermissions().playerHas(player, Flags.build, FlagCombo.TrueOrNone);
                     if (!hasBuild) {
-                        plugin.msg(player, lm.Invalid_PortalDestination);
+                        lm.Invalid_PortalDestination.sendMessage(player);
                     }
                 }
             } else {
@@ -1115,7 +1114,7 @@ public class ResidenceBlockListener implements Listener {
             FlagPermissions perms = plugin.getPermsByLocForPlayer(event.getBlock().getLocation(), player);
             if (player != null && !perms.playerHas(player, Flags.ignite, true) && !ResAdmin.isResAdmin(player)) {
                 event.setCancelled(true);
-                plugin.msg(player, lm.Flag_Deny, Flags.ignite);
+                lm.Flag_Deny.sendMessage(player, Flags.ignite);
             }
         } else {
             // Disabling listener if flag disabled globally
@@ -1133,11 +1132,10 @@ public class ResidenceBlockListener implements Listener {
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
-        
-        
+
         Player player = event.getPlayer();
         FlagPermissions perms = plugin.getPermsByLocForPlayer(event.getClickedBlock().getLocation(), player);
-        
+
         if (perms.playerHas(player, Flags.ignite, true) || ResAdmin.isResAdmin(player))
             return;
 
@@ -1149,7 +1147,7 @@ public class ResidenceBlockListener implements Listener {
             return;
 
         event.setCancelled(true);
-        plugin.msg(player, lm.Flag_Deny, Flags.ignite);
+        lm.Flag_Deny.sendMessage(player, Flags.ignite);
 
     }
 }

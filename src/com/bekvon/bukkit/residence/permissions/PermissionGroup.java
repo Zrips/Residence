@@ -5,11 +5,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -542,41 +544,47 @@ public class PermissionGroup {
         return itemListAccess;
     }
 
+    @Deprecated
     public void printLimits(CommandSender player, OfflinePlayer target, boolean resadmin) {
+        printLimits(player, target.getUniqueId(), resadmin);
+    }
+
+    public void printLimits(CommandSender sender, UUID target, boolean resadmin) {
 
         ResidencePlayer rPlayer = Residence.getInstance().getPlayerManager().getResidencePlayer(target);
         rPlayer.getGroup(true);
         PermissionGroup group = rPlayer.getGroup();
 
-        Residence.getInstance().msg(player, lm.General_Separator);
-        Residence.getInstance().msg(player, lm.Limits_PGroup, Residence.getInstance().getPermissionManager().getPermissionsGroup(target.getName(),
-            target.isOnline() ? Bukkit.getPlayer(target.getName()).getWorld().getName() : Residence.getInstance().getConfigManager().getDefaultWorld()));
-        Residence.getInstance().msg(player, lm.Limits_RGroup, group.getGroupName());
-        if (target.isOnline() && resadmin)
-            Residence.getInstance().msg(player, lm.Limits_Admin, Residence.getInstance().getPermissionManager().isResidenceAdmin(player));
-        Residence.getInstance().msg(player, lm.Limits_CanCreate, group.canCreateResidences());
-        Residence.getInstance().msg(player, lm.Limits_MaxRes, rPlayer.getMaxRes());
-        Residence.getInstance().msg(player, lm.Limits_NumberOwn, rPlayer.getResAmount());
-        Residence.getInstance().msg(player, lm.Limits_MaxEW, group.getMinX() + "-" + rPlayer.getMaxX());
-        Residence.getInstance().msg(player, lm.Limits_MaxNS, group.getMinZ() + "-" + rPlayer.getMaxZ());
-        Residence.getInstance().msg(player, lm.Limits_MaxUD, group.getMinY() + "-" + group.getMaxY());
-        Residence.getInstance().msg(player, lm.Limits_MinMax, group.getMinHeight(), group.getMaxHeight());
-        Residence.getInstance().msg(player, lm.Limits_MaxSubzones, rPlayer.getMaxSubzones());
-        Residence.getInstance().msg(player, lm.Limits_MaxSubDepth, rPlayer.getMaxSubzoneDepth());
-        Residence.getInstance().msg(player, lm.Limits_MaxRents, rPlayer.getMaxRents() + (getMaxRentDays() != -1 ? Residence.getInstance().msg(lm.Limits_MaxRentDays, getMaxRentDays())
-            : ""));
-        Residence.getInstance().msg(player, lm.Limits_EnterLeave, group.messageperms);
+        Player player = rPlayer.getPlayer();
+
+        lm.General_Separator.sendMessage(sender);
+        lm.Limits_PGroup.sendMessage(sender, Residence.getInstance().getPermissionManager().getPermissionsGroup(rPlayer.getName(),
+            player != null ? player.getWorld().getName() : Residence.getInstance().getConfigManager().getDefaultWorld()));
+        lm.Limits_RGroup.sendMessage(sender, group.getGroupName());
+        if (player != null && resadmin)
+            lm.Limits_Admin.sendMessage(sender, Residence.getInstance().getPermissionManager().isResidenceAdmin(sender));
+        lm.Limits_CanCreate.sendMessage(sender, group.canCreateResidences());
+        lm.Limits_MaxRes.sendMessage(sender, rPlayer.getMaxRes());
+        lm.Limits_NumberOwn.sendMessage(sender, rPlayer.getResAmount());
+        lm.Limits_MaxEW.sendMessage(sender, group.getMinX() + "-" + rPlayer.getMaxX());
+        lm.Limits_MaxNS.sendMessage(sender, group.getMinZ() + "-" + rPlayer.getMaxZ());
+        lm.Limits_MaxUD.sendMessage(sender, group.getMinYSize() + "-" + group.getMaxYSize());
+        lm.Limits_MinMax.sendMessage(sender, group.getLowestYAllowed(), group.getHighestYAllowed());
+        lm.Limits_MaxSubzones.sendMessage(sender, rPlayer.getMaxSubzones());
+        lm.Limits_MaxSubDepth.sendMessage(sender, rPlayer.getMaxSubzoneDepth());
+        lm.Limits_MaxRents.sendMessage(sender, rPlayer.getMaxRents() + (getMaxRentDays() != -1 ? lm.Limits_MaxRentDays.getMessage(getMaxRentDays()) : ""));
+        lm.Limits_EnterLeave.sendMessage(sender, group.messageperms);
         if (Residence.getInstance().getEconomyManager() != null) {
-            Residence.getInstance().msg(player, lm.Limits_Cost, group.costperarea);
-            Residence.getInstance().msg(player, lm.Limits_Sell, group.sellperarea);
+            lm.Limits_Cost.sendMessage(sender, group.costperarea);
+            lm.Limits_Sell.sendMessage(sender, group.sellperarea);
         }
-        Residence.getInstance().msg(player, lm.Limits_Flag, group.flagPerms.listFlags());
+        lm.Limits_Flag.sendMessage(sender, group.flagPerms.listFlags());
         if (Residence.getInstance().getConfigManager().useLeases()) {
-            Residence.getInstance().msg(player, lm.Limits_MaxDays, group.maxLeaseTime);
-            Residence.getInstance().msg(player, lm.Limits_LeaseTime, group.leaseGiveTime);
-            Residence.getInstance().msg(player, lm.Limits_RenewCost, group.renewcostperarea);
+            lm.Limits_MaxDays.sendMessage(sender, group.maxLeaseTime);
+            lm.Limits_LeaseTime.sendMessage(sender, group.leaseGiveTime);
+            lm.Limits_RenewCost.sendMessage(sender, group.renewcostperarea);
         }
-        Residence.getInstance().msg(player, lm.General_Separator);
+        lm.General_Separator.sendMessage(sender);
     }
 
     public double getCostperarea() {

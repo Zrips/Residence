@@ -20,47 +20,47 @@ public class setmain implements cmd {
     @CommandAnnotation(simple = true, priority = 2900)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
 
-	if (!(sender instanceof Player))
-	    return false;
+        if (!(sender instanceof Player))
+            return false;
 
-	Player player = (Player) sender;
-	if (args.length != 0 && args.length != 1) {
-	    return false;
-	}
+        Player player = (Player) sender;
+        if (args.length != 0 && args.length != 1) {
+            return false;
+        }
 
-	ClaimedResidence res = null;
+        ClaimedResidence res = null;
 
-	if (args.length == 0)
-	    res = plugin.getResidenceManager().getByLoc(player.getLocation());
-	else
-	    res = plugin.getResidenceManager().getByName(args[0]);
+        if (args.length == 0)
+            res = plugin.getResidenceManager().getByLoc(player.getLocation());
+        else
+            res = plugin.getResidenceManager().getByName(args[0]);
 
-	if (res == null) {
-	    plugin.msg(sender, lm.Invalid_Residence);
-	    return false;
-	}
+        if (res == null) {
+            lm.Invalid_Residence.sendMessage(sender);
+            return false;
+        }
 
-	if (res.isOwner(player)) {
-	    res.setMainResidence(res.isMainResidence() ? false : true);
-	} else if (plugin.getRentManager().isRented(res.getName()) && !plugin.getRentManager().getRentingPlayer(res.getName()).equalsIgnoreCase(player.getName())) {
-	    plugin.msg(sender, lm.Invalid_Residence);
-	    return false;
-	}
+        if (res.isOwner(player)) {
+            res.setMainResidence(res.isMainResidence() ? false : true);
+        } else if (plugin.getRentManager().isRented(res.getName()) && !plugin.getRentManager().getRentingPlayer(res.getName()).equalsIgnoreCase(player.getName())) {
+            lm.Invalid_Residence.sendMessage(sender);
+            return false;
+        }
 
-	plugin.msg(player, lm.Residence_ChangedMain, res.getTopParentName());
+        lm.Residence_ChangedMain.sendMessage(sender, res.getTopParentName());
 
-	ResidencePlayer rplayer = plugin.getPlayerManager().getResidencePlayer(player);
-	if (rplayer != null)
-	    rplayer.setMainResidence(res);
+        ResidencePlayer rplayer = plugin.getPlayerManager().getResidencePlayer(player);
+        if (rplayer != null)
+            rplayer.setMainResidence(res);
 
-	return true;
+        return true;
     }
 
     @Override
     public void getLocale() {
-	ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
-	c.get("Description", "Sets defined residence as main to show up in chat as prefix");
-	c.get("Info", Arrays.asList("&eUsage: &6/res setmain (residence)", "Set defined residence as main."));
-	LocaleManager.addTabCompleteMain(this, "[residence]");
+        ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
+        c.get("Description", "Sets defined residence as main to show up in chat as prefix");
+        c.get("Info", Arrays.asList("&eUsage: &6/res setmain (residence)", "Set defined residence as main."));
+        LocaleManager.addTabCompleteMain(this, "[residence]");
     }
 }

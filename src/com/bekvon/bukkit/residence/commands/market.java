@@ -70,35 +70,35 @@ public class market implements cmd {
                 res = plugin.getResidenceManager().getByName(args[1]);
 
             if (res == null) {
-                plugin.msg(player, lm.Invalid_Residence);
+                lm.Invalid_Residence.sendMessage(sender);
                 return true;
             }
 
             if (res.isRented()) {
                 if (resadmin || ResAdmin.isResAdmin(player) || ResPerm.market_evict.hasPermission(player)) {
                     plugin.UnrentConfirm.put(player.getName(), res.getName());
-                    plugin.msg(sender, lm.Rent_EvictConfirm, res.getName());
+                    lm.Rent_EvictConfirm.sendMessage(sender, res.getName());
                 } else if (plugin.getRentManager().getRentingPlayer(res).equalsIgnoreCase(sender.getName())) {
                     plugin.UnrentConfirm.put(player.getName(), res.getName());
-                    plugin.msg(sender, lm.Rent_UnrentConfirm, res.getName());
+                    lm.Rent_UnrentConfirm.sendMessage(sender, res.getName());
                 } else
                     plugin.getRentManager().printRentInfo(player, res);
             } else {
                 plugin.UnrentConfirm.put(player.getName(), res.getName());
-                plugin.msg(sender, lm.Rent_ReleaseConfirm, res.getName());
+                lm.Rent_ReleaseConfirm.sendMessage(sender, res.getName());
             }
 
             return true;
 
         case "confirm":
             if (!plugin.UnrentConfirm.containsKey(player.getName())) {
-                plugin.msg(player, lm.Invalid_Residence);
+                lm.Invalid_Residence.sendMessage(sender);
                 return false;
             }
             String area = plugin.UnrentConfirm.remove(player.getName());
             res = plugin.getResidenceManager().getByName(area);
             if (res == null) {
-                plugin.msg(player, lm.Invalid_Residence);
+                lm.Invalid_Residence.sendMessage(sender);
                 return true;
             }
 
@@ -118,7 +118,7 @@ public class market implements cmd {
             Block block = Utils.getTargetBlock(player, 10);
 
             if (!(block.getState() instanceof Sign)) {
-                plugin.msg(player, lm.Sign_LookAt);
+                lm.Sign_LookAt.sendMessage(sender);
                 return true;
             }
 
@@ -136,14 +136,14 @@ public class market implements cmd {
             ClaimedResidence CurrentRes = plugin.getResidenceManager().getByLoc(sign.getLocation());
 
             if (CurrentRes != null && !CurrentRes.isOwner(player) && !resadmin) {
-                plugin.msg(player, lm.Residence_NotOwner);
+                lm.Residence_NotOwner.sendMessage(sender);
                 return true;
             }
 
             res = plugin.getResidenceManager().getByName(args[1]);
 
             if (res == null) {
-                plugin.msg(player, lm.Invalid_Residence);
+                lm.Invalid_Residence.sendMessage(sender);
                 return true;
             }
 
@@ -162,7 +162,7 @@ public class market implements cmd {
                 plugin.getSignUtil().getSigns().addSign(signInfo);
                 plugin.getSignUtil().saveSigns();
             } else {
-                plugin.msg(player, lm.Residence_NotForRentOrSell);
+                lm.Residence_NotForRentOrSell.sendMessage(sender);
                 return true;
             }
 
@@ -177,14 +177,14 @@ public class market implements cmd {
             else if (args.length == 2)
                 res = plugin.getResidenceManager().getByName(args[1]);
             if (res == null) {
-                plugin.msg(player, lm.Invalid_Residence);
+                lm.Invalid_Residence.sendMessage(sender);
                 return true;
             }
             boolean sell = plugin.getTransactionManager().viewSaleInfo(res, player);
             if (plugin.getConfigManager().enabledRentSystem() && res.isForRent()) {
                 plugin.getRentManager().printRentInfo(player, res);
             } else if (!sell) {
-                plugin.msg(sender, lm.Residence_NotForRentOrSell);
+                lm.Residence_NotForRentOrSell.sendMessage(sender);
             }
             return true;
         case "buy":
@@ -195,7 +195,7 @@ public class market implements cmd {
                 res = plugin.getResidenceManager().getByName(args[1]);
 
             if (res == null) {
-                plugin.msg(player, lm.Invalid_Residence);
+                lm.Invalid_Residence.sendMessage(sender);
                 return true;
             }
 
@@ -203,7 +203,7 @@ public class market implements cmd {
             if (sell) {
                 plugin.getTransactionManager().buyPlot(res, player, resadmin);
             } else {
-                plugin.msg(sender, lm.Residence_NotForRentOrSell);
+                lm.Residence_NotForRentOrSell.sendMessage(sender);
             }
             return true;
         case "unsell":
@@ -221,7 +221,7 @@ public class market implements cmd {
             try {
                 amount = Integer.parseInt(args[2]);
             } catch (Exception ex) {
-                plugin.msg(player, lm.Invalid_Amount);
+                lm.Invalid_Amount.sendMessage(sender);
                 return true;
             }
             plugin.getTransactionManager().putForSale(args[1], player, amount, resadmin);
@@ -245,7 +245,7 @@ public class market implements cmd {
             } else if (args[2].equalsIgnoreCase("f") || args[2].equalsIgnoreCase("false")) {
                 repeat = false;
             } else {
-                plugin.msg(player, lm.Invalid_Boolean);
+                lm.Invalid_Boolean.sendMessage(player);
                 return true;
             }
         }
@@ -258,7 +258,7 @@ public class market implements cmd {
         if (res != null) {
             plugin.getRentManager().rent(player, res, repeat, resadmin);
         } else
-            plugin.msg(player, lm.Invalid_Residence);
+            lm.Invalid_Residence.sendMessage(player);
 
         return true;
     }
@@ -278,7 +278,7 @@ public class market implements cmd {
         if (res != null)
             plugin.getRentManager().payRent(player, res, resadmin);
         else
-            plugin.msg(player, lm.Invalid_Residence);
+            lm.Invalid_Residence.sendMessage(player);
         return true;
     }
 
@@ -287,7 +287,7 @@ public class market implements cmd {
             return false;
         }
         if (!plugin.getConfigManager().enabledRentSystem()) {
-            plugin.msg(player, lm.Rent_Disabled);
+            lm.Rent_Disabled.sendMessage(player);
             return true;
         }
         int days;
@@ -295,21 +295,21 @@ public class market implements cmd {
         try {
             cost = Integer.parseInt(args[2]);
         } catch (Exception ex) {
-            plugin.msg(player, lm.Invalid_Cost);
+            lm.Invalid_Cost.sendMessage(player);
             return true;
         }
         if (cost <= 0) {
-            plugin.msg(player, lm.Invalid_Cost);
+            lm.Invalid_Cost.sendMessage(player);
             return true;
         }
         try {
             days = Integer.parseInt(args[3]);
         } catch (Exception ex) {
-            plugin.msg(player, lm.Invalid_Days);
+            lm.Invalid_Days.sendMessage(player);
             return true;
         }
         if (days <= 0) {
-            plugin.msg(player, lm.Invalid_Days);
+            lm.Invalid_Days.sendMessage(player);
             return true;
         }
         boolean AllowRenewing = plugin.getConfigManager().isRentAllowRenewing();
@@ -320,7 +320,7 @@ public class market implements cmd {
             } else if (ag.equalsIgnoreCase("f") || ag.equalsIgnoreCase("false")) {
                 AllowRenewing = false;
             } else {
-                plugin.msg(player, lm.Invalid_Boolean);
+                lm.Invalid_Boolean.sendMessage(player);
                 return true;
             }
         }
@@ -333,7 +333,7 @@ public class market implements cmd {
             } else if (ag.equalsIgnoreCase("f") || ag.equalsIgnoreCase("false")) {
                 StayInMarket = false;
             } else {
-                plugin.msg(player, lm.Invalid_Boolean);
+                lm.Invalid_Boolean.sendMessage(player);
                 return true;
             }
         }
@@ -346,7 +346,7 @@ public class market implements cmd {
             } else if (ag.equalsIgnoreCase("f") || ag.equalsIgnoreCase("false")) {
                 AllowAutoPay = false;
             } else {
-                plugin.msg(player, lm.Invalid_Boolean);
+                lm.Invalid_Boolean.sendMessage(player);
                 return true;
             }
         }
@@ -357,7 +357,7 @@ public class market implements cmd {
 
     private boolean commandResMarketAutoPay(String[] args, boolean resadmin, Player player) {
         if (!plugin.getConfigManager().enableEconomy()) {
-            plugin.msg(player, lm.Economy_MarketDisabled);
+            lm.Economy_MarketDisabled.sendMessage(player);
             return true;
         }
         if (args.length != 2 && args.length != 3) {
@@ -381,12 +381,12 @@ public class market implements cmd {
         } else if (barg.equalsIgnoreCase("false") || barg.equalsIgnoreCase("f")) {
             value = false;
         } else {
-            plugin.msg(player, lm.Invalid_Boolean);
+            lm.Invalid_Boolean.sendMessage(player);
             return true;
         }
 
         if (res == null) {
-            plugin.msg(player, lm.Invalid_Residence);
+            lm.Invalid_Residence.sendMessage(player);
             return true;
         }
 
@@ -395,17 +395,17 @@ public class market implements cmd {
         } else if (res.isForRent()) {
             plugin.getRentManager().setRentRepeatable(player, res.getName(), value, resadmin);
         } else {
-            plugin.msg(player, lm.Economy_RentReleaseInvalid, ChatColor.YELLOW + res.getName() + ChatColor.RED);
+            lm.Economy_RentReleaseInvalid.sendMessage(player, ChatColor.YELLOW + res.getName() + ChatColor.RED);
         }
         return true;
     }
 
     private boolean commandResMarketList(String[] args, Player player, int page) {
         if (!plugin.getConfigManager().enableEconomy()) {
-            plugin.msg(player, lm.Economy_MarketDisabled);
+            lm.Economy_MarketDisabled.sendMessage(player);
             return true;
         }
-        plugin.msg(player, lm.General_MarketList);
+        lm.General_MarketList.sendMessage(player);
         if (args.length < 2)
             return false;
 

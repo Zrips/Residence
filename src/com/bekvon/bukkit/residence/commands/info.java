@@ -50,16 +50,16 @@ public class info implements cmd {
             nearby.remove(res);
 
             if (res != null) {
-                plugin.getResidenceManager().printAreaInfo(res.getName(), sender, resadmin);
+                plugin.getResidenceManager().printAreaInfo(res, sender, resadmin);
             } else {
                 if (nearby.isEmpty())
-                    plugin.msg(sender, lm.Invalid_Residence);
+                    lm.Invalid_Residence.sendMessage(sender);
             }
 
             RawMessage rm = new RawMessage();
 
             if (!nearby.isEmpty()) {
-                rm.addText(plugin.msg(lm.Residence_Near, ""));
+                rm.addText(lm.Residence_Near.getMessage(""));
                 for (ClaimedResidence one : nearby) {
                     if (rm.getFinalLenght() > 0)
                         rm.addText(LC.info_ListSpliter.getLocale());
@@ -68,7 +68,7 @@ public class info implements cmd {
                     RawMessageCommand rmc = new RawMessageCommand() {
                         @Override
                         public void run(CommandSender sender) {
-                            plugin.getResidenceManager().printAreaInfo(one.getName(), sender, resadmin);
+                            plugin.getResidenceManager().printAreaInfo(one, sender, resadmin);
                         }
                     };
                     rm.addHover(LC.info_Click.getLocale());

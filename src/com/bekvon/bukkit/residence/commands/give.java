@@ -20,50 +20,50 @@ public class give implements cmd {
     @Override
     @CommandAnnotation(simple = true, priority = 3800)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
-	if (!(sender instanceof Player))
-	    return false;
+        if (!(sender instanceof Player))
+            return false;
 
-	Player player = (Player) sender;
+        Player player = (Player) sender;
 
-	boolean includeSubzones = false;
-	boolean confirmed = false;
+        boolean includeSubzones = false;
+        boolean confirmed = false;
 
-	if (args.length != 2 && args.length != 3 && args.length != 4)
-	    return false;
+        if (args.length != 2 && args.length != 3 && args.length != 4)
+            return false;
 
-	for (String one : args) {
-	    if (one.equalsIgnoreCase("-s"))
-		includeSubzones = true;
-	    if (one.equalsIgnoreCase("-confirmed"))
-		confirmed = true;
-	}
-	if (!confirmed) {
+        for (String one : args) {
+            if (one.equalsIgnoreCase("-s"))
+                includeSubzones = true;
+            if (one.equalsIgnoreCase("-confirmed"))
+                confirmed = true;
+        }
+        if (!confirmed) {
 
-	    RawMessage rm = new RawMessage();
+            RawMessage rm = new RawMessage();
 
-	    ClaimedResidence res = plugin.getResidenceManager().getByName(args[0]);
+            ClaimedResidence res = plugin.getResidenceManager().getByName(args[0]);
 
-	    if (res == null) {
-		plugin.msg(sender, lm.Invalid_Residence);
-		return false;
-	    }
+            if (res == null) {
+                lm.Invalid_Residence.sendMessage(sender);
+                return false;
+            }
 
-	    rm.addText(plugin.getLM().getMessage(lm.Residence_GiveConfirm, args[0], res.getOwner(), args[1]))
-		.addHover(plugin.getLM().getMessage(lm.info_click))
-		.addCommand((resadmin ? "resadmin" : "res") + " give " + args[0] + " " + args[1] + (includeSubzones ? " -s" : "") + " -confirmed");
-	    rm.show(sender);
+            rm.addText(lm.Residence_GiveConfirm.getMessage(args[0], res.getOwner(), args[1]))
+                .addHover(lm.info_click.getMessage())
+                .addCommand((resadmin ? "resadmin" : "res") + " give " + args[0] + " " + args[1] + (includeSubzones ? " -s" : "") + " -confirmed");
+            rm.show(sender);
 
-	    return true;
-	}
-	plugin.getResidenceManager().giveResidence(player, args[1], args[0], resadmin, includeSubzones);
-	return true;
+            return true;
+        }
+        plugin.getResidenceManager().giveResidence(player, args[1], args[0], resadmin, includeSubzones);
+        return true;
     }
 
     @Override
     public void getLocale() {
-	ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
-	c.get("Description", "Give residence to player.");
-	c.get("Info", Arrays.asList("&eUsage: &6/res give <residence name> [player] <-s>", "Gives your owned residence to target player"));
-	LocaleManager.addTabCompleteMain(this, "[residence]", "[playername]");
+        ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
+        c.get("Description", "Give residence to player.");
+        c.get("Info", Arrays.asList("&eUsage: &6/res give <residence name> [player] <-s>", "Gives your owned residence to target player"));
+        LocaleManager.addTabCompleteMain(this, "[residence]", "[playername]");
     }
 }

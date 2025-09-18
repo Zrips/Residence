@@ -33,7 +33,6 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.vaultinterface.ResidenceVaultAdapter;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -451,7 +450,7 @@ public class PermissionManager {
         private static void informConsole(CommandSender sender, String permission, boolean informConsole) {
             if (informConsole) {
                 ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-                Residence.getInstance().msg(console, Residence.getInstance().getLM().getMessage(lm.General_NoPermission, "[playerName]", sender.getName(), "[permission]", permission));
+                lm.General_NoPermission.sendMessage(console, "[playerName]", sender.getName(), "[permission]", permission);
             }
         }
 

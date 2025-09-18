@@ -64,15 +64,15 @@ public class gset implements cmd {
             area = plugin.getResidenceManager().getByLoc(player.getLocation());
 
         if (area == null) {
-            plugin.msg(player, lm.Invalid_Residence);
+            lm.Invalid_Residence.sendMessage(sender);
             return true;
         }
 
         if (flagGroup == null) {
-            Residence.getInstance().msg(player, lm.Invalid_Group);
+            lm.Invalid_Group.sendMessage(sender);
             return true;
         }
-        
+
         area.getPermissions().setGroupFlag(player, flagGroup, flag, state, resadmin);
 
         return true;

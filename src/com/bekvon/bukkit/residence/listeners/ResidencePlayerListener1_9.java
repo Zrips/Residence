@@ -50,7 +50,7 @@ public class ResidencePlayerListener1_9 implements Listener {
         if (perms.playerHas(player, Flags.elytra, FlagCombo.TrueOrNone))
             return;
 
-        plugin.msg(player, lm.Flag_Deny, Flags.elytra);
+        lm.Flag_Deny.sendMessage(player, Flags.elytra);
 
         event.setCancelled(true);
         CMIScheduler.runAtEntityLater(plugin, player, () -> player.setGliding(false), 2L);
@@ -86,7 +86,7 @@ public class ResidencePlayerListener1_9 implements Listener {
             }
         }
         if (loc != null) {
-            plugin.msg(player, lm.Flag_Deny, Flags.elytra);
+            lm.Flag_Deny.sendMessage(player, Flags.elytra);
             player.closeInventory();
             PaperLib.teleportAsync(player, loc);
         }

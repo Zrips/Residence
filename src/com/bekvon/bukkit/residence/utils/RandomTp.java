@@ -391,7 +391,7 @@ public class RandomTp {
 
             targetPlayer.closeInventory();
             PaperLib.teleportAsync(targetPlayer, loc);
-            plugin.msg(targetPlayer, lm.RandomTeleport_TeleportSuccess, loc.getX(), loc.getY(), loc.getZ());
+            lm.RandomTeleport_TeleportSuccess.sendMessage(targetPlayer, loc.getX(), loc.getY(), loc.getZ());
         }, plugin.getConfigManager().getTeleportDelay() * 20L);
 
         tpDelayRecord.setRemainingTime(plugin.getConfigManager().getTeleportDelay());
@@ -402,6 +402,6 @@ public class RandomTp {
         targetPlayer.closeInventory();
         PaperLib.teleportAsync(targetPlayer, loc);
 
-        plugin.msg(targetPlayer, lm.RandomTeleport_TeleportSuccess, loc.getX(), loc.getY(), loc.getZ());
+        lm.RandomTeleport_TeleportSuccess.sendMessage(targetPlayer, loc.getX(), loc.getY(), loc.getZ());
     }
 }

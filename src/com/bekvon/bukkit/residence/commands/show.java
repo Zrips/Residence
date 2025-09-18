@@ -34,7 +34,7 @@ public class show implements cmd {
         }
 
         if (res == null) {
-            plugin.msg(sender, lm.Invalid_Residence);
+            lm.Invalid_Residence.sendMessage(sender);
             return true;
         }
 

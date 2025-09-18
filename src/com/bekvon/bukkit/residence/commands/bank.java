@@ -14,7 +14,6 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
-import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class bank implements cmd {
 
@@ -72,14 +71,14 @@ public class bank implements cmd {
         amount = CMINumber.clamp(amount, 0, Double.MAX_VALUE);
 
         if (!action.equals(Action.balance) && amount == 0) {
-            plugin.msg(sender, lm.Invalid_Amount);
+            lm.Invalid_Amount.sendMessage(sender);
             return null;
         }
         if (resName != null) {
             res = plugin.getResidenceManager().getByName(resName);
 
             if (res == null) {
-                plugin.msg(sender, lm.Invalid_Residence);
+                lm.Invalid_Residence.sendMessage(sender);
                 return null;
             }
         } else if (sender instanceof Player) {
@@ -87,7 +86,7 @@ public class bank implements cmd {
         }
 
         if (res == null) {
-            plugin.msg(sender, lm.Residence_NotIn);
+            lm.Residence_NotIn.sendMessage(sender);
             return null;
         }
 

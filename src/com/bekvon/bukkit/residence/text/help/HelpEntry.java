@@ -75,7 +75,7 @@ public class HelpEntry {
 
         PageInfo pi = new PageInfo(linesPerPage, helplines.size(), page);
         if (!pi.isPageOk()) {
-            Residence.getInstance().msg(sender, lm.Invalid_Help);
+            lm.Invalid_Help.sendMessage(sender);
             return;
         }
 
@@ -118,7 +118,7 @@ public class HelpEntry {
         if (subEntry != null) {
             subEntry.printHelp(sender, page, resadmin, path);
         } else {
-            Residence.getInstance().msg(sender, lm.Invalid_Help);
+            lm.Invalid_Help.sendMessage(sender);
         }
     }
 
@@ -166,12 +166,13 @@ public class HelpEntry {
                     }
 
                     // adding flag name and description for later sorting
-                    unsortMap.put(entry.getName(), Residence.getInstance().msg(lm.InformationPage_FlagsList, flagName, desc));
+
+                    unsortMap.put(entry.getName(), lm.InformationPage_FlagsList.getMessage(flagName, desc));
                     continue;
                 }
             }
 
-            helplines.add(new HelpLines(entry.getName(), Residence.getInstance().msg(lm.InformationPage_GeneralList, entry.getName(), entry.getDescription())));
+            helplines.add(new HelpLines(entry.getName(), lm.InformationPage_GeneralList.getMessage(entry.getName(), entry.getDescription())));
         }
 
         if (!unsortMap.isEmpty()) {
@@ -391,7 +392,7 @@ public class HelpEntry {
                             subCommands.add(oneRes.getName());
                         }
                     } else {
-                        subCommands.addAll(Residence.getInstance().getResidenceManager().getResidenceList(Residence.getInstance().getServerLandName(), true, false, false));
+                        subCommands.addAll(Residence.getInstance().getResidenceManager().getResidenceList(Residence.getInstance().getServerUUID(), true, false, false));
                     }
                     break;
                 case "[cresidence]":

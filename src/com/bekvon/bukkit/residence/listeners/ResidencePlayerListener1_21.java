@@ -92,7 +92,7 @@ public class ResidencePlayerListener1_21 implements Listener {
 
             if (time + 1000L < System.currentTimeMillis()) {
                 boats.put(closest.getUniqueId(), System.currentTimeMillis());
-                plugin.msg(closest, lm.Residence_FlagDeny, Flags.leash, res.getName());
+                lm.Residence_FlagDeny.sendMessage(closest, Flags.leash, res.getName());
             }
 
             event.setCancelled(true);
@@ -148,7 +148,7 @@ public class ResidencePlayerListener1_21 implements Listener {
             return;
 
         if (res.getPermissions().playerHas(player, Flags.leash, FlagCombo.OnlyFalse)) {
-            plugin.msg(player, lm.Residence_FlagDeny, Flags.leash, res.getName());
+            lm.Residence_FlagDeny.sendMessage(player, Flags.leash, res.getName());
             event.setCancelled(true);
             player.updateInventory();
         }

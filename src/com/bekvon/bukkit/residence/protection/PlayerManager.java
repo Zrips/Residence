@@ -20,6 +20,7 @@ import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
+import com.bekvon.bukkit.residence.utils.PlayerCache;
 
 import net.Zrips.CMILib.Logs.CMIDebug;
 
@@ -52,6 +53,7 @@ public class PlayerManager implements ResidencePlayerInterface {
     }
 
     public ResidencePlayer playerJoin(Player player) {
+        PlayerCache.addToCache(player);
         ResidencePlayer resPlayer = playersUuid.get(player.getUniqueId().toString());
         if (resPlayer == null) {
             resPlayer = new ResidencePlayer(player);
@@ -160,8 +162,7 @@ public class PlayerManager implements ResidencePlayerInterface {
             if (onlyHidden && !hidden)
                 continue;
 
-            temp.add(plugin.msg(lm.Residence_List, "", one.getName(), one.getWorld()) +
-                (hidden ? plugin.msg(lm.Residence_Hidden) : ""));
+            temp.add(lm.Residence_List.getMessage("", one.getName(), one.getWorldName()) + (hidden ? lm.Residence_Hidden.getMessage() : ""));
         }
         Collections.sort(temp, String.CASE_INSENSITIVE_ORDER);
         return temp;
@@ -187,17 +188,35 @@ public class PlayerManager implements ResidencePlayerInterface {
                 continue;
             if (onlyHidden && !hidden)
                 continue;
-            if (world != null && !world.getName().equalsIgnoreCase(one.getWorld()))
+            if (world != null && !world.getName().equalsIgnoreCase(one.getWorldName()))
                 continue;
             temp.add(one);
         }
         return temp;
     }
 
+    @Deprecated
     public TreeMap<String, ClaimedResidence> getResidencesMap(String player, boolean showhidden, boolean onlyHidden, World world) {
-        TreeMap<String, ClaimedResidence> temp = new TreeMap<String, ClaimedResidence>();
 
         ResidencePlayer resPlayer = this.getResidencePlayer(player);
+        if (resPlayer == null)
+            return new TreeMap<String, ClaimedResidence>();
+
+        return getResidencesMap(resPlayer, showhidden, onlyHidden, world);
+    }
+
+    public TreeMap<String, ClaimedResidence> getResidencesMap(UUID uuid, boolean showhidden, boolean onlyHidden, World world) {
+
+        ResidencePlayer resPlayer = this.getResidencePlayer(uuid);
+        if (resPlayer == null)
+            return new TreeMap<String, ClaimedResidence>();
+
+        return getResidencesMap(resPlayer, showhidden, onlyHidden, world);
+    }
+
+    public TreeMap<String, ClaimedResidence> getResidencesMap(ResidencePlayer resPlayer, boolean showhidden, boolean onlyHidden, World world) {
+        TreeMap<String, ClaimedResidence> temp = new TreeMap<String, ClaimedResidence>();
+
         if (resPlayer == null) {
             return temp;
         }
@@ -209,17 +228,25 @@ public class PlayerManager implements ResidencePlayerInterface {
             }
             if (onlyHidden && !hidden)
                 continue;
-            if (world != null && !world.getName().equalsIgnoreCase(one.getWorld()))
+            if (world != null && !world.getName().equalsIgnoreCase(one.getWorldName()))
                 continue;
             temp.put(one.getName(), one);
         }
         return temp;
     }
 
+    @Deprecated
     public TreeMap<String, ClaimedResidence> getTrustedResidencesMap(String player, boolean showhidden, boolean onlyHidden, World world) {
+        return getTrustedResidencesMap(this.getResidencePlayer(player), showhidden, onlyHidden, world);
+    }
+
+    public TreeMap<String, ClaimedResidence> getTrustedResidencesMap(UUID uuid, boolean showhidden, boolean onlyHidden, World world) {
+        return getTrustedResidencesMap(this.getResidencePlayer(uuid), showhidden, onlyHidden, world);
+    }
+
+    public TreeMap<String, ClaimedResidence> getTrustedResidencesMap(ResidencePlayer resPlayer, boolean showhidden, boolean onlyHidden, World world) {
         TreeMap<String, ClaimedResidence> temp = new TreeMap<String, ClaimedResidence>();
 
-        ResidencePlayer resPlayer = this.getResidencePlayer(player);
         if (resPlayer == null) {
             return temp;
         }
@@ -232,9 +259,9 @@ public class PlayerManager implements ResidencePlayerInterface {
                 continue;
             if (onlyHidden && !hidden)
                 continue;
-            if (world != null && !world.getName().equalsIgnoreCase(one.getWorld()))
+            if (world != null && !world.getName().equalsIgnoreCase(one.getWorldName()))
                 continue;
-            if (!one.isTrusted(player)) {
+            if (!one.isTrusted(resPlayer)) {
                 iter.remove();
                 continue;
             }
@@ -322,10 +349,10 @@ public class PlayerManager implements ResidencePlayerInterface {
         Player p = Bukkit.getPlayer(player);
         if (p != null && p.getName().equalsIgnoreCase(player))
             return getResidencePlayer(p);
-        
-        OfflinePlayer offline = plugin.getOfflinePlayer(player);
-        if (offline != null)
-            return getResidencePlayer(offline);
+
+        UUID uuid = PlayerCache.getUUID(player);
+        if (uuid != null)
+            return getResidencePlayer(uuid);
 
         return players.get(player.toLowerCase());
     }
@@ -360,6 +387,20 @@ public class PlayerManager implements ResidencePlayerInterface {
             return resPlayer;
         }
         return playerJoin(uuid);
+    }
+
+    public ResidencePlayer tryToGetResidencePlayer(UUID uuid) {
+        if (uuid == null)
+            return null;
+
+        return playersUuid.get(uuid.toString());
+    }
+
+    public ResidencePlayer tryToGetResidencePlayer(String player) {
+        if (player == null)
+            return null;
+
+        return players.get(player.toLowerCase());
     }
 
     public ResidencePlayer getResidencePlayer(String name, UUID uuid) {
@@ -415,9 +456,6 @@ public class PlayerManager implements ResidencePlayerInterface {
             if (residence.perms.playerFlags != null) {
                 for (Entry<String, Map<String, Boolean>> one : residence.perms.playerFlags.entrySet()) {
                     String name = one.getKey();
-                    if (name.length() == 36)
-                        name = residence.perms.cachedPlayerNameUUIDs.get(UUID.fromString(one.getKey()));
-
                     if (!residence.isTrusted(name))
                         continue;
                     ResidencePlayer rplayer = null;

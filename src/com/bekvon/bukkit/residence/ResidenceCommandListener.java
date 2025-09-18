@@ -64,7 +64,7 @@ public class ResidenceCommandListener implements CommandExecutor {
 
         if (sender instanceof Player && !plugin.getPermissionManager().isResidenceAdmin(sender) && plugin.isDisabledWorldCommand(((Player) sender)
             .getWorld())) {
-            plugin.msg(sender, lm.General_DisabledWorld);
+            lm.General_DisabledWorld.sendMessage(sender);
             return true;
         }
         if (cmdName.equals("resreload")) {
@@ -75,7 +75,7 @@ public class ResidenceCommandListener implements CommandExecutor {
                     sender.sendMessage(ChatColor.GREEN + "[Residence] Reloaded config.");
                     CMIMessages.consoleMessage("[Residence] Reloaded by " + player.getName() + ".");
                 } else
-                    plugin.msg(player, lm.General_NoPermission);
+                    lm.General_NoPermission.sendMessage(player);
             } else {
                 plugin.reloadPlugin();
                 CMIMessages.consoleMessage("[Residence] Reloaded by console.");
@@ -93,7 +93,7 @@ public class ResidenceCommandListener implements CommandExecutor {
                     Logger.getLogger(Residence.getInstance().getClass().getName()).log(Level.SEVERE, null, ex);
                 }
             } else
-                plugin.msg(sender, lm.General_NoPermission);
+                lm.General_NoPermission.sendMessage(sender);
             return true;
         } else if (cmdName.equals("rc")) {
             cmd cmdClass = getCmdClass(new String[] { "rc" });
@@ -117,7 +117,7 @@ public class ResidenceCommandListener implements CommandExecutor {
                     resadmin = true;
                 }
                 if (cmdName.equals("resadmin") && !plugin.getPermissionManager().isResidenceAdmin(sender)) {
-                    ((Player) sender).sendMessage(plugin.msg(lm.Residence_NonAdmin));
+                    lm.Residence_NonAdmin.sendMessage(sender);
                     return true;
                 }
                 if (cmdName.equals("res") && plugin.getPermissionManager().isResidenceAdmin(sender) && plugin.getConfigManager().getAdminFullAccess()) {
@@ -137,7 +137,7 @@ public class ResidenceCommandListener implements CommandExecutor {
                 resadmin = true;
             }
             if (plugin.getConfigManager().allowAdminsOnly() && !resadmin && player != null) {
-                plugin.msg(player, lm.General_AdminOnly);
+                lm.General_AdminOnly.sendMessage(player);
                 return true;
             }
 
@@ -164,12 +164,11 @@ public class ResidenceCommandListener implements CommandExecutor {
 
             if (!resadmin && !ResPerm.command_$1.hasPermission(sender, args[0].toLowerCase())) {
                 RawMessage rm = new RawMessage();
-                rm.addText(plugin.msg(lm.General_NoPermission))
-                    .addHover("&7" + ResPerm.command_$1.getPermission(args[0].toLowerCase()));
+                rm.addText(lm.General_NoPermission.getMessage()).addHover("&7" + ResPerm.command_$1.getPermission(args[0].toLowerCase()));
                 rm.show(sender);
 
                 ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-                plugin.msg(console, plugin.msg(lm.General_NoPermission) + " " + ResPerm.command_$1.getPermission(args[0].toLowerCase()));
+                lm.showMessage(console, lm.General_NoPermission.getMessage() + " " + ResPerm.command_$1.getPermission(args[0].toLowerCase()));
                 return true;
             }
 
@@ -204,7 +203,7 @@ public class ResidenceCommandListener implements CommandExecutor {
                         break varCheck;
 
                     if (list.contains(666) || list.contains(-666)) {
-                        plugin.msg(sender, lm.Invalid_FromConsole);
+                        lm.Invalid_FromConsole.sendMessage(sender);
                         return false;
                     }
 
@@ -246,7 +245,7 @@ public class ResidenceCommandListener implements CommandExecutor {
                         break varCheck;
 
                     if (list.contains(666) || list.contains(-666)) {
-                        plugin.msg(sender, lm.Invalid_Ingame);
+                        lm.Invalid_Ingame.sendMessage(sender);
                         return false;
                     }
 
@@ -313,7 +312,7 @@ public class ResidenceCommandListener implements CommandExecutor {
     }
 
     public void sendUsage(CommandSender sender, String command) {
-        plugin.msg(sender, lm.General_DefaultUsage, command);
+        lm.General_DefaultUsage.sendMessage(sender, command);
     }
 
     private boolean commandHelp(String[] args, boolean resadmin, CommandSender sender, Command command) {
@@ -328,7 +327,7 @@ public class ResidenceCommandListener implements CommandExecutor {
             try {
                 page = Integer.parseInt(args[args.length - 1]);
             } catch (Exception ex) {
-                plugin.msg(sender, lm.General_InvalidHelp);
+                lm.General_InvalidHelp.sendMessage(sender);
             }
         }
 

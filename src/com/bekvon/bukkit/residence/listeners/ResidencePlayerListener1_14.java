@@ -33,6 +33,6 @@ public class ResidencePlayerListener1_14 implements Listener {
         if (perms.playerHas(event.getPlayer(), Flags.container, FlagCombo.TrueOrNone))
             return;
         event.setCancelled(true);
-        plugin.msg(event.getPlayer(), lm.Flag_Deny, Flags.container);
+        lm.Flag_Deny.sendMessage(event.getPlayer(), Flags.container);
     }
 }

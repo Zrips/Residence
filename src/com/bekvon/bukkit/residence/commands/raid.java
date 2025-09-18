@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.Zrips.CMILib.FileHandler.ConfigReader;
 import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
@@ -18,6 +17,8 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.raid.ResidenceRaid;
 import com.bekvon.bukkit.residence.utils.TimeModifier;
 import com.bekvon.bukkit.residence.utils.Utils;
+
+import net.Zrips.CMILib.FileHandler.ConfigReader;
 
 public class raid implements cmd {
 
@@ -39,12 +40,12 @@ public class raid implements cmd {
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
 
         if (!ConfigManager.RaidEnabled) {
-            plugin.msg(sender, lm.Raid_NotEnabled);
+            lm.Raid_NotEnabled.sendMessage(sender);
             return true;
         }
 
         if (!resadmin && !ResAdmin.isResAdmin(sender)) {
-            plugin.msg(sender, lm.General_NoPermission);
+            lm.General_NoPermission.sendMessage(sender);
             return null;
         }
 
@@ -65,7 +66,7 @@ public class raid implements cmd {
                 res = plugin.getResidenceManager().getByLoc(((Player) sender).getLocation());
 
             if (res == null) {
-                plugin.msg(sender, lm.Invalid_Residence);
+                lm.Invalid_Residence.sendMessage(sender);
                 return null;
             }
 
@@ -87,7 +88,7 @@ public class raid implements cmd {
                 immune = immune == null || immune < System.currentTimeMillis() ? System.currentTimeMillis() : immune;
                 immune += (time * 1000L);
                 res.getRaid().setImmunityUntil(immune);
-                plugin.msg(sender, lm.Raid_immune, Utils.to24hourShort(immune - System.currentTimeMillis()));
+                lm.Raid_immune.sendMessage(sender, Utils.to24hourShort(immune - System.currentTimeMillis()));
                 return true;
             case "take":
                 if (time == null)
@@ -98,22 +99,22 @@ public class raid implements cmd {
                 res.getRaid().setImmunityUntil(immune);
 
                 if (res.getRaid().isImmune())
-                    plugin.msg(sender, lm.Raid_immune, Utils.to24hourShort(immune - System.currentTimeMillis()));
+                    lm.Raid_immune.sendMessage(sender, Utils.to24hourShort(immune - System.currentTimeMillis()));
                 else
-                    plugin.msg(sender, lm.Raid_notImmune);
+                    lm.Raid_notImmune.sendMessage(sender);
                 return true;
             case "set":
                 if (time == null)
                     return false;
                 immune = System.currentTimeMillis() + (time * 1000L);
                 res.getRaid().setImmunityUntil(immune);
-                plugin.msg(sender, lm.Raid_immune, Utils.to24hourShort(immune - System.currentTimeMillis()));
+                lm.Raid_immune.sendMessage(sender, Utils.to24hourShort(immune - System.currentTimeMillis()));
 
                 return true;
             case "clear":
                 res.getRaid().setImmunityUntil(null);
                 res.getRaid().setEndsAt(0L);
-                plugin.msg(sender, lm.Raid_notImmune);
+                lm.Raid_notImmune.sendMessage(sender);
 
                 return true;
             }
@@ -127,23 +128,23 @@ public class raid implements cmd {
             ResidencePlayer rplayer = plugin.getPlayerManager().getResidencePlayer(args[1]);
 
             if (rplayer == null) {
-                plugin.msg(sender, lm.Invalid_Player);
+                lm.Invalid_Player.sendMessage(sender);
                 return null;
             }
 
             if (rplayer.getJoinedRaid() == null || rplayer.getJoinedRaid().isEnded()) {
-                plugin.msg(sender, lm.Raid_notInRaid);
+                lm.Raid_notInRaid.sendMessage(sender);
                 return null;
             }
 
             ResidenceRaid raid = rplayer.getJoinedRaid();
             if (raid == null || !raid.isUnderRaid() && !raid.isInPreRaid()) {
-                plugin.msg(sender, lm.Raid_NotIn);
+                lm.Raid_NotIn.sendMessage(sender);
                 return true;
             }
 
             if (raid.getRes().isOwner(rplayer.getUniqueId())) {
-                plugin.msg(sender, lm.Raid_CantKick, raid.getRes().getName());
+                lm.Raid_CantKick.sendMessage(sender, raid.getRes().getName());
                 return true;
             }
 
@@ -151,7 +152,7 @@ public class raid implements cmd {
             raid.removeDefender(rplayer);
             raid.getRes().kickFromResidence(rplayer.getPlayer());
 
-            plugin.msg(sender, lm.Raid_Kicked, rplayer.getName(), raid.getRes().getName());
+            lm.Raid_Kicked.sendMessage(sender, rplayer.getName(), raid.getRes().getName());
 
             return true;
         case start:
@@ -164,7 +165,7 @@ public class raid implements cmd {
                 res = plugin.getResidenceManager().getByLoc(((Player) sender).getLocation());
 
             if (res == null) {
-                plugin.msg(sender, lm.Invalid_Residence);
+                lm.Invalid_Residence.sendMessage(sender);
                 return null;
             }
 
@@ -194,19 +195,19 @@ public class raid implements cmd {
                 res = plugin.getResidenceManager().getByLoc(((Player) sender).getLocation());
 
             if (res == null) {
-                plugin.msg(sender, lm.Invalid_Residence);
+                lm.Invalid_Residence.sendMessage(sender);
                 return null;
             }
 
             if (!res.getRaid().isUnderRaid() && !res.getRaid().isInPreRaid()) {
-                plugin.msg(sender, lm.Raid_defend_notRaided);
+                lm.Raid_defend_notRaided.sendMessage(sender);
                 return null;
             }
 
             res.getRaid().endRaid();
             res.getRaid().setEndsAt(0L);
 
-            plugin.msg(sender, lm.Raid_stopped, res.getName());
+            lm.Raid_stopped.sendMessage(sender, res.getName());
             return true;
         default:
             break;

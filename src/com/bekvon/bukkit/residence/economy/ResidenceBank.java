@@ -64,25 +64,25 @@ public class ResidenceBank {
             return;
         Player player = (Player) sender;
         if (!Residence.getInstance().getConfigManager().enableEconomy()) {
-            Residence.getInstance().msg(sender, lm.Economy_MarketDisabled);
+            lm.Economy_MarketDisabled.sendMessage(sender);
         }
         if (!resadmin && !res.getPermissions().playerHas(player, Flags.bank, FlagCombo.OnlyTrue)) {
-            Residence.getInstance().msg(sender, lm.Bank_NoAccess);
+            lm.Bank_NoAccess.sendMessage(sender);
             return;
         }
         if (!hasEnough(amount)) {
-            Residence.getInstance().msg(sender, lm.Bank_NoMoney);
+            lm.Bank_NoMoney.sendMessage(sender);
             return;
         }
 
         if (!resadmin && res.isRented() && !res.getRentedLand().isRenter(player)) {
-            Residence.getInstance().msg(sender, lm.Bank_rentedWithdraw, res.getName());
+            lm.Bank_rentedWithdraw.sendMessage(sender, res.getName());
             return;
         }
 
         if (sender instanceof Player && Residence.getInstance().getEconomyManager().add(player.getUniqueId(), amount) || !(sender instanceof Player)) {
             this.subtract(amount);
-            Residence.getInstance().msg(sender, lm.Bank_Withdraw, String.format("%.2f", amount));
+            lm.Bank_Withdraw.sendMessage(sender, String.format("%.2f", amount));
         }
     }
 
@@ -94,23 +94,23 @@ public class ResidenceBank {
     public void deposit(CommandSender sender, double amount, boolean resadmin) {
         if (!(sender instanceof Player))
             return;
-        
+
         Player player = (Player) sender;
         if (!Residence.getInstance().getConfigManager().enableEconomy()) {
-            Residence.getInstance().msg(sender, lm.Economy_MarketDisabled);
+            lm.Economy_MarketDisabled.sendMessage(sender);
         }
         if (!resadmin && !res.getPermissions().playerHas(player, Flags.bank, FlagCombo.OnlyTrue)) {
-            Residence.getInstance().msg(sender, lm.Bank_NoAccess);
+            lm.Bank_NoAccess.sendMessage(sender);
             return;
         }
         if (!Residence.getInstance().getEconomyManager().canAfford(player, amount)) {
-            Residence.getInstance().msg(sender, lm.Economy_NotEnoughMoney);
+            lm.Economy_NotEnoughMoney.sendMessage(sender);
             return;
         }
 
         if (Residence.getInstance().getConfigManager().BankCapacity > 0 && this.getStoredMoneyD() + amount > Residence.getInstance().getConfigManager().BankCapacity) {
             amount = Residence.getInstance().getConfigManager().BankCapacity - this.getStoredMoneyD();
-            Residence.getInstance().msg(sender, lm.Bank_full);
+            lm.Bank_full.sendMessage(sender);
             if (amount < 0) {
                 return;
             }
@@ -118,18 +118,18 @@ public class ResidenceBank {
 
         if (Residence.getInstance().getEconomyManager().subtract(player, amount)) {
             this.add(amount);
-            Residence.getInstance().msg(sender, lm.Bank_Deposit, Residence.getInstance().getEconomyManager().format(amount));
+            lm.Bank_Deposit.sendMessage(sender, Residence.getInstance().getEconomyManager().format(amount));
         }
     }
 
     public void showBalance(CommandSender sender, boolean resadmin) {
 
         if (!Residence.getInstance().getConfigManager().enableEconomy()) {
-            Residence.getInstance().msg(sender, lm.Economy_MarketDisabled);
+            lm.Economy_MarketDisabled.sendMessage(sender);
         }
 
         if (sender instanceof Player && !resadmin && !res.isOwner(sender) && !res.getPermissions().playerHas((Player) sender, Flags.bank, FlagCombo.OnlyTrue)) {
-            Residence.getInstance().msg(sender, lm.Bank_NoAccess);
+            lm.Bank_NoAccess.sendMessage(sender);
             return;
         }
 
