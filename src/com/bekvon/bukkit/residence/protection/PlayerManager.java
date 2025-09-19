@@ -1,13 +1,17 @@
 package com.bekvon.bukkit.residence.protection;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,6 +23,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -28,16 +34,17 @@ import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 
-import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Messages.CMIMessages;
-import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
 
 public class PlayerManager implements ResidencePlayerInterface {
     private ConcurrentHashMap<String, ResidencePlayer> playersByName = new ConcurrentHashMap<String, ResidencePlayer>();
     private ConcurrentHashMap<UUID, ResidencePlayer> playersByUUID = new ConcurrentHashMap<UUID, ResidencePlayer>();
+
+    private Set<UUID> toBeSaved = ConcurrentHashMap.newKeySet();
+
     private Residence plugin;
 
     public PlayerManager(Residence plugin) {
@@ -136,12 +143,12 @@ public class PlayerManager implements ResidencePlayerInterface {
 
     public void addPlayer(String name, UUID uuid, ResidencePlayer resPlayer) {
         if (name != null) {
-            CMIDebug.c("0 Add new player record ", uuid, name);
             playersByName.put(name.toLowerCase(), resPlayer);
         }
         if (uuid != null) {
-            CMIDebug.c("1 Add new player record ", uuid, name);
             playersByUUID.put(uuid, resPlayer);
+            if (!resPlayer.isSaved())
+                resPlayer.save();
         }
     }
 
@@ -153,17 +160,14 @@ public class PlayerManager implements ResidencePlayerInterface {
 
         ResidencePlayer resPlayer = playersByUUID.get(player.getUniqueId());
 
-        CMIDebug.c("playerJoin", player.getName());
         if (resPlayer == null) {
-            CMIDebug.c("not found");
             ResidencePlayer byName = playersByName.get(player.getName().toLowerCase());
             if (byName != null && isTempUUID(byName.getUniqueId())) {
-                CMIDebug.c("existing temp found");
                 resPlayer = playersByUUID.remove(byName.getUniqueId());
                 if (resPlayer != null) {
-                    CMIDebug.c("adding new by new UUID");
                     resPlayer.setUniqueId(player.getUniqueId());
                     addPlayer(player.getName(), player.getUniqueId(), resPlayer);
+                    resPlayer.save();
                 }
             }
         }
@@ -171,6 +175,7 @@ public class PlayerManager implements ResidencePlayerInterface {
         if (resPlayer == null) {
             resPlayer = new ResidencePlayer(player);
             addPlayer(resPlayer);
+            resPlayer.save();
         } else {
             resPlayer.updatePlayer(player);
         }
@@ -536,7 +541,7 @@ public class PlayerManager implements ResidencePlayerInterface {
                     continue;
                 rplayer.addTrustedResidence(residence);
             }
-            
+
             // Deprecated
             for (Entry<String, Map<String, Boolean>> one : residence.getPermissions().getPlayerFlagsByName().entrySet()) {
                 String name = one.getKey();
@@ -594,35 +599,56 @@ public class PlayerManager implements ResidencePlayerInterface {
     public void save() {
         if (saveTask != null)
             return;
+
+        if (toBeSaved.isEmpty())
+            return;
+
         saveTask = CMIScheduler.runLaterAsync(Residence.getInstance(), () -> {
             saveDelayed();
             saveTask = null;
-        }, 200);
+        }, 20);
     }
 
-    private static final String fileName = "Save" + File.separator + "playerNameCache.yml";
+    private static final String folderName = "PlayerData";
 
     private void saveDelayed() {
 
-        if (Version.isTestServer())
-            return;
+        File folder = new File(Residence.getInstance().getDataFolder(), "Save" + File.separator + folderName);
 
-        ConfigReader cfg = null;
-        try {
-            cfg = new ConfigReader(Residence.getInstance(), fileName);
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (UUID uuid : getForSave()) {
+
+            ResidencePlayer pc = getResidencePlayer(uuid);
+
+            File file = new File(folder, uuid.toString() + ".yml");
+
+            YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+
+            for (Map.Entry<String, Object> e : pc.serialize().entrySet()) {
+                yaml.set(e.getKey(), e.getValue());
+            }
+
+            try {
+                yaml.save(file);
+                remove(uuid);
+                pc.setSaved(true);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
         }
-        if (cfg == null)
-            return;
+    }
 
-        cfg.load();
+    public void addForSave(UUID uuid) {
+        toBeSaved.add(uuid);
+        save();
+    }
 
-        for (ResidencePlayer pc : playersByUUID.values()) {
-            cfg.set(pc.getUniqueId().toString(), pc.getName());
-        }
+    private Set<UUID> getForSave() {
+        return new HashSet<>(toBeSaved);
+    }
 
-        cfg.save();
+    private void remove(UUID id) {
+        toBeSaved.remove(id);
     }
 
     private void cacheOfflinePlayers() {
@@ -647,42 +673,78 @@ public class PlayerManager implements ResidencePlayerInterface {
             if (i % 1000 == 0) {
                 CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " Cached data (" + i + "/" + total + ")");
             }
-
-            if (!Residence.getInstance().isFullyLoaded())
-                return;
         }
+
+        save();
     }
 
     public void load() {
 
-        File file = new File(Residence.getInstance().getDataFolder(), "Save");
-        if (!file.isDirectory()) {
-            file.mkdir();
+        File folder = new File(Residence.getInstance().getDataFolder(), "Save");
+        if (!folder.isDirectory()) {
+            folder.mkdir();
+        }
+        boolean loadOffline = false;
+
+        folder = new File(Residence.getInstance().getDataFolder(), "Save" + File.separator + folderName);
+        if (!folder.isDirectory()) {
+            folder.mkdir();
+            loadOffline = true;
         }
 
-        file = new File(Residence.getInstance().getDataFolder(), fileName);
-        if (!file.isFile()) {
+        if (loadOffline) {
             cacheOfflinePlayers();
         }
 
-        ConfigReader cfg = null;
-        try {
-            cfg = new ConfigReader(Residence.getInstance(), fileName);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!folder.exists() || !folder.isDirectory()) {
+            return;
         }
-        if (cfg == null)
+
+        File[] files = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".yml"));
+        if (files == null)
             return;
 
-        for (String s : cfg.getC().getKeys(false)) {
-            try {
-                addPlayer(cfg.getC().getString(s), UUID.fromString(s));
-            } catch (Exception e) {
-                e.printStackTrace();
+        int i = 0;
+        for (File playerFile : files) {
+
+            String name = playerFile.getName();
+
+            if (!name.toLowerCase().endsWith(".yml"))
                 continue;
+            String base = name.substring(0, name.length() - 4);
+            UUID uuid = null;
+            try {
+                uuid = UUID.fromString(base);
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+
+            YamlConfiguration yaml = YamlConfiguration.loadConfiguration(playerFile);
+
+            Map<String, Object> result = sectionToMap(yaml);
+
+            ResidencePlayer rc = ResidencePlayer.deserialize(uuid, result);
+
+            if (rc != null) {
+                rc.setSaved(true);
+                addPlayer(rc);
+                i++;
             }
         }
 
-        CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " Preloaded " + playersByUUID.size() + " player cached data");
+        CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " Preloaded " + i + " player cached data");
+    }
+
+    private static Map<String, Object> sectionToMap(ConfigurationSection section) {
+        Map<String, Object> out = new HashMap<>();
+        for (String k : section.getKeys(false)) {
+            Object val = section.get(k);
+            if (val instanceof ConfigurationSection) {
+                out.put(k, sectionToMap((ConfigurationSection) val));
+            } else {
+                out.put(k, val);
+            }
+        }
+        return out;
     }
 }

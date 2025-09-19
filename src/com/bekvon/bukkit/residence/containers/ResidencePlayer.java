@@ -1,9 +1,11 @@
 package com.bekvon.bukkit.residence.containers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -35,6 +37,8 @@ public class ResidencePlayer {
     private ClaimedResidence mainResidence = null;
 
     private PlayerGroup groups = null;
+
+    private boolean saved = false;
 
     private static final int maxValue = 9999;
 
@@ -221,7 +225,6 @@ public class ResidencePlayer {
     }
 
     public PermissionGroup getGroup(boolean forceUpdate) {
-        updatePlayer();
         return getGroup(getPlayer() != null ? getPlayer().getWorld().getName() : Residence.getInstance().getConfigManager().getDefaultWorld(), forceUpdate);
     }
 
@@ -264,6 +267,7 @@ public class ResidencePlayer {
 
     public void onQuit() {
         updated = false;
+        save();
     }
 
     private void updatePlayer() {
@@ -475,5 +479,47 @@ public class ResidencePlayer {
 
     public static @Nullable UUID getUUID(String name) {
         return Residence.getInstance().getPlayerManager().getUUID(name);
+    }
+
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("Name", this.getName());
+
+        ResidencePlayerMaxValues maxData = ResidencePlayerMaxValues.getNullable(getUniqueId());
+
+        if (maxData != null)
+            map.putAll(maxData.serialize());
+
+        return map;
+    }
+
+    public void save() {
+        saved = false;
+        Residence.getInstance().getPlayerManager().addForSave(this.getUniqueId());
+    }
+
+    public static ResidencePlayer deserialize(UUID uuid, Map<String, Object> map) {
+        String name = null;
+
+        try {
+            name = (String) map.get("Name");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (name == null)
+            return null;
+
+        ResidencePlayerMaxValues.deserialize(uuid, map);
+
+        return new ResidencePlayer(name, uuid);
+    }
+
+    public boolean isSaved() {
+        return saved;
+    }
+
+    public void setSaved(boolean saved) {
+        this.saved = saved;
     }
 }

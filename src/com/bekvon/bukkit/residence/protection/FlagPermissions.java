@@ -399,7 +399,7 @@ public class FlagPermissions {
     // To get outdated named flag records, can be removed in future
     private Map<String, Boolean> getFlagsByPlayerName(Map<String, Boolean> flags, UUID uuid) {
 
-        if (!playerFlagsByName.isEmpty())
+        if (playerFlagsByName.isEmpty())
             return flags;
 
         String name = ResidencePlayer.getName(uuid);
@@ -417,10 +417,8 @@ public class FlagPermissions {
 
         flags.putAll(namedFlags);
 
-        if (!PlayerManager.isTempUUID(uuid)) {
-            playerFlags.computeIfAbsent(uuid, k -> new HashMap<String, Boolean>()).putAll(namedFlags);
-            playerFlagsByName.remove(name);
-        }
+        playerFlags.computeIfAbsent(uuid, k -> new HashMap<String, Boolean>()).putAll(namedFlags);
+        playerFlagsByName.remove(name);
 
         return flags;
     }
@@ -471,17 +469,17 @@ public class FlagPermissions {
             return false;
 
         Map<String, Boolean> map = this.getPlayerFlags(uuid, state != FlagState.NEITHER);
-        if (map == null)
-            return true;
-        if (state == FlagState.FALSE) {
-            map.put(flag, false);
-        } else if (state == FlagState.TRUE) {
-            map.put(flag, true);
-        } else if (state == FlagState.NEITHER) {
-            map.remove(flag);
+        if (map != null) {
+            if (state == FlagState.FALSE) {
+                map.put(flag, false);
+            } else if (state == FlagState.TRUE) {
+                map.put(flag, true);
+            } else if (state == FlagState.NEITHER) {
+                map.remove(flag);
+            }
+            if (map.isEmpty())
+                this.removeAllPlayerFlags(uuid);
         }
-        if (map.isEmpty())
-            this.removeAllPlayerFlags(uuid);
 
         return true;
     }
@@ -968,7 +966,6 @@ public class FlagPermissions {
         }
 
         for (Entry<String, UUID> convert : converts.entrySet()) {
-            CMIDebug.c("PUT 4", convert.getValue());
             playerFlags.computeIfAbsent(convert.getValue(), k -> new HashMap<String, Boolean>()).putAll(playerFlagsByName.remove(convert.getKey()));
         }
     }

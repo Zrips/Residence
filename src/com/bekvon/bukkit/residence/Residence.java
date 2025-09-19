@@ -488,7 +488,6 @@ public class Residence extends JavaPlugin {
 
             LocaleManager = new LocaleManager(this);
 
-            PlayerManager = new PlayerManager(this);
             ShopSignUtilManager = new ShopSignUtil(this);
             RandomTpManager = new RandomTp(this);
 //	    townManager = new TownManager(this);
