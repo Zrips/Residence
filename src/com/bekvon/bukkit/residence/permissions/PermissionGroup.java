@@ -23,6 +23,9 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import net.Zrips.CMILib.Container.CMIWorld;
 
 public class PermissionGroup {
+    
+    protected String groupname;    
+    
     private int xmax = 0;
     private int ymax = 0;
     private int zmax = 0;
@@ -64,7 +67,6 @@ public class PermissionGroup {
     protected boolean canSell = false;
     protected boolean buyIgnoreLimits = false;
     protected boolean cancreate = false;
-    protected String groupname;
     protected int maxPhysical = 2;
     protected boolean unstuck = false;
     protected boolean kick = false;

@@ -52,11 +52,11 @@ import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.GetTime;
-import com.bekvon.bukkit.residence.utils.PlayerCache;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.PageInfo;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Version;
@@ -324,7 +324,7 @@ public class ResidenceManager implements ResidenceInterface {
 
         calculateChunks(newRes);
         plugin.getLeaseManager().removeExpireTime(newRes);
-        plugin.getPlayerManager().addResidence(newRes.getOwner(), newRes);
+        plugin.getPlayerManager().addResidence(newRes.getOwnerUUID(), newRes);
 
         if (player != null) {
             Visualizer v = new Visualizer(player);
@@ -379,7 +379,7 @@ public class ResidenceManager implements ResidenceInterface {
 
     @Deprecated
     public void listResidences(CommandSender sender, String targetplayer, int page, boolean showhidden, boolean onlyHidden, boolean resadmin, World world) {
-        listResidences(sender, PlayerCache.getUUID(targetplayer), page, showhidden, onlyHidden, resadmin, world);
+        listResidences(sender, ResidencePlayer.getUUID(targetplayer), page, showhidden, onlyHidden, resadmin, world);
     }
 
     public void listResidences(CommandSender sender, UUID targetUuid, int page, boolean showhidden, boolean onlyHidden, boolean resadmin, World world) {
@@ -511,7 +511,7 @@ public class ResidenceManager implements ResidenceInterface {
     @Deprecated
     private ArrayList<String> getResidenceList(String targetplayer, boolean showhidden, boolean showsubzones, String parentzone, String resname, ClaimedResidence res, boolean formattedOutput,
         boolean onlyHidden) {
-        return getResidenceList(PlayerCache.getUUID(targetplayer), showhidden, showsubzones, parentzone, resname, res, formattedOutput, onlyHidden);
+        return getResidenceList(ResidencePlayer.getUUID(targetplayer), showhidden, showsubzones, parentzone, resname, res, formattedOutput, onlyHidden);
     }
 
     private ArrayList<String> getResidenceList(UUID target, boolean showhidden, boolean showsubzones, String parentzone, String resname, ClaimedResidence res, boolean formattedOutput, boolean onlyHidden) {
@@ -832,10 +832,9 @@ public class ResidenceManager implements ResidenceInterface {
 
         String resNameOwner = lm.Residence_Line.getMessage(areaname);
         resNameOwner += lm.General_Owner.getMessage(perms.getOwner());
-        if (plugin.getConfigManager().enableEconomy()) {
-            if (res.isOwner(sender) || !(sender instanceof Player) || resadmin)
-                resNameOwner += lm.Bank_Name.getMessage(res.getBank().getStoredMoneyFormated());
-        }
+        if (plugin.getConfigManager().enableEconomy() && (res.isOwner(sender) || !(sender instanceof Player) || resadmin))
+            resNameOwner += lm.Bank_Name.getMessage(res.getBank().getStoredMoneyFormated());
+
         resNameOwner = CMIChatColor.translate(resNameOwner);
 
         String worldInfo = lm.General_World.getMessage(perms.getWorldName());
@@ -877,7 +876,7 @@ public class ResidenceManager implements ResidenceInterface {
             lm.General_PlayersFlags.sendMessage(sender, perms.listPlayersFlags());
         else if (plugin.getConfigManager().isShortInfoUse() || sender instanceof Player) {
 
-            RawMessage rm = perms.listPlayersFlagsRaw(PlayerCache.getSenderUUID(sender), lm.General_PlayersFlags.getMessage(""));
+            RawMessage rm = perms.listPlayersFlagsRaw(PlayerManager.getSenderUUID(sender), lm.General_PlayersFlags.getMessage(""));
             rm.addCommand("res info " + res.getName() + " -players");
             rm.show(sender);
         }
@@ -1320,7 +1319,7 @@ public class ResidenceManager implements ResidenceInterface {
                         });
                     }
 
-                    plugin.getPlayerManager().addResidence(residence.getOwner(), residence);
+                    plugin.getPlayerManager().addResidence(residence.getOwnerUUID(), residence);
 
                     residences.put(resName, residence);
                 } catch (Exception ex) {
@@ -1387,7 +1386,7 @@ public class ResidenceManager implements ResidenceInterface {
                     retRes.put(chunk, ress);
                 }
 
-                plugin.getPlayerManager().addResidence(residence.getOwner(), residence);
+                plugin.getPlayerManager().addResidence(residence.getOwnerUUID(), residence);
 
                 residences.put(resName.toLowerCase(), residence);
 

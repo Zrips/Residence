@@ -5,12 +5,12 @@ import java.util.Arrays;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.Zrips.CMILib.FileHandler.ConfigReader;
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.cmd;
-import com.bekvon.bukkit.residence.utils.PlayerCache;
+
+import net.Zrips.CMILib.FileHandler.ConfigReader;
 
 public class padd implements cmd {
 
@@ -28,13 +28,13 @@ public class padd implements cmd {
         if (resadmin)
             baseCmd = "resadmin";
         if (args.length == 1) {
-            if (!PlayerCache.isPlayerExist(player, args[0], true))
+            if (!plugin.getPlayerManager().isPlayerExist(player, args[0], true))
                 return false;
             player.performCommand(baseCmd + " pset " + args[0] + " " + groupedFlag + " true");
             return true;
         }
         if (args.length == 2) {
-            if (!PlayerCache.isPlayerExist(player, args[1], true))
+            if (!plugin.getPlayerManager().isPlayerExist(player, args[1], true))
                 return false;
             player.performCommand(baseCmd + " pset " + args[0] + " " + args[1] + " " + groupedFlag + " true");
             return true;

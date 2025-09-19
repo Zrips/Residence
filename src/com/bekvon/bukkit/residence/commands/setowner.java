@@ -4,14 +4,14 @@ import java.util.Arrays;
 
 import org.bukkit.command.CommandSender;
 
-import net.Zrips.CMILib.FileHandler.ConfigReader;
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
-import com.bekvon.bukkit.residence.utils.PlayerCache;
+
+import net.Zrips.CMILib.FileHandler.ConfigReader;
 
 public class setowner implements cmd {
 
@@ -43,7 +43,7 @@ public class setowner implements cmd {
             return null;
         }
 
-        if (!PlayerCache.isPlayerExist(sender, args[1], true)) {
+        if (!plugin.getPlayerManager().isPlayerExist(sender, args[1], true)) {
             return null;
         }
 

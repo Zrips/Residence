@@ -18,7 +18,6 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.raid.RaidAttacker;
 import com.bekvon.bukkit.residence.raid.RaidDefender;
 import com.bekvon.bukkit.residence.raid.ResidenceRaid;
-import com.bekvon.bukkit.residence.utils.PlayerCache;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
@@ -51,7 +50,7 @@ public class raidstatus implements cmd {
         }
 
         if (res == null) {
-            UUID offp = PlayerCache.getUUID(args[0]);
+            UUID offp = ResidencePlayer.getUUID(args[0]);
             if (offp != null) {
                 ResidencePlayer resp = plugin.getPlayerManager().getResidencePlayer(offp);
                 res = resp.getCurrentlyRaidedResidence();

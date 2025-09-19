@@ -29,7 +29,6 @@ import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.utils.GetTime;
-import com.bekvon.bukkit.residence.utils.PlayerCache;
 
 import net.Zrips.CMILib.Container.PageInfo;
 import net.Zrips.CMILib.Messages.CMIMessages;
@@ -178,7 +177,7 @@ public class RentManager implements MarketRentInterface {
 
     @Deprecated
     public TreeMap<String, ClaimedResidence> getRentsMap(String playername, boolean onlyHidden, World world) {
-        return getRentsMap(PlayerCache.getUUID(playername), onlyHidden, world);
+        return getRentsMap(ResidencePlayer.getUUID(playername), onlyHidden, world);
     }
 
     public TreeMap<String, ClaimedResidence> getRentsMap(UUID uuid, boolean onlyHidden, World world) {

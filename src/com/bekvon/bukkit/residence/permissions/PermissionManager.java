@@ -29,6 +29,7 @@ import org.bukkit.plugin.PluginManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.PlayerGroup;
+import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.vaultinterface.ResidenceVaultAdapter;
@@ -41,7 +42,7 @@ import net.Zrips.CMILib.Version.Schedulers.CMITask;
 public class PermissionManager {
     protected static PermissionsInterface perms;
     protected LinkedHashMap<String, PermissionGroup> groups;
-    protected Map<String, String> playersGroup;
+    protected Map<UUID, String> playersGroup;
     protected FlagPermissions globalFlagPerms;
 
     protected HashMap<String, PlayerGroup> groupsMap = new HashMap<String, PlayerGroup>();
@@ -55,7 +56,7 @@ public class PermissionManager {
         this.plugin = plugin;
         try {
             groups = new LinkedHashMap<String, PermissionGroup>();
-            playersGroup = Collections.synchronizedMap(new HashMap<String, String>());
+            playersGroup = Collections.synchronizedMap(new HashMap<UUID, String>());
             globalFlagPerms = new FlagPermissions();
             this.readConfig();
             checkPermissions();
@@ -80,7 +81,7 @@ public class PermissionManager {
         return this.globalFlagPerms;
     }
 
-    public Map<String, String> getPlayersGroups() {
+    public Map<UUID, String> getPlayersGroups() {
         return playersGroup;
     }
 
@@ -201,7 +202,10 @@ public class PermissionManager {
             Set<String> keys = groupsFile.getConfigurationSection("GroupAssignments").getKeys(false);
             if (keys != null) {
                 for (String key : keys) {
-                    playersGroup.put(key.toLowerCase(), groupsFile.getString("GroupAssignments." + key, defaultGroup).toLowerCase());
+
+                    UUID uuid = ResidencePlayer.getUUID(key.toLowerCase());
+                    if (uuid != null)
+                        playersGroup.put(uuid, groupsFile.getString("GroupAssignments." + key, defaultGroup).toLowerCase());
                 }
             }
         }

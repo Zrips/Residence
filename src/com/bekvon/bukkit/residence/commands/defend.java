@@ -18,7 +18,6 @@ import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.raid.RaidDefender;
-import com.bekvon.bukkit.residence.utils.PlayerCache;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.RawMessages.RawMessage;
@@ -44,7 +43,7 @@ public class defend implements cmd {
         ClaimedResidence res = null;
         ResidencePlayer target = null;
         if (args.length == 1) {
-            UUID targetP = PlayerCache.getUUID(args[0]);
+            UUID targetP = ResidencePlayer.getUUID(args[0]);
             if (targetP != null) {
                 if (Bukkit.getPlayer(targetP) == null) {
                     lm.Invalid_PlayerOffline.sendMessage(sender);

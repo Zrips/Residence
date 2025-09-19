@@ -21,17 +21,16 @@ import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.economy.rent.RentableLand;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.GetTime;
-import com.bekvon.bukkit.residence.utils.PlayerCache;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
@@ -69,7 +68,7 @@ public class InformationPager {
 
     @Deprecated
     public void printListInfo(CommandSender sender, String targetPlayer, TreeMap<String, ClaimedResidence> ownedResidences, int page, boolean resadmin, World world) {
-        printListInfo(sender, PlayerCache.getUUID(targetPlayer), ownedResidences, page, resadmin, world);
+        printListInfo(sender, ResidencePlayer.getUUID(targetPlayer), ownedResidences, page, resadmin, world);
     }
 
     public void printListInfo(CommandSender sender, UUID uuid, TreeMap<String, ClaimedResidence> ownedResidences, int page, boolean resadmin, World world) {
@@ -80,7 +79,7 @@ public class InformationPager {
 
         String targetPlayer = null;
         if (uuid != null)
-            targetPlayer = PlayerCache.getName(uuid);
+            targetPlayer = ResidencePlayer.getName(uuid);
 
         if (ownedResidences.isEmpty()) {
             lm.Residence_DontOwn.sendMessage(sender, targetPlayer);

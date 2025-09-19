@@ -55,7 +55,6 @@ import com.bekvon.bukkit.residence.signsStuff.Signs;
 import com.bekvon.bukkit.residence.utils.LocationCheck;
 import com.bekvon.bukkit.residence.utils.LocationUtil;
 import com.bekvon.bukkit.residence.utils.LocationValidity;
-import com.bekvon.bukkit.residence.utils.PlayerCache;
 import com.bekvon.bukkit.residence.utils.SafeLocationCache;
 import com.bekvon.bukkit.residence.utils.Teleporting;
 
@@ -722,7 +721,7 @@ public class ClaimedResidence {
     }
 
     public boolean isServerLand() {
-        return this.getOwnerUUID().toString().equals(Residence.getInstance().getServerLandUUID());
+        return this.getOwnerUUID().equals(Residence.getInstance().getServerUUID());
     }
 
     public boolean addSubzone(Player player, String name, boolean resadmin) {
@@ -1636,7 +1635,7 @@ public class ClaimedResidence {
         Map<String, Object> areamap = (Map<String, Object>) root.get("Areas");
 
         res.perms = ResidencePermissions.load(worldName, res, (Map<String, Object>) root.get("Permissions"));
-        
+
         if (res.perms.getOwnerUUID() == null) {
             Bukkit.getConsoleSender().sendMessage("Failed to load residence: " + res.getName());
         }
@@ -1695,10 +1694,9 @@ public class ClaimedResidence {
                 if (Residence.getInstance().getConfigManager().flagsInherit())
                     subres.getPermissions().setParent(res.getPermissions());
 
-                // Adding subzone owner into hies res list if parent zone owner is not same
-                // person
+                // Adding subzone owner into his res list if parent zone owner is not the same person
                 if (subres.getParent() != null && !subres.getOwnerUUID().equals(subres.getParent().getOwnerUUID()))
-                    Residence.getInstance().getPlayerManager().addResidence(subres.getOwner(), subres);
+                    Residence.getInstance().getPlayerManager().addResidence(subres.getOwnerUUID(), subres);
 
                 res.subzones.put(map.getKey().toLowerCase(), subres);
             }
@@ -2133,7 +2131,7 @@ public class ClaimedResidence {
 
     @Deprecated
     public boolean isTrusted(String playerName) {
-        return isTrusted(PlayerCache.getUUID(playerName));
+        return isTrusted(ResidencePlayer.getUUID(playerName));
     }
 
     public boolean isTrusted(UUID uuid) {
@@ -2171,14 +2169,28 @@ public class ClaimedResidence {
 
     public Set<ResidencePlayer> getTrustedPlayers() {
         Set<ResidencePlayer> trusted = new HashSet<ResidencePlayer>();
-        Iterator<Entry<String, Map<String, Boolean>>> iter = this.getPermissions().getPlayerFlags().entrySet().iterator();
+        Iterator<Entry<UUID, Map<String, Boolean>>> iter = this.getPermissions().getPlayerFlags().entrySet().iterator();
         while (iter.hasNext()) {
-            Entry<String, Map<String, Boolean>> entry = iter.next();
-            if (isTrusted(entry.getKey())) {
-                ResidencePlayer rp = ResidencePlayer.get(entry.getKey());
-                if (rp != null)
-                    trusted.add(rp);
-            }
+            Entry<UUID, Map<String, Boolean>> entry = iter.next();
+            if (!isTrusted(entry.getKey()))
+                continue;
+            ResidencePlayer rp = ResidencePlayer.get(entry.getKey());
+            if (rp != null)
+                trusted.add(rp);
+        }
+
+        if (this.getPermissions().getPlayerFlagsByName().isEmpty())
+            return trusted;
+        
+        Iterator<Entry<String, Map<String, Boolean>>> iterByName = this.getPermissions().getPlayerFlagsByName().entrySet().iterator();
+        while (iterByName.hasNext()) {
+            Entry<String, Map<String, Boolean>> entry = iterByName.next();
+            if (!isTrusted(entry.getKey()))
+                continue;
+
+            ResidencePlayer rp = ResidencePlayer.get(entry.getKey());
+            if (rp != null)
+                trusted.add(rp);
         }
         return trusted;
     }

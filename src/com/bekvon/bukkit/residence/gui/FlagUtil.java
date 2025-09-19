@@ -7,9 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
-import com.bekvon.bukkit.residence.utils.PlayerCache;
 
 import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Container.PageInfo;
@@ -77,9 +77,9 @@ public class FlagUtil {
         flag.recalculate();
 
         PageInfo pi = new PageInfo(45, flag.getButtons().size(), page);
-        openUI(flag, pi, player, lm.Gui_Pset_Title.getMessage(res.getName(), PlayerCache.getName(targetPlayer)));
+        openUI(flag, pi, player, lm.Gui_Pset_Title.getMessage(res.getName(), ResidencePlayer.getName(targetPlayer)));
         return;
-    } 
+    }
 
     private void openUI(setFlagInfo flag, PageInfo pi, Player player, String title) {
 

@@ -7,10 +7,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -21,7 +24,6 @@ import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.raid.ResidenceRaid;
-import com.bekvon.bukkit.residence.utils.PlayerCache;
 
 public class ResidencePlayer {
 
@@ -41,7 +43,6 @@ public class ResidencePlayer {
             return;
         this.uuid = off.getUniqueId();
         this.userName = off.getName();
-        PlayerCache.addToCache(userName, uuid);
         this.updatePlayer();
     }
 
@@ -58,10 +59,6 @@ public class ResidencePlayer {
     public ResidencePlayer(String userName, UUID uuid) {
         this.userName = userName;
         this.uuid = uuid;
-    }
-
-    public ResidencePlayer(String userName) {
-        this.userName = userName;
     }
 
     public void setMainResidence(ClaimedResidence res) {
@@ -251,7 +248,6 @@ public class ResidencePlayer {
             updated = true;
         this.uuid = player.getUniqueId();
         this.userName = player.getName();
-        PlayerCache.addToCache(player);
         return this;
     }
 
@@ -289,7 +285,7 @@ public class ResidencePlayer {
             return;
         }
 
-        this.userName = PlayerCache.getName(this.getUniqueId());
+        this.userName = ResidencePlayer.getName(this.getUniqueId());
     }
 
     public synchronized void addResidence(ClaimedResidence residence) {
@@ -349,7 +345,6 @@ public class ResidencePlayer {
 
     public UUID getUniqueId() {
         return uuid;
-
     }
 
     @Deprecated
@@ -408,7 +403,7 @@ public class ResidencePlayer {
     }
 
     public boolean canBreakBlock(Block block, boolean inform) {
-        return ResidenceBlockListener.canBreakBlock(this.getPlayer(), block, inform);
+        return ResidenceBlockListener.canBreakBlock(this.getPlayer(), block.getLocation(), inform);
     }
 
     @Deprecated
@@ -443,8 +438,19 @@ public class ResidencePlayer {
 //
 //    }
 
-    public void setUuid(UUID uuid) {
+    public void setUniqueId(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    @Deprecated
+    public void setUuid(UUID uuid) {
+        setUniqueId(uuid);
+    }
+
+    public static ResidencePlayer get(CommandSender sender) {
+        if (sender instanceof Player)
+            return Residence.getInstance().getPlayerManager().getResidencePlayer((Player) sender);
+        return null;
     }
 
     public static ResidencePlayer get(String name) {
@@ -459,4 +465,15 @@ public class ResidencePlayer {
         return Residence.getInstance().getPlayerManager().getResidencePlayer(uuid);
     }
 
+    public static @Nullable String getName(String uuid) {
+        return Residence.getInstance().getPlayerManager().getName(uuid);
+    }
+
+    public static @Nullable String getName(UUID uuid) {
+        return Residence.getInstance().getPlayerManager().getName(uuid);
+    }
+
+    public static @Nullable UUID getUUID(String name) {
+        return Residence.getInstance().getPlayerManager().getUUID(name);
+    }
 }

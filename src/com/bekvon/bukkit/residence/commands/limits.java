@@ -12,7 +12,7 @@ import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
-import com.bekvon.bukkit.residence.utils.PlayerCache;
+import com.bekvon.bukkit.residence.protection.PlayerManager;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 
@@ -33,12 +33,12 @@ public class limits implements cmd {
             target = ((Player) sender).getUniqueId();
             rsadm = true;
         } else
-            target = PlayerCache.getUUID(tempArgs[0]);
+            target = ResidencePlayer.getUUID(tempArgs[0]);
 
         if (target == null)
             return false;
 
-        if (!PlayerCache.getSenderUUID(sender).equals(target) && !ResPerm.command_$1_others.hasPermission(sender, this.getClass().getSimpleName()))
+        if (!PlayerManager.getSenderUUID(sender).equals(target) && !ResPerm.command_$1_others.hasPermission(sender, this.getClass().getSimpleName()))
             return true;
 
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(target);
