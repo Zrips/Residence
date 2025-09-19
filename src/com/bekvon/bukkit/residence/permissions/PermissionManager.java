@@ -152,13 +152,6 @@ public class PermissionManager {
             Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Found Vault, but Vault reported no usable permissions system...");
         }
 
-        p = server.getPluginManager().getPlugin("bPermissions");
-        if (p != null) {
-            perms = new BPermissionsAdapter();
-            Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Found bPermissions Plugin!");
-            return;
-        }
-
         Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Permissions plugin NOT FOUND!");
     }
 
