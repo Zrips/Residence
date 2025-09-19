@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -29,7 +28,6 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -107,14 +105,11 @@ import com.bekvon.bukkit.residence.raid.ResidenceRaidListener;
 import com.bekvon.bukkit.residence.selection.AutoSelection;
 import com.bekvon.bukkit.residence.selection.KingdomsUtil;
 import com.bekvon.bukkit.residence.selection.Schematics7Manager;
-import com.bekvon.bukkit.residence.selection.SchematicsManager;
 import com.bekvon.bukkit.residence.selection.SelectionManager;
 import com.bekvon.bukkit.residence.selection.WESchematicManager;
 import com.bekvon.bukkit.residence.selection.WorldEdit7SelectionManager;
-import com.bekvon.bukkit.residence.selection.WorldEditSelectionManager;
 import com.bekvon.bukkit.residence.selection.WorldGuard7Util;
 import com.bekvon.bukkit.residence.selection.WorldGuardInterface;
-import com.bekvon.bukkit.residence.selection.WorldGuardUtil;
 import com.bekvon.bukkit.residence.shopStuff.ShopListener;
 import com.bekvon.bukkit.residence.shopStuff.ShopSignUtil;
 import com.bekvon.bukkit.residence.signsStuff.SignUtil;
@@ -124,7 +119,6 @@ import com.bekvon.bukkit.residence.text.help.HelpEntry;
 import com.bekvon.bukkit.residence.text.help.InformationPager;
 import com.bekvon.bukkit.residence.utils.CrackShot;
 import com.bekvon.bukkit.residence.utils.FileCleanUp;
-import com.bekvon.bukkit.residence.utils.PlayerCache;
 import com.bekvon.bukkit.residence.utils.RandomTp;
 import com.bekvon.bukkit.residence.utils.SafeLocationCache;
 import com.bekvon.bukkit.residence.utils.Sorting;
@@ -136,7 +130,6 @@ import com.residence.zip.ZipLibrary;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -221,16 +214,14 @@ public class Residence extends JavaPlugin {
     protected boolean initsuccess = false;
     public Map<String, String> deleteConfirm;
     public Map<String, String> UnrentConfirm = new HashMap<String, String>();
-    private ConcurrentHashMap<String, OfflinePlayer> OfflinePlayerList = new ConcurrentHashMap<String, OfflinePlayer>();
-//    private Map<UUID, OfflinePlayer> cachedPlayerNameUUIDs = new HashMap<UUID, OfflinePlayer>();
-    private Map<UUID, String> cachedPlayerNames = new HashMap<UUID, String>();
+
     private com.sk89q.worldedit.bukkit.WorldEditPlugin wep = null;
     private com.sk89q.worldguard.bukkit.WorldGuardPlugin wg = null;
     private CMIMaterial wepid;
 
 //    private String ServerLandname = "Server_Land";
     private UUID ServerLandUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-    private UUID TempUserUUID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
+//    private UUID TempUserUUID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
 
     public HashMap<String, Long> rtMap = new HashMap<String, Long>();
     public HashMap<UUID, SafeLocationCache> teleportMap = new HashMap<UUID, SafeLocationCache>();
@@ -398,7 +389,7 @@ public class Residence extends JavaPlugin {
                 Logger.getLogger("Minecraft").log(Level.SEVERE, "[Residence] SEVERE SAVE ERROR", ex);
             }
 
-            PlayerCache.onPluginStop();
+            getPlayerManager().onPluginStop();
 
             Bukkit.getConsoleSender().sendMessage(getPrefix() + " Disabled!");
         }
@@ -418,7 +409,7 @@ public class Residence extends JavaPlugin {
             ResidenceVersion = this.getDescription().getVersion();
             authlist = this.getDescription().getAuthors();
 
-            PlayerCache.load();
+            getPlayerManager().load();
 
             cmdFiller = new CommandFiller();
             cmdFiller.fillCommands();
@@ -908,19 +899,12 @@ public class Residence extends JavaPlugin {
             Plugin plugin = server.getPluginManager().getPlugin("WorldEdit");
             if (plugin != null) {
                 this.wep = (com.sk89q.worldedit.bukkit.WorldEditPlugin) plugin;
-                try {
-                    Class.forName("com.sk89q.worldedit.bukkit.selections.Selection");
 
-                    if (getConfigManager().isWorldEditIntegration())
-                        smanager = new WorldEditSelectionManager(server, this);
-                    if (wep != null)
-                        SchematicManager = new SchematicsManager(this);
-                } catch (ClassNotFoundException e) {
-                    if (getConfigManager().isWorldEditIntegration())
-                        smanager = new WorldEdit7SelectionManager(server, this);
-                    if (wep != null)
-                        SchematicManager = new Schematics7Manager(this);
-                }
+                if (getConfigManager().isWorldEditIntegration())
+                    smanager = new WorldEdit7SelectionManager(server, this);
+                if (wep != null)
+                    SchematicManager = new Schematics7Manager(this);
+
                 if (smanager == null)
                     smanager = new SelectionManager(server, this);
                 if (this.getWorldEdit().getConfig().isInt("wand-item"))
@@ -1050,6 +1034,8 @@ public class Residence extends JavaPlugin {
     }
 
     public PlayerManager getPlayerManager() {
+        if (PlayerManager == null)
+            PlayerManager = new PlayerManager(this);
         return PlayerManager;
     }
 
@@ -1720,18 +1706,18 @@ public class Residence extends JavaPlugin {
         return ServerLandUUID.toString();
     }
 
-    @Deprecated
-    public String getTempUserUUID() {
-        return TempUserUUID.toString();
-    }
+//    @Deprecated
+//    public String getTempUserUUID() {
+//        return TempUserUUID.toString();
+//    }
 
     public UUID getServerUUID() {
         return ServerLandUUID;
     }
 
-    public UUID getEmptyUserUUID() {
-        return TempUserUUID;
-    }
+//    public UUID getEmptyUserUUID() {
+//        return TempUserUUID;
+//    }
 
     public boolean isDisabledWorld(World world) {
         return isDisabledWorld(world.getName());
@@ -1799,8 +1785,6 @@ public class Residence extends JavaPlugin {
             if (version >= 7) {
                 wepVersion = version;
                 worldGuardUtil = new WorldGuard7Util(this);
-            } else {
-                worldGuardUtil = new WorldGuardUtil(this);
             }
         }
         return worldGuardUtil;
