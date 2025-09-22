@@ -43,10 +43,6 @@ import org.kingdoms.manager.game.GameManagement;
 
 import com.bekvon.bukkit.residence.Placeholders.Placeholder;
 import com.bekvon.bukkit.residence.Placeholders.PlaceholderAPIHook;
-import com.bekvon.bukkit.residence.allNms.v1_10Events;
-import com.bekvon.bukkit.residence.allNms.v1_13Events;
-import com.bekvon.bukkit.residence.allNms.v1_8Events;
-import com.bekvon.bukkit.residence.allNms.v1_9Events;
 import com.bekvon.bukkit.residence.api.ChatInterface;
 import com.bekvon.bukkit.residence.api.MarketBuyInterface;
 import com.bekvon.bukkit.residence.api.MarketRentInterface;
@@ -72,11 +68,15 @@ import com.bekvon.bukkit.residence.economy.TransactionManager;
 import com.bekvon.bukkit.residence.economy.rent.RentManager;
 import com.bekvon.bukkit.residence.gui.FlagUtil;
 import com.bekvon.bukkit.residence.itemlist.WorldItemManager;
+import com.bekvon.bukkit.residence.listeners.CrackShotListener;
 import com.bekvon.bukkit.residence.listeners.ResidenceBlockListener;
 import com.bekvon.bukkit.residence.listeners.ResidenceEntityListener;
 import com.bekvon.bukkit.residence.listeners.ResidenceFixesListener;
 import com.bekvon.bukkit.residence.listeners.ResidenceLWCListener;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener;
+import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_08;
+import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_09;
+import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_10;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_12;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_13;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_14;
@@ -117,7 +117,6 @@ import com.bekvon.bukkit.residence.slimeFun.SlimefunManager;
 import com.bekvon.bukkit.residence.text.Language;
 import com.bekvon.bukkit.residence.text.help.HelpEntry;
 import com.bekvon.bukkit.residence.text.help.InformationPager;
-import com.bekvon.bukkit.residence.utils.CrackShot;
 import com.bekvon.bukkit.residence.utils.FileCleanUp;
 import com.bekvon.bukkit.residence.utils.RandomTp;
 import com.bekvon.bukkit.residence.utils.SafeLocationCache;
@@ -365,11 +364,8 @@ public class Residence extends JavaPlugin {
         this.getShopSignUtilManager().forceSaveIfPending();
 
         if (this.metrics != null)
-            try {
-                metrics.disable();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            metrics.shutdown();
+
         if (getConfigManager().useLeases() && leaseBukkitId != null) {
             leaseBukkitId.cancel();
         }
@@ -653,6 +649,8 @@ public class Residence extends JavaPlugin {
 
                 if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
                     pm.registerEvents(new ResidencePlayerListener1_9(this), this);
+                if (Version.isCurrentEqualOrHigher(Version.v1_10_R1))
+                    pm.registerEvents(new ResidencePlayerListener1_10(), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_12_R1))
                     pm.registerEvents(new ResidencePlayerListener1_12(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_13_R1))
@@ -688,19 +686,11 @@ public class Residence extends JavaPlugin {
 
                 // 1.8 event
                 if (Version.isCurrentEqualOrHigher(Version.v1_8_R1))
-                    pm.registerEvents(new v1_8Events(), this);
+                    pm.registerEvents(new ResidencePlayerListener1_08(), this);
 
                 // 1.9 event
                 if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
-                    pm.registerEvents(new v1_9Events(), this);
-
-                // 1.10 event
-                if (Version.isCurrentEqualOrHigher(Version.v1_10_R1))
-                    pm.registerEvents(new v1_10Events(), this);
-
-                // 1.13 event
-                if (Version.isCurrentEqualOrHigher(Version.v1_13_R1))
-                    pm.registerEvents(new v1_13Events(this), this);
+                    pm.registerEvents(new ResidencePlayerListener1_09(), this);
 
                 firstenable = false;
             } else {
@@ -721,7 +711,7 @@ public class Residence extends JavaPlugin {
             }
 
             if (getServer().getPluginManager().getPlugin("CrackShot") != null)
-                getServer().getPluginManager().registerEvents(new CrackShot(this), this);
+                getServer().getPluginManager().registerEvents(new CrackShotListener(this), this);
 
             try {
                 // DynMap
@@ -788,12 +778,9 @@ public class Residence extends JavaPlugin {
                     ResAdmin.turnResAdminOn(player);
                 }
             }
-            try {
-                metrics = new Metrics(this);
-                metrics.start();
-            } catch (IOException e) {
-                // Failed to submit the stats :-(
-            }
+
+            metrics = new Metrics(this, 27340);
+
             Bukkit.getConsoleSender().sendMessage(getPrefix() + " Enabled! Version " + this.getDescription().getVersion() + " by Zrips");
             initsuccess = true;
 

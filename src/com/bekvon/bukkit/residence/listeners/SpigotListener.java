@@ -14,6 +14,8 @@ import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.utils.Utils;
 
+import net.Zrips.CMILib.Items.CMIItemStack;
+
 public class SpigotListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -27,7 +29,7 @@ public class SpigotListener implements Listener {
 	if (!perms.has(Flags.nodurability, false))
 	    return;
 
-	ItemStack held = Utils.itemInMainHand(player);
+	ItemStack held = CMIItemStack.getItemInMainHand(player);
 
 	if (held.getType() == Material.AIR)
 	    return;

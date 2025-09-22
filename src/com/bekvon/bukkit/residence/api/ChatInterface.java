@@ -1,17 +1,20 @@
 package com.bekvon.bukkit.residence.api;
 
+import java.util.UUID;
+
 import com.bekvon.bukkit.residence.chat.ChatChannel;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
 public interface ChatInterface {
-    public boolean setChannel(String player, String resName);
+    @Deprecated
+    public boolean setChannel(UUID player, String resName);
 
-    public boolean setChannel(String player, ClaimedResidence res);
+    public boolean setChannel(UUID player, ClaimedResidence res);
 
-    public boolean removeFromChannel(String player);
+    public boolean removeFromChannel(UUID player);
 
     public ChatChannel getChannel(String channel);
 
-    public ChatChannel getPlayerChannel(String player);
+    public ChatChannel getPlayerChannel(UUID player);
 
 }

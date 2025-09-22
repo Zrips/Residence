@@ -12,11 +12,6 @@ import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
-import net.Zrips.CMILib.Colors.CMIChatColor;
-import net.Zrips.CMILib.Messages.CMIMessages;
-import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
-import net.Zrips.CMILib.Version.Schedulers.CMITask;
-
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.economy.TransactionManager;
@@ -26,6 +21,11 @@ import com.bekvon.bukkit.residence.protection.CuboidArea;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.bekvon.bukkit.residence.utils.GetTime;
+
+import net.Zrips.CMILib.Colors.CMIChatColor;
+import net.Zrips.CMILib.Messages.CMIMessages;
+import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
+import net.Zrips.CMILib.Version.Schedulers.CMITask;
 
 public class DynMapManager {
     Residence plugin;
@@ -54,7 +54,7 @@ public class DynMapManager {
             scheduler.cancel();
         }
 
-        scheduler = CMIScheduler.runTaskLater(plugin, () -> handleResidenceAdd(res.getName(), res, deep), 10L);
+        scheduler = CMIScheduler.runTaskLater(plugin, () -> handleResidenceAdd(res, deep), 10L);
     }
 
     public void fireUpdateRemove(final ClaimedResidence res, final int deep) {
@@ -66,7 +66,7 @@ public class DynMapManager {
         handleResidenceRemove(res.getName(), res, deep);
     }
 
-    private String formatInfoWindow(String resid, ClaimedResidence res, String resName) {
+    private String formatInfoWindow(ClaimedResidence res, String resName) {
         if (res == null)
             return null;
         if (res.getName() == null)
@@ -100,7 +100,7 @@ public class DynMapManager {
 
         v += "</div></div>";
 
-        if (plugin.getRentManager().isForRent(res.getName()))
+        if (plugin.getRentManager().isForRent(res))
             v = "<div class=\"regioninfo\"><div class=\"infowindow\">"
                 + CMIChatColor.stripColor(lm.Rentable_Land.getMessage("")) + "<span style=\"font-size:140%;font-weight:bold;\">%regionname%</span><br />"
                 + CMIChatColor.stripColor(lm.General_Owner.getMessage("")) + "<span style=\"font-weight:bold;\">%playerowners%</span><br />"
@@ -110,7 +110,7 @@ public class DynMapManager {
                 + CMIChatColor.stripColor(lm.Rentable_AllowRenewing.getMessage("")) + "<span style=\"font-weight:bold;\">%renew%</span><br /> "
                 + CMIChatColor.stripColor(lm.Rent_Expire.getMessage("")) + "<span style=\"font-weight:bold;\">%expire%</span></div></div>";
 
-        if (plugin.getTransactionManager().isForSale(res.getName()))
+        if (plugin.getTransactionManager().isForSale(res))
             v = "<div class=\"regioninfo\"><div class=\"infowindow\">"
                 + CMIChatColor.stripColor(lm.Economy_LandForSale.getMessage(" "))
                 + "<span style=\"font-size:140%;font-weight:bold;\">%regionname%</span><br /> "
@@ -127,33 +127,33 @@ public class DynMapManager {
         RentManager rentmgr = plugin.getRentManager();
         TransactionManager transmgr = plugin.getTransactionManager();
 
-        if (rentmgr.isForRent(res.getName())) {
-            boolean isrented = rentmgr.isRented(resid);
+        if (rentmgr.isForRent(res)) {
+            boolean isrented = rentmgr.isRented(res);
             v = v.replace("%isrented%", Boolean.toString(isrented));
             String id = "";
             if (isrented)
-                id = rentmgr.getRentingPlayer(resid);
+                id = rentmgr.getRentingPlayer(res);
             v = v.replace("%renter%", id);
 
-            v = v.replace("%rent%", rentmgr.getCostOfRent(resid) + "");
-            v = v.replace("%rentdays%", rentmgr.getRentDays(resid) + "");
-            boolean renew = rentmgr.getRentableRepeatable(resid);
+            v = v.replace("%rent%", rentmgr.getCostOfRent(res) + "");
+            v = v.replace("%rentdays%", rentmgr.getRentDays(res) + "");
+            boolean renew = rentmgr.getRentableRepeatable(res);
             v = v.replace("%renew%", renew + "");
             String expire = "";
             if (isrented) {
-                long time = rentmgr.getRentedLand(resid).endTime;
+                long time = rentmgr.getRentedLand(res).endTime;
                 if (time != 0L)
                     expire = GetTime.getTime(time);
             }
             v = v.replace("%expire%", expire);
         }
 
-        if (transmgr.isForSale(res.getName())) {
-            boolean forsale = transmgr.isForSale(resid);
-            v = v.replace("%isforsale%", Boolean.toString(transmgr.isForSale(resid)));
+        if (transmgr.isForSale(res)) {
+            boolean forsale = transmgr.isForSale(res);
+            v = v.replace("%isforsale%", Boolean.toString(transmgr.isForSale(res)));
             String price = "";
             if (forsale)
-                price = Integer.toString(transmgr.getSaleAmount(resid));
+                price = Integer.toString(transmgr.getSaleAmount(res));
             v = v.replace("%price%", price);
         }
 
@@ -172,17 +172,17 @@ public class DynMapManager {
         return true;
     }
 
-    private void addStyle(String resid, AreaMarker m) {
+    private void addStyle(ClaimedResidence res, AreaMarker m) {
         AreaStyle as = new AreaStyle();
         int sc = 0xFF0000;
         int fc = 0xFF0000;
         try {
             sc = Integer.parseInt(as.strokecolor.substring(1), 16);
-            if (plugin.getRentManager().isForRent(resid) && !plugin.getRentManager().isRented(resid))
+            if (plugin.getRentManager().isForRent(res) && !plugin.getRentManager().isRented(res))
                 fc = Integer.parseInt(as.forrentstrokecolor.substring(1), 16);
-            else if (plugin.getRentManager().isForRent(resid) && plugin.getRentManager().isRented(resid))
+            else if (plugin.getRentManager().isForRent(res) && plugin.getRentManager().isRented(res))
                 fc = Integer.parseInt(as.rentedstrokecolor.substring(1), 16);
-            else if (plugin.getTransactionManager().isForSale(resid))
+            else if (plugin.getTransactionManager().isForSale(res))
                 fc = Integer.parseInt(as.forsalestrokecolor.substring(1), 16);
             else
                 fc = Integer.parseInt(as.fillcolor.substring(1), 16);
@@ -193,7 +193,7 @@ public class DynMapManager {
         m.setRangeY(as.y, as.y);
     }
 
-    private void handleResidenceAdd(String resid, ClaimedResidence res, int depth) {
+    private void handleResidenceAdd(ClaimedResidence res, int depth) {
 
         if (res == null)
             return;
@@ -206,7 +206,7 @@ public class DynMapManager {
 
         for (Entry<String, CuboidArea> oneArea : res.getAreaMap().entrySet()) {
 
-            String id = oneArea.getKey() + "." + resid;
+            String id = oneArea.getKey() + "." + res.getName();
 
             String name = res.getName();
             double[] x = new double[4];
@@ -218,9 +218,9 @@ public class DynMapManager {
                 resName = res.getName() + " (" + oneArea.getKey() + ")";
             }
 
-            String desc = formatInfoWindow(resid, res, resName);
+            String desc = formatInfoWindow(res, resName);
 
-            if (!isVisible(resid, res.getWorldName()))
+            if (!isVisible(res.getName(), res.getWorldName()))
                 return;
 
             Location l0 = oneArea.getValue().getLowLocation();
@@ -256,13 +256,13 @@ public class DynMapManager {
                 marker.setRangeY(l1.getY(), l0.getY());
 
             marker.setDescription(desc);
-            addStyle(resid, marker);
+            addStyle(res, marker);
             resareas.put(id, marker);
 
             if (depth <= plugin.getConfigManager().DynMapLayerSubZoneDepth) {
                 List<ClaimedResidence> subids = res.getSubzones();
                 for (ClaimedResidence one : subids) {
-                    handleResidenceAdd(one.getName(), one, depth + 1);
+                    handleResidenceAdd(one, depth + 1);
                 }
             }
         }
@@ -321,7 +321,7 @@ public class DynMapManager {
 
         for (Entry<String, ClaimedResidence> one : plugin.getResidenceManager().getResidences().entrySet()) {
             plugin.getDynManager().fireUpdateAdd(one.getValue(), one.getValue().getSubzoneDeep());
-            handleResidenceAdd(one.getValue().getName(), one.getValue(), one.getValue().getSubzoneDeep());
+            handleResidenceAdd(one.getValue(), one.getValue().getSubzoneDeep());
         }
     }
 }

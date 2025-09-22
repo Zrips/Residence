@@ -334,11 +334,11 @@ public class ResidencePlayerListener implements Listener {
         CMIScheduler.runTaskLater(plugin, () -> {
             if (!player.isOnline())
                 return;
-            List<String> list = plugin.getRentManager().getRentedLandsList(player.getName());
+            List<ClaimedResidence> list = plugin.getRentManager().getRentedLandsList(player.getUniqueId());
             if (list.isEmpty())
                 return;
-            for (String one : list) {
-                RentedLand rentedland = plugin.getRentManager().getRentedLand(one);
+            for (ClaimedResidence one : list) {
+                RentedLand rentedland = one.getRentedLand();
                 if (rentedland == null)
                     continue;
                 if (rentedland.AutoPay)
@@ -817,7 +817,7 @@ public class ResidencePlayerListener implements Listener {
         plugin.getSignUtil().getSigns().addSign(signInfo);
         plugin.getSignUtil().saveSigns();
 
-        CMIScheduler.runTaskLater(plugin, () -> plugin.getSignUtil().CheckSign(residence), 5L);
+        CMIScheduler.runTaskLater(plugin, () -> plugin.getSignUtil().checkSign(residence), 5L);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -856,9 +856,9 @@ public class ResidencePlayerListener implements Listener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        plugin.getChatManager().removeFromChannel(player.getName());
-        plugin.getPlayerListener().removePlayerResidenceChat(player);
-        plugin.getAutoSelectionManager().getList().remove(uuid);
+        plugin.getChatManager().removeFromChannel(uuid);
+        plugin.getPlayerListener().removePlayerResidenceChat(uuid);
+        plugin.getAutoSelectionManager().remove(uuid);
 
         playerPersistentData.remove(uuid);
     }
@@ -1802,7 +1802,7 @@ public class ResidencePlayerListener implements Listener {
         if (res == null)
             return;
         if (!res.isOwner(player) && res.getPermissions().playerHas(player, Flags.dye, FlagCombo.OnlyFalse)) {
-            ItemStack iih = Utils.itemInMainHand(player);
+            ItemStack iih = CMIItemStack.getItemInMainHand(player);
             ItemStack iiho = CMILib.getInstance().getReflectionManager().getItemInOffHand(player);
             if (iih == null && iiho == null)
                 return;
@@ -1836,7 +1836,7 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         if (!res.isOwner(player) && res.getPermissions().playerHas(player, Flags.shear, FlagCombo.OnlyFalse)) {
-            ItemStack iih = Utils.itemInMainHand(player);
+            ItemStack iih = CMIItemStack.getItemInMainHand(player);
             ItemStack iiho = CMILib.getInstance().getReflectionManager().getItemInOffHand(player);
             if (iih == null && iiho == null)
                 return;
@@ -1899,7 +1899,7 @@ public class ResidencePlayerListener implements Listener {
         if (!(ent instanceof Hanging))
             return;
 
-        Material heldItem = Utils.itemInMainHand(player).getType();
+        Material heldItem = CMIItemStack.getItemInMainHand(player).getType();
 
         FlagPermissions perms = plugin.getPermsByLocForPlayer(ent.getLocation(), player);
         String world = player.getWorld().getName();
@@ -2887,7 +2887,7 @@ public class ResidencePlayerListener implements Listener {
         if (!plugin.getConfigManager().chatEnabled() || playerPersistentData.get(event.getPlayer()).isChatEnabled())
             return;
 
-        ChatChannel channel = plugin.getChatManager().getPlayerChannel(pname);
+        ChatChannel channel = plugin.getChatManager().getPlayerChannel(event.getPlayer().getUniqueId());
         if (channel != null) {
             channel.chat(pname, event.getMessage());
         }
@@ -2907,8 +2907,14 @@ public class ResidencePlayerListener implements Listener {
     public void removePlayerResidenceChat(Player player) {
         if (player == null)
             return;
-        playerPersistentData.get(player).setChatEnabled(true);
-        lm.Chat_ChatChannelLeave.sendMessage(player);
+        removePlayerResidenceChat(player.getUniqueId());
+    }
+
+    public void removePlayerResidenceChat(UUID uuid) {
+        if (uuid == null)
+            return;
+        playerPersistentData.get(uuid).setChatEnabled(true);
+        lm.Chat_ChatChannelLeave.sendMessage(ResidencePlayer.getOnlinePlayer(uuid));
     }
 
     @Deprecated

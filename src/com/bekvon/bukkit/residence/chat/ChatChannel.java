@@ -1,25 +1,27 @@
 package com.bekvon.bukkit.residence.chat;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
-import net.Zrips.CMILib.Colors.CMIChatColor;
-import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
-
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.event.ResidenceChatEvent;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
+import net.Zrips.CMILib.Colors.CMIChatColor;
+import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
+
 public class ChatChannel {
 
     protected String channelName;
-    protected List<String> members;
+    protected Set<UUID> members;
     protected String ChatPrefix = "";
     protected CMIChatColor ChannelColor = CMIChatColor.WHITE;
 
@@ -27,7 +29,7 @@ public class ChatChannel {
         this.channelName = channelName;
         this.ChatPrefix = ChatPrefix;
         this.ChannelColor = chatColor;
-        members = new ArrayList<String>();
+        members = new HashSet<UUID>();
     }
 
     public String getChannelName() {
@@ -50,15 +52,14 @@ public class ChatChannel {
             Residence.getInstance().getServ().getPluginManager().callEvent(cevent);
             if (cevent.isCancelled())
                 return;
-            for (String member : members) {
-                Player player = serv.getPlayer(member);
-
+            for (UUID member : members) {
+                Player player = ResidencePlayer.get(member).getPlayer();
                 lm.Chat_ChatMessage.sendMessage(player, cevent.getChatprefix(), Residence.getInstance().getConfigManager().getChatColor(), sourcePlayer, cevent.getColor(), cevent.getChatMessage());
             }
 
             if (Residence.getInstance().getConfigManager().isChatListening()) {
                 cevent.getResidence().getPlayersInResidence().forEach((v) -> {
-                    if (members.contains(v.getName()))
+                    if (members.contains(v.getUniqueId()))
                         return;
                     if (!cevent.getResidence().isOwner(v) && !cevent.getResidence().getPermissions().playerHas(v, Flags.chat, FlagCombo.OnlyTrue))
                         return;
@@ -71,16 +72,15 @@ public class ChatChannel {
         });
     }
 
-    public void join(String player) {
-        if (!members.contains(player))
-            members.add(player);
+    public void join(UUID uuid) {
+        members.add(uuid);
     }
 
-    public void leave(String player) {
+    public void leave(UUID player) {
         members.remove(player);
     }
 
-    public boolean hasMember(String player) {
+    public boolean hasMember(UUID player) {
         return members.contains(player);
     }
 

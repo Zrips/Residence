@@ -52,7 +52,7 @@ public class Pl3xMapManager {
         if (res == null)
             return;
 
-        CMIScheduler.runTaskLater(plugin, () -> handleResidenceAdd(res.getName(), res, deep), 10L);
+        CMIScheduler.runTaskLater(plugin, () -> handleResidenceAdd(res, deep), 10L);
     }
 
     public void fireUpdateRemove(final ClaimedResidence res, final int deep) {
@@ -64,7 +64,7 @@ public class Pl3xMapManager {
         handleResidenceRemove(res.getName(), res, deep);
     }
 
-    private String formatInfoWindow(String resid, ClaimedResidence res, String resName) {
+    private String formatInfoWindow(ClaimedResidence res, String resName) {
         if (res == null)
             return null;
         if (res.getName() == null)
@@ -98,7 +98,7 @@ public class Pl3xMapManager {
 
         v += "</div></div>";
 
-        if (plugin.getRentManager().isForRent(res.getName()))
+        if (plugin.getRentManager().isForRent(res))
             v = "<div class=\"regioninfo\"><div class=\"infowindow\">"
                 + CMIChatColor.stripColor(lm.Rentable_Land.getMessage("")) + "<span style=\"font-size:140%;font-weight:bold;\">%regionname%</span><br />"
                 + CMIChatColor.stripColor(lm.General_Owner.getMessage("")) + "<span style=\"font-weight:bold;\">%playerowners%</span><br />"
@@ -108,7 +108,7 @@ public class Pl3xMapManager {
                 + CMIChatColor.stripColor(lm.Rentable_AllowRenewing.getMessage("")) + "<span style=\"font-weight:bold;\">%renew%</span><br /> "
                 + CMIChatColor.stripColor(lm.Rent_Expire.getMessage("")) + "<span style=\"font-weight:bold;\">%expire%</span></div></div>";
 
-        if (plugin.getTransactionManager().isForSale(res.getName()))
+        if (plugin.getTransactionManager().isForSale(res))
             v = "<div class=\"regioninfo\"><div class=\"infowindow\">"
                 + CMIChatColor.stripColor(lm.Economy_LandForSale.getMessage(" "))
                 + "<span style=\"font-size:140%;font-weight:bold;\">%regionname%</span><br /> "
@@ -125,33 +125,33 @@ public class Pl3xMapManager {
         RentManager rentmgr = plugin.getRentManager();
         TransactionManager transmgr = plugin.getTransactionManager();
 
-        if (rentmgr.isForRent(res.getName())) {
-            boolean isrented = rentmgr.isRented(resid);
+        if (rentmgr.isForRent(res)) {
+            boolean isrented = rentmgr.isRented(res);
             v = v.replace("%isrented%", Boolean.toString(isrented));
             String id = "";
             if (isrented)
-                id = rentmgr.getRentingPlayer(resid);
+                id = rentmgr.getRentingPlayer(res);
             v = v.replace("%renter%", id);
 
-            v = v.replace("%rent%", rentmgr.getCostOfRent(resid) + "");
-            v = v.replace("%rentdays%", rentmgr.getRentDays(resid) + "");
-            boolean renew = rentmgr.getRentableRepeatable(resid);
+            v = v.replace("%rent%", rentmgr.getCostOfRent(res) + "");
+            v = v.replace("%rentdays%", rentmgr.getRentDays(res) + "");
+            boolean renew = rentmgr.getRentableRepeatable(res);
             v = v.replace("%renew%", renew + "");
             String expire = "";
             if (isrented) {
-                long time = rentmgr.getRentedLand(resid).endTime;
+                long time = rentmgr.getRentedLand(res).endTime;
                 if (time != 0L)
                     expire = GetTime.getTime(time);
             }
             v = v.replace("%expire%", expire);
         }
 
-        if (transmgr.isForSale(res.getName())) {
-            boolean forsale = transmgr.isForSale(resid);
-            v = v.replace("%isforsale%", Boolean.toString(transmgr.isForSale(resid)));
+        if (transmgr.isForSale(res)) {
+            boolean forsale = transmgr.isForSale(res);
+            v = v.replace("%isforsale%", Boolean.toString(transmgr.isForSale(res)));
             String price = "";
             if (forsale)
-                price = Integer.toString(transmgr.getSaleAmount(resid));
+                price = Integer.toString(transmgr.getSaleAmount(res));
             v = v.replace("%price%", price);
         }
 
@@ -170,7 +170,7 @@ public class Pl3xMapManager {
         return true;
     }
 
-    private int fillColor(String resid) {
+    private int fillColor(ClaimedResidence resid) {
         if (plugin.getRentManager().isForRent(resid) && !plugin.getRentManager().isRented(resid))
             return plugin.getConfigManager().Pl3xMapFillForRent;
         else if (plugin.getRentManager().isForRent(resid) && plugin.getRentManager().isRented(resid))
@@ -180,7 +180,7 @@ public class Pl3xMapManager {
         return plugin.getConfigManager().Pl3xFillColor;
     }
 
-    private void handleResidenceAdd(String resid, ClaimedResidence res, int depth) {
+    private void handleResidenceAdd(ClaimedResidence res, int depth) {
 
         if (res == null)
             return;
@@ -219,7 +219,7 @@ public class Pl3xMapManager {
 
         for (Entry<String, CuboidArea> oneArea : res.getAreaMap().entrySet()) {
 
-            String id = oneArea.getKey() + "." + resid;
+            String id = oneArea.getKey() + "." + res.getName();
 
             String resName = res.getName();
 
@@ -227,9 +227,9 @@ public class Pl3xMapManager {
                 resName = res.getName() + " (" + oneArea.getKey() + ")";
             }
 
-            String desc = formatInfoWindow(resid, res, resName);
+            String desc = formatInfoWindow(res, resName);
 
-            if (!isVisible(resid, res.getPermissions().getWorldName()))
+            if (!isVisible(res.getName(), res.getPermissions().getWorldName()))
                 return;
 
             Location l0 = oneArea.getValue().getLowLocation();
@@ -249,7 +249,7 @@ public class Pl3xMapManager {
             options.setTooltip(tooltip);
 
             Fill fill = new Fill();
-            fill.setColor(fillColor(resid));
+            fill.setColor(fillColor(res));
             fill.setType(Type.NONZERO);
             options.setFill(fill);
 
@@ -266,7 +266,7 @@ public class Pl3xMapManager {
                 List<ClaimedResidence> subids = res.getSubzones();
                 for (ClaimedResidence one : subids) {
                     try {
-                        handleResidenceAdd(one.getName(), one, depth + 1);
+                        handleResidenceAdd(one, depth + 1);
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -316,7 +316,7 @@ public class Pl3xMapManager {
         CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " Pl3xMap residence activated!");
         for (Entry<String, ClaimedResidence> one : plugin.getResidenceManager().getResidences().entrySet()) {
             try {
-                handleResidenceAdd(one.getValue().getName(), one.getValue(), one.getValue().getSubzoneDeep());
+                handleResidenceAdd(one.getValue(), one.getValue().getSubzoneDeep());
             } catch (Throwable e) {
                 e.printStackTrace();
             }

@@ -166,7 +166,7 @@ public class market implements cmd {
                 return true;
             }
 
-            plugin.getSignUtil().CheckSign(res, 5);
+            plugin.getSignUtil().checkSign(res, 5);
 
             return true;
 

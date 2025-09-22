@@ -1,17 +1,17 @@
 package com.bekvon.bukkit.residence.containers;
 
 public class SelectionSides {
-    Boolean NorthSide = true;
-    Boolean WestSide = true;
-    Boolean EastSide = true;
-    Boolean SouthSide = true;
-    Boolean TopSide = true;
-    Boolean BottomSide = true;
+    boolean NorthSide = true;
+    boolean WestSide = true;
+    boolean EastSide = true;
+    boolean SouthSide = true;
+    boolean TopSide = true;
+    boolean BottomSide = true;
 
     public SelectionSides() {
     }
 
-    public SelectionSides(Boolean NorthSide, Boolean WestSide, Boolean EastSide, Boolean SouthSide, Boolean TopSide, Boolean BottomSide) {
+    public SelectionSides(boolean NorthSide, boolean WestSide, boolean EastSide, boolean SouthSide, boolean TopSide, boolean BottomSide) {
 	this.NorthSide = NorthSide;
 	this.WestSide = WestSide;
 	this.EastSide = EastSide;

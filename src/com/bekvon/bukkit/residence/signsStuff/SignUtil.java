@@ -5,14 +5,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentHashMap.KeySetView;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,15 +21,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
-
 import com.bekvon.bukkit.residence.CommentedYamlConfiguration;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.economy.rent.RentedLand;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.utils.Utils;
+
+import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class SignUtil {
 
@@ -136,11 +133,11 @@ public class SignUtil {
         return this.getSigns().getResSign(loc);
     }
 
-    public void CheckSign(final ClaimedResidence res, int time) {
-        CMIScheduler.runTaskLater(plugin, () -> CheckSign(res), time * 1L);
+    public void checkSign(final ClaimedResidence res, int time) {
+        CMIScheduler.runTaskLater(plugin, () -> checkSign(res), time * 1L);
     }
 
-    public void CheckSign(ClaimedResidence res) {
+    public void checkSign(ClaimedResidence res) {
         for (Signs one : res.getSignsInResidence()) {
             if (res != one.getResidence())
                 continue;
@@ -274,14 +271,14 @@ public class SignUtil {
                 }
 
                 sign.setLine(0, lm.Sign_ForSaleTopLine.getMessage());
-                String infoLine = lm.Sign_ForSalePriceLine.getMessage( res.getSellPrice());
+                String infoLine = lm.Sign_ForSalePriceLine.getMessage(res.getSellPrice());
                 sign.setLine(1, infoLine);
-                sign.setLine(2, lm.Sign_RentedResName.getMessage( shortName));
+                sign.setLine(2, lm.Sign_RentedResName.getMessage(shortName));
 
                 if (secondLine != null)
                     sign.setLine(3, lm.Sign_RentedResName.getMessage(secondLine));
                 else
-                    sign.setLine(3, lm.Sign_ForSaleBottom.getMessage( res.getTotalSize()));
+                    sign.setLine(3, lm.Sign_ForSaleBottom.getMessage(res.getTotalSize()));
                 sign.update();
             }
         });

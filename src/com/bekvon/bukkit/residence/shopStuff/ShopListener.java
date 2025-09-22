@@ -54,7 +54,7 @@ public class ShopListener implements Listener {
         if (Delete.contains(player.getName())) {
             Board Found = null;
             for (Board one : plugin.getShopSignUtilManager().getAllBoards()) {
-                for (Location location : one.GetLocations()) {
+                for (Location location : one.getLocations()) {
 
                     if (!loc.getWorld().getName().equalsIgnoreCase(location.getWorld().getName()))
                         continue;

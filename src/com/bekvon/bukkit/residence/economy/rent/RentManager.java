@@ -109,10 +109,12 @@ public class RentManager implements MarketRentInterface {
     }
 
     @Override
+    @Deprecated
     public List<String> getRentedLands(String playername) {
         return getRentedLands(playername, false);
     }
 
+    @Deprecated
     public List<String> getRentedLands(String playername, boolean onlyHidden) {
         List<String> rentedLands = new ArrayList<String>();
         if (playername == null)
@@ -141,48 +143,29 @@ public class RentManager implements MarketRentInterface {
         return rentedLands;
     }
 
-    public List<ClaimedResidence> getRents(String playername) {
-        return getRents(playername, false);
+    public List<ClaimedResidence> getRentedLands(UUID uuid, boolean onlyHidden) {
+        return getRentedLands(uuid, onlyHidden, null);
     }
 
-    public List<ClaimedResidence> getRents(String playername, boolean onlyHidden) {
-        return getRents(playername, onlyHidden, null);
-    }
-
-    public List<ClaimedResidence> getRents(String playername, boolean onlyHidden, World world) {
+    public List<ClaimedResidence> getRentedLands(UUID uuid, boolean onlyHidden, World world) {
         List<ClaimedResidence> rentedLands = new ArrayList<ClaimedResidence>();
-        for (ClaimedResidence res : rentedLand) {
-            if (res == null)
-                continue;
+        if (uuid == null)
+            return rentedLands;
 
-            if (!res.isRented())
-                continue;
+        rentedLands.addAll(parseLands(uuid, onlyHidden, world, playerRentedLands.getOrDefault(uuid, new ArrayList<>())));
 
-            if (!res.getRentedLand().isRenter(playername))
-                continue;
-
-            ClaimedResidence topres = res.getTopParent();
-
-            boolean hidden = topres.getPermissions().has("hidden", false);
-
-            if (onlyHidden && !hidden)
-                continue;
-
-            if (world != null && !world.getName().equalsIgnoreCase(res.getWorld()))
-                continue;
-            rentedLands.add(res);
+        if (!byPlayerNameRentedLands.isEmpty()) {
+            String playerName = ResidencePlayer.getName(uuid);
+            rentedLands.addAll(parseLands(uuid, onlyHidden, world, byPlayerNameRentedLands.getOrDefault(playerName, new ArrayList<>())));
         }
+
         return rentedLands;
     }
 
-    @Deprecated
-    public TreeMap<String, ClaimedResidence> getRentsMap(String playername, boolean onlyHidden, World world) {
-        return getRentsMap(ResidencePlayer.getUUID(playername), onlyHidden, world);
-    }
+    private static List<ClaimedResidence> parseLands(UUID uuid, boolean onlyHidden, World world, List<ClaimedResidence> lands) {
+        List<ClaimedResidence> rentedLands = new ArrayList<ClaimedResidence>();
 
-    public TreeMap<String, ClaimedResidence> getRentsMap(UUID uuid, boolean onlyHidden, World world) {
-        TreeMap<String, ClaimedResidence> rentedLands = new TreeMap<String, ClaimedResidence>();
-        for (ClaimedResidence res : rentedLand) {
+        for (ClaimedResidence res : lands) {
             if (res == null)
                 continue;
 
@@ -194,32 +177,90 @@ public class RentManager implements MarketRentInterface {
 
             ClaimedResidence topres = res.getTopParent();
 
-            boolean hidden = topres.getPermissions().has("hidden", false);
-
-            if (onlyHidden && !hidden)
+            if (world != null && !world.getName().equalsIgnoreCase(res.getWorldName()))
                 continue;
 
-            if (world != null && !world.getName().equalsIgnoreCase(res.getWorld()))
+            if (onlyHidden && !topres.getPermissions().has("hidden", false))
                 continue;
+
+            rentedLands.add(res);
+        }
+        return rentedLands;
+
+    }
+
+    @Deprecated
+    public List<ClaimedResidence> getRents(String playername) {
+        return getRents(playername, false);
+    }
+
+    @Deprecated
+    public List<ClaimedResidence> getRents(String playername, boolean onlyHidden) {
+        return getRents(playername, onlyHidden, null);
+    }
+
+    @Deprecated
+    public List<ClaimedResidence> getRents(String playername, boolean onlyHidden, World world) {
+        return getRentedLands(ResidencePlayer.getUUID(playername), onlyHidden, world);
+    }
+
+    @Deprecated
+    public TreeMap<String, ClaimedResidence> getRentsMap(String playername, boolean onlyHidden, World world) {
+        return getRentsMap(ResidencePlayer.getUUID(playername), onlyHidden, world);
+    }
+
+    public TreeMap<String, ClaimedResidence> getRentsMap(UUID uuid, boolean onlyHidden, World world) {
+        TreeMap<String, ClaimedResidence> rentedLands = new TreeMap<String, ClaimedResidence>();
+        for (ClaimedResidence res : getRentedLands(uuid, onlyHidden, world)) {
+            if (res == null)
+                continue;
+
+            if (!res.isRented())
+                continue;
+
+            if (!res.getRentedLand().isRenter(uuid))
+                continue;
+
             rentedLands.put(res.getName(), res);
         }
         return rentedLands;
     }
 
+    @Deprecated
     public List<String> getRentedLandsList(Player player) {
         return getRentedLandsList(player.getName());
     }
 
+    @Deprecated
     public List<String> getRentedLandsList(String playername) {
+
         List<String> rentedLands = new ArrayList<String>();
-        for (ClaimedResidence res : rentedLand) {
+        List<ClaimedResidence> list = getRentedLandsList(ResidencePlayer.getUUID(playername));
+
+        for (ClaimedResidence res : list) {
+            if (res == null)
+                continue;
+            rentedLands.add(res.getName());
+        }
+
+        return rentedLands;
+    }
+
+    public List<ClaimedResidence> getRentedLandsList(UUID uuid) {
+
+        List<ClaimedResidence> rentedLands = new ArrayList<ClaimedResidence>();
+
+        if (uuid == null)
+            return rentedLands;
+
+        for (ClaimedResidence res : getRentedLands(uuid, false)) {
             if (res == null)
                 continue;
             if (!res.isRented())
                 continue;
-            if (!res.getRentedLand().isRenter(playername))
+            if (!res.getRentedLand().isRenter(uuid))
                 continue;
-            rentedLands.add(res.getName());
+            rentedLands.add(res);
         }
         return rentedLands;
     }
@@ -300,7 +341,7 @@ public class RentManager implements MarketRentInterface {
             res.setRentable(newrent);
             rentableLand.add(res);
 
-            plugin.getSignUtil().CheckSign(res);
+            plugin.getSignUtil().checkSign(res);
 
             lm.Residence_ForRentSuccess.sendMessage(player, res.getResidenceName(), amount, days);
         } else {
@@ -314,7 +355,6 @@ public class RentManager implements MarketRentInterface {
         rent(player, res, AutoPay, resadmin);
     }
 
-    @SuppressWarnings("deprecation")
     public void rent(Player player, ClaimedResidence res, boolean AutoPay, boolean resadmin) {
 
         if (res == null) {
@@ -376,7 +416,7 @@ public class RentManager implements MarketRentInterface {
 
                 addRented(player, res);
 
-                plugin.getSignUtil().CheckSign(res);
+                plugin.getSignUtil().checkSign(res);
 
                 Visualizer v = new Visualizer(player);
                 v.setAreas(res);
@@ -455,7 +495,7 @@ public class RentManager implements MarketRentInterface {
                 return;
             if (plugin.getEconomyManager().transfer(player.getUniqueId(), res.getPermissions().getOwnerUUID(), land.cost)) {
                 rentedLand.endTime = rentedLand.endTime + daysToMs(land.days);
-                plugin.getSignUtil().CheckSign(res);
+                plugin.getSignUtil().checkSign(res);
 
                 Visualizer v = new Visualizer(player);
                 v.setAreas(res);
@@ -520,7 +560,7 @@ public class RentManager implements MarketRentInterface {
                 // set true if its already exists
                 res.getPermissions().setFlag("backup", FlagState.TRUE);
             }
-            plugin.getSignUtil().CheckSign(res);
+            plugin.getSignUtil().checkSign(res);
 
             lm.Residence_Unrent.sendMessage(player, res.getName());
         } else {
@@ -529,7 +569,6 @@ public class RentManager implements MarketRentInterface {
     }
 
     private static long daysToMs(int days) {
-//	return (((long) days) * 1000L);
         return ((days) * 24L * 60L * 60L * 1000L);
     }
 
@@ -562,7 +601,7 @@ public class RentManager implements MarketRentInterface {
             rentableLand.remove(res);
             res.setRentable(null);
             res.getPermissions().applyDefaultFlags();
-            plugin.getSignUtil().CheckSign(res);
+            plugin.getSignUtil().checkSign(res);
             lm.Residence_RemoveRentable.sendMessage(player, res.getResidenceName());
         } else {
             lm.Residence_NotForRent.sendMessage(player);
@@ -570,6 +609,7 @@ public class RentManager implements MarketRentInterface {
     }
 
     @Override
+    @Deprecated
     public void removeFromRent(String landName) {
         removeRented(ClaimedResidence.getByName(landName));
     }
@@ -579,6 +619,7 @@ public class RentManager implements MarketRentInterface {
     }
 
     @Override
+    @Deprecated
     public void removeRentable(String landName) {
         removeRentable(ClaimedResidence.getByName(landName));
     }
@@ -597,6 +638,7 @@ public class RentManager implements MarketRentInterface {
     }
 
     @Override
+    @Deprecated
     public boolean isForRent(String landName) {
         return isForRent(ClaimedResidence.getByName(landName));
     }
@@ -607,6 +649,7 @@ public class RentManager implements MarketRentInterface {
         return rentableLand.contains(res);
     }
 
+    @Deprecated
     public RentableLand getRentableLand(String landName) {
         ClaimedResidence res = plugin.getResidenceManager().getByName(landName);
         return getRentableLand(res);
@@ -621,6 +664,7 @@ public class RentManager implements MarketRentInterface {
     }
 
     @Override
+    @Deprecated
     public boolean isRented(String landName) {
         ClaimedResidence res = plugin.getResidenceManager().getByName(landName);
         return isRented(res);
@@ -633,6 +677,7 @@ public class RentManager implements MarketRentInterface {
     }
 
     @Override
+    @Deprecated
     public String getRentingPlayer(String landName) {
         ClaimedResidence res = plugin.getResidenceManager().getByName(landName);
         return getRentingPlayer(res);
@@ -645,6 +690,7 @@ public class RentManager implements MarketRentInterface {
     }
 
     @Override
+    @Deprecated
     public int getCostOfRent(String landName) {
         ClaimedResidence res = plugin.getResidenceManager().getByName(landName);
         return getCostOfRent(res);
@@ -657,6 +703,7 @@ public class RentManager implements MarketRentInterface {
     }
 
     @Override
+    @Deprecated
     public boolean getRentableRepeatable(String landName) {
         ClaimedResidence res = plugin.getResidenceManager().getByName(landName);
         return getRentableRepeatable(res);
@@ -669,6 +716,7 @@ public class RentManager implements MarketRentInterface {
     }
 
     @Override
+    @Deprecated
     public boolean getRentedAutoRepeats(String landName) {
         ClaimedResidence res = plugin.getResidenceManager().getByName(landName);
         return getRentedAutoRepeats(res);
@@ -681,6 +729,7 @@ public class RentManager implements MarketRentInterface {
     }
 
     @Override
+    @Deprecated
     public int getRentDays(String landName) {
         ClaimedResidence res = plugin.getResidenceManager().getByName(landName);
         return getRentDays(res);
@@ -726,7 +775,7 @@ public class RentManager implements MarketRentInterface {
                 removeRented(res);
 
                 res.getPermissions().applyDefaultFlags();
-                plugin.getSignUtil().CheckSign(res);
+                plugin.getSignUtil().checkSign(res);
                 continue;
             }
 
@@ -801,7 +850,7 @@ public class RentManager implements MarketRentInterface {
                     }
                 }
 
-                plugin.getSignUtil().CheckSign(res);
+                plugin.getSignUtil().checkSign(res);
                 continue;
             }
             if (!rentable.StayInMarket) {
@@ -817,13 +866,13 @@ public class RentManager implements MarketRentInterface {
 
             if (plugin.getSchematicManager() != null && plugin.getConfigManager().RestoreAfterRentEnds && backup) {
                 plugin.getSchematicManager().load(res);
-                plugin.getSignUtil().CheckSign(res);
+                plugin.getSignUtil().checkSign(res);
                 // set true if its already exists
                 res.getPermissions().setFlag("backup", FlagState.TRUE);
                 // To avoid lag spikes on multiple residence restores at once, will limit to one residence at time
                 break;
             }
-            plugin.getSignUtil().CheckSign(res);
+            plugin.getSignUtil().checkSign(res);
         }
     }
 
@@ -903,7 +952,7 @@ public class RentManager implements MarketRentInterface {
         else
             lm.Rent_DisableRenew.sendMessage(player, res.getResidenceName());
 
-        plugin.getSignUtil().CheckSign(res);
+        plugin.getSignUtil().checkSign(res);
     }
 
     public void printRentInfo(Player player, String landName) {
@@ -1011,16 +1060,14 @@ public class RentManager implements MarketRentInterface {
     @Override
     @Deprecated
     public int getRentCount(String player) {
-        int count = 0;
-        for (ClaimedResidence res : rentedLand) {
-            if (res.getRentedLand().isRenter(player))
-                count++;
-        }
-        return count;
+        return getRentCount(ResidencePlayer.getUUID(player));
     }
 
     @Override
     public int getRentableCount(UUID playerUUID) {
+        if (playerUUID == null)
+            return 0;
+
         int count = 0;
         for (ClaimedResidence res : rentableLand) {
             if (res != null && res.isOwner(playerUUID))
@@ -1030,13 +1077,9 @@ public class RentManager implements MarketRentInterface {
     }
 
     @Override
+    @Deprecated
     public int getRentableCount(String player) {
-        int count = 0;
-        for (ClaimedResidence res : rentableLand) {
-            if (res != null && res.isOwner(player))
-                count++;
-        }
-        return count;
+        return getRentableCount(ResidencePlayer.getUUID(player));
     }
 
     @Override

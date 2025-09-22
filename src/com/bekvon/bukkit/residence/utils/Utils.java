@@ -37,45 +37,6 @@ public class Utils {
     public Utils() {
     }
 
-    public static String to24hourShort(Long ticks) {
-        long years = ticks / 1000 / 60 / 60 / 24 / 365;
-        ticks = ticks - (years * 1000 * 60 * 60 * 24 * 365);
-
-        long days = ticks / 1000 / 60 / 60 / 24;
-        ticks = ticks - (days * 1000 * 60 * 60 * 24);
-
-        long hours = ticks / 1000 / 60 / 60;
-        ticks = ticks - (hours * 1000 * 60 * 60);
-
-        long minutes = ticks / 1000 / 60;
-        ticks = ticks - (minutes * 1000 * 60);
-
-        long sec = ticks / 1000;
-        ticks = ticks - (sec * 1000);
-
-        String time = "";
-
-        if (years > 0)
-            time += years == 1 ? Residence.getInstance().getLM().getMessage(lm.info_oneYear, years) : Residence.getInstance().getLM().getMessage(lm.info_years, years);
-
-        if (days > 0)
-            time += days == 1 ? Residence.getInstance().getLM().getMessage(lm.info_oneDay, days) : Residence.getInstance().getLM().getMessage(lm.info_day, days);
-
-        if (hours > 0)
-            time += hours == 1 ? Residence.getInstance().getLM().getMessage(lm.info_oneHour, hours) : Residence.getInstance().getLM().getMessage(lm.info_hour, hours);
-
-        if (minutes > 0)
-            time += Residence.getInstance().getLM().getMessage(lm.info_min, minutes);
-
-        if (sec > 0)
-            time += Residence.getInstance().getLM().getMessage(lm.info_sec, sec);
-
-        if (time.isEmpty())
-            time += Residence.getInstance().getLM().getMessage(lm.info_sec, 0);
-
-        return time;
-    }
-
     public static Block getTargetBlock(Player player, int distance, boolean ignoreNoneSolids) {
         return getTargetBlock(player, null, distance, ignoreNoneSolids);
     }
@@ -229,18 +190,6 @@ public class Utils {
         if (Version.isCurrentEqualOrLower(Version.v1_8_R3))
             return true;
         return event.getHand() == EquipmentSlot.HAND ? true : false;
-    }
-
-    public static ItemStack itemInMainHand(Player player) {
-        if (Version.isCurrentEqualOrLower(Version.v1_8_R3))
-            return player.getInventory().getItemInHand();
-        return player.getInventory().getItemInMainHand();
-    }
-
-    public static ItemStack itemInOffHand(Player player) {
-        if (Version.isCurrentEqualOrLower(Version.v1_8_R3))
-            return null;
-        return player.getInventory().getItemInOffHand();
     }
 
     public static boolean isChorusTeleport(org.bukkit.event.player.PlayerTeleportEvent.TeleportCause tpcause) {

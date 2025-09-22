@@ -377,14 +377,13 @@ public class shop implements cmd {
                         }
                         lm.Shop_VoteChanged.sendMessage(sender, OneVote.getVote(), vote, resName);
                         OneVote.setVote(vote);
-                        OneVote.setName(player.getName());
                         OneVote.setTime(System.currentTimeMillis());
                         found = true;
                         break;
                     }
                 }
                 if (!found) {
-                    ShopVote newVote = new ShopVote(player.getName(), player.getUniqueId(), vote, System.currentTimeMillis());
+                    ShopVote newVote = new ShopVote(player.getUniqueId(), vote, System.currentTimeMillis());
                     list.add(newVote);
                     if (plugin.getConfigManager().isOnlyLike())
                         lm.Shop_Liked.sendMessage(sender, resName);
@@ -392,7 +391,7 @@ public class shop implements cmd {
                         lm.Shop_Voted.sendMessage(sender, vote, resName);
                 }
             } else {
-                ShopVote newVote = new ShopVote(player.getName(), player.getUniqueId(), vote, System.currentTimeMillis());
+                ShopVote newVote = new ShopVote(player.getUniqueId(), vote, System.currentTimeMillis());
                 res.addShopVote(newVote);
                 if (plugin.getConfigManager().isOnlyLike())
                     lm.Shop_Liked.sendMessage(sender, resName);

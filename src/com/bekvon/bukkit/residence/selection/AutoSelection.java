@@ -129,4 +129,8 @@ public class AutoSelection {
     public HashMap<UUID, AutoSelector> getList() {
         return list;
     }
+
+    public void remove(UUID uuid) {
+         list.remove(uuid);
+    }
 }

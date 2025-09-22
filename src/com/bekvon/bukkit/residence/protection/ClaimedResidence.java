@@ -1879,7 +1879,7 @@ public class ClaimedResidence {
 
     public void remove() {
         Residence.getInstance().getResidenceManager().removeResidence(this);
-        Residence.getInstance().getResidenceManager().removeChunkList(this.getName());
+        Residence.getInstance().getResidenceManager().removeChunkList(this);
         Residence.getInstance().getPlayerManager().removeResFromPlayer(this);
     }
 
@@ -2181,7 +2181,7 @@ public class ClaimedResidence {
 
         if (this.getPermissions().getPlayerFlagsByName().isEmpty())
             return trusted;
-        
+
         Iterator<Entry<String, Map<String, Boolean>>> iterByName = this.getPermissions().getPlayerFlagsByName().entrySet().iterator();
         while (iterByName.hasNext()) {
             Entry<String, Map<String, Boolean>> entry = iterByName.next();
@@ -2197,5 +2197,9 @@ public class ClaimedResidence {
 
     public static ClaimedResidence getByName(String landName) {
         return Residence.getInstance().getResidenceManager().getByName(landName);
+    }
+
+    public static ClaimedResidence getByLoc(Location loc) {
+        return Residence.getInstance().getResidenceManager().getByLoc(loc);
     }
 }

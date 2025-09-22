@@ -1,4 +1,4 @@
-package com.bekvon.bukkit.residence.allNms;
+package com.bekvon.bukkit.residence.listeners;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -22,7 +22,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
-public class v1_9Events implements Listener {
+public class ResidencePlayerListener1_09 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onLingeringSplashPotion(LingeringPotionSplashEvent event) {

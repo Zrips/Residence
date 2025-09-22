@@ -166,14 +166,14 @@ public enum lm {
 
     Raid_stopped("&eRaid on &6%1 &ewas stopped"),
 
-    info_years("&e%1 &6years "),
-    info_oneYear("&e%1 &6year "),
-    info_day("&e%1 &6days "),
-    info_oneDay("&e%1 &6day "),
-    info_hour("&e%1 &6hours "),
-    info_oneHour("&e%1 &6hour "),
-    info_min("&e%1 &6min "),
-    info_sec("&e%1 &6sec "),
+//    info_years("&e%1 &6years "),
+//    info_oneYear("&e%1 &6year "),
+//    info_day("&e%1 &6days "),
+//    info_oneDay("&e%1 &6day "),
+//    info_hour("&e%1 &6hours "),
+//    info_oneHour("&e%1 &6hour "),
+//    info_min("&e%1 &6min "),
+//    info_sec("&e%1 &6sec "),
 
     info_listSplitter(", "),
 

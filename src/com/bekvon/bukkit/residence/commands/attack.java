@@ -13,6 +13,8 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.utils.Utils;
 
+import net.Zrips.CMILib.Time.CMITimeManager;
+
 public class attack implements cmd {
 
     @Override
@@ -66,12 +68,12 @@ public class attack implements cmd {
         }
 
         if (res.getRaid().isPlayerImmune() && !res.getRaid().isInPreRaid() && !res.getRaid().isUnderRaid()) {
-            lm.Raid_attack_playerImmune.sendMessage(player, Utils.to24hourShort(res.getRaid().getPlayerImmunityUntil() - System.currentTimeMillis() + 1000L));
+            lm.Raid_attack_playerImmune.sendMessage(player, CMITimeManager.to24hourShort(res.getRaid().getPlayerImmunityUntil() - System.currentTimeMillis() + 1000L));
             return null;
         }
 
         if (res.getRaid().isUnderRaidCooldown() && !res.getRaid().isInPreRaid() && !res.getRaid().isUnderRaid()) {
-            lm.Raid_attack_cooldown.sendMessage(player, Utils.to24hourShort(res.getRaid().getCooldownEnd() - System.currentTimeMillis() + 1000L));
+            lm.Raid_attack_cooldown.sendMessage(player, CMITimeManager.to24hourShort(res.getRaid().getCooldownEnd() - System.currentTimeMillis() + 1000L));
             return null;
         }
 

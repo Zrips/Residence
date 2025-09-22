@@ -35,7 +35,6 @@ import net.Zrips.CMILib.Container.PageInfo;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Locale.LC;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Version;
 
@@ -871,7 +870,7 @@ public class FlagPermissions {
                         ft = Residence.getInstance().getResidenceManager().getChacheFlags(((ResidencePermissions) newperms).getWorldName(), one.getValue());
                         if (ft != null && !ft.isEmpty()) {
 
-                            if (one.getKey().length() == 32 && one.getKey().contains("-")) {
+                            if (one.getKey().length() == 36 && one.getKey().contains("-")) {
                                 try {
                                     UUID uuid = UUID.fromString(one.getKey());
                                     byUUID.put(uuid, new HashMap<String, Boolean>(ft));

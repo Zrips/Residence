@@ -19,6 +19,7 @@ import com.bekvon.bukkit.residence.utils.TimeModifier;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+import net.Zrips.CMILib.Time.CMITimeManager;
 
 public class raid implements cmd {
 
@@ -88,7 +89,7 @@ public class raid implements cmd {
                 immune = immune == null || immune < System.currentTimeMillis() ? System.currentTimeMillis() : immune;
                 immune += (time * 1000L);
                 res.getRaid().setImmunityUntil(immune);
-                lm.Raid_immune.sendMessage(sender, Utils.to24hourShort(immune - System.currentTimeMillis()));
+                lm.Raid_immune.sendMessage(sender, CMITimeManager.to24hourShort(immune - System.currentTimeMillis()));
                 return true;
             case "take":
                 if (time == null)
@@ -99,7 +100,7 @@ public class raid implements cmd {
                 res.getRaid().setImmunityUntil(immune);
 
                 if (res.getRaid().isImmune())
-                    lm.Raid_immune.sendMessage(sender, Utils.to24hourShort(immune - System.currentTimeMillis()));
+                    lm.Raid_immune.sendMessage(sender, CMITimeManager.to24hourShort(immune - System.currentTimeMillis()));
                 else
                     lm.Raid_notImmune.sendMessage(sender);
                 return true;
@@ -108,7 +109,7 @@ public class raid implements cmd {
                     return false;
                 immune = System.currentTimeMillis() + (time * 1000L);
                 res.getRaid().setImmunityUntil(immune);
-                lm.Raid_immune.sendMessage(sender, Utils.to24hourShort(immune - System.currentTimeMillis()));
+                lm.Raid_immune.sendMessage(sender, CMITimeManager.to24hourShort(immune - System.currentTimeMillis()));
 
                 return true;
             case "clear":

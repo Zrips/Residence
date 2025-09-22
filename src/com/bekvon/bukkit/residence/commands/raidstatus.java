@@ -22,6 +22,7 @@ import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.RawMessages.RawMessage;
+import net.Zrips.CMILib.Time.CMITimeManager;
 
 public class raidstatus implements cmd {
 
@@ -70,9 +71,9 @@ public class raidstatus implements cmd {
 
         lm.Raid_status_title.sendMessage(sender, res.getName(), res.getOwner());
         if (res.getRaid().isImmune()) {
-            lm.Raid_status_immune.sendMessage(sender, Utils.to24hourShort(raid.getImmunityUntil() - System.currentTimeMillis() + 1000L));
+            lm.Raid_status_immune.sendMessage(sender, CMITimeManager.to24hourShort(raid.getImmunityUntil() - System.currentTimeMillis() + 1000L));
         } else if (res.getRaid().isInPreRaid()) {
-            lm.Raid_status_starts.sendMessage(sender, Utils.to24hourShort(raid.getStartsAt() - System.currentTimeMillis()));
+            lm.Raid_status_starts.sendMessage(sender, CMITimeManager.to24hourShort(raid.getStartsAt() - System.currentTimeMillis()));
             RawMessage rm = new RawMessage();
             rm.addText(plugin.getLM().getMessage(lm.Raid_status_attackers, raid.getAttackers().size())).addHover(getAttackers(raid));
             rm.show(sender);
@@ -80,7 +81,7 @@ public class raidstatus implements cmd {
             rm.addText(plugin.getLM().getMessage(lm.Raid_status_defenders, raid.getDefenders().size())).addHover(getDefenders(raid));
             rm.show(sender);
         } else if (res.getRaid().isUnderRaid()) {
-            lm.Raid_status_ends.sendMessage(sender, Utils.to24hourShort(raid.getEndsAt() - System.currentTimeMillis()));
+            lm.Raid_status_ends.sendMessage(sender, CMITimeManager.to24hourShort(raid.getEndsAt() - System.currentTimeMillis()));
             RawMessage rm = new RawMessage();
             rm.addText(plugin.getLM().getMessage(lm.Raid_status_attackers, raid.getAttackers().size())).addHover(getAttackers(raid));
             rm.show(sender);
@@ -91,7 +92,7 @@ public class raidstatus implements cmd {
             if (raid.getCooldownEnd() < System.currentTimeMillis())
                 lm.Raid_status_canraid.sendMessage(sender);
             else
-                lm.Raid_status_raidin.sendMessage(sender, Utils.to24hourShort(raid.getCooldownEnd() - System.currentTimeMillis() + 1000L));
+                lm.Raid_status_raidin.sendMessage(sender, CMITimeManager.to24hourShort(raid.getCooldownEnd() - System.currentTimeMillis() + 1000L));
         }
 
         return true;

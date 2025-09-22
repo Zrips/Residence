@@ -263,12 +263,6 @@ public class ConfigManager {
     protected CMIParticle OverlapFrame;
     protected CMIParticle OverlapSides;
 
-//    protected CMIParticle SelectedSpigotFrame;
-//    protected CMIParticle SelectedSpigotSides;
-//
-//    protected CMIParticle OverlapSpigotFrame;
-//    protected CMIParticle OverlapSpigotSides;
-
     // DynMap
     public boolean DynMapHideByDefault;
     public boolean DynMapUse;
@@ -300,11 +294,7 @@ public class ConfigManager {
     public int Pl3xMapLayerSubZoneDepth;
     public int Pl3xBorderColor = 0;
     public int Pl3xFillColor = 0;
-//    public Color Pl3xMapBorderColor = new Color(125, 125, 125);
-//    public double Pl3xMapBorderOpacity;
     public int Pl3xMapBorderWeight;
-//    public Color Pl3xMapFillColor = new Color(125, 125, 125);
-//    public double Pl3xMapFillOpacity;
     public int Pl3xMapFillForRent = 0;
     public int Pl3xMapFillRented = 0;
     public int Pl3xMapFillForSale = 0;
@@ -342,7 +332,6 @@ public class ConfigManager {
     private Residence plugin;
 
     public ConfigManager(Residence plugin) {
-//	FileConfiguration config = YamlConfiguration.loadConfiguration(new File(Residence.dataFolder, "config.yml"));
         this.plugin = plugin;
         globalCreatorDefaults = new FlagPermissions();
         globalRentedDefaults = new FlagPermissions();

@@ -67,10 +67,17 @@ public class TransactionManager implements MarketBuyInterface {
 
         lm.Economy_MarketDisabled.sendMessage(player);
         return false;
+    }
 
+    @Deprecated
+    public boolean giveEconomyMoney(String playerName, double amount) {
+        return giveEconomyMoney(ResidencePlayer.getUUID(playerName), amount);
     }
 
     public boolean giveEconomyMoney(UUID uuid, double amount) {
+        if (uuid == null)
+            return false;
+        
         if (amount == 0)
             return true;
         EconomyInterface econ = plugin.getEconomyManager();
@@ -80,22 +87,8 @@ public class TransactionManager implements MarketBuyInterface {
         return true;
     }
 
-    @Deprecated
-    public boolean giveEconomyMoney(String playerName, double amount) {
-        if (playerName == null)
-            return false;
-        if (amount == 0)
-            return true;
-        EconomyInterface econ = plugin.getEconomyManager();
-        if (econ == null) {
-            return false;
-        }
-        econ.add(playerName, amount);
-        return true;
-    }
-
     public void putForSale(String areaname, Player player, int amount, boolean resadmin) {
-        ClaimedResidence res = plugin.getResidenceManager().getByName(areaname);
+        ClaimedResidence res = ClaimedResidence.getByName(areaname);
         putForSale(res, player, amount, resadmin);
     }
 
@@ -158,16 +151,17 @@ public class TransactionManager implements MarketBuyInterface {
         }
         res.setSellPrice(amount);
         sellAmount.add(res);
-        plugin.getSignUtil().CheckSign(res);
+        plugin.getSignUtil().checkSign(res);
         lm.Residence_ForSale.sendMessage(player, res.getName(), amount);
     }
 
     @Override
+    @Deprecated
     public boolean putForSale(String areaname, int amount) {
-        ClaimedResidence res = plugin.getResidenceManager().getByName(areaname);
-        return putForSale(res, amount);
+        return putForSale(ClaimedResidence.getByName(areaname), amount);
     }
 
+    @Override
     public boolean putForSale(ClaimedResidence res, int amount) {
         if (res == null)
             return false;
@@ -184,9 +178,9 @@ public class TransactionManager implements MarketBuyInterface {
     }
 
     @Override
+    @Deprecated
     public void buyPlot(String areaname, Player player, boolean resadmin) {
-        ClaimedResidence res = plugin.getResidenceManager().getByName(areaname);
-        buyPlot(res, player, resadmin);
+        buyPlot(ClaimedResidence.getByName(areaname), player, resadmin);
     }
 
     public void buyPlot(ClaimedResidence res, Player player, boolean resadmin) {
@@ -195,7 +189,7 @@ public class TransactionManager implements MarketBuyInterface {
             return;
         }
 
-        ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
+        ResidencePlayer rPlayer = ResidencePlayer.get(player);
         PermissionGroup group = rPlayer.getGroup();
         if (!resadmin) {
             if (!plugin.getConfigManager().enableEconomy() || plugin.getEconomyManager() == null) {
@@ -256,7 +250,7 @@ public class TransactionManager implements MarketBuyInterface {
             if (plugin.getConfigManager().isRemoveLwcOnBuy() && plugin.isLwcPresent())
                 ResidenceLWCListener.removeLwcFromResidence(player, res);
 
-            plugin.getSignUtil().CheckSign(res);
+            plugin.getSignUtil().checkSign(res);
 
             Visualizer v = new Visualizer(player);
             v.setAreas(res);
@@ -275,9 +269,9 @@ public class TransactionManager implements MarketBuyInterface {
 
     }
 
+    @Deprecated
     public void removeFromSale(Player player, String areaname, boolean resadmin) {
-        ClaimedResidence res = plugin.getResidenceManager().getByName(areaname);
-        removeFromSale(player, res, resadmin);
+        removeFromSale(player, ClaimedResidence.getByName(areaname), resadmin);
     }
 
     public void removeFromSale(Player player, ClaimedResidence res, boolean resadmin) {
@@ -292,7 +286,7 @@ public class TransactionManager implements MarketBuyInterface {
         }
         if (res.isOwner(player) || resadmin) {
             removeFromSale(res);
-            plugin.getSignUtil().CheckSign(res);
+            plugin.getSignUtil().checkSign(res);
             lm.Residence_StopSelling.sendMessage(player);
         } else {
             lm.General_NoPermission.sendMessage(player);
@@ -300,6 +294,7 @@ public class TransactionManager implements MarketBuyInterface {
     }
 
     @Override
+    @Deprecated
     public void removeFromSale(String areaname) {
         removeFromSale(ClaimedResidence.getByName(areaname));
     }
@@ -317,6 +312,7 @@ public class TransactionManager implements MarketBuyInterface {
     }
 
     @Override
+    @Deprecated
     public boolean isForSale(String areaname) {
         ClaimedResidence res = plugin.getResidenceManager().getByName(areaname);
         return isForSale(res);

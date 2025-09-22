@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
@@ -245,13 +246,7 @@ public class ResidencePlayer {
     private boolean updated = false;
 
     public ResidencePlayer updatePlayer(Player player) {
-        if (updated)
-            return this;
-        if (player.isOnline())
-            updated = true;
-        this.uuid = player.getUniqueId();
-        this.userName = player.getName();
-        return this;
+        return updatePlayer((OfflinePlayer) player);
     }
 
     public ResidencePlayer updatePlayer(OfflinePlayer player) {
@@ -261,7 +256,7 @@ public class ResidencePlayer {
             updated = true;
 
         this.uuid = player.getUniqueId();
-        this.userName = player.getName();
+        setName(player.getName());
         return this;
     }
 
@@ -289,7 +284,7 @@ public class ResidencePlayer {
             return;
         }
 
-        this.userName = ResidencePlayer.getName(this.getUniqueId());
+        setName(ResidencePlayer.getName(this.getUniqueId()));
     }
 
     public synchronized void addResidence(ClaimedResidence residence) {
@@ -345,6 +340,12 @@ public class ResidencePlayer {
         if (userName == null)
             this.updatePlayer();
         return userName;
+    }
+
+    public void setName(@Nonnull String newName) {
+        if (userName == null || !newName.equals(userName))
+            Residence.getInstance().getPlayerManager().updateUserName(userName, newName, this);
+        this.userName = newName;
     }
 
     public UUID getUniqueId() {
@@ -479,6 +480,10 @@ public class ResidencePlayer {
 
     public static @Nullable UUID getUUID(String name) {
         return Residence.getInstance().getPlayerManager().getUUID(name);
+    }
+
+    public static @Nullable Player getOnlinePlayer(UUID uuid) {
+        return Bukkit.getPlayer(uuid);
     }
 
     public Map<String, Object> serialize() {

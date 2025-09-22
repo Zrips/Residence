@@ -1,6 +1,7 @@
 package com.bekvon.bukkit.residence.commands;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.chat.ChatChannel;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
@@ -25,7 +27,10 @@ public class rc implements cmd {
         if (!(sender instanceof Player))
             return true;
         Player player = (Player) sender;
+
         String pname = player.getName();
+        UUID uuid = player.getUniqueId();
+
         if (!plugin.getConfigManager().chatEnabled()) {
             lm.Residence_ChatDisabled.sendMessage(sender);
             return false;
@@ -34,18 +39,18 @@ public class rc implements cmd {
         if (args.length == 0) {
             ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
             if (res == null) {
-                ChatChannel chat = plugin.getChatManager().getPlayerChannel(pname);
+                ChatChannel chat = plugin.getChatManager().getPlayerChannel(uuid);
                 if (chat != null) {
-                    plugin.getChatManager().removeFromChannel(pname);
+                    plugin.getChatManager().removeFromChannel(uuid);
                     plugin.getPlayerListener().removePlayerResidenceChat(player);
                     return true;
                 }
                 lm.Residence_NotIn.sendMessage(sender);
                 return true;
             }
-            ChatChannel chat = plugin.getChatManager().getPlayerChannel(pname);
+            ChatChannel chat = plugin.getChatManager().getPlayerChannel(uuid);
             if (chat != null && chat.getChannelName().equals(res.getName())) {
-                plugin.getChatManager().removeFromChannel(pname);
+                plugin.getChatManager().removeFromChannel(uuid);
                 plugin.getPlayerListener().removePlayerResidenceChat(player);
                 return true;
             }
@@ -55,11 +60,11 @@ public class rc implements cmd {
             }
 
             plugin.getPlayerListener().tooglePlayerResidenceChat(player, res.getName());
-            plugin.getChatManager().setChannel(pname, res);
+            plugin.getChatManager().setChannel(uuid, res);
             return true;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("l") || args[0].equalsIgnoreCase("leave")) {
-                plugin.getChatManager().removeFromChannel(pname);
+                plugin.getChatManager().removeFromChannel(uuid);
                 plugin.getPlayerListener().removePlayerResidenceChat(player);
                 return true;
             }
@@ -74,13 +79,13 @@ public class rc implements cmd {
                 return false;
             }
             plugin.getPlayerListener().tooglePlayerResidenceChat(player, res.getName());
-            plugin.getChatManager().setChannel(pname, res);
+            plugin.getChatManager().setChannel(uuid, res);
 
             return true;
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("setcolor")) {
 
-                ChatChannel chat = plugin.getChatManager().getPlayerChannel(pname);
+                ChatChannel chat = plugin.getChatManager().getPlayerChannel(uuid);
 
                 if (chat == null) {
                     lm.Chat_JoinFirst.sendMessage(sender);
@@ -122,7 +127,7 @@ public class rc implements cmd {
                 lm.Chat_ChangedColor.sendMessage(sender, color.getName());
                 return true;
             } else if (args[0].equalsIgnoreCase("setprefix")) {
-                ChatChannel chat = plugin.getChatManager().getPlayerChannel(pname);
+                ChatChannel chat = plugin.getChatManager().getPlayerChannel(uuid);
 
                 if (chat == null) {
                     lm.Chat_JoinFirst.sendMessage(sender);
@@ -155,7 +160,7 @@ public class rc implements cmd {
                 lm.Chat_ChangedPrefix.sendMessage(sender, CMIChatColor.translate(prefix));
                 return true;
             } else if (args[0].equalsIgnoreCase("kick")) {
-                ChatChannel chat = plugin.getChatManager().getPlayerChannel(pname);
+                ChatChannel chat = plugin.getChatManager().getPlayerChannel(uuid);
 
                 if (chat == null) {
                     lm.Chat_JoinFirst.sendMessage(sender);
@@ -175,15 +180,18 @@ public class rc implements cmd {
                 if (!ResPerm.chatkick.hasPermission(player))
                     return true;
 
-                String targetName = args[1];
-                if (!chat.hasMember(targetName)) {
+                
+                
+                ResidencePlayer targetPlayer = ResidencePlayer.get(args[1]);
+                
+                if (targetPlayer == null || !chat.hasMember(targetPlayer.getUniqueId())) {
                     lm.Chat_NotInChannel.sendMessage(sender);
                     return false;
                 }
 
-                chat.leave(targetName);
-                plugin.getPlayerListener().removePlayerResidenceChat(targetName);
-                lm.Chat_Kicked.sendMessage(sender, targetName, chat.getChannelName());
+                chat.leave(targetPlayer.getUniqueId());
+                plugin.getPlayerListener().removePlayerResidenceChat(targetPlayer.getUniqueId());
+                lm.Chat_Kicked.sendMessage(sender, targetPlayer.getName(), chat.getChannelName());
                 return true;
             }
         }

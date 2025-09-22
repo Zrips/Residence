@@ -1,4 +1,4 @@
-package com.bekvon.bukkit.residence.allNms;
+package com.bekvon.bukkit.residence.listeners;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
@@ -10,7 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 
-public class v1_10Events implements Listener {
+public class ResidencePlayerListener1_10 implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 
     public void onPlayerFireInteract(EntityDamageEvent event) {

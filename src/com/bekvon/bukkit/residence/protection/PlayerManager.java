@@ -32,7 +32,6 @@ import com.bekvon.bukkit.residence.api.ResidencePlayerInterface;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 
 import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Messages.CMIMessages;
@@ -116,23 +115,63 @@ public class PlayerManager implements ResidencePlayerInterface {
         return pc.getUniqueId();
     }
 
+    public void updateUserName(String from, String to, ResidencePlayer residencePlayer) {
+        ResidencePlayer byName = from == null ? null : playersByName.remove(from.toLowerCase());
+        if (byName != null)
+            playersByName.put(to.toLowerCase(), byName);
+        else
+            playersByName.put(to.toLowerCase(), residencePlayer);
+    }
+
     public void addPlayer(ResidencePlayer resPlayer) {
         if (resPlayer == null)
             return;
-        addPlayer(resPlayer.getName(), resPlayer.getUniqueId(), resPlayer);
-    }
 
-    public void addPlayer(Player player, ResidencePlayer resPlayer) {
-        if (player == null)
-            return;
-        addPlayer(player.getName(), player.getUniqueId(), resPlayer);
+        String name = resPlayer.getName();
+        UUID uuid = resPlayer.getUniqueId();
+
+        // Removing record based on temp UUID
+        if (name != null) {
+            ResidencePlayer byName = playersByName.get(name.toLowerCase());
+            if (byName != null && isTempUUID(byName.getUniqueId())) {
+                ResidencePlayer byTempUUID = playersByUUID.remove(byName.getUniqueId());
+                if (byTempUUID != null) {
+
+                    renameFile(byTempUUID.getUniqueId(), uuid);
+
+                    byTempUUID.setUniqueId(resPlayer.getUniqueId());
+
+                    playersByUUID.put(byTempUUID.getUniqueId(), byTempUUID);
+
+                    if (!byName.equals(byTempUUID)) {
+                        playersByName.remove(name.toLowerCase());
+                        playersByName.put(name.toLowerCase(), byTempUUID);
+                    }
+
+                    byTempUUID.save();
+
+                    return;
+                }
+            }
+        }
+
+        if (name != null) {
+            playersByName.put(name.toLowerCase(), resPlayer);
+        }
+
+        if (uuid != null) {
+            playersByUUID.put(uuid, resPlayer);
+            if (!resPlayer.isSaved())
+                resPlayer.save();
+        }
     }
 
     public void addPlayer(@Nonnull String name, @Nonnull UUID uuid) {
 
         ResidencePlayer rp = getResidencePlayer(uuid);
-        if (rp == null)
-            rp = getResidencePlayer(name);
+
+//        if (rp == null)
+//            rp = getResidencePlayer(name);
 
         if (rp == null && name != null && uuid != null) {
             rp = new ResidencePlayer(name, uuid);
@@ -141,36 +180,12 @@ public class PlayerManager implements ResidencePlayerInterface {
         }
     }
 
-    public void addPlayer(String name, UUID uuid, ResidencePlayer resPlayer) {
-        if (name != null) {
-            playersByName.put(name.toLowerCase(), resPlayer);
-        }
-        if (uuid != null) {
-            playersByUUID.put(uuid, resPlayer);
-            if (!resPlayer.isSaved())
-                resPlayer.save();
-        }
-    }
-
     public ResidencePlayer playerJoin(Player player) {
         return playerJoin((OfflinePlayer) player);
     }
 
     public ResidencePlayer playerJoin(OfflinePlayer player) {
-
         ResidencePlayer resPlayer = playersByUUID.get(player.getUniqueId());
-
-        if (resPlayer == null) {
-            ResidencePlayer byName = playersByName.get(player.getName().toLowerCase());
-            if (byName != null && isTempUUID(byName.getUniqueId())) {
-                resPlayer = playersByUUID.remove(byName.getUniqueId());
-                if (resPlayer != null) {
-                    resPlayer.setUniqueId(player.getUniqueId());
-                    addPlayer(player.getName(), player.getUniqueId(), resPlayer);
-                    resPlayer.save();
-                }
-            }
-        }
 
         if (resPlayer == null) {
             resPlayer = new ResidencePlayer(player);
@@ -355,56 +370,6 @@ public class PlayerManager implements ResidencePlayerInterface {
         return temp;
     }
 
-    @Override
-    @Deprecated
-    public PermissionGroup getGroup(String player) {
-        ResidencePlayer resPlayer = getResidencePlayer(player);
-        if (resPlayer != null) {
-            return resPlayer.getGroup();
-        }
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public int getMaxResidences(String player) {
-        ResidencePlayer resPlayer = getResidencePlayer(player);
-        if (resPlayer != null) {
-            return resPlayer.getMaxRes();
-        }
-        return -1;
-    }
-
-    @Override
-    @Deprecated
-    public int getMaxSubzones(String player) {
-        ResidencePlayer resPlayer = getResidencePlayer(player);
-        if (resPlayer != null) {
-            return resPlayer.getMaxSubzones();
-        }
-        return -1;
-    }
-
-    @Override
-    @Deprecated
-    public int getMaxSubzoneDepth(String player) {
-        ResidencePlayer resPlayer = getResidencePlayer(player);
-        if (resPlayer != null) {
-            return resPlayer.getMaxSubzoneDepth();
-        }
-        return -1;
-    }
-
-    @Override
-    @Deprecated
-    public int getMaxRents(String player) {
-        ResidencePlayer resPlayer = getResidencePlayer(player);
-        if (resPlayer != null) {
-            return resPlayer.getMaxRents();
-        }
-        return -1;
-    }
-
     public ResidencePlayer getResidencePlayer(OfflinePlayer player) {
         if (player == null)
             return null;
@@ -458,33 +423,6 @@ public class PlayerManager implements ResidencePlayerInterface {
         return playersByUUID.get(uuid);
     }
 
-    public ResidencePlayer getResidencePlayer(String name, UUID uuid) {
-
-        if (plugin.getServerUUID().equals(uuid))
-            return null;
-
-        Player p = Bukkit.getPlayer(uuid);
-        if (p != null)
-            return getResidencePlayer(p);
-
-        ResidencePlayer resPlayer = getResidencePlayer(uuid);
-        if (resPlayer != null)
-            return resPlayer;
-
-        if (name != null) {
-            resPlayer = this.playersByName.get(name.toLowerCase());
-            if (resPlayer != null && resPlayer.getUniqueId() == null) {
-                resPlayer.setUniqueId(uuid);
-                addPlayer(name, uuid, resPlayer);
-            }
-        }
-
-        if (resPlayer != null)
-            return resPlayer;
-
-        return playerJoin(name, uuid);
-    }
-
     public void addResidence(Player player, ClaimedResidence residence) {
         addResidence(player.getUniqueId(), residence);
     }
@@ -521,42 +459,6 @@ public class PlayerManager implements ResidencePlayerInterface {
         return;
     }
 
-    @Deprecated
-    public void addResidence(String player, ClaimedResidence residence) {
-        ResidencePlayer resPlayer = getResidencePlayer(player, residence.getOwnerUUID());
-        if (resPlayer != null) {
-            if (resPlayer.getUniqueId() == null) {
-                Bukkit.getConsoleSender().sendMessage(" <--------------------- " + resPlayer.getUniqueId() + "  " + residence.getOwnerUUID());
-            }
-            resPlayer.addResidence(residence);
-        }
-
-        // Adding trusted residences
-        try {
-            for (Entry<UUID, Map<String, Boolean>> one : residence.getPermissions().getPlayerFlags().entrySet()) {
-                if (!residence.isTrusted(one.getKey()))
-                    continue;
-                ResidencePlayer rplayer = getResidencePlayer(one.getKey());
-                if (rplayer == null)
-                    continue;
-                rplayer.addTrustedResidence(residence);
-            }
-
-            // Deprecated
-            for (Entry<String, Map<String, Boolean>> one : residence.getPermissions().getPlayerFlagsByName().entrySet()) {
-                String name = one.getKey();
-                if (!residence.isTrusted(name))
-                    continue;
-                ResidencePlayer rplayer = getResidencePlayer(one.getKey());
-                if (rplayer == null)
-                    continue;
-                rplayer.addTrustedResidence(residence);
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
-
     public void removeResFromPlayer(ClaimedResidence residence) {
         if (residence == null)
             return;
@@ -575,15 +477,6 @@ public class PlayerManager implements ResidencePlayerInterface {
         ResidencePlayer resPlayer = getResidencePlayer(uuid);
         if (resPlayer != null)
             resPlayer.removeResidence(residence);
-    }
-
-    @Deprecated
-    /** @deprecated use {@link #removeResFromPlayer(UUID, ClaimedResidence)} */
-    public void removeResFromPlayer(String player, ClaimedResidence residence) {
-        ResidencePlayer resPlayer = this.getResidencePlayer(player);
-        if (resPlayer != null) {
-            resPlayer.removeResidence(residence);
-        }
     }
 
     private static CMITask saveTask = null;
@@ -733,6 +626,28 @@ public class PlayerManager implements ResidencePlayerInterface {
         }
 
         CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " Preloaded " + i + " player cached data");
+    }
+
+    private static void renameFile(UUID from, UUID to) {
+
+        CMIScheduler.runTaskAsynchronously(Residence.getInstance(), () -> {
+            if (!isTempUUID(from)) {
+                return;
+            }
+
+            File folder = new File(Residence.getInstance().getDataFolder(), "Save" + File.separator + folderName);
+            if (!folder.isDirectory())
+                folder.mkdir();
+
+            File fromFile = new File(folder, from.toString() + ".yml");
+            if (!fromFile.isFile()) {
+                return;
+            }
+
+            File toFile = new File(folder, to.toString() + ".yml");
+
+            fromFile.renameTo(toFile);
+        });
     }
 
     private static Map<String, Object> sectionToMap(ConfigurationSection section) {

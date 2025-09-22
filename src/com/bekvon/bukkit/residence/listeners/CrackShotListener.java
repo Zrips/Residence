@@ -1,4 +1,4 @@
-package com.bekvon.bukkit.residence.utils;
+package com.bekvon.bukkit.residence.listeners;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
@@ -14,15 +14,15 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.listeners.ResidenceEntityListener;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
+import com.bekvon.bukkit.residence.utils.Utils;
 import com.shampaggon.crackshot.events.WeaponDamageEntityEvent;
 
-public class CrackShot implements Listener {
+public class CrackShotListener implements Listener {
     private Residence plugin;
 
-    public CrackShot(Residence plugin) {
+    public CrackShotListener(Residence plugin) {
         this.plugin = plugin;
     }
 
@@ -120,8 +120,8 @@ public class CrackShot implements Listener {
         if (damager == null)
             return;
 
-        srcarea = plugin.getResidenceManager().getByLoc(damager.getLocation());
-
+        srcarea = ClaimedResidence.getByLoc(damager.getLocation());
+ 
         boolean srcpvp = true;
         if (srcarea != null) {
             srcpvp = srcarea.getPermissions().has(Flags.pvp, true);

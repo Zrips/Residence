@@ -56,9 +56,9 @@ public class ShopSignUtil {
     }
 
     public boolean exist(Board board) {
-        List<Location> loc2 = board.GetLocations();
+        List<Location> loc2 = board.getLocations();
         for (Board one : allBoards) {
-            List<Location> loc1 = one.GetLocations();
+            List<Location> loc1 = one.getLocations();
             for (Location oneL : loc1) {
                 if (!loc2.contains(oneL))
                     continue;
@@ -92,7 +92,7 @@ public class ShopSignUtil {
 
         for (String category : categoriesList) {
             List<String> List = ConfCategory.getStringList(category);
-            List<ShopVote> VoteList = new ArrayList<ShopVote>();
+            List<ShopVote> voteList = new ArrayList<ShopVote>();
             for (String oneEntry : List) {
                 if (!oneEntry.contains("%"))
                     continue;
@@ -106,6 +106,11 @@ public class ShopSignUtil {
                     } catch (Exception e) {
                     }
                     name = name.split(":")[0];
+                } else if (name.length() == 36) {
+                    try {
+                        uuid = UUID.fromString(name);
+                    } catch (Exception e) {
+                    }
                 }
 
                 int vote = -1;
@@ -133,8 +138,7 @@ public class ShopSignUtil {
                         time = System.currentTimeMillis();
                     }
 
-                VoteList.add(new ShopVote(name, uuid, vote, time));
-
+                voteList.add(new ShopVote(uuid, vote, time));
             }
 
             ClaimedResidence res = plugin.getResidenceManager().getByName(category.replace("_", "."));
@@ -142,7 +146,7 @@ public class ShopSignUtil {
             if (res == null)
                 continue;
             res.clearShopVotes();
-            res.addShopVote(VoteList);
+            res.addShopVote(voteList);
         }
         return;
     }
@@ -346,8 +350,8 @@ public class ShopSignUtil {
         for (Board one : getAllBoards()) {
             cat++;
             String path = "ShopSigns." + cat;
-            writer.set(path + ".StartPlace", one.GetStartPlace());
-            writer.set(path + ".World", one.GetWorld());
+            writer.set(path + ".StartPlace", one.getStartPlace());
+            writer.set(path + ".World", one.getWorld());
             writer.set(path + ".TX", one.getTopLoc().getBlockX());
             writer.set(path + ".TY", one.getTopLoc().getBlockY());
             writer.set(path + ".TZ", one.getTopLoc().getBlockZ());
@@ -372,11 +376,11 @@ public class ShopSignUtil {
     public boolean boardUpdate() {
         for (Board board : getAllBoards()) {
             board.clearSignLoc();
-            List<Location> SignsLocation = board.GetLocations();
+            List<Location> SignsLocation = board.getLocations();
 
             ArrayList<String> ShopNames = new ArrayList<String>(getSortedShopList().keySet());
 
-            int Start = board.GetStartPlace();
+            int Start = board.getStartPlace();
             for (Location OneSignLoc : SignsLocation) {
 
                 Block block = OneSignLoc.getBlock();
@@ -417,7 +421,7 @@ public class ShopSignUtil {
                 sign.setLine(2, lm.Shop_SignLines_3.getMessage(res.getOwner()));
                 sign.setLine(3, votestat);
                 sign.update();
-                board.addSignLoc(res.getName(), sign.getLocation());
+                board.addSignLoc(res, sign.getLocation());
 
                 Start++;
             }

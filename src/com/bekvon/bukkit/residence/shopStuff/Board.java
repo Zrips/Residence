@@ -7,116 +7,134 @@ import java.util.Map.Entry;
 
 import org.bukkit.Location;
 
+import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+
 public class Board {
 
     private Location TopLoc = null;
     private Location BottomLoc = null;
 
-    int StartPlace = 0;
+    int startPlace = 0;
 
     List<Location> Locations = new ArrayList<Location>();
-    HashMap<String, Location> SignLocations = new HashMap<String, Location>();
+    HashMap<ClaimedResidence, Location> signLocations = new HashMap<ClaimedResidence, Location>();
 
     public void clearSignLoc() {
-	SignLocations.clear();
+        signLocations.clear();
     }
 
+    @Deprecated
     public void addSignLoc(String resName, Location loc) {
-	SignLocations.put(resName, loc);
+        ClaimedResidence res = ClaimedResidence.getByName(resName);
+        if (res == null)
+            return;
+        addSignLoc(res, loc);
     }
 
-    public HashMap<String, Location> getSignLocations() {
-	return SignLocations;
+    public void addSignLoc(ClaimedResidence res, Location loc) {
+        signLocations.put(res, loc);
+    }
+
+    public HashMap<ClaimedResidence, Location> getSignLocations() {
+        return signLocations;
     }
 
     public Location getSignLocByName(String resName) {
-	return SignLocations.get(resName);
+        ClaimedResidence res = ClaimedResidence.getByName(resName);
+        if (res == null)
+            return null;
+        return signLocations.get(res);
     }
 
     public String getResNameByLoc(Location location) {
-	for (Entry<String, Location> One : SignLocations.entrySet()) {
-	    Location loc = One.getValue();
-	    if (!loc.getWorld().getName().equalsIgnoreCase(location.getWorld().getName()))
-		continue;
-	    if (loc.getBlockX() != location.getBlockX())
-		continue;
-	    if (loc.getBlockY() != location.getBlockY())
-		continue;
-	    if (loc.getBlockZ() != location.getBlockZ())
-		continue;
-	    return One.getKey();
-	}
-	return null;
+        ClaimedResidence res = getResByLoc(location);
+        return res == null ? null : res.getName();
     }
 
-    public List<Location> GetLocations() {
-	Locations.clear();
+    public ClaimedResidence getResByLoc(Location location) {
+        for (Entry<ClaimedResidence, Location> one : signLocations.entrySet()) {
+            Location loc = one.getValue();
+            if (!loc.getWorld().getName().equalsIgnoreCase(location.getWorld().getName()))
+                continue;
+            if (loc.getBlockX() != location.getBlockX())
+                continue;
+            if (loc.getBlockY() != location.getBlockY())
+                continue;
+            if (loc.getBlockZ() != location.getBlockZ())
+                continue;
+            return one.getKey();
+        }
+        return null;
+    }
 
-	if (TopLoc == null || BottomLoc == null)
-	    return null;
+    public List<Location> getLocations() {
+        Locations.clear();
 
-	if (TopLoc.getWorld() == null)
-	    return null;
+        if (TopLoc == null || BottomLoc == null)
+            return null;
 
-	int xLength = TopLoc.getBlockX() - BottomLoc.getBlockX();
-	int yLength = TopLoc.getBlockY() - BottomLoc.getBlockY();
-	int zLength = TopLoc.getBlockZ() - BottomLoc.getBlockZ();
+        if (TopLoc.getWorld() == null)
+            return null;
 
-	if (xLength < 0)
-	    xLength = xLength * -1;
-	if (zLength < 0)
-	    zLength = zLength * -1;
+        int xLength = TopLoc.getBlockX() - BottomLoc.getBlockX();
+        int yLength = TopLoc.getBlockY() - BottomLoc.getBlockY();
+        int zLength = TopLoc.getBlockZ() - BottomLoc.getBlockZ();
 
-	for (int y = 0; y <= yLength; y++) {
-	    for (int x = 0; x <= xLength; x++) {
-		for (int z = 0; z <= zLength; z++) {
+        if (xLength < 0)
+            xLength = xLength * -1;
+        if (zLength < 0)
+            zLength = zLength * -1;
 
-		    int tempx = 0;
-		    int tempz = 0;
+        for (int y = 0; y <= yLength; y++) {
+            for (int x = 0; x <= xLength; x++) {
+                for (int z = 0; z <= zLength; z++) {
 
-		    if (TopLoc.getBlockX() > BottomLoc.getBlockX())
-			tempx = TopLoc.getBlockX() - x;
-		    else
-			tempx = TopLoc.getBlockX() + x;
+                    int tempx = 0;
+                    int tempz = 0;
 
-		    if (TopLoc.getBlockZ() > BottomLoc.getBlockZ())
-			tempz = TopLoc.getBlockZ() - z;
-		    else
-			tempz = TopLoc.getBlockZ() + z;
+                    if (TopLoc.getBlockX() > BottomLoc.getBlockX())
+                        tempx = TopLoc.getBlockX() - x;
+                    else
+                        tempx = TopLoc.getBlockX() + x;
 
-		    Locations.add(new Location(TopLoc.getWorld(), tempx, TopLoc.getBlockY() - y, tempz));
-		}
-	    }
-	}
+                    if (TopLoc.getBlockZ() > BottomLoc.getBlockZ())
+                        tempz = TopLoc.getBlockZ() - z;
+                    else
+                        tempz = TopLoc.getBlockZ() + z;
 
-	return this.Locations;
+                    Locations.add(new Location(TopLoc.getWorld(), tempx, TopLoc.getBlockY() - y, tempz));
+                }
+            }
+        }
+
+        return this.Locations;
     }
 
     public void setStartPlace(int StartPlace) {
-	this.StartPlace = StartPlace;
+        this.startPlace = StartPlace;
     }
 
-    public int GetStartPlace() {
-	return this.StartPlace == 0 ? 0 : (StartPlace - 1);
+    public int getStartPlace() {
+        return this.startPlace == 0 ? 0 : (startPlace - 1);
     }
 
-    public String GetWorld() {
-	return this.TopLoc.getWorld().getName();
+    public String getWorld() {
+        return this.TopLoc.getWorld().getName();
     }
 
     public Location getTopLoc() {
-	return TopLoc;
+        return TopLoc;
     }
 
     public void setTopLoc(Location topLoc) {
-	TopLoc = topLoc;
+        TopLoc = topLoc;
     }
 
     public Location getBottomLoc() {
-	return BottomLoc;
+        return BottomLoc;
     }
 
     public void setBottomLoc(Location bottomLoc) {
-	BottomLoc = bottomLoc;
+        BottomLoc = bottomLoc;
     }
 }

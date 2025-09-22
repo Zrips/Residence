@@ -1,4 +1,4 @@
-package com.bekvon.bukkit.residence.allNms;
+package com.bekvon.bukkit.residence.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.utils.Utils;
 
-public class v1_8Events implements Listener {
+public class ResidencePlayerListener1_08 implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractAtArmoStand(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
