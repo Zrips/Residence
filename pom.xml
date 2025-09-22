@@ -1,0 +1,298 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>Residence</groupId>
+  <artifactId>Residence</artifactId>
+  <version>5.2.0.0</version>
+  <name>Residence</name>
+  
+  
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	
+
+	<dependencies>
+		<dependency>
+		    <groupId>org.yaml</groupId>
+		    <artifactId>snakeyaml</artifactId>
+		    <version>2.5</version>
+		</dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.21.8-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>authlib</artifactId>
+            <version>1.5.21</version>
+            <scope>provided</scope>
+        </dependency>
+		<!-- LWCX -->
+        <dependency>
+		    <groupId>com.griefcraft.lwc</groupId>
+		    <artifactId>LWCX</artifactId>
+		    <version>2.2.8</version>
+		    <scope>provided</scope>
+		</dependency>
+		<!-- LuckPerms -->
+	    <dependency>
+	        <groupId>net.luckperms</groupId>
+	        <artifactId>api</artifactId>
+	        <version>5.4</version>
+	        <scope>provided</scope>
+	    </dependency>
+		<!-- Utilities -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.0.0</version>
+        </dependency>
+		<!-- DynMap -->
+		<dependency>
+		    <groupId>org.dynmap</groupId>
+		    <artifactId>dynmap-api</artifactId>
+		    <version>1.9</version>
+		</dependency>
+		<!-- CMI -->
+		<dependency>
+			<groupId>com.github.Zrips</groupId>
+			<artifactId>CMI-API</artifactId>
+			<version>9.7.14.3</version>
+			<scope>provided</scope> 
+		</dependency>
+		<dependency>
+			<groupId>com.github.Zrips</groupId>
+			<artifactId>CMILib</artifactId>
+			<version>1.5.6.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>com.github.Slimefun</groupId>
+		    <artifactId>Slimefun4</artifactId>
+		    <version>5374034</version>
+		    <scope>provided</scope>
+		</dependency>		
+		<!-- Pl3xMap -->
+		<dependency>
+		  <groupId>maven.modrinth</groupId>
+		  <artifactId>pl3xmap</artifactId>
+		  <version>1.21.8-534</version>
+		  <scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>net.essentialsx</groupId>
+		    <artifactId>EssentialsX</artifactId>
+		    <version>2.21.2</version>
+		    <scope>provided</scope>
+		</dependency>
+		<!-- PlaceholderAPI -->
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.11.6</version>
+            <scope>provided</scope>
+        </dependency>
+		<!-- CrackShot -->
+		<dependency>
+			<groupId>com.shampaggon</groupId>
+			<artifactId>CrackShot</artifactId>
+			<version>0.98.13</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/CrackShot0.98.13.jar</systemPath>
+		</dependency>
+		<!-- Vault -->
+		<dependency>
+			<groupId>com.github.MilkBowl</groupId>
+			<artifactId>VaultAPI</artifactId>
+			<version>1.7</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+				<!-- WorldGuard new version -->
+		<dependency>
+			<groupId>com.sk89q.worldguard</groupId>
+			<artifactId>worldguard-bukkit</artifactId>
+			<version>7.0.12</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>bukkit</artifactId>
+					<groupId>org.bukkit</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>bukkit-classloader-check</artifactId>
+					<groupId>org.sk89q.bukkit</groupId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sk89q</groupId>
+					<artifactId>commandbook</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bstats</groupId>
+					<artifactId>bstats-bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.papermc</groupId>
+					<artifactId>paperlib</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- WorldEdit -->
+		<dependency>
+			<groupId>com.sk89q.worldedit</groupId>
+			<artifactId>worldedit-bukkit</artifactId>
+			<version>7.3.10</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>bukkit-classloader-check</artifactId>
+					<groupId>org.sk89q.bukkit</groupId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bstats</groupId>
+					<artifactId>bstats-bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.papermc</groupId>
+					<artifactId>paperlib</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>
+						com.sk89q.worldedit.worldedit-libs
+					</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.java.truevfs</groupId>
+					<artifactId>
+						truevfs-profile-default_2.13
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-slf4j-impl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Kingdoms -->
+		<dependency>
+		    <groupId>com.github.cryptomorin</groupId>
+		    <artifactId>kingdoms</artifactId>
+		    <version>1.17.18.1-BETA</version>
+		    <scope>provided</scope>
+		</dependency>
+		<!-- BigDoors -->
+		<dependency>
+		    <groupId>nl.pim16aap2.BigDoors</groupId>
+		    <artifactId>core</artifactId>
+		    <version>0.1.8.50-ALPHA</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>
+		    <version>2.11.0</version>
+		    <scope>provided</scope>
+		</dependency>
+    </dependencies>
+    
+	<repositories>
+		<!-- LWCX -->
+		<repository>
+			<id>LWCX</id>
+			<url>https://repo.loohpjames.com/repository/</url>
+		</repository>
+		<!-- BigDoors -->
+		<repository>
+			<id>BigDoors</id>
+			<url>https://repo.codemc.io/repository/maven-public/</url>
+		</repository>
+		<!-- Kingdoms -->
+		<repository>
+			<id>Kingdoms</id>
+			<url>https://mvnrepository.com/artifact/com.github.cryptomorin/kingdoms/</url>
+		</repository>
+		<!-- DynMap -->
+		<repository>
+			<id>DynMap</id>
+			<url>https://maven.elmakers.com/repository/</url>
+		</repository>
+		<!-- WorldGuard & WorldEdit -->
+		<repository>
+			<id>sk89q-repo</id>
+			<url>https://maven.enginehub.org/repo/</url>
+		</repository>
+		<!-- Pl3xMap -->
+		<repository>
+			<id>modrinth-repo</id>
+			<url>https://api.modrinth.com/maven/</url>
+		</repository>
+		<!-- EssentialsX -->
+		<repository>
+			<id>Essentials-repo</id>
+			<url>https://repo.essentialsx.net/releases/</url>
+		</repository>
+		<repository>
+			<id>papermc</id>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
+		</repository>
+		<repository>
+			<id>minecraft-repo</id>
+			<url>https://libraries.minecraft.net/</url>
+		</repository>
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
+		<!-- PlaceholderAPI -->
+		<repository>
+			<id>placeholderapi</id>
+			<url>
+				https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+		</repository>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+		
+	</repositories>
+	
+	<build>
+		<defaultGoal>clean package</defaultGoal>
+		<finalName>Residence${project.version}</finalName>
+		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+		<resources>
+			<resource>
+				<targetPath>.</targetPath>
+				<directory>${basedir}/src/main/resources/</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+			<!-- Make a Jar -->
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
