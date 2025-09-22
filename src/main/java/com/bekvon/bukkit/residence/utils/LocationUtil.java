@@ -435,9 +435,6 @@ public class LocationUtil {
                             .getChunkAt(chunkX, chunkZ)
                             .getChunkSnapshot(true, biomeData, false)));
 
-                        if (Version.isCurrentEqualOrHigher(Version.v1_13_R1))
-                            t = t.orTimeout(10, TimeUnit.SECONDS);
-
                         t = t.exceptionally(ex -> {
                             CMIMessages.consoleMessage("Could not get chunk snapshot for " + world + " " + (chunkX * 16) + ":" + (chunkZ * 16));
                             ex.printStackTrace();
@@ -468,9 +465,6 @@ public class LocationUtil {
             try {
                 CompletableFuture<Void> t = CMIScheduler.runAtLocation(Residence.getInstance(), new Location(world, chunkX * 16, 0, chunkZ * 16), () -> cmiChunkSnapshot.setSnapshot(chunk.getChunkSnapshot(
                     true, biomeData, false)));
-
-                if (Version.isCurrentEqualOrHigher(Version.v1_13_R1))
-                    t = t.orTimeout(10, TimeUnit.SECONDS);
 
                 t = t.exceptionally(ex -> {
                     CMIMessages.consoleMessage("Unable to get chunk snapshot for " + world + " " + (chunkX * 16) + ":" + (chunkZ * 16));

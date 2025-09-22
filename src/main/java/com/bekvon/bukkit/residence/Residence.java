@@ -38,8 +38,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.DynmapAPI;
-import org.kingdoms.main.Kingdoms;
-import org.kingdoms.manager.game.GameManagement;
 
 import com.bekvon.bukkit.residence.Placeholders.Placeholder;
 import com.bekvon.bukkit.residence.Placeholders.PlaceholderAPIHook;
@@ -907,20 +905,21 @@ public class Residence extends JavaPlugin {
         }
     }
 
-    private GameManagement kingdomsmanager = null;
+    private boolean kingdomsPresent = false;
 
     private void setKingdoms() {
         if (Bukkit.getPluginManager().getPlugin("Kingdoms") != null) {
             try {
-                kingdomsmanager = Kingdoms.getManagers();
+                Class.forName("org.kingdoms.constants.land.location.SimpleChunkLocation");
+                kingdomsPresent = true;
             } catch (Throwable e) {
                 this.consoleMessage("Failed to recognize Kingdoms plugin. Compatability disabled");
             }
         }
     }
 
-    public GameManagement getKingdomsManager() {
-        return kingdomsmanager;
+    public boolean isKingdomsPresent() {
+        return kingdomsPresent;
     }
 
     private void setWorldGuard() {

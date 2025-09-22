@@ -6,8 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.kingdoms.constants.land.Land;
-import org.kingdoms.constants.land.SimpleChunkLocation;
-import org.kingdoms.manager.game.GameManagement;
+import org.kingdoms.constants.land.location.SimpleChunkLocation;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Visualizer;
@@ -23,7 +22,7 @@ public class KingdomsUtil {
 
     private Land getRegion(CuboidArea area) {
 
-        if (plugin.getKingdomsManager() == null)
+        if (!plugin.isKingdomsPresent())
             return null;
 
         if (area == null)
@@ -37,9 +36,10 @@ public class KingdomsUtil {
         for (int x = loc1.getX(); x <= loc2.getX(); x++) {
             for (int z = loc1.getZ(); z <= loc2.getZ(); z++) {
                 Chunk tchunk = world.getChunkAt(x, z);
-                SimpleChunkLocation sChunk = new SimpleChunkLocation(tchunk);
-                Land land = GameManagement.getLandManager().getOrLoadLand(sChunk);
-                if (land != null && land.getOwner() != null)
+
+                SimpleChunkLocation sChunk = SimpleChunkLocation.of(tchunk);
+                Land land = sChunk.getLand();
+                if (land != null && land.getClaimedBy() != null)
                     return land;
             }
         }
@@ -49,16 +49,16 @@ public class KingdomsUtil {
 
     public boolean isSelectionInArea(Player player) {
 
-        if (plugin.getKingdomsManager() == null)
+        if (!plugin.isKingdomsPresent())
             return false;
 
         Land land = getRegion(plugin.getSelectionManager().getSelectionCuboid(player));
         if (land == null)
             return false;
 
-        lm.Select_KingdomsOverlap.sendMessage(player, land.getOwner());
+        lm.Select_KingdomsOverlap.sendMessage(player, land.getKingdom().getName());
 
-        SimpleChunkLocation sl = land.getLoc();
+        SimpleChunkLocation sl = land.getLocation();
 
         World world = Bukkit.getWorld(sl.getWorld());
 
