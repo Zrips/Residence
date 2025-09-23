@@ -94,7 +94,7 @@ public enum Flags {
     nomobs(CMIMaterial.BARRIER, FlagMode.Residence, "Prevents monsters from entering residence. Requires AutoMobRemoval to be enabled", true),
     note(CMIMaterial.NOTE_BLOCK, FlagMode.Both, "Allows or denys players to use note blocks", true),
     nodurability(CMIMaterial.ANVIL, FlagMode.Residence, "Prevents item durability loss", false),
-    overridepvp(CMIMaterial.IRON_SWORD, FlagMode.Residence, "Overrides any plugin pvp protection", false),
+//    overridepvp(CMIMaterial.IRON_SWORD, FlagMode.Residence, "Overrides any plugin pvp protection", false),
     pressure(CMIMaterial.LIGHT_WEIGHTED_PRESSURE_PLATE, FlagMode.Both, "Allows or denys players to use pressure plates", true),
     piston(CMIMaterial.PISTON, FlagMode.Residence, "Allow or deny pistons from pushing or pulling blocks in the residence", true),
     pistonprotection(CMIMaterial.STICKY_PISTON, FlagMode.Residence, "Enables or disabled piston block move in or out of residence", true),

@@ -19,6 +19,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.Locale.LC;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.RawMessages.RawMessageCommand;
 
@@ -30,10 +31,10 @@ public class info implements cmd {
 
         if (args.length == 0 && sender instanceof Player) {
             Player player = (Player) sender;
+
             ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
 
             Set<ClaimedResidence> nearby = new HashSet<ClaimedResidence>();
-
             Location loc = player.getLocation();
             for (int x = -9; x <= 9; x = x + 3) {
                 for (int z = -9; z <= 9; z = z + 3) {
@@ -42,11 +43,12 @@ public class info implements cmd {
                             continue;
                         Location l = loc.clone().add(x, y, z);
                         ClaimedResidence nr = plugin.getResidenceManager().getByLoc(l);
-                        if (nr != null && (nr.getPermissions().has(Flags.hidden, FlagCombo.FalseOrNone) || resadmin))
+                        if (nr != null && (resadmin || nr.getPermissions().has(Flags.hidden, FlagCombo.FalseOrNone)))
                             nearby.add(nr);
                     }
                 }
             }
+
             nearby.remove(res);
 
             if (res != null) {

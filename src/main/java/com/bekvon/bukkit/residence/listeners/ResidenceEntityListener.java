@@ -77,6 +77,7 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceEntityListener implements Listener {
@@ -1563,13 +1564,6 @@ public class ResidenceEntityListener implements Listener {
         boolean tamedAnimal = isTamed(victim);
         ClaimedResidence area = Residence.getInstance().getResidenceManager().getByLoc(victim.getLocation());
 
-        if (area != null && victim instanceof Player && damager instanceof Player) {
-            if (area.getPermissions().has(Flags.overridepvp, false) || Residence.getInstance().getConfigManager().isOverridePvp() && area.getPermissions().has(Flags.pvp,
-                FlagCombo.OnlyFalse)) {
-                return false;
-            }
-        }
-
         ClaimedResidence srcarea = null;
         if (damager != null) {
             srcarea = Residence.getInstance().getResidenceManager().getByLoc(damager.getLocation());
@@ -1634,7 +1628,7 @@ public class ResidenceEntityListener implements Listener {
 
             if (!srcpvp && !isSnowBall || !allowSnowBall && isSnowBall) {
                 if (attacker != null && inform)
-                     lm.General_NoPVPZone.sendMessage(attacker);
+                    lm.General_NoPVPZone.sendMessage(attacker);
                 if (isOnFire)
                     victim.setFireTicks(0);
                 return false;
@@ -1646,16 +1640,16 @@ public class ResidenceEntityListener implements Listener {
                 if (damager != null)
                     if (!Residence.getInstance().getWorldFlags().getPerms(damager.getWorld().getName()).has(Flags.pvp, FlagCombo.TrueOrNone)) {
                         if (attacker != null && inform)
-                             lm.General_WorldPVPDisabled.sendMessage(attacker);
+                            lm.General_WorldPVPDisabled.sendMessage(attacker);
                         return false;
                     }
 
                 /* Attacking from safe zone */
                 if (attacker != null) {
-                    FlagPermissions aPerm = Residence.getInstance().getPermsByLoc(attacker.getLocation());
+                    FlagPermissions aPerm = FlagPermissions.getPerms(attacker.getLocation());
                     if (!aPerm.has(Flags.pvp, FlagCombo.TrueOrNone)) {
                         if (inform)
-                             lm.General_NoPVPZone.sendMessage(attacker);
+                            lm.General_NoPVPZone.sendMessage(attacker);
                         return false;
                     }
                 }
@@ -1664,7 +1658,7 @@ public class ResidenceEntityListener implements Listener {
                 if (!isSnowBall && !area.getPermissions().has(Flags.pvp, FlagCombo.TrueOrNone) || isSnowBall && !allowSnowBall) {
                     if (attacker != null)
                         if (inform)
-                             lm.General_NoPVPZone.sendMessage(attacker);
+                            lm.General_NoPVPZone.sendMessage(attacker);
                     return false;
                 }
             }
@@ -1704,18 +1698,6 @@ public class ResidenceEntityListener implements Listener {
         if (event instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent attackevent = (EntityDamageByEntityEvent) event;
             Entity damager = attackevent.getDamager();
-
-            if (area != null && ent instanceof Player && damager instanceof Player) {
-                if (area.getPermissions().has(Flags.overridepvp, false) || plugin.getConfigManager().isOverridePvp() && area.getPermissions().has(Flags.pvp,
-                    FlagCombo.OnlyFalse)) {
-                    Player player = (Player) ent;
-                    Damageable damage = player;
-                    damage.damage(event.getDamage());
-                    damage.setVelocity(damager.getLocation().getDirection());
-                    event.setCancelled(true);
-                    return;
-                }
-            }
 
             ClaimedResidence srcarea = null;
             if (damager != null) {

@@ -75,7 +75,7 @@ public class ConfigManager {
     protected List<Material> LwcMatList = new ArrayList<Material>();
     protected boolean UseClean = false;
     protected boolean PvPFlagPrevent;
-    protected boolean OverridePvp;
+
     protected boolean BlockAnyTeleportation;
     protected CMIMaterial infoTool;
     protected int AutoCleanUpDays;
@@ -760,10 +760,6 @@ public class ConfigManager {
             "When this set to true, any teleportation to residence where player don't have tp flag, action will be denyied",
             "This can prevent from teleporting players to residence with 3rd party plugins like esentials /tpa");
         BlockAnyTeleportation = c.get("Global.Optimizations.BlockAnyTeleportation", true);
-
-        c.addComment("Global.Optimizations.OverridePvp", "By setting this to true, regular pvp flag will be acting as overridepvp flag",
-            "Overridepvp flag tries to ignore any pvp protection in that residence by any other plugin");
-        OverridePvp = c.get("Global.Optimizations.OverridePvp", false);
 
         // residence kick location
         c.addComment("Global.Optimizations.KickLocation.Use",
@@ -1849,10 +1845,6 @@ public class ConfigManager {
 
     public boolean isPvPFlagPrevent() {
         return PvPFlagPrevent;
-    }
-
-    public boolean isOverridePvp() {
-        return OverridePvp;
     }
 
     public boolean isBlockAnyTeleportation() {

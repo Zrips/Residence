@@ -6,12 +6,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityKnockbackEvent;
+import org.bukkit.util.Vector;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
+
+import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class ResidencePlayerListener1_21_8 implements Listener {
 
@@ -23,6 +26,8 @@ public class ResidencePlayerListener1_21_8 implements Listener {
 
     @EventHandler
     public void onKnockback(EntityKnockbackEvent event) {
+
+        CMIDebug.d("knock", event.getEntityType(), event.getForce(), event.getCause());
 
         if (!(event.getEntity() instanceof LivingEntity)) {
             return;
@@ -37,7 +42,6 @@ public class ResidencePlayerListener1_21_8 implements Listener {
                 event.setCancelled(true);
             return;
         }
-
         if (ResidenceEntityListener.isMonster(entity)) {
             if (FlagPermissions.has(loc, Flags.mobkilling, FlagCombo.OnlyFalse))
                 event.setCancelled(true);
@@ -45,8 +49,11 @@ public class ResidencePlayerListener1_21_8 implements Listener {
         }
 
         if (entity instanceof Player) {
-            if (FlagPermissions.has(loc, Flags.pvp, FlagCombo.OnlyFalse))
+            if (FlagPermissions.has(loc, Flags.pvp, FlagCombo.OnlyFalse)) {
+                CMIDebug.d("cancel knock on pvp");
                 event.setCancelled(true);
+                event.setFinalKnockback(new Vector(0, 0, 0));
+            }
             return;
         }
     }

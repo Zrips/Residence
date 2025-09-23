@@ -678,12 +678,15 @@ public class FlagPermissions {
     }
 
     public boolean has(Flags flag, boolean def, boolean checkParent) {
-        if (cuboidFlags.containsKey(flag.toString())) {
-            return cuboidFlags.get(flag.toString());
-        }
-        if (checkParent && parent != null) {
+
+        Boolean cubFlag = cuboidFlags.get(flag.toString());
+
+        if (cubFlag != null)
+            return cubFlag;
+
+        if (checkParent && parent != null)
             return parent.has(flag, def);
-        }
+
         return def;
     }
 
