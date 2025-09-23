@@ -16,8 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -99,7 +100,7 @@ public class FlagPermissions {
 
     public static void addFlag(String flag) {
         if (Residence.getInstance() == null) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Can't add flags (" + flag + ") to residence plugin before it was initialized");
+            lm.consoleMessage("Can't add flags (" + flag + ") to residence plugin before it was initialized");
             return;
         }
         flag = flag.toLowerCase();
@@ -123,7 +124,7 @@ public class FlagPermissions {
 
     public static void addPlayerOrGroupOnlyFlag(String flag) {
         if (Residence.getInstance() == null) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Can't add flags (" + flag + ") to residence plugin before it was initialized");
+            lm.consoleMessage("Can't add flags (" + flag + ") to residence plugin before it was initialized");
             return;
         }
         flag = flag.toLowerCase();
@@ -147,7 +148,7 @@ public class FlagPermissions {
 
     public static void addResidenceOnlyFlag(String flag) {
         if (Residence.getInstance() == null) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Can't add flags (" + flag + ") to residence plugin before it was initialized");
+            lm.consoleMessage("Can't add flags (" + flag + ") to residence plugin before it was initialized");
             return;
         }
         flag = flag.toLowerCase();
@@ -1178,7 +1179,7 @@ public class FlagPermissions {
                 String pName = ResidencePlayer.getName(pUUID);
 
                 if (!perms.equals("none")) {
-                    sbuild.append(pName).append(ChatColor.WHITE).append("[").append(perms).append(ChatColor.WHITE).append("] ");
+                    sbuild.append(pName).append(CMIChatColor.WHITE).append("[").append(perms).append(CMIChatColor.WHITE).append("] ");
                 }
             }
         }
@@ -1202,7 +1203,7 @@ public class FlagPermissions {
                 String perms = printPlayerFlags(nextEnt.getValue());
 
                 if (!perms.equals("none")) {
-                    sbuild.append(pName).append(ChatColor.WHITE).append("[").append(perms).append(ChatColor.WHITE).append("] ");
+                    sbuild.append(pName).append(CMIChatColor.WHITE).append("[").append(perms).append(CMIChatColor.WHITE).append("] ");
                 }
             }
         }
@@ -1227,7 +1228,7 @@ public class FlagPermissions {
                     continue;
 
                 if (!perms.equals("none")) {
-                    sbuild.append(pName).append(ChatColor.WHITE).append("[").append(perms).append(ChatColor.WHITE).append("] ");
+                    sbuild.append(pName).append(CMIChatColor.WHITE).append("[").append(perms).append(CMIChatColor.WHITE).append("] ");
                 }
             }
         }
@@ -1246,7 +1247,7 @@ public class FlagPermissions {
                 String perms = printPlayerFlags(nextEnt.getValue());
 
                 if (!perms.equals("none")) {
-                    sbuild.append(pName).append(ChatColor.WHITE).append("[").append(perms).append(ChatColor.WHITE).append("] ");
+                    sbuild.append(pName).append(CMIChatColor.WHITE).append("[").append(perms).append(CMIChatColor.WHITE).append("] ");
                 }
             }
         }
@@ -1558,11 +1559,11 @@ public class FlagPermissions {
                 if (!perms.equals("none")) {
                     sbuild
                         .append(next)
-                        .append(ChatColor.WHITE)
+                        .append(CMIChatColor.WHITE)
                         .append("[")
-                        .append(ChatColor.DARK_AQUA)
+                        .append(CMIChatColor.DARK_AQUA)
                         .append(perms)
-                        .append(ChatColor.WHITE)
+                        .append(CMIChatColor.WHITE)
                         .append("] ");
                 }
             }
@@ -1671,5 +1672,33 @@ public class FlagPermissions {
 
     public boolean isInheritCMDLimits() {
         return inherit;
+    }
+
+    public static boolean has(Location loc, Flags flag, FlagCombo combo) {
+        return getPerms(loc).has(flag, combo);
+    }
+
+    public static boolean has(Location loc, Flags flag, boolean state) {
+        return getPerms(loc).has(flag, state);
+    }
+
+    public static FlagPermissions getPerms(Location loc) {
+        ClaimedResidence res = Residence.getInstance().getResidenceManager().getByLoc(loc);
+        if (res != null)
+            return res.getPermissions();
+        return Residence.getInstance().getWorldFlags().getPerms(loc.getWorld().getName());
+    }
+
+    public static FlagPermissions getPerms(Location loc, Player player) {
+        ClaimedResidence res = Residence.getInstance().getResidenceManager().getByLoc(loc);
+        if (res != null)
+            return res.getPermissions();
+        if (player != null)
+            return Residence.getInstance().getWorldFlags().getPerms(player);
+        return Residence.getInstance().getWorldFlags().getPerms(loc.getWorld().getName());
+    }
+
+    public static FlagPermissions getPerms(World world) {
+        return Residence.getInstance().getWorldFlags().getPerms(world);
     }
 }

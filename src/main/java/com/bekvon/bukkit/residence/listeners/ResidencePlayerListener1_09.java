@@ -17,6 +17,7 @@ import org.bukkit.potion.PotionEffect;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
 import net.Zrips.CMILib.Logs.CMIDebug;
@@ -48,7 +49,7 @@ public class ResidencePlayerListener1_09 implements Listener {
             return;
 
         Entity ent = potion;
-        boolean srcpvp = Residence.getInstance().getPermsByLoc(ent.getLocation()).has(Flags.pvp, FlagCombo.TrueOrNone);
+        boolean srcpvp = FlagPermissions.has(ent.getLocation(), Flags.pvp, FlagCombo.TrueOrNone);
         if (!srcpvp)
             event.setCancelled(true);
     }
@@ -103,13 +104,13 @@ public class ResidencePlayerListener1_09 implements Listener {
             return;
 
         Entity ent = event.getEntity();
-        boolean srcpvp = Residence.getInstance().getPermsByLoc(ent.getLocation()).has(Flags.pvp, true);
+        boolean srcpvp = FlagPermissions.has(ent.getLocation(), Flags.pvp, true);
         Iterator<LivingEntity> it = event.getAffectedEntities().iterator();
         while (it.hasNext()) {
             LivingEntity target = it.next();
             if (!(target instanceof Player))
                 continue;
-            Boolean tgtpvp = Residence.getInstance().getPermsByLoc(target.getLocation()).has(Flags.pvp, true);
+            Boolean tgtpvp = FlagPermissions.has(target.getLocation(), Flags.pvp, true);
             if (!srcpvp || !tgtpvp) {
                 event.getAffectedEntities().remove(target);
                 event.getEntity().remove();

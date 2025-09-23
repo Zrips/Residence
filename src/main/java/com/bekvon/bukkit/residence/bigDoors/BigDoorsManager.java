@@ -3,6 +3,7 @@ package com.bekvon.bukkit.residence.bigDoors;
 import java.lang.reflect.Method;
 
 import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.containers.lm;
 
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
@@ -21,7 +22,7 @@ public class BigDoorsManager {
         task = CMIScheduler.scheduleSyncRepeatingTask(Residence.getInstance(), () -> {
             ++times;
             if (times >= TRIES) {
-                residence.consoleMessage("&cFailed to initialize BigDoors support");
+                lm.consoleMessage("&cFailed to initialize BigDoors support");
                 task.cancel();
             }
 
@@ -42,7 +43,7 @@ public class BigDoorsManager {
                     method.setAccessible(true);
                     method.invoke(manager, new BigDoorsModule());
 
-                    residence.consoleMessage("Enabled compatability with BigDoors plugin");
+                    lm.consoleMessage("Enabled compatability with BigDoors plugin");
                     task.cancel();
                 } catch (Throwable e) {
                     e.printStackTrace();

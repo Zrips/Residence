@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -411,7 +412,6 @@ public enum lm {
 
     InformationPage_Top("&e___/ &a %1 - %2 &e \\___"),
     InformationPage_TopSingle("&e___/ &a %1 &e \\___"),
-    InformationPage_Page("&e-----< &6%1 &e>-----"),
     InformationPage_GeneralList("&2 %1 &6- &e%2"),
     InformationPage_FlagsList("&2 %1 &6- &e%2"),
     InformationPage_SmallSeparator("&6------"),
@@ -622,24 +622,7 @@ public enum lm {
             sender.sendMessage(CMIChatColor.translate(text));
     }
 
-//    public static void msg(Player player, String text) {
-//        if (player != null && !text.isEmpty())
-//            player.sendMessage(CMIChatColor.translate(text));
-//    }
-//
-//    public void msg(CommandSender sender, lm lm, Object... variables) {
-//
-//        if (sender == null)
-//            return;
-//
-//        if (getLM().containsKey(lm.getPath())) {
-//            String msg = getLM().getMessage(lm, variables);
-//            if (msg.length() > 0)
-//                sender.sendMessage(msg);
-//        } else {
-//            String msg = lm.getPath();
-//            if (msg.length() > 0)
-//                sender.sendMessage(lm.getPath());
-//        }
-//    }
+    public static void consoleMessage(String message) {
+        Bukkit.getConsoleSender().sendMessage(CMIChatColor.translate(Residence.getInstance().getPrefix() + " &f" + message));
+    }
 }

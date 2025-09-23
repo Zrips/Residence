@@ -76,27 +76,26 @@ public class market implements cmd {
 
             if (res.isRented()) {
                 if (resadmin || ResAdmin.isResAdmin(player) || ResPerm.market_evict.hasPermission(player)) {
-                    plugin.UnrentConfirm.put(player.getName(), res.getName());
+                    plugin.unrentConfirm.put(player.getUniqueId(), res);
                     lm.Rent_EvictConfirm.sendMessage(sender, res.getName());
                 } else if (plugin.getRentManager().getRentingPlayer(res).equalsIgnoreCase(sender.getName())) {
-                    plugin.UnrentConfirm.put(player.getName(), res.getName());
+                    plugin.unrentConfirm.put(player.getUniqueId(), res);
                     lm.Rent_UnrentConfirm.sendMessage(sender, res.getName());
                 } else
                     plugin.getRentManager().printRentInfo(player, res);
             } else {
-                plugin.UnrentConfirm.put(player.getName(), res.getName());
+                plugin.unrentConfirm.put(player.getUniqueId(), res);
                 lm.Rent_ReleaseConfirm.sendMessage(sender, res.getName());
             }
 
             return true;
 
         case "confirm":
-            if (!plugin.UnrentConfirm.containsKey(player.getName())) {
+            if (!plugin.unrentConfirm.containsKey(player.getUniqueId())) {
                 lm.Invalid_Residence.sendMessage(sender);
                 return false;
             }
-            String area = plugin.UnrentConfirm.remove(player.getName());
-            res = plugin.getResidenceManager().getByName(area);
+            res = plugin.unrentConfirm.remove(player.getUniqueId());
             if (res == null) {
                 lm.Invalid_Residence.sendMessage(sender);
                 return true;
@@ -109,7 +108,7 @@ public class market implements cmd {
                     rPlayer.setMainResidence(null);
                 }
             } else
-                plugin.getRentManager().unrent(player, area, resadmin);
+                plugin.getRentManager().unrent(player, res, resadmin);
             return true;
         case "sign":
             if (args.length != 2) {

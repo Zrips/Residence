@@ -135,10 +135,10 @@ public class PermissionManager {
             Integer ver = CMIVersionChecker.convertVersion(pl.getDescription().getVersion());
             if (ver > 50000) {
                 perms = new LuckPerms5Adapter();
-                Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Found LuckPerms5 Plugin!");
+                lm.consoleMessage("Found LuckPerms5 Plugin!");
                 return;
             }
-            plugin.consoleMessage("&cLuckPerms plugin was found but its outdated");
+            lm.consoleMessage("&cLuckPerms plugin was found but its outdated");
         }
 
         Plugin p = server.getPluginManager().getPlugin("Vault");
@@ -146,13 +146,13 @@ public class PermissionManager {
             ResidenceVaultAdapter vault = new ResidenceVaultAdapter(server);
             if (vault.permissionsOK()) {
                 perms = vault;
-                Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Found Vault using permissions plugin:" + vault.getPermissionsName());
+                lm.consoleMessage("Found Vault using permissions plugin:" + vault.getPermissionsName());
                 return;
             }
-            Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Found Vault, but Vault reported no usable permissions system...");
+            lm.consoleMessage("Found Vault, but Vault reported no usable permissions system...");
         }
 
-        Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Permissions plugin NOT FOUND!");
+        lm.consoleMessage("Permissions plugin NOT FOUND!");
     }
 
     private void readConfig() {
@@ -180,7 +180,7 @@ public class PermissionManager {
                         groups.put(group.toLowerCase(), new PermissionGroup(group.toLowerCase(), nodes.getConfigurationSection(key), globalFlagPerms, i));
                     }
                 } catch (Exception ex) {
-                    Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Error parsing group from config:" + key + " Exception:" + ex);
+                    lm.consoleMessage("Error parsing group from config:" + key + " Exception:" + ex);
                 }
             }
         }
@@ -189,7 +189,7 @@ public class PermissionManager {
             groups.put(defaultGroup, new PermissionGroup(defaultGroup));
         }
 
-        Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Loaded (" + groups.size() + ") groups");
+        lm.consoleMessage("Loaded (" + groups.size() + ") groups");
 
         if (groupsFile.isConfigurationSection("GroupAssignments")) {
             Set<String> keys = groupsFile.getConfigurationSection("GroupAssignments").getKeys(false);

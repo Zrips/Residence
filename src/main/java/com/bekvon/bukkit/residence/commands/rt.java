@@ -90,9 +90,9 @@ public class rt implements cmd {
             return false;
 
         int sec = plugin.getConfigManager().getrtCooldown();
-        if (plugin.getRandomTeleportMap().containsKey(tPlayer.getName()) && !resadmin && !ResPerm.randomtp_cooldownbypass.hasPermission(sender, false)) {
-            if (plugin.getRandomTeleportMap().get(tPlayer.getName()) + (sec * 1000) > System.currentTimeMillis()) {
-                int left = (int) (sec - ((System.currentTimeMillis() - plugin.getRandomTeleportMap().get(tPlayer.getName())) / 1000));
+        if (plugin.getRandomTeleportMap().containsKey(tPlayer.getUniqueId()) && !resadmin && !ResPerm.randomtp_cooldownbypass.hasPermission(sender, false)) {
+            if (plugin.getRandomTeleportMap().get(tPlayer.getUniqueId()) + (sec * 1000) > System.currentTimeMillis()) {
+                int left = (int) (sec - ((System.currentTimeMillis() - plugin.getRandomTeleportMap().get(tPlayer.getUniqueId())) / 1000));
                 lm.RandomTeleport_TpLimit.sendMessage(tPlayer, left);
                 return true;
             }
@@ -120,7 +120,7 @@ public class rt implements cmd {
 
     private static boolean teleport(CommandSender sender, Player player, Location lc, int sec, boolean resadmin) {
 
-        Residence.getInstance().getRandomTeleportMap().put(player.getName(), System.currentTimeMillis());
+        Residence.getInstance().getRandomTeleportMap().put(player.getUniqueId(), System.currentTimeMillis());
 
         if (lc == null) {
             lm.RandomTeleport_IncorrectLocation.sendMessage(sender, sec);

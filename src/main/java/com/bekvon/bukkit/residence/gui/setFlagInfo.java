@@ -170,7 +170,7 @@ public class setFlagInfo {
 
                     Bukkit.dispatchCommand(player, cmdPrefix + " set " + residence.getName() + " " + one.getKey() + " " + command);
                     if (Residence.getInstance().getConfigManager().isConsoleLogsShowFlagChanges())
-                        Residence.getInstance().consoleMessage(player.getName() + " issued server command: /" + cmdPrefix + " set " + residence.getName() + " " + one.getKey() + " " + command);
+                        lm.consoleMessage(player.getName() + " issued server command: /" + cmdPrefix + " set " + residence.getName() + " " + one.getKey() + " " + command);
                     updateLooks();
                 }
 
@@ -212,7 +212,7 @@ public class setFlagInfo {
                     temp.put(one, globalFlags.get(one));
             }
             globalFlags = temp;
- 
+
             Map<String, Boolean> pFlags = residence.getPermissions().getPlayerFlags(targetPlayer);
 
             if (pFlags != null)
@@ -269,7 +269,7 @@ public class setFlagInfo {
 
                     Bukkit.dispatchCommand(player, cmdPrefix + " pset " + residence.getName() + targetPlayerName + " " + one.getKey() + " " + command);
                     if (Residence.getInstance().getConfigManager().isConsoleLogsShowFlagChanges())
-                        Residence.getInstance().consoleMessage(player.getName() + " issued server command: /" + cmdPrefix + " pset " + residence.getName() + targetPlayerName + " " + one
+                        lm.consoleMessage(player.getName() + " issued server command: /" + cmdPrefix + " pset " + residence.getName() + targetPlayerName + " " + one
                             .getKey() + " " + command);
                     updateLooks();
                 }

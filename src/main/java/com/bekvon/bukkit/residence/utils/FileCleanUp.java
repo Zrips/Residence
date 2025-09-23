@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
+import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.LuckPerms5Adapter;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -45,7 +46,7 @@ public class FileCleanUp {
         int interval = plugin.getConfigManager().getResidenceFileCleanDays();
         long time = System.currentTimeMillis();
 
-        Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Starting auto CleanUp (" + playerMapUUID.size() + "/" + resNameList.size() + ")!");
+        lm.consoleMessage("Starting auto CleanUp (" + playerMapUUID.size() + "/" + resNameList.size() + ")!");
 
         int skipped = 0;
         try {
@@ -59,7 +60,7 @@ public class FileCleanUp {
                 if (player == null) {
                     skipped++;
                     if (plugin.getConfigManager().isAutoCleanDetailsOnUnknown())
-                        Bukkit.getConsoleSender().sendMessage("Skipping " + res.getName() + " residence owned by " + res.getOwner() + " (" + res.getOwnerUUID() + ")");
+                        lm.consoleMessage("Skipping " + res.getName() + " residence owned by " + res.getOwner() + " (" + res.getOwnerUUID() + ")");
                     continue;
                 }
 
@@ -95,8 +96,8 @@ public class FileCleanUp {
         } catch (Throwable e) {
             e.printStackTrace();
         }
-        Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Auto CleanUp deleted " + i + " residences!");
+        lm.consoleMessage("Auto CleanUp deleted " + i + " residences!");
         if (skipped > 0)
-            Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Skipped " + skipped + " residences due to inability to determine residence owner.");
+            lm.consoleMessage("Skipped " + skipped + " residences due to inability to determine residence owner.");
     }
 }

@@ -1075,12 +1075,14 @@ public class ClaimedResidence {
         PageInfo pi = new PageInfo(6, subzones.size(), page);
 
         if (!pi.isPageOk()) {
-            lm.Invalid_Page.sendMessage(sender);
+            if (pi.getTotalPages() == 0)
+                LC.info_nothingToShow.sendMessage(sender);
+            else
+                lm.Invalid_Page.sendMessage(sender);
             return;
         }
 
         lm.InformationPage_TopSingle.sendMessage(sender, lm.General_Subzones.getMessage());
-        lm.InformationPage_Page.sendMessage(sender, lm.General_GenericPages.getMessage(String.format("%d", page), pi.getTotalPages(), pi.getTotalEntries()));
         RawMessage rm = new RawMessage();
         for (int i = pi.getStart(); i <= pi.getEnd(); i++) {
             ClaimedResidence res = getSubzones().get(i);
@@ -1471,7 +1473,7 @@ public class ClaimedResidence {
                     root.put("LeaveMessage", leaveMessage);
             }
         } catch (Throwable e) {
-            Bukkit.getConsoleSender().sendMessage(Residence.getInstance().getPrefix() + ChatColor.RED + " Failed to save residence (" + getName() + ")!");
+            lm.consoleMessage("Failed to save residence (" + getName() + ")!");
             e.printStackTrace();
         }
 
@@ -1637,7 +1639,7 @@ public class ClaimedResidence {
         res.perms = ResidencePermissions.load(worldName, res, (Map<String, Object>) root.get("Permissions"));
 
         if (res.perms.getOwnerUUID() == null) {
-            Bukkit.getConsoleSender().sendMessage("Failed to load residence: " + res.getName());
+            lm.consoleMessage("Failed to load residence: " + res.getName());
         }
 //	if (root.containsKey("TownCap")) {
 //	    String townName = (String) root.get("TownCap");

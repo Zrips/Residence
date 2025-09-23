@@ -53,7 +53,7 @@ public class ResidencePlayerListener1_13 implements Listener {
         if (!mat.equals(CMIMaterial.FARMLAND))
             return;
 
-        FlagPermissions perms = plugin.getPermsByLoc(event.getNewState().getLocation());
+        FlagPermissions perms = FlagPermissions.getPerms(event.getNewState().getLocation());
         if (perms.has(Flags.dryup, FlagCombo.OnlyFalse)) {
             Block b = event.getBlock();
             try {
@@ -85,7 +85,7 @@ public class ResidencePlayerListener1_13 implements Listener {
             if (!event.getChangedType().toString().equalsIgnoreCase("FARMLAND"))
                 return;
 
-            FlagPermissions perms = plugin.getPermsByLoc(event.getBlock().getLocation());
+            FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
             if (perms.has(Flags.dryup, FlagCombo.OnlyFalse)) {
                 Block b = event.getBlock();
                 try {

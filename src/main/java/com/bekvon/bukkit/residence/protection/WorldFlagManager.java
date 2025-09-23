@@ -8,14 +8,15 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
+import com.bekvon.bukkit.residence.containers.lm;
 
 public class WorldFlagManager {
     protected Map<String, Map<String, FlagPermissions>> groupperms;
@@ -32,7 +33,7 @@ public class WorldFlagManager {
     }
 
     public FlagPermissions getPerms(Player player) {
-        ResidencePlayer resPlayer = plugin.getPlayerManager().getResidencePlayer(player);
+        ResidencePlayer resPlayer = ResidencePlayer.get(player);
         return this.getPerms(player.getWorld().getName(), resPlayer.getGroup().getGroupName());
     }
 
@@ -54,6 +55,10 @@ public class WorldFlagManager {
             }
         }
         return list;
+    }
+
+    public FlagPermissions getPerms(World world) {
+        return this.getPerms(world.getName());
     }
 
     public FlagPermissions getPerms(String world) {
@@ -109,7 +114,7 @@ public class WorldFlagManager {
             }
 
             if (!groups.isConfigurationSection("Groups")) {
-                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Your groups.yml file is incorrect!");
+                lm.consoleMessage(ChatColor.RED + "Your groups.yml file is incorrect!");
                 return;
             }
 

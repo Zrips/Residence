@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.Zrips.CMILib.FileHandler.ConfigReader;
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
@@ -13,28 +12,34 @@ import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
+import net.Zrips.CMILib.FileHandler.ConfigReader;
+
 public class sublist implements cmd {
 
     @Override
-    @CommandAnnotation(simple = true, priority = 4100)
+    @CommandAnnotation(simple = true, priority = 4100, regVar = { 0, 1, 2 }, consoleVar = { 0, 1, 2 })
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
 
-        if (args.length != 0 && args.length != 1 && args.length != 2)
-            return false;
-
         int page = 0;
-        try {
-            if (args.length > 0) {
-                page = Integer.parseInt(args[args.length - 1]);
-            }
-        } catch (Exception ex) {
+        String residenceName = null;
+        for (String one : args) {
+
+            if (page <= 0)
+                try {
+                    page = Integer.parseInt(one);
+                    continue;
+                } catch (Exception ex) {
+                }
+
+            if (residenceName == null)
+                residenceName = one;
         }
 
         ClaimedResidence res;
-        if (args.length == 0 && sender instanceof Player) {
-            res = plugin.getResidenceManager().getByLoc(((Player) sender).getLocation());
+        if (residenceName == null && sender instanceof Player) {
+            res = plugin.getResidenceManager().getByLoc(sender);
         } else {
-            res = plugin.getResidenceManager().getByName(args[0]);
+            res = plugin.getResidenceManager().getByName(residenceName);
         }
 
         if (page < 1)

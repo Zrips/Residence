@@ -6,6 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+
+import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.cmd;
@@ -37,5 +39,6 @@ public class tpset implements cmd {
         c.get("Description", "Set the teleport location of a Residence");
         c.get("Info", Arrays.asList("&eUsage: &6/res tpset", "This will set the teleport location for a residence to where your standing.",
             "You must be standing in the residence to use this command.", "You must also be the owner or have the +admin flag for the residence."));
+        LocaleManager.addTabCompleteMain(this);
     }
 }

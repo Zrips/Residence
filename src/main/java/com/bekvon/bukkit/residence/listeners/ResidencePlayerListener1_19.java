@@ -49,7 +49,7 @@ public class ResidencePlayerListener1_19 implements Listener {
         if (!horn.getType().equals(Material.GOAT_HORN))
             return;
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(event.getPlayer().getLocation());
+        ClaimedResidence res = ClaimedResidence.getByLoc(event.getPlayer().getLocation());
         if (res == null)
             return;
 
@@ -77,7 +77,7 @@ public class ResidencePlayerListener1_19 implements Listener {
             return;
 
         Location loc = event.getBlock().getLocation();
-        FlagPermissions perms = plugin.getPermsByLoc(loc);
+        FlagPermissions perms = FlagPermissions.getPerms(loc);
         if (!perms.has(Flags.skulk, true)) {
             event.setCancelled(true);
         }

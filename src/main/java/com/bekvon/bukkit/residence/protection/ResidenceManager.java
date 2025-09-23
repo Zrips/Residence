@@ -21,7 +21,6 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
@@ -56,8 +55,6 @@ import com.bekvon.bukkit.residence.utils.GetTime;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.PageInfo;
-import net.Zrips.CMILib.Logs.CMIDebug;
-import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -80,6 +77,12 @@ public class ResidenceManager implements ResidenceInterface {
         if (res != null && res.isOwner(player))
             return true;
         return false;
+    }
+
+    public ClaimedResidence getByLoc(CommandSender sender) {
+        if ((sender instanceof Player))
+            return getByLoc(((Player) sender).getLocation());
+        return null;
     }
 
     public ClaimedResidence getByLoc(Player player) {
@@ -1027,7 +1030,7 @@ public class ResidenceManager implements ResidenceInterface {
                 try {
                     resmap.put(res.getValue().getResidenceName(), res.getValue().save());
                 } catch (Throwable ex) {
-                    Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + ChatColor.RED + " Failed to save residence (" + res.getKey() + ")!");
+                    lm.consoleMessage("Failed to save residence (" + res.getKey() + ")!");
                     Logger.getLogger(ResidenceManager.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -1201,12 +1204,12 @@ public class ResidenceManager implements ResidenceInterface {
             Map<String, Object> reslist = (Map<String, Object>) worldSet.getValue();
 
             if (!plugin.isDisabledWorld(worldName) && !plugin.getConfigManager().CleanerStartupLog)
-                Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " Loading " + worldName + " data into memory...");
+                lm.consoleMessage("Loading " + worldName + " data into memory...");
             if (reslist != null) {
                 try {
                     chunkResidences.put(worldName, multithreadLoadMap(worldName, reslist));
                 } catch (Exception ex) {
-                    Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + ChatColor.RED + "Error in loading save file for world: " + worldName);
+                    lm.consoleMessage("Error in loading save file for world: " + worldName);
                     if (plugin.getConfigManager().stopOnSaveError())
                         throw (ex);
                 }
@@ -1216,7 +1219,7 @@ public class ResidenceManager implements ResidenceInterface {
             String pastTime = pass > 1000 ? String.format("%.2f", (pass / 1000F)) + " sec" : pass + " ms";
 
             if (!plugin.isDisabledWorld(worldName))
-                CMIMessages.consoleMessage(plugin.getPrefix() + "&f Loaded &e" + worldName + "&f data into memory. (&e" + pastTime + "&f) -> " + (reslist == null ? "?" : reslist.size())
+                lm.consoleMessage("Loaded &e" + worldName + "&f data into memory. (&e" + pastTime + "&f) -> " + (reslist == null ? "?" : reslist.size())
                     + " residences");
         }
 
@@ -1305,7 +1308,7 @@ public class ResidenceManager implements ResidenceInterface {
                     List<ChunkRef> chunks = getChunks(residence);
 
                     if (chunks.size() > 1000000)
-                        Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + ChatColor.YELLOW + " Detected extensively big residence area (" + currentEntry.getKey() + ") which covers " + chunks
+                        lm.consoleMessage(ChatColor.YELLOW + "Detected extensively big residence area (" + currentEntry.getKey() + ") which covers " + chunks
                             .size() + " chunks!");
 
                     for (ChunkRef chunk : chunks) {
@@ -1323,8 +1326,7 @@ public class ResidenceManager implements ResidenceInterface {
 
                     residences.put(resName, residence);
                 } catch (Exception ex) {
-                    Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + ChatColor.RED + " Failed to load residence (" + currentEntry.getKey() + ")! Reason:" + ex.getMessage()
-                        + " Error Log:");
+                    lm.consoleMessage(ChatColor.RED + "Failed to load residence (" + currentEntry.getKey() + ")! Reason:" + ex.getMessage() + " Error Log:");
                     Logger.getLogger(ResidenceManager.class.getName()).log(Level.SEVERE, null, ex);
                     if (plugin.getConfigManager().stopOnSaveError()) {
                         throw new RuntimeException(ex);
@@ -1344,8 +1346,6 @@ public class ResidenceManager implements ResidenceInterface {
         int i = 0;
         int y = 0;
         for (Entry<String, Object> res : root.entrySet()) {
-//            if (i == 100 && plugin.getConfigManager().isUUIDConvertion())
-//                Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + " " + worldName + " UUID conversion done: " + y + " of " + root.size());
             if (i >= 100)
                 i = 0;
             i++;
@@ -1391,8 +1391,7 @@ public class ResidenceManager implements ResidenceInterface {
                 residences.put(resName.toLowerCase(), residence);
 
             } catch (Exception ex) {
-                Bukkit.getConsoleSender().sendMessage(plugin.getPrefix() + ChatColor.RED + " Failed to load residence (" + res.getKey() + ")! Reason:" + ex.getMessage()
-                    + " Error Log:");
+                lm.consoleMessage(ChatColor.RED + "Failed to load residence (" + res.getKey() + ")! Reason:" + ex.getMessage() + " Error Log:");
                 Logger.getLogger(ResidenceManager.class.getName()).log(Level.SEVERE, null, ex);
                 if (plugin.getConfigManager().stopOnSaveError()) {
                     throw (ex);

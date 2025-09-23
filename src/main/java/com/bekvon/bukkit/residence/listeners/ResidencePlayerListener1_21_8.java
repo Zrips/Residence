@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityKnockbackEvent;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
@@ -32,19 +33,19 @@ public class ResidencePlayerListener1_21_8 implements Listener {
         Location loc = entity.getLocation();
 
         if (Utils.isAnimal(entity)) {
-            if (plugin.getPermsByLoc(loc).has(Flags.animalkilling, FlagCombo.OnlyFalse))
+            if (FlagPermissions.has(loc, Flags.animalkilling, FlagCombo.OnlyFalse))
                 event.setCancelled(true);
             return;
         }
 
         if (ResidenceEntityListener.isMonster(entity)) {
-            if (plugin.getPermsByLoc(loc).has(Flags.mobkilling, FlagCombo.OnlyFalse))
+            if (FlagPermissions.has(loc, Flags.mobkilling, FlagCombo.OnlyFalse))
                 event.setCancelled(true);
             return;
         }
 
         if (entity instanceof Player) {
-            if (plugin.getPermsByLoc(loc).has(Flags.pvp, FlagCombo.OnlyFalse))
+            if (FlagPermissions.has(loc, Flags.pvp, FlagCombo.OnlyFalse))
                 event.setCancelled(true);
             return;
         }

@@ -61,6 +61,7 @@ import org.bukkit.util.Vector;
 import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.chat.ChatChannel;
+import com.bekvon.bukkit.residence.chat.ChatManager;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
@@ -98,7 +99,6 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -151,7 +151,7 @@ public class ResidencePlayerListener implements Listener {
         if (player.hasMetadata("NPC"))
             return;
 
-        FlagPermissions perms = plugin.getPermsByLoc(player.getLocation());
+        FlagPermissions perms = FlagPermissions.getPerms(player.getLocation());
         if (Flags.jump2.isGlobalyEnabled() && perms.has(Flags.jump2, FlagCombo.OnlyTrue))
             player.setVelocity(player.getVelocity().add(player.getVelocity().multiply(0.3)));
         else if (Flags.jump3.isGlobalyEnabled() && perms.has(Flags.jump3, FlagCombo.OnlyTrue))
@@ -365,8 +365,8 @@ public class ResidencePlayerListener implements Listener {
         if (event.getCaught() == null)
             return;
         if ((Utils.isArmorStandEntity(event.getCaught().getType()) || event.getCaught() instanceof Boat || event.getCaught() instanceof LivingEntity) && !ResAdmin.isResAdmin(player)) {
-            FlagPermissions perm = plugin.getPermsByLoc(event.getCaught().getLocation());
-            ClaimedResidence res = plugin.getResidenceManager().getByLoc(event.getCaught().getLocation());
+            FlagPermissions perm = FlagPermissions.getPerms(event.getCaught().getLocation());
+            ClaimedResidence res = ClaimedResidence.getByLoc(event.getCaught().getLocation());
             if (perm.has(Flags.hook, FlagCombo.OnlyFalse)) {
                 event.setCancelled(true);
                 if (res != null)
@@ -858,7 +858,7 @@ public class ResidencePlayerListener implements Listener {
         UUID uuid = player.getUniqueId();
 
         plugin.getChatManager().removeFromChannel(uuid);
-        plugin.getPlayerListener().removePlayerResidenceChat(uuid);
+        ChatManager.removePlayerResidenceChat(uuid);
         plugin.getAutoSelectionManager().remove(uuid);
 
         playerPersistentData.remove(uuid);
@@ -2895,30 +2895,26 @@ public class ResidencePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    @Deprecated
     public void tooglePlayerResidenceChat(Player player, String residence) {
-        playerPersistentData.get(player).setChatEnabled(false);
-        lm.Chat_ChatChannelChange.sendMessage(player, residence);
+        ChatManager.tooglePlayerResidenceChat(player, residence);
     }
 
     @Deprecated
     public void removePlayerResidenceChat(String pname) {
-        removePlayerResidenceChat(Bukkit.getPlayer(pname));
-    }
-
-    public void removePlayerResidenceChat(Player player) {
-        if (player == null)
-            return;
-        removePlayerResidenceChat(player.getUniqueId());
-    }
-
-    public void removePlayerResidenceChat(UUID uuid) {
-        if (uuid == null)
-            return;
-        playerPersistentData.get(uuid).setChatEnabled(true);
-        lm.Chat_ChatChannelLeave.sendMessage(ResidencePlayer.getOnlinePlayer(uuid));
+        ChatManager.removePlayerResidenceChat(Bukkit.getPlayer(pname));
     }
 
     @Deprecated
+    public void removePlayerResidenceChat(Player player) {
+        ChatManager.removePlayerResidenceChat(player);
+    }
+
+    @Deprecated
+    public void removePlayerResidenceChat(UUID uuid) {
+        ChatManager.removePlayerResidenceChat(uuid);
+    }
+
     public ClaimedResidence getCurrentResidence(UUID uuid) {
         return playerTempData.getCurrentResidence(uuid);
     }

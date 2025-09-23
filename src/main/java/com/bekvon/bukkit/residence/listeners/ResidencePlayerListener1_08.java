@@ -31,7 +31,7 @@ public class ResidencePlayerListener1_08 implements Listener {
         if (!Utils.isArmorStandEntity(ent.getType()))
             return;
 
-        FlagPermissions perms = Residence.getInstance().getPermsByLocForPlayer(ent.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(ent.getLocation(), player);
 
         if (!perms.playerHas(player, Flags.container, perms.playerHas(player, Flags.use, true))) {
             event.setCancelled(true);
@@ -48,10 +48,10 @@ public class ResidencePlayerListener1_08 implements Listener {
             return;
         if (event.isCancelled())
             return;
-        FlagPermissions world = Residence.getInstance().getWorldFlags().getPerms(loc.getWorld().getName());
+        FlagPermissions world = FlagPermissions.getPerms(loc.getWorld());
         List<Block> preserve = new ArrayList<Block>();
         for (Block block : event.blockList()) {
-            FlagPermissions blockperms = Residence.getInstance().getPermsByLoc(block.getLocation());
+            FlagPermissions blockperms = FlagPermissions.getPerms(block.getLocation());
             if (!blockperms.has(Flags.explode, world.has(Flags.explode, true))) {
                 preserve.add(block);
             }

@@ -18,12 +18,14 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.bekvon.bukkit.residence.containers.CommandStatus;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.text.help.HelpEntry;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 
@@ -61,8 +63,7 @@ public class LocaleManager {
         } catch (FileNotFoundException ex) {
         } catch (IOException ex) {
         } catch (InvalidConfigurationException ex) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[Residence] Your locale file for " + language
-                + " is incorect! Use http://yaml-online-parser.appspot.com/ to find issue.");
+            lm.consoleMessage(ChatColor.RED + "[Residence] Your locale file for " + language + " is incorect! Use http://yaml-online-parser.appspot.com/ to find issue.");
             return null;
         }
 
@@ -192,5 +193,67 @@ public class LocaleManager {
 
     public ConfigReader getLocaleConfig() {
         return c;
+    }
+
+    public static HelpEntry helppages;
+
+    public static HelpEntry getHelpPages() {
+        return helppages;
+    }
+
+    public static void parseHelpEntries() {
+
+        File dataFolder = Residence.getInstance().getDataFolder();
+
+        try {
+            File langFile = new File(new File(dataFolder, "Language"), Residence.getInstance().getConfigManager().getLanguage() + ".yml");
+
+            BufferedReader in = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(new FileInputStream(langFile), StandardCharsets.UTF_8));
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+
+            if (langFile.isFile()) {
+                FileConfiguration langconfig = new YamlConfiguration();
+                langconfig.load(in);
+                helppages = HelpEntry.parseHelp(langconfig, "CommandHelp");
+            } else {
+                lm.consoleMessage("Language file does not exist...");
+            }
+            if (in != null)
+                in.close();
+        } catch (Exception ex) {
+            lm.consoleMessage("Failed to load language file: " + Residence.getInstance().getConfigManager().getLanguage() + ".yml setting to default - English");
+
+            File langFile = new File(new File(dataFolder, "Language"), "English.yml");
+
+            BufferedReader in = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(new FileInputStream(langFile), StandardCharsets.UTF_8));
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+
+            try {
+                if (langFile.isFile()) {
+                    FileConfiguration langconfig = new YamlConfiguration();
+                    langconfig.load(in);
+                    helppages = HelpEntry.parseHelp(langconfig, "CommandHelp");
+                } else {
+                    lm.consoleMessage("Language file does not exist...");
+                }
+            } catch (Throwable e) {
+
+            } finally {
+                if (in != null)
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+            }
+        }
     }
 }

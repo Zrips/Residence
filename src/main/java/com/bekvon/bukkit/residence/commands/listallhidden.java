@@ -5,6 +5,8 @@ import java.util.Arrays;
 import org.bukkit.command.CommandSender;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+
+import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.cmd;
@@ -44,5 +46,6 @@ public class listallhidden implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "List All Hidden Residences");
         c.get("Info", Arrays.asList("&eUsage: &6/res listhidden <page>", "Lists all hidden residences on the server."));
+        LocaleManager.addTabCompleteMain(this);
     }
 }

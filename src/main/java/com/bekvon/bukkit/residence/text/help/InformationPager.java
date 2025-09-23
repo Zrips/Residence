@@ -55,8 +55,6 @@ public class InformationPager {
         }
         lm.InformationPage_TopSingle.sendMessage(sender, title);
 
-        lm.InformationPage_Page.sendMessage(sender, lm.General_GenericPages.getMessage(String.format("%d", page), pi.getTotalPages(), lines.size()));
-
         for (int i = pi.getStart(); i <= pi.getEnd(); i++) {
             if (lines.size() > i)
                 sender.sendMessage(ChatColor.GREEN + lines.get(i));
@@ -249,7 +247,7 @@ public class InformationPager {
 
     private void printListToFile(final TreeMap<String, ClaimedResidence> ownedResidences, final boolean resadmin) {
 
-        Bukkit.getConsoleSender().sendMessage("Saving");
+        lm.consoleMessage("Saving");
         CMIScheduler.runTaskAsynchronously(plugin, () -> {
             int y = 0;
             final StringBuilder sb = new StringBuilder();
@@ -316,7 +314,7 @@ public class InformationPager {
                 e.printStackTrace();
             }
 
-            Bukkit.getConsoleSender().sendMessage("Saved file to FullLists folder with " + file.getName() + " name");
+            lm.consoleMessage("Saved file to FullLists folder with " + file.getName() + " name");
         });
     }
 }

@@ -114,7 +114,7 @@ public class ResidencePlayerListener1_21 implements Listener {
             return;
 
         Location loc = ent.getLocation();
-        FlagPermissions perms = plugin.getPermsByLoc(loc);
+        FlagPermissions perms = FlagPermissions.getPerms(loc);
         if (perms.has(Flags.build, FlagCombo.TrueOrNone))
             return;
 

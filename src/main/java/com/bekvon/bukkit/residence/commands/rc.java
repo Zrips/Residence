@@ -11,6 +11,7 @@ import net.Zrips.CMILib.FileHandler.ConfigReader;
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.chat.ChatChannel;
+import com.bekvon.bukkit.residence.chat.ChatManager;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
@@ -28,7 +29,6 @@ public class rc implements cmd {
             return true;
         Player player = (Player) sender;
 
-        String pname = player.getName();
         UUID uuid = player.getUniqueId();
 
         if (!plugin.getConfigManager().chatEnabled()) {
@@ -42,7 +42,7 @@ public class rc implements cmd {
                 ChatChannel chat = plugin.getChatManager().getPlayerChannel(uuid);
                 if (chat != null) {
                     plugin.getChatManager().removeFromChannel(uuid);
-                    plugin.getPlayerListener().removePlayerResidenceChat(player);
+                    ChatManager.removePlayerResidenceChat(player);
                     return true;
                 }
                 lm.Residence_NotIn.sendMessage(sender);
@@ -51,7 +51,7 @@ public class rc implements cmd {
             ChatChannel chat = plugin.getChatManager().getPlayerChannel(uuid);
             if (chat != null && chat.getChannelName().equals(res.getName())) {
                 plugin.getChatManager().removeFromChannel(uuid);
-                plugin.getPlayerListener().removePlayerResidenceChat(player);
+                ChatManager.removePlayerResidenceChat(player);
                 return true;
             }
             if (!res.getPermissions().playerHas(player.getName(), Flags.chat, true) && !plugin.getPermissionManager().isResidenceAdmin(player)) {
@@ -59,13 +59,13 @@ public class rc implements cmd {
                 return false;
             }
 
-            plugin.getPlayerListener().tooglePlayerResidenceChat(player, res.getName());
+            ChatManager.tooglePlayerResidenceChat(player, res.getName());
             plugin.getChatManager().setChannel(uuid, res);
             return true;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("l") || args[0].equalsIgnoreCase("leave")) {
                 plugin.getChatManager().removeFromChannel(uuid);
-                plugin.getPlayerListener().removePlayerResidenceChat(player);
+                ChatManager.removePlayerResidenceChat(player);
                 return true;
             }
             ClaimedResidence res = plugin.getResidenceManager().getByName(args[0]);
@@ -78,7 +78,7 @@ public class rc implements cmd {
                 lm.Residence_FlagDeny.sendMessage(sender, Flags.chat, res.getName());
                 return false;
             }
-            plugin.getPlayerListener().tooglePlayerResidenceChat(player, res.getName());
+            ChatManager.tooglePlayerResidenceChat(player, res.getName());
             plugin.getChatManager().setChannel(uuid, res);
 
             return true;
@@ -180,17 +180,15 @@ public class rc implements cmd {
                 if (!ResPerm.chatkick.hasPermission(player))
                     return true;
 
-                
-                
                 ResidencePlayer targetPlayer = ResidencePlayer.get(args[1]);
-                
+
                 if (targetPlayer == null || !chat.hasMember(targetPlayer.getUniqueId())) {
                     lm.Chat_NotInChannel.sendMessage(sender);
                     return false;
                 }
 
                 chat.leave(targetPlayer.getUniqueId());
-                plugin.getPlayerListener().removePlayerResidenceChat(targetPlayer.getUniqueId());
+                ChatManager.removePlayerResidenceChat(targetPlayer.getUniqueId());
                 lm.Chat_Kicked.sendMessage(sender, targetPlayer.getName(), chat.getChannelName());
                 return true;
             }

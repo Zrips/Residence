@@ -5,6 +5,8 @@ import java.util.Arrays;
 import org.bukkit.command.CommandSender;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+
+import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.cmd;
@@ -28,5 +30,6 @@ public class signupdate implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Updated residence signs");
         c.get("Info", Arrays.asList("&eUsage: &6/res signupdate"));
+        LocaleManager.addTabCompleteMain(this);
     }
 }

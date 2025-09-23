@@ -296,7 +296,7 @@ public class DynMapManager {
         } catch (Exception e) {
         }
         if (markerapi == null) {
-            Bukkit.getConsoleSender().sendMessage("[Residence] Error loading dynmap marker API!");
+            lm.consoleMessage("Error loading dynmap marker API!");
             return;
         }
 
@@ -311,7 +311,7 @@ public class DynMapManager {
             set.setMarkerSetLabel("Residence");
 
         if (set == null) {
-            Bukkit.getConsoleSender().sendMessage("Error creating marker set");
+            lm.consoleMessage("Error creating marker set");
             return;
         }
         set.setLayerPriority(1);

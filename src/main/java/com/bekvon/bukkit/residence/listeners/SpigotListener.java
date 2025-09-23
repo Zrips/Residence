@@ -20,24 +20,23 @@ public class SpigotListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onItemDamage(PlayerItemDamageEvent event) {
-	// disabling event on world
-	if (Residence.getInstance().isDisabledWorldListener(event.getPlayer().getWorld()))
-	    return;
-	Player player = event.getPlayer();
-	Location loc = player.getLocation();
-	FlagPermissions perms = Residence.getInstance().getPermsByLoc(loc);
-	if (!perms.has(Flags.nodurability, false))
-	    return;
+        // disabling event on world
+        if (Residence.getInstance().isDisabledWorldListener(event.getPlayer().getWorld()))
+            return;
+        Player player = event.getPlayer();
+        Location loc = player.getLocation();
+        if (!FlagPermissions.has(loc, Flags.nodurability, false))
+            return;
 
-	ItemStack held = CMIItemStack.getItemInMainHand(player);
+        ItemStack held = CMIItemStack.getItemInMainHand(player);
 
-	if (held.getType() == Material.AIR)
-	    return;
+        if (held.getType() == Material.AIR)
+            return;
 
-	if (held.getType().toString().equalsIgnoreCase("TRIDENT"))
-	    return;
+        if (held.getType().toString().equalsIgnoreCase("TRIDENT"))
+            return;
 
-	event.setDamage(0);
-	event.setCancelled(true);
+        event.setDamage(0);
+        event.setCancelled(true);
     }
 }

@@ -4,7 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import com.bekvon.bukkit.residence.api.ChatInterface;
+import com.bekvon.bukkit.residence.containers.ResidencePlayer;
+import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.containers.playerPersistentData;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
 public class ChatManager implements ChatInterface {
@@ -54,5 +60,23 @@ public class ChatManager implements ChatInterface {
     @Override
     public ChatChannel getPlayerChannel(UUID uuid) {
         return playerChannelMap.get(uuid);
+    }
+
+    public static void tooglePlayerResidenceChat(Player player, String residence) {
+        playerPersistentData.get(player).setChatEnabled(false);
+        lm.Chat_ChatChannelChange.sendMessage(player, residence);
+    }
+
+    public static void removePlayerResidenceChat(Player player) {
+        if (player == null)
+            return;
+        removePlayerResidenceChat(player.getUniqueId());
+    }
+
+    public static void removePlayerResidenceChat(UUID uuid) {
+        if (uuid == null)
+            return;
+        playerPersistentData.get(uuid).setChatEnabled(true);
+        lm.Chat_ChatChannelLeave.sendMessage(ResidencePlayer.getOnlinePlayer(uuid));
     }
 }

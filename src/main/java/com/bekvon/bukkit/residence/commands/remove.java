@@ -1,6 +1,7 @@
 package com.bekvon.bukkit.residence.commands;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,6 +15,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
+import com.bekvon.bukkit.residence.protection.PlayerManager;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.RawMessages.RawMessage;
@@ -25,7 +27,7 @@ public class remove implements cmd {
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
 
         ClaimedResidence res = null;
-        String senderName = sender.getName();
+
         if (args.length == 1) {
             res = plugin.getResidenceManager().getByName(args[0]);
         } else if (sender instanceof Player && args.length == 0) {
@@ -70,11 +72,10 @@ public class remove implements cmd {
             return true;
         }
 
-        plugin.deleteConfirm.remove(senderName);
+        UUID uuid = PlayerManager.getSenderUUID(sender);
+        plugin.deleteConfirm.remove(uuid);
 
-        String resname = res.getName();
-
-        if (!plugin.deleteConfirm.containsKey(senderName) || !resname.equalsIgnoreCase(plugin.deleteConfirm.get(senderName))) {
+        if (!plugin.deleteConfirm.containsKey(uuid) || !res.equals(plugin.deleteConfirm.get(uuid))) {
             String cmd = "res";
             if (resadmin)
                 cmd = "resadmin";
@@ -93,7 +94,7 @@ public class remove implements cmd {
                 else
                     lm.Residence_DeleteConfirm.sendMessage(sender, res.getResidenceName());
             }
-            plugin.deleteConfirm.put(senderName, resname);
+            plugin.deleteConfirm.put(uuid, res);
         } else {
             plugin.getResidenceManager().removeResidence(sender, res, resadmin);
         }

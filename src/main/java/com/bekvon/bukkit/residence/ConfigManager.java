@@ -34,6 +34,7 @@ import com.bekvon.bukkit.residence.containers.ELMessageType;
 import com.bekvon.bukkit.residence.containers.EconomyType;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.RandomTeleport;
+import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 
@@ -901,7 +902,7 @@ public class ConfigManager {
                     World w = getWorld(one);
 
                     if (w == null) {
-                        plugin.consoleMessage("&cCan't find world with (" + one + ") name");
+                        lm.consoleMessage("&cCan't find world with (" + one + ") name");
                         continue;
                     }
 
@@ -1000,7 +1001,7 @@ public class ConfigManager {
                 if (mat != null)
                     LwcMatList.add(mat);
                 else
-                    Bukkit.getConsoleSender().sendMessage("Incorrect Lwc material name for " + oneName);
+                    lm.consoleMessage("Incorrect Lwc material name for " + oneName);
             }
         }
 
@@ -1150,8 +1151,8 @@ public class ConfigManager {
         if (VaultEconomy == null)
 
         {
-            plugin.consoleMessage("&cCould not determine economy from " + c.get("Global.Type", "Vault"));
-            plugin.consoleMessage("&cTrying to find suitable economy system");
+            lm.consoleMessage("&cCould not determine economy from " + c.get("Global.Type", "Vault"));
+            lm.consoleMessage("&cTrying to find suitable economy system");
             VaultEconomy = EconomyType.None;
         }
 
@@ -1359,7 +1360,7 @@ public class ConfigManager {
         SelectedFrame = CMIParticle.getCMIParticle(efname);
         if (SelectedFrame == null) {
             SelectedFrame = CMIParticle.HAPPY_VILLAGER;
-            Bukkit.getConsoleSender().sendMessage("Can't find effect for Selected Frame with this name, it was set to default");
+            lm.consoleMessage("Can't find effect for Selected Frame with this name, it was set to default");
         }
 
         // Sides
@@ -1367,21 +1368,21 @@ public class ConfigManager {
         SelectedSides = CMIParticle.getCMIParticle(efname);
         if (SelectedSides == null) {
             SelectedSides = CMIParticle.COLOURED_DUST;
-            Bukkit.getConsoleSender().sendMessage("Can't find effect for Selected Sides with this name, it was set to default");
+            lm.consoleMessage("Can't find effect for Selected Sides with this name, it was set to default");
         }
 
         efname = c.get("Global.Visualizer.Overlap.Frame", "FLAME");
         OverlapFrame = CMIParticle.getCMIParticle(efname);
         if (OverlapFrame == null) {
             OverlapFrame = CMIParticle.FLAME;
-            Bukkit.getConsoleSender().sendMessage("Can't find effect for Overlap Frame with this name, it was set to default");
+            lm.consoleMessage("Can't find effect for Overlap Frame with this name, it was set to default");
         }
 
         efname = c.get("Global.Visualizer.Overlap.Sides", "FLAME");
         OverlapSides = CMIParticle.getCMIParticle(efname);
         if (OverlapSides == null) {
             OverlapSides = CMIParticle.FLAME;
-            Bukkit.getConsoleSender().sendMessage("Can't find effect for Selected Sides with this name, it was set to default");
+            lm.consoleMessage("an't find effect for Selected Sides with this name, it was set to default");
         }
 
         c.addComment("Global.Visualizer.EnterAnimation", "Shows particle effect when player enters residence. Only applies to main residence area");

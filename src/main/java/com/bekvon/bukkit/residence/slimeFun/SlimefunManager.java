@@ -8,6 +8,7 @@ import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 
 import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.containers.lm;
 
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.ProtectionManager;
@@ -26,7 +27,7 @@ public class SlimefunManager {
         task = CMIScheduler.scheduleSyncRepeatingTask(Residence.getInstance(), () -> {
             ++times;
             if (times >= TRIES) {
-                residence.consoleMessage("&cFailed to initialize SlimeFun support");
+                lm.consoleMessage("&cFailed to initialize SlimeFun support");
                 task.cancel();
             }
 
@@ -39,13 +40,13 @@ public class SlimefunManager {
                     if (method != null) {
                         Function<Plugin, ProtectionModule> m = plugin -> new SlimeFunResidenceModule(plugin);
                         method.invoke(manager, Bukkit.getServer(), "Residence", m);
-                        residence.consoleMessage("Enabled compatability with SlimeFun plugin");
+                        lm.consoleMessage("Enabled compatability with SlimeFun plugin");
                         task.cancel();
                     }
                 } catch (Throwable e) {
                     // Going with latest dev build supported approach
                     manager.registerModule(Bukkit.getServer().getPluginManager(), "Residence", plugin -> new SlimeFunResidenceModule(plugin));
-                    residence.consoleMessage("Enabled compatability with SlimeFun plugin");
+                    lm.consoleMessage("Enabled compatability with SlimeFun plugin");
                     task.cancel();
                 }
             }
