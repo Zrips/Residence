@@ -19,7 +19,6 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
 import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
-import net.Zrips.CMILib.Version.Teleporters.CMITeleporter;
 
 public class ResidencePlayerListener1_9 implements Listener {
 
@@ -45,7 +44,7 @@ public class ResidencePlayerListener1_9 implements Listener {
 
         Player player = (Player) event.getEntity();
 
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(player.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(player);
 
         if (perms.playerHas(player, Flags.elytra, FlagCombo.TrueOrNone))
             return;
@@ -53,7 +52,11 @@ public class ResidencePlayerListener1_9 implements Listener {
         lm.Flag_Deny.sendMessage(player, Flags.elytra);
 
         event.setCancelled(true);
-        CMIScheduler.runAtEntityLater(plugin, player, () -> player.setGliding(false), 2L);
+        CMIScheduler.runAtLocation(plugin, player.getLocation(), () -> {
+            // Need to enable before disabling to prevent client side bug
+            player.setGliding(true);
+            player.setGliding(false);
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

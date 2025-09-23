@@ -1701,6 +1701,10 @@ public class FlagPermissions {
         return Residence.getInstance().getWorldFlags().getPerms(loc.getWorld().getName());
     }
 
+    public static FlagPermissions getPerms(Player player) {
+        return getPerms(player.getLocation(), player);
+    }
+
     public static FlagPermissions getPerms(Location loc, Player player) {
         ClaimedResidence res = Residence.getInstance().getResidenceManager().getByLoc(loc);
         if (res != null)
