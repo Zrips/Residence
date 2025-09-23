@@ -21,11 +21,12 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 
 import net.Zrips.CMILib.Container.CMIWorld;
+import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class PermissionGroup {
-    
-    protected String groupname;    
-    
+
+    protected String groupname;
+
     private int xmax = 0;
     private int ymax = 0;
     private int zmax = 0;

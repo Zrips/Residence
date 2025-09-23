@@ -4,6 +4,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -97,15 +98,34 @@ public class playerTempData {
 
     public Location getLastValidLocation(Player player) {
 
+        Location loc = null;
+
         if (lastInsideLoc != null) {
             ClaimedResidence res = Residence.getInstance().getResidenceManager().getByLoc(lastInsideLoc);
             if (res != null && Flags.tp.isGlobalyEnabled() && (res.getPermissions().playerHas(player, Flags.tp, FlagCombo.TrueOrNone) || ResAdmin.isResAdmin(player)
                 || res.isOwner(player) || ResPerm.admin_move.hasPermission(player, 10000L))) {
-                return lastInsideLoc;
+                loc = lastInsideLoc;
             }
         }
 
-        return playerPersistentData.get(player).getLastOutsideLoc();
+        loc = validated(loc, player.getWorld());
+
+        if (loc != null)
+            return loc;
+
+        loc = playerPersistentData.get(player).getLastOutsideLoc();
+
+        return validated(loc, player.getWorld());
+    }
+
+    private static Location validated(Location loc, World world) {
+        if (loc == null)
+            return loc;
+
+        if (loc.getWorld() != null && !loc.getWorld().equals(world) && Residence.getInstance().getConfigManager().getKickLocation() != null) {
+            return Residence.getInstance().getConfigManager().getKickLocation();
+        }
+        return loc;
     }
 
     public void setLastInsideLoc(Location lastInsideLoc) {
