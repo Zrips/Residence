@@ -968,11 +968,14 @@ public class ResidenceEntityListener implements Listener {
 
         Boolean cancel = false;
         Boolean remove = true;
-        FlagPermissions perms = plugin.getPermsByLoc(loc);
+        FlagPermissions perms = FlagPermissions.getPerms(loc);
         FlagPermissions world = plugin.getWorldFlags().getPerms(loc.getWorld().getName());
 
-        if (ent != null) {
-            switch (CMIEntityType.get(event.getEntityType())) {
+        CMIEntityType ctype = CMIEntityType.get(event.getEntityType());
+
+        if (ent != null && ctype != null) {
+
+            switch (ctype) {
             case CREEPER:
                 // Disabling listener if flag disabled globally
                 if (!Flags.creeper.isGlobalyEnabled())
@@ -1057,10 +1060,10 @@ public class ResidenceEntityListener implements Listener {
 
         List<Block> preserve = new ArrayList<Block>();
         for (Block block : event.blockList()) {
-            FlagPermissions blockperms = plugin.getPermsByLoc(block.getLocation());
+            FlagPermissions blockperms = FlagPermissions.getPerms(block.getLocation());
 
-            if (ent != null) {
-                switch (CMIEntityType.get(event.getEntityType())) {
+            if (ent != null && ctype != null) {
+                switch (ctype) {
                 case CREEPER:
                     // Disabling listener if flag disabled globally
                     if (!Flags.creeper.isGlobalyEnabled())
