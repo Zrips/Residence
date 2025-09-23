@@ -13,6 +13,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+import net.Zrips.CMILib.Locale.LC;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class give implements cmd {
@@ -49,7 +50,7 @@ public class give implements cmd {
             }
 
             rm.addText(lm.Residence_GiveConfirm.getMessage(args[0], res.getOwner(), args[1]))
-                .addHover(lm.info_click.getMessage())
+                .addHover(LC.info_Click.getLocale())
                 .addCommand((resadmin ? "resadmin" : "res") + " give " + args[0] + " " + args[1] + (includeSubzones ? " -s" : "") + " -confirmed");
             rm.show(sender);
 

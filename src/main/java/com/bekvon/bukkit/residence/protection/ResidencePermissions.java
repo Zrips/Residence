@@ -26,6 +26,8 @@ import com.bekvon.bukkit.residence.event.ResidenceOwnerChangeEvent;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 
+import net.Zrips.CMILib.Locale.LC;
+
 public class ResidencePermissions extends FlagPermissions {
 
     private UUID ownerUUID;
@@ -284,7 +286,7 @@ public class ResidencePermissions extends FlagPermissions {
                 lm.Flag_SetDeny.sendMessage(player, flag.getKey());
             }
         }
-        
+
         for (Entry<UUID, Map<String, Boolean>> plists : list.getPlayerFlags().entrySet()) {
             Map<String, Boolean> map = this.getPlayerFlags(plists.getKey(), true);
             for (Entry<String, Boolean> flag : plists.getValue().entrySet()) {
@@ -295,7 +297,7 @@ public class ResidencePermissions extends FlagPermissions {
                 }
             }
         }
-        
+
         for (Entry<String, Map<String, Boolean>> plists : list.getPlayerFlagsByName().entrySet()) {
             Map<String, Boolean> map = this.getPlayerFlags(plists.getKey(), true);
             for (Entry<String, Boolean> flag : plists.getValue().entrySet()) {
@@ -940,7 +942,7 @@ public class ResidencePermissions extends FlagPermissions {
             if (this.setPlayerFlag(sender, uuid, flag, state, resadmin, false)) {
                 changed = true;
                 if (!flagString.toString().isEmpty())
-                    flagString.append(lm.info_listSplitter.getMessage());
+                    flagString.append(LC.info_ListSpliter.getLocale());
                 flagString.append(flag);
             } else
                 changedAll = false;

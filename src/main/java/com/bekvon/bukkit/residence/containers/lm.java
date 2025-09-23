@@ -166,18 +166,6 @@ public enum lm {
 
     Raid_stopped("&eRaid on &6%1 &ewas stopped"),
 
-//    info_years("&e%1 &6years "),
-//    info_oneYear("&e%1 &6year "),
-//    info_day("&e%1 &6days "),
-//    info_oneDay("&e%1 &6day "),
-//    info_hour("&e%1 &6hours "),
-//    info_oneHour("&e%1 &6hour "),
-//    info_min("&e%1 &6min "),
-//    info_sec("&e%1 &6sec "),
-
-    info_listSplitter(", "),
-
-    info_click("&7Click"),
     info_clickToConfirm("&7Click to confirm"),
 
     server_land("Server_Land"),
@@ -424,8 +412,6 @@ public enum lm {
     InformationPage_Top("&e___/ &a %1 - %2 &e \\___"),
     InformationPage_TopSingle("&e___/ &a %1 &e \\___"),
     InformationPage_Page("&e-----< &6%1 &e>-----"),
-    InformationPage_NextPage2("&e-----< &6%1 &e>-----"),
-    InformationPage_NoNextPage("&e-----------------------"),
     InformationPage_GeneralList("&2 %1 &6- &e%2"),
     InformationPage_FlagsList("&2 %1 &6- &e%2"),
     InformationPage_SmallSeparator("&6------"),

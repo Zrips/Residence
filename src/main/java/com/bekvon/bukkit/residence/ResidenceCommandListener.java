@@ -29,7 +29,7 @@ import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class ResidenceCommandListener implements CommandExecutor {
 
-    private static List<String> AdminCommands = new ArrayList<String>();
+    private static List<String> adminCommands = new ArrayList<String>();
     private static final String label = "res";
 
     public String getLabel() {
@@ -37,9 +37,9 @@ public class ResidenceCommandListener implements CommandExecutor {
     }
 
     public static List<String> getAdminCommands() {
-        if (AdminCommands.size() == 0)
-            AdminCommands = Residence.getInstance().getCommandFiller().getCommands(false);
-        return AdminCommands;
+        if (adminCommands.isEmpty())
+            adminCommands = Residence.getInstance().getCommandFiller().getCommands(false);
+        return adminCommands;
     }
 
     private Residence plugin;

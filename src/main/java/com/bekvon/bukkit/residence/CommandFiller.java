@@ -21,7 +21,7 @@ public class CommandFiller {
     public final String packagePath = "com.bekvon.bukkit.residence.commands";
     private Map<String, CommandStatus> CommandList = new HashMap<String, CommandStatus>();
 
-    public List<String> getCommands(Boolean simple) {
+    public List<String> getCommands(boolean simple) {
 	Map<String, Integer> cmd = new HashMap<String, Integer>();
 	for (Entry<String, CommandStatus> one : CommandList.entrySet()) {
 	    if (simple && !one.getValue().getSimple() || !simple && one.getValue().getSimple())

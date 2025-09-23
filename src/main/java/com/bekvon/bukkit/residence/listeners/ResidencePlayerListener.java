@@ -98,6 +98,7 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -2534,15 +2535,15 @@ public class ResidencePlayerListener implements Listener {
         if (res == null)
             playerPersistentData.get(uuid).setLastOutsideLoc(loc);
 
+        if (!plugin.getAutoSelectionManager().getList().isEmpty())
+            CMIScheduler.runTaskAsynchronously(plugin, () -> plugin.getAutoSelectionManager().UpdateSelection(player));
+
         if (!changedResidence) {
             // In case we are inside same residence, we can assume we can move there
             if (res != null)
                 tempData.setLastInsideLoc(loc);
             return true;
         }
-
-        if (!plugin.getAutoSelectionManager().getList().isEmpty())
-            CMIScheduler.runTaskAsynchronously(plugin, () -> plugin.getAutoSelectionManager().UpdateSelection(player));
 
         if (res == null) {
             tempData.setCurrentResidence(player, res);
