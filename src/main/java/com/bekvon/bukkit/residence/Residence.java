@@ -75,7 +75,6 @@ import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_17;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_19;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_20;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_21;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_21_8;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_9;
 import com.bekvon.bukkit.residence.listeners.SpigotListener;
 import com.bekvon.bukkit.residence.permissions.PermissionManager;
@@ -118,7 +117,6 @@ import com.residence.mcstats.Metrics;
 import com.residence.zip.ZipLibrary;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -629,10 +627,10 @@ public class Residence extends JavaPlugin {
                     pm.registerEvents(new ResidencePlayerListener1_20(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_21_R1))
                     pm.registerEvents(new ResidencePlayerListener1_21(this), this);
-
-                if (Version.isCurrentEqualOrHigher(Version.v1_21_R5) && Version.isCurrentSubEqualOrHigher(8) || Version.isCurrentEqualOrHigher(Version.v1_22_R1)) {
-                    pm.registerEvents(new ResidencePlayerListener1_21_8(this), this);
-                }
+                
+                // No working at the moment
+//                if (Version.isCurrentEqualOrHigher(Version.v1_21_R5) && Version.isCurrentSubEqualOrHigher(8) || Version.isCurrentEqualOrHigher(Version.v1_22_R1))
+//                    pm.registerEvents(new ResidencePlayerListener1_21_8(this), this);
 
                 plistener = new ResidencePlayerListener(this);
 

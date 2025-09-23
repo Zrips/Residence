@@ -13,7 +13,6 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -77,7 +76,6 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceEntityListener implements Listener {
@@ -95,9 +93,10 @@ public class ResidenceEntityListener implements Listener {
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
             return;
+
         if (event.getEntityType() != EntityType.ENDERMAN)
             return;
-        FlagPermissions perms = plugin.getPermsByLoc(event.getBlock().getLocation());
+        FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
         if (!perms.has(Flags.destroy, true)) {
             event.setCancelled(true);
         }
@@ -124,7 +123,7 @@ public class ResidenceEntityListener implements Listener {
         if (plugin.isDisabledWorldListener(entity.getWorld()))
             return;
 
-        FlagPermissions perms = plugin.getPermsByLoc(entity.getLocation());
+        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation());
 
         if (perms.has(Flags.nomobs, FlagCombo.OnlyTrue)) {
             event.setCancelled(true);

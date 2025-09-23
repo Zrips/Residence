@@ -30,6 +30,7 @@ import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
+import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
@@ -1683,6 +1684,14 @@ public class FlagPermissions {
 
     public static boolean has(Location loc, Flags flag, boolean state) {
         return getPerms(loc).has(flag, state);
+    }
+
+    public static boolean has(Location loc, Player player, Flags flag, FlagCombo combo) {
+        return FlagPermissions.getPerms(loc, player).playerHas(player, flag, combo);
+    }
+
+    public static boolean has(Location loc, Player player, Flags flag, boolean state) {
+        return FlagPermissions.getPerms(loc, player).playerHas(player, flag, state);
     }
 
     public static FlagPermissions getPerms(Location loc) {

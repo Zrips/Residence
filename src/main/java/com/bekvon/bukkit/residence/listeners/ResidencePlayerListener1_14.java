@@ -1,7 +1,11 @@
 package com.bekvon.bukkit.residence.listeners;
 
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerTakeLecternBookEvent;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -28,11 +32,33 @@ public class ResidencePlayerListener1_14 implements Listener {
         if (ResAdmin.isResAdmin(event.getPlayer())) {
             return;
         }
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(event.getLectern().getLocation(), event.getPlayer());
 
-        if (perms.playerHas(event.getPlayer(), Flags.container, FlagCombo.TrueOrNone))
+        if (FlagPermissions.has(event.getLectern().getLocation(), event.getPlayer(), Flags.container, FlagCombo.TrueOrNone))
             return;
         event.setCancelled(true);
         lm.Flag_Deny.sendMessage(event.getPlayer(), Flags.container);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onRavager(EntityChangeBlockEvent event) {
+
+        // Disabling listener if flag disabled globally
+        if (!Flags.destroy.isGlobalyEnabled())
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
+            return;
+        if (event.isCancelled())
+            return;
+
+        Entity ent = event.getEntity();
+
+        if (ent.getType() != EntityType.RAVAGER)
+            return;
+
+        if (!FlagPermissions.has(event.getBlock().getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
+            return;
+
+        event.setCancelled(true);
     }
 }
