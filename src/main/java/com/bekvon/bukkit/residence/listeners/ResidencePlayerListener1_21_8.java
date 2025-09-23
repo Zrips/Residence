@@ -1,6 +1,7 @@
 package com.bekvon.bukkit.residence.listeners;
 
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,6 +38,7 @@ public class ResidencePlayerListener1_21_8 implements Listener {
                 event.setCancelled(true);
             return;
         }
+
         if (ResidenceEntityListener.isMonster(entity)) {
             if (FlagPermissions.has(loc, Flags.mobkilling, FlagCombo.OnlyFalse))
                 event.setCancelled(true);
@@ -48,5 +50,12 @@ public class ResidencePlayerListener1_21_8 implements Listener {
                 event.setCancelled(true);
             return;
         }
+
+        if (event.getEntityType().equals(EntityType.ARMOR_STAND)) {
+            if (FlagPermissions.has(loc, Flags.destroy, FlagCombo.OnlyFalse))
+                event.setCancelled(true);
+            return;
+        }
+
     }
 }
