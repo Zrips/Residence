@@ -1,23 +1,54 @@
 # Residence
 
-Residence is different from most protection plugins in that it aims for the users to be able to protect their own homes without having to bother the admin to do it. 
+Residence is different from most protection plugins in that it allows users to protect their own homes without needing to bother the server administrator.
 
-Residence has support for a variety of different protection types including preventing movement through areas, all of which can be configured by the land owner, and limited by the admin.
+It supports a variety of protection types, including preventing movement through protected areas. All settings can be configured by the landowner, with limits defined by the admin.
 
-## Credit
+---
 
-Original plugin created by bekvon, made premium with their permission to help further developement. 
+## 📜 Credit
 
-## Source and Downloads
+Original plugin created by **bekvon** and later made premium with their permission to further development.
 
-- Github Source code: https://github.com/Zrips/Residence
-- Premium release on SpigotMC: https://www.spigotmc.org/resources/11480/
-- Precompiled builds: https://zrips.net/Residence/
+---
 
-## Misc.
+## 📦 Source and Downloads
 
-More information about this plugin, changelogs, wiki:
+- **GitHub Source Code:** https://github.com/Zrips/Residence  
+- **Premium Release on SpigotMC:** https://www.spigotmc.org/resources/11480/  
+- **Precompiled Builds:** https://zrips.net/Residence/  
 
-- Release thread on SpigotMC: https://www.spigotmc.org/resources/11480/
-- Changelogs: https://www.spigotmc.org/resources/11480/updates
-- Documentation: https://www.zrips.net/residence/
+---
+
+## ⚙️ Maven Setup
+
+Residence is available via JitPack (https://jitpack.io/), making integration into your Maven project simple.
+
+### Add the repository to your pom.xml:
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+
+### Add the dependency:
+```xml
+<dependency>
+    <groupId>com.github.Zrips</groupId>
+    <artifactId>Residence</artifactId>
+    <version>6.0.0.0</version>
+</dependency>
+```
+
+This will include Residence in your project, allowing you to use its API and functionality directly.
+
+---
+
+## 📚 Documentation & Resources
+
+- **Release Thread (SpigotMC):** https://www.spigotmc.org/resources/11480/  
+- **Changelogs:** https://www.spigotmc.org/resources/11480/updates  
+- **Official Documentation & Wiki:** https://www.zrips.net/residence/
