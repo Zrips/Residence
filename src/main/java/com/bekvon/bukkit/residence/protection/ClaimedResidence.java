@@ -22,6 +22,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.util.Vector;
 
 import com.bekvon.bukkit.residence.ConfigManager;
@@ -61,6 +62,7 @@ import com.bekvon.bukkit.residence.utils.Teleporting;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
 import net.Zrips.CMILib.Locale.LC;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Version.Version;
@@ -2052,14 +2054,12 @@ public class ClaimedResidence {
             CompletableFuture<Location> future = LocationUtil.getOutsideFreeLocASYNC(this, player, true);
 
             future.thenAccept(loc1 -> {
-
                 if (loc1 == null) {
                     LC.info_IncorrectLocation.getLocale();
                     return;
                 }
 
                 loc1.add(0, 0.4, 0);
-
                 PaperLib.teleportAsync(player, loc1).thenApply(success -> {
                     if (success)
                         lm.Residence_Kicked.sendMessage(player);
@@ -2071,13 +2071,14 @@ public class ClaimedResidence {
             return true;
         }
 
-        PaperLib.teleportAsync(player, loc).thenApply(success -> {
+        PaperLib.teleportAsync(player, loc, TeleportCause.PLUGIN).thenApply(success -> {
             if (success)
                 lm.Residence_Kicked.sendMessage(player);
             else
                 lm.General_TeleportCanceled.sendMessage(player);
             return null;
         });
+
         return true;
     }
 

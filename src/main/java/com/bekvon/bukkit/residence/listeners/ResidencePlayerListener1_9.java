@@ -17,6 +17,7 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 

@@ -99,6 +99,7 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -872,14 +873,14 @@ public class ResidencePlayerListener implements Listener {
         Player player = event.getPlayer();
         if (player.hasMetadata("NPC"))
             return;
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(player.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(player.getLocation(), player);
 
-        f: if ((player.getAllowFlight() || player.isFlying()) && perms.has(Flags.nofly, false) && !ResAdmin.isResAdmin(player)
+        if ((player.getAllowFlight() || player.isFlying()) && perms.has(Flags.nofly, false) && !ResAdmin.isResAdmin(player)
             && !ResPerm.bypass_nofly.hasPermission(player, 10000L)) {
 
             ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
             if (res != null && res.isOwner(player))
-                break f;
+                return;
 
             Location lc = player.getLocation();
             Location location = new Location(lc.getWorld(), lc.getX(), lc.getBlockY(), lc.getZ());
@@ -2156,10 +2157,10 @@ public class ResidencePlayerListener implements Listener {
             if (player.hasPermission("cmi.command.fly") || player.hasPermission("essentials.fly"))
                 return;
             boolean land = player.isFlying();
-            
+
             player.setFlying(false);
             player.setAllowFlight(false);
-            
+
             if (land) {
                 Location loc = getFlyTeleportLocation(player, oldRes);
                 player.closeInventory();
@@ -2468,16 +2469,9 @@ public class ResidencePlayerListener implements Listener {
 
             ClaimedResidence current = plugin.getResidenceManager().getByLoc(lastLoc);
             if (current != null && Flags.tp.isGlobalyEnabled() && current.getPermissions().playerHas(player, Flags.tp, FlagCombo.OnlyFalse) && !ResPerm.admin_tp.hasPermission(player, 10000L)) {
-                teleported = current.kickFromResidence(player);
-            }
-
-            if (!teleported) {
-                current = plugin.getResidenceManager().getByLoc(location.clone().add(0, 0.5, 0));
-                if (current == null || Flags.tp.isGlobalyEnabled() && current.getPermissions().playerHas(player, Flags.tp, FlagCombo.OnlyFalse) && !ResPerm.admin_tp.hasPermission(player, 10000L)) {
-                    teleported = teleport(player, location.clone().add(0, 0.5, 0));
-                } else {
-                    teleported = current.kickFromResidence(player);
-                }
+                // Should have a 1 tick delay to avoid player teleportation on move event
+                CMIScheduler.runTask(plugin, () -> current.kickFromResidence(player));
+                teleported = true;
             }
 
             player.setFlying(false);
@@ -2565,6 +2559,7 @@ public class ResidencePlayerListener implements Listener {
         boolean teleported = false;
         if (!cantMove && Flags.nofly.isGlobalyEnabled() && player.isFlying() && res.getPermissions().playerHas(player, Flags.nofly, FlagCombo.OnlyTrue) && !ResAdmin.isResAdmin(player)
             && !res.isOwner(player) && !ResPerm.bypass_nofly.hasPermission(player, 10000L)) {
+
             teleported = checkNoFly(player, res, loc);
         }
 

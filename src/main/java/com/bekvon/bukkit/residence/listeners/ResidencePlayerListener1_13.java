@@ -117,7 +117,6 @@ public class ResidencePlayerListener1_13 implements Listener {
 
     @EventHandler
     public void onBlockPhysics(BlockPhysicsEvent event) {
-        CMIDebug.d("BlockPhysicsEvent");
 
     }
 
