@@ -1225,7 +1225,7 @@ public class ConfigManager {
             chatColor = CMIChatColor.DARK_PURPLE;
         }
         if (chatColor == null) {
-            CMIMessages.consoleMessage("&cCan't find color by name for ResidenceChatColor");
+            lm.consoleMessage("&cCan't find color by name for ResidenceChatColor");
             chatColor = CMIChatColor.DARK_PURPLE;
         }
 

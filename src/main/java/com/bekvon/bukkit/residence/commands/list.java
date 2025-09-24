@@ -1,6 +1,7 @@
 package com.bekvon.bukkit.residence.commands;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -10,6 +11,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.cmd;
+import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 
 import net.Zrips.CMILib.Container.CMIWorld;
@@ -56,7 +58,14 @@ public class list implements cmd {
         if (target != null && !sender.getName().equalsIgnoreCase(target) && !ResPerm.command_$1_others.hasPermission(sender, this.getClass().getSimpleName()))
             return true;
 
-        plugin.getResidenceManager().listResidences(sender, target, page, false, false, resadmin, world);
+        UUID uuid = ResidencePlayer.getUUID(target);
+
+        if (uuid == null) {
+            lm.Invalid_Player.sendMessage(sender);
+            return false;
+        }
+
+        plugin.getResidenceManager().listResidences(sender, uuid, page, false, false, resadmin, world);
 
         return true;
     }

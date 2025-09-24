@@ -758,7 +758,7 @@ public class RentManager implements MarketRentInterface {
                 continue;
 
             if (plugin.getConfigManager().debugEnabled())
-                CMIMessages.consoleMessage("Rent Check: " + res.getName());
+                lm.consoleMessage("Rent Check: " + res.getName());
 
             ResidenceRentEvent revent = new ResidenceRentEvent(res, null, RentEventType.RENT_EXPIRE);
             plugin.getServ().getPluginManager().callEvent(revent);

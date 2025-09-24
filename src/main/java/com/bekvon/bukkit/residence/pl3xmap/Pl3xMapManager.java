@@ -313,7 +313,7 @@ public class Pl3xMapManager {
     }
 
     public void activate() {
-        CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " Pl3xMap residence activated!");
+        lm.consoleMessage("Pl3xMap residence activated!");
         for (Entry<String, ClaimedResidence> one : plugin.getResidenceManager().getResidences().entrySet()) {
             try {
                 handleResidenceAdd(one.getValue(), one.getValue().getSubzoneDeep());

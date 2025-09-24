@@ -18,6 +18,7 @@ import org.bukkit.util.Vector;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.RandomLoc;
+import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
@@ -436,7 +437,7 @@ public class LocationUtil {
                             .getChunkSnapshot(true, biomeData, false)));
 
                         t = t.exceptionally(ex -> {
-                            CMIMessages.consoleMessage("Could not get chunk snapshot for " + world + " " + (chunkX * 16) + ":" + (chunkZ * 16));
+                            lm.consoleMessage("Could not get chunk snapshot for " + world + " " + (chunkX * 16) + ":" + (chunkZ * 16));
                             ex.printStackTrace();
                             return null;
                         });
@@ -467,7 +468,7 @@ public class LocationUtil {
                     true, biomeData, false)));
 
                 t = t.exceptionally(ex -> {
-                    CMIMessages.consoleMessage("Unable to get chunk snapshot for " + world + " " + (chunkX * 16) + ":" + (chunkZ * 16));
+                    lm.consoleMessage("Unable to get chunk snapshot for " + world + " " + (chunkX * 16) + ":" + (chunkZ * 16));
                     ex.printStackTrace();
                     return null;
                 });

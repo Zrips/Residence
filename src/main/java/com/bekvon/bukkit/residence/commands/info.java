@@ -80,7 +80,12 @@ public class info implements cmd {
 
             return true;
         } else if (args.length == 1) {
-            plugin.getResidenceManager().printAreaInfo(args[0], sender, resadmin);
+            ClaimedResidence res = ClaimedResidence.getByName(args[0]);
+            if (res == null) {
+                lm.Invalid_Residence.sendMessage(sender);
+                return false;
+            }
+            plugin.getResidenceManager().printAreaInfo(res, sender, resadmin);
             return true;
         } else if (args.length == 2 || args.length == 3) {
 
@@ -102,7 +107,12 @@ public class info implements cmd {
                 return false;
 
             if (playerName.equalsIgnoreCase("-players")) {
-                plugin.getResidenceManager().printAreaPlayers(args[0], sender, page);
+                ClaimedResidence res = ClaimedResidence.getByName(args[0]);
+                if (res == null) {
+                    lm.Invalid_Residence.sendMessage(sender);
+                    return false;
+                }
+                plugin.getResidenceManager().printAreaPlayers(res, sender, page);
             }
             return true;
         }

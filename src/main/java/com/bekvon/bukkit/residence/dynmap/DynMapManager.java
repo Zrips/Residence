@@ -317,7 +317,7 @@ public class DynMapManager {
         set.setLayerPriority(1);
         set.setHideByDefault(plugin.getConfigManager().DynMapHideByDefault);
 
-        CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " DynMap residence activated!");
+        lm.consoleMessage("DynMap residence activated!");
 
         for (Entry<String, ClaimedResidence> one : plugin.getResidenceManager().getResidences().entrySet()) {
             plugin.getDynManager().fireUpdateAdd(one.getValue(), one.getValue().getSubzoneDeep());

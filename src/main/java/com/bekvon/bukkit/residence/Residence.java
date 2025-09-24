@@ -1301,7 +1301,7 @@ public class Residence extends JavaPlugin {
 
     private void writeDefaultFromJar(String fileName) {
         if (this.writeDefaultFileFromJar(new File(this.getDataFolder(), fileName), fileName, true)) {
-            CMIMessages.consoleMessage("[Residence] Wrote default " + fileName + "...");
+            lm.consoleMessage("Wrote default " + fileName + "...");
         }
     }
 

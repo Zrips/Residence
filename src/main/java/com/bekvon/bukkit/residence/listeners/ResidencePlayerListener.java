@@ -2156,9 +2156,10 @@ public class ResidencePlayerListener implements Listener {
             if (player.hasPermission("cmi.command.fly") || player.hasPermission("essentials.fly"))
                 return;
             boolean land = player.isFlying();
+            
             player.setFlying(false);
-
             player.setAllowFlight(false);
+            
             if (land) {
                 Location loc = getFlyTeleportLocation(player, oldRes);
                 player.closeInventory();

@@ -546,7 +546,7 @@ public class PlayerManager implements ResidencePlayerInterface {
 
     private void cacheOfflinePlayers() {
 
-        CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " Preloading player data. This is one time thing. Wait until finished");
+        lm.consoleMessage("Preloading player data. This is one time thing. Wait until finished");
 
         int total = Bukkit.getOfflinePlayers().length;
         int i = 0;
@@ -560,11 +560,11 @@ public class PlayerManager implements ResidencePlayerInterface {
                     continue;
                 addPlayer(name, player.getUniqueId());
             } catch (Exception e) {
-                CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " Failed to cache data of a player " + player.getUniqueId() + " (" + i + "/" + total + ")");
+                lm.consoleMessage("Failed to cache data of a player " + player.getUniqueId() + " (" + i + "/" + total + ")");
             }
 
             if (i % 1000 == 0) {
-                CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " Cached data (" + i + "/" + total + ")");
+                lm.consoleMessage("Cached data (" + i + "/" + total + ")");
             }
         }
 
@@ -625,7 +625,7 @@ public class PlayerManager implements ResidencePlayerInterface {
             }
         }
 
-        CMIMessages.consoleMessage(Residence.getInstance().getPrefix() + " Preloaded " + i + " player cached data");
+        lm.consoleMessage("Preloaded " + i + " player cached data");
     }
 
     private static void renameFile(UUID from, UUID to) {

@@ -26,7 +26,6 @@ import com.bekvon.bukkit.residence.selection.SelectionManager.Selection;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class auto implements cmd {
@@ -200,7 +199,7 @@ public class auto implements cmd {
         return true;
     }
 
-    private double getRatio(int v1, int v2, int v3) {
+    private static double getRatio(int v1, int v2, int v3) {
         double ratio = v2 / (double) v1;
         if (v3 / v1 > ratio)
             ratio = v3 / (double) v1;
@@ -218,34 +217,12 @@ public class auto implements cmd {
         return maxV;
     }
 
-    private static int getMin(int min, int max) {
-        if (!Residence.getInstance().getConfigManager().isARCSizeEnabled())
-            return min;
-        int percent = (int) (max * (Residence.getInstance().getConfigManager().getARCSizePercentage() / 100D));
-        int arcmin = Residence.getInstance().getConfigManager().getARCSizeMin();
-        int arcmax = Residence.getInstance().getConfigManager().getARCSizeMax();
-        int pmin = arcmin < percent ? percent : arcmin;
-        int newmin = min < pmin ? pmin : min;
-        newmin = newmin > arcmax ? arcmin : newmin;
-        newmin = newmin > max ? max : newmin;
-
-        if (newmin >= max) {
-            newmin = (int) (min + ((max - min) * (Residence.getInstance().getConfigManager().getARCSizePercentage() / 100D)));
-        }
-
-        return newmin;
-    }
-
     public static failReason resize(Residence plugin, Player player, CuboidArea cuboid, boolean checkBalance, int max) {
 
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
 
         double cost = cuboid.getCost(group);
-
-        double balance = 0;
-        if (plugin.getEconomyManager() != null)
-            balance = plugin.getEconomyManager().getBalance(player);
 
         direction dir = direction.Top;
 
@@ -259,7 +236,7 @@ public class auto implements cmd {
         int groupMaxZ = rPlayer.getMaxZ();
 
         int maxX = getMax(groupMaxX);
-        int maxY = getMax(group.getMaxY());
+        int maxY = getMax(group.getMaxYSize());
         int maxZ = getMax(groupMaxZ);
 
         if (maxX > max && max > 0)
@@ -273,7 +250,7 @@ public class auto implements cmd {
             maxX = (rPlayer.getMaxX() - group.getMinX()) / 2 + group.getMinX();
 
         if (maxY <= 1)
-            maxY = (group.getMaxY() - group.getMinY()) / 2 + group.getMinY();
+            maxY = (group.getMaxYSize() - group.getMinYSize()) / 2 + group.getMinYSize();
 
         if (maxZ <= 1)
             maxZ = (rPlayer.getMaxZ() - group.getMinZ()) / 2 + group.getMinZ();
@@ -340,7 +317,7 @@ public class auto implements cmd {
                 continue;
             }
 
-            if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && (maxY > 0 && maxY < c.getYSize() || c.getYSize() > group.getMaxY() + (-group.getMinY()))) {
+            if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && (maxY > 0 && maxY < c.getYSize() || c.getYSize() > group.getMaxYSize() + (-group.getMinYSize()))) {
                 locked.add(dir);
                 dir = dir.getNext();
                 skipped++;
@@ -409,7 +386,6 @@ public class auto implements cmd {
         int done = 0;
 
         int maxWorldY = group.getMaxYSize();
-        int minWorldY = group.getMinYSize();
 
         int groupMaxX = rPlayer.getMaxX();
         int groupMaxZ = rPlayer.getMaxZ();

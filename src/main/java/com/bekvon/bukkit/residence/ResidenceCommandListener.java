@@ -73,12 +73,12 @@ public class ResidenceCommandListener implements CommandExecutor {
                 if (plugin.getPermissionManager().isResidenceAdmin(player) && ResPerm.topadmin.hasPermission(player)) {
                     plugin.reloadPlugin();
                     sender.sendMessage(ChatColor.GREEN + "[Residence] Reloaded config.");
-                    CMIMessages.consoleMessage("[Residence] Reloaded by " + player.getName() + ".");
+                    lm.consoleMessage("Reloaded by " + player.getName() + ".");
                 } else
                     lm.General_NoPermission.sendMessage(player);
             } else {
                 plugin.reloadPlugin();
-                CMIMessages.consoleMessage("[Residence] Reloaded by console.");
+                lm.consoleMessage("Reloaded by console.");
             }
             return true;
         }

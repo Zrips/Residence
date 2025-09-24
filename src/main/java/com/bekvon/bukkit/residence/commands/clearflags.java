@@ -3,7 +3,6 @@ package com.bekvon.bukkit.residence.commands;
 import java.util.Arrays;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
@@ -19,14 +18,13 @@ public class clearflags implements cmd {
     @Override
     @CommandAnnotation(simple = false, priority = 3600, regVar = { 2, 3 }, consoleVar = { 666 })
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
-        Player player = (Player) sender;
 
         if (!resadmin) {
             lm.General_NoPermission.sendMessage(sender);
             return null;
         }
 
-        ClaimedResidence area = plugin.getResidenceManager().getByName(args[0]);
+        ClaimedResidence area = ClaimedResidence.getByName(args[0]);
         if (area == null) {
             lm.Invalid_Residence.sendMessage(sender);
             return null;
