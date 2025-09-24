@@ -4,9 +4,10 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Powerable;
 import org.bukkit.block.data.type.Farmland;
-import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
@@ -18,6 +19,7 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -28,8 +30,8 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
-import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class ResidencePlayerListener1_13 implements Listener {
 
@@ -115,42 +117,43 @@ public class ResidencePlayerListener1_13 implements Listener {
 
     @EventHandler
     public void onBlockPhysics(BlockPhysicsEvent event) {
+        CMIDebug.d("BlockPhysicsEvent");
 
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onButtonHitWithProjectile(BlockRedstoneEvent e) {
+//    @EventHandler(priority = EventPriority.LOWEST)
+//    public void onButtonHitWithProjectile(BlockRedstoneEvent e) {
+//
+//        if (tempButtonLocation == null)
+//            return;
+//
+//        // Disabling listener if flag disabled globally
+//        if (!Flags.button.isGlobalyEnabled())
+//            return;
+//
+//        if (e.getBlock() == null)
+//            return;
+//
+//        if (plugin.isDisabledWorldListener(e.getBlock().getWorld()))
+//            return;
+//
+//        Block block = e.getBlock();
+//
+//        if (!tempButtonLocation.equals(block.getLocation()) && !tempButtonLocation.clone().add(0, 1, 0).equals(block.getLocation()))
+//            return;
+//
+//        if (!CMIMaterial.isButton(block.getType()))
+//            return;
+//
+//        e.setNewCurrent(0);
+//    }
 
-        if (tempButtonLocation == null)
-            return;
-
-        // Disabling listener if flag disabled globally
-        if (!Flags.button.isGlobalyEnabled())
-            return;
-
-        if (e.getBlock() == null)
-            return;
-
-        if (plugin.isDisabledWorldListener(e.getBlock().getWorld()))
-            return;
-
-        Block block = e.getBlock();
-
-        if (!tempButtonLocation.equals(block.getLocation()) && !tempButtonLocation.clone().add(0, 1, 0).equals(block.getLocation()))
-            return;
-
-        if (!CMIMaterial.isButton(block.getType()))
-            return;
-
-        e.setNewCurrent(0);
-    }
-
-    private Location tempButtonLocation = null;
+//    private Location tempButtonLocation = null;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onButtonHitWithProjectile(ProjectileHitEvent e) {
 
-        tempButtonLocation = null;
+//        tempButtonLocation = null;
         // Disabling listener if flag disabled globally
         if (!Flags.button.isGlobalyEnabled())
             return;
@@ -168,16 +171,16 @@ public class ResidencePlayerListener1_13 implements Listener {
 
         Block block = e.getHitBlock().getLocation().clone().add(e.getHitBlockFace().getDirection()).getBlock();
 
-        tempButtonLocation = block.getLocation().clone();
+//        tempButtonLocation = block.getLocation().clone();
 
         if (!CMIMaterial.isButton(block.getType()))
             return;
 
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
 
         boolean hasuse = perms.playerHas(player, Flags.use, true);
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
+        ClaimedResidence res = ClaimedResidence.getByLoc(block.getLocation());
 
         Flags result = FlagPermissions.getMaterialUseFlagList().get(block.getType());
         if (result == null)
@@ -196,36 +199,27 @@ public class ResidencePlayerListener1_13 implements Listener {
                 return;
             break;
         }
+
         e.setCancelled(true);
 
         lm.Flag_Deny.sendMessage(player, result);
 
-        if (e.getEntity() instanceof Arrow)
-            e.getEntity().remove();
-
-        if (Version.isCurrentHigher(Version.v1_13_R1) && CMIMaterial.isButton(block.getType()) && block.getBlockData() instanceof Switch) {
-            Switch button = (Switch) block.getBlockData();
-            button.setPowered(false);
-            block.setBlockData(button, true);
-            CMIScheduler.runAtLocationLater(plugin, block.getLocation(), () -> {
-                button.setPowered(false);
-                block.setBlockData(button, true);
-            }, 1L);
+        if (Version.isCurrentHigher(Version.v1_13_R1) && e.getEntity() instanceof Arrow) {
+            dropAndRemove(e.getEntity(), ((Arrow) e.getEntity()).getItem());
             return;
         }
 
-        if (Version.isCurrentHigher(Version.v1_13_R1) && e.getEntity() instanceof Trident && !block.getType().toString().contains("STONE") && block
-            .getBlockData() instanceof org.bukkit.block.data.Powerable) {
-            org.bukkit.block.data.Powerable powerable = (org.bukkit.block.data.Powerable) block.getBlockData();
-            if (!powerable.isPowered()) {
-                CMIScheduler.runAtLocation(plugin, block.getLocation(), () -> {
-                    powerable.setPowered(false);
-                    block.setBlockData(powerable, true);
-                });
-            }
+        if (Version.isCurrentHigher(Version.v1_13_R1) && e.getEntity() instanceof Trident) {
+            dropAndRemove(e.getEntity(), ((Trident) e.getEntity()).getItem());
+            return;
         }
 
         return;
+    }
+
+    private void dropAndRemove(Entity ent, ItemStack item) {
+        ent.getWorld().dropItemNaturally(ent.getLocation(), item.clone());
+        ent.remove();
     }
 
 }
