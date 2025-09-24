@@ -33,11 +33,11 @@ import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
-public class ResidencePlayerListener1_13 implements Listener {
+public class ResidenceListener1_13 implements Listener {
 
     private Residence plugin;
 
-    public ResidencePlayerListener1_13(Residence plugin) {
+    public ResidenceListener1_13(Residence plugin) {
         this.plugin = plugin;
     }
 

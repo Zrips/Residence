@@ -9,34 +9,18 @@ public class ResidenceRaidListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void ResidenceSiegePreStartEvent(com.bekvon.bukkit.residence.event.ResidenceRaidPreStartEvent event) {
-	for (Player one : event.getRes().getPlayersInResidence()) {
-	    if (!event.getRes().getRaid().isDefender(one))
-		event.getRes().kickFromResidence(one);
-	}
+        for (Player one : event.getRes().getPlayersInResidence()) {
+            if (!event.getRes().getRaid().isDefender(one))
+                event.getRes().kickFromResidence(one);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void ResidenceSiegeStartEvent(com.bekvon.bukkit.residence.event.ResidenceRaidStartEvent event) {
-	for (Player one : event.getRes().getPlayersInResidence()) {
-	    if (!event.getRes().getRaid().isDefender(one)) 
-		event.getRes().kickFromResidence(one);
-	}
-//	for (UUID one : event.getRes().getRaid().getAttackers()) {
-//	    ResidencePlayer RPlayer = Residence.getInstance().getPlayerManager().getResidencePlayer(one);
-//	    if (RPlayer != null) {
-//		BossBarInfo barInfo = RPlayer.getBossBar(ResidenceRaid.bossBarPreRaidIdent);
-//		if (barInfo != null)
-//		    RPlayer.removeBossBar(barInfo);
-//	    }
-//	}
-//	for (UUID one : event.getRes().getRaid().getDefenders()) {
-//	    ResidencePlayer RPlayer = Residence.getInstance().getPlayerManager().getResidencePlayer(one);
-//	    if (RPlayer != null) {
-//		BossBarInfo barInfo = RPlayer.getBossBar(ResidenceRaid.bossBarPreRaidIdent);
-//		if (barInfo != null)
-//		    RPlayer.removeBossBar(barInfo);
-//	    }
-//	}
+        for (Player one : event.getRes().getPlayersInResidence()) {
+            if (!event.getRes().getRaid().isDefender(one))
+                event.getRes().kickFromResidence(one);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

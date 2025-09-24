@@ -28,11 +28,11 @@ import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Logs.CMIDebug;
 
-public class ResidencePlayerListener1_21 implements Listener {
+public class ResidenceListener1_21 implements Listener {
 
     private Residence plugin;
 
-    public ResidencePlayerListener1_21(Residence plugin) {
+    public ResidenceListener1_21(Residence plugin) {
         this.plugin = plugin;
     }
 

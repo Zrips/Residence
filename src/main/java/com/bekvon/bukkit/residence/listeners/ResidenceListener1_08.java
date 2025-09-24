@@ -20,7 +20,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.utils.Utils;
 
-public class ResidencePlayerListener1_08 implements Listener {
+public class ResidenceListener1_08 implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractAtArmoStand(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();

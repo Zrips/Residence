@@ -60,24 +60,22 @@ import com.bekvon.bukkit.residence.itemlist.WorldItemManager;
 import com.bekvon.bukkit.residence.listeners.CrackShotListener;
 import com.bekvon.bukkit.residence.listeners.ResidenceBlockListener;
 import com.bekvon.bukkit.residence.listeners.ResidenceEntityListener;
-import com.bekvon.bukkit.residence.listeners.ResidenceFixesListener;
 import com.bekvon.bukkit.residence.listeners.ResidenceLWCListener;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_08;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_09;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_10;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_12;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_13;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_14;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_15;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_16;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_17;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_19;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_20;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_8_Paper;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_8_Spigot;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_08;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_09;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_10;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_12;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_13;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_14;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_15;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_16;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_17;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_19;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_20;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_21;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_21_8;
-import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener1_9;
-import com.bekvon.bukkit.residence.listeners.SpigotListener;
 import com.bekvon.bukkit.residence.permissions.PermissionManager;
 import com.bekvon.bukkit.residence.persistance.YMLSaveHelper;
 import com.bekvon.bukkit.residence.pl3xmap.Pl3xMapListeners;
@@ -118,7 +116,6 @@ import com.residence.mcstats.Metrics;
 import com.residence.zip.ZipLibrary;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -606,49 +603,45 @@ public class Residence extends JavaPlugin {
 
                 PluginManager pm = getServer().getPluginManager();
 
+                if (Version.isCurrentEqualOrHigher(Version.v1_8_R1))
+                    pm.registerEvents(new ResidenceListener1_08(), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_9(this), this);
+                    pm.registerEvents(new ResidenceListener1_09(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_10_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_10(), this);
+                    pm.registerEvents(new ResidenceListener1_10(), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_12_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_12(this), this);
+                    pm.registerEvents(new ResidenceListener1_12(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_13_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_13(this), this);
+                    pm.registerEvents(new ResidenceListener1_13(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_14_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_14(this), this);
+                    pm.registerEvents(new ResidenceListener1_14(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_15_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_15(this), this);
+                    pm.registerEvents(new ResidenceListener1_15(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_16_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_16(this), this);
+                    pm.registerEvents(new ResidenceListener1_16(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_17_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_17(this), this);
+                    pm.registerEvents(new ResidenceListener1_17(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_19_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_19(this), this);
+                    pm.registerEvents(new ResidenceListener1_19(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_20_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_20(this), this);
+                    pm.registerEvents(new ResidenceListener1_20(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_21_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_21(this), this);
-                
+                    pm.registerEvents(new ResidenceListener1_21(this), this);
 
-                if (Version.isCurrentEqualOrHigher(Version.v1_21_R5) && Version.isCurrentSubEqualOrHigher(8) || Version.isCurrentEqualOrHigher(Version.v1_22_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_21_8(this), this);
+                if (Version.isCurrentEqualOrHigher(Version.v1_21_R5) && Version.isCurrentSubEqualOrHigher(8) || Version.isCurrentEqualOrHigher(Version.v1_22_R1)) {
+                    if (Version.isPaperBranch())
+                        pm.registerEvents(new ResidenceListener1_21_8_Paper(this), this);
+                    else
+                        pm.registerEvents(new ResidenceListener1_21_8_Spigot(this), this);
+                }
 
                 plistener = new ResidencePlayerListener(this);
 
                 pm.registerEvents(new ResidenceBlockListener(this), this);
                 pm.registerEvents(plistener, this);
                 pm.registerEvents(new ResidenceEntityListener(this), this);
-                pm.registerEvents(new ResidenceFixesListener(), this);
                 pm.registerEvents(new ShopListener(this), this);
                 pm.registerEvents(new ResidenceRaidListener(), this);
-
-                // 1.8 event
-                if (Version.isCurrentEqualOrHigher(Version.v1_8_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_08(), this);
-
-                // 1.9 event
-                if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
-                    pm.registerEvents(new ResidencePlayerListener1_09(), this);
 
                 firstenable = false;
             } else {
@@ -656,12 +649,6 @@ public class Residence extends JavaPlugin {
             }
 
             AutoSelectionManager = new AutoSelection(this);
-
-            try {
-                Class.forName("org.bukkit.event.player.PlayerItemDamageEvent");
-                getServer().getPluginManager().registerEvents(new SpigotListener(), this);
-            } catch (Exception e) {
-            }
 
             if (setupPlaceHolderAPI()) {
                 lm.consoleMessage("PlaceholderAPI was found - Enabling capabilities.");

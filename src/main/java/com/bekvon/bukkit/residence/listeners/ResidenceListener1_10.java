@@ -11,7 +11,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 
-public class ResidencePlayerListener1_10 implements Listener {
+public class ResidenceListener1_10 implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 
     public void onPlayerFireInteract(EntityDamageEvent event) {

@@ -22,11 +22,11 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
 
-public class ResidencePlayerListener1_20 implements Listener {
+public class ResidenceListener1_20 implements Listener {
 
     private Residence plugin;
 
-    public ResidencePlayerListener1_20(Residence plugin) {
+    public ResidenceListener1_20(Residence plugin) {
         this.plugin = plugin;
     }
 

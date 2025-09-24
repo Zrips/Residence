@@ -5,12 +5,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Allay;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Entity;
@@ -18,23 +16,31 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.WaterMob;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
-import com.bekvon.bukkit.residence.Residence;
-import com.bekvon.bukkit.residence.containers.lm;
 
 public class Utils {
 
     public Utils() {
+    }
+
+    public static Player entityToPlayer(Entity entity) {
+        Player player = null;
+        if (entity instanceof Projectile) {
+            player = ((Projectile) entity).getShooter() instanceof Player ? (Player) ((Projectile) entity).getShooter() : null;
+        }
+        if (entity instanceof Player) {
+            player = (Player) entity;
+        }
+        return player;
     }
 
     public static Block getTargetBlock(Player player, int distance, boolean ignoreNoneSolids) {

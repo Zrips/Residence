@@ -19,11 +19,11 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Items.CMIMaterial;
 
-public class ResidencePlayerListener1_15 implements Listener {
+public class ResidenceListener1_15 implements Listener {
 
     private Residence plugin;
 
-    public ResidencePlayerListener1_15(Residence plugin) {
+    public ResidenceListener1_15(Residence plugin) {
         this.plugin = plugin;
     }
 

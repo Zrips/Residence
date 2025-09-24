@@ -5,7 +5,7 @@ website: https://www.spigotmc.org/resources/residence.11480/
 description: Cuboid Residence Plugin
 api-version: 1.13
 folia-supported: true
-authors: [bekvon,nate302,t00thpick1]
+authors: [Zrips,bekvon]
 depend: [CMILib]
 softdepend: [Pl3xMap,Vault,Essentials,RealPlugin,iConomy,bPermissions,WorldEdit,WorldGuard,CrackShot,Multiverse-Core,MultiWorld,My_Worlds,TheWorld,dynmap,LWC,Kingdoms,PlaceholderAPI,CMI,ServerControlReloaded,Slimefun,CS-CoreLib]
 contributors: [lemon42,smbarbour,inorixu,Shayana_fr,Zrips]

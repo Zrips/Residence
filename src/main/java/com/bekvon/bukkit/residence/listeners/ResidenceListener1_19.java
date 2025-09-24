@@ -17,11 +17,11 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
-public class ResidencePlayerListener1_19 implements Listener {
+public class ResidenceListener1_19 implements Listener {
 
     private Residence plugin;
 
-    public ResidencePlayerListener1_19(Residence plugin) {
+    public ResidenceListener1_19(Residence plugin) {
         this.plugin = plugin;
     }
 

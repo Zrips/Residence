@@ -36,11 +36,11 @@ import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Logs.CMIDebug;
 
-public class ResidencePlayerListener1_17 implements Listener {
+public class ResidenceListener1_17 implements Listener {
 
     private Residence plugin;
 
-    public ResidencePlayerListener1_17(Residence plugin) {
+    public ResidenceListener1_17(Residence plugin) {
         this.plugin = plugin;
     }
 
@@ -63,7 +63,7 @@ public class ResidencePlayerListener1_17 implements Listener {
         if (event.getBlock().getType() != Material.POWDER_SNOW)
             return;
 
-        BlockData data = ResidencePlayerListener1_17.powder_snow.remove(event.getBlock().getLocation().toString());
+        BlockData data = ResidenceListener1_17.powder_snow.remove(event.getBlock().getLocation().toString());
         if (data == null)
             return;
 
