@@ -42,6 +42,7 @@ public class ResidencePlayer {
     private long lastSeen = 0L;
 
     private boolean saved = false;
+    private String lastKnownWorld = null;
 
     private static final int maxValue = 9999;
 
@@ -223,11 +224,11 @@ public class ResidencePlayer {
     }
 
     public PermissionGroup forceUpdateGroup() {
-        return getGroup(getPlayer() != null ? getPlayer().getWorld().getName() : Residence.getInstance().getConfigManager().getDefaultWorld(), true);
+        return getGroup(true);
     }
 
     public PermissionGroup getGroup(boolean forceUpdate) {
-        return getGroup(getPlayer() != null ? getPlayer().getWorld().getName() : Residence.getInstance().getConfigManager().getDefaultWorld(), forceUpdate);
+        return getGroups().getGroup(forceUpdate);
     }
 
     public PermissionGroup getGroup(String world) {
@@ -235,13 +236,7 @@ public class ResidencePlayer {
     }
 
     public PermissionGroup getGroup(String world, boolean force) {
-        if (groups == null)
-            groups = new PlayerGroup(this);
-        groups.updateGroup(world, force);
-        PermissionGroup group = groups.getGroup(world);
-        if (group == null)
-            group = Residence.getInstance().getPermissionManager().getDefaultGroup();
-        return group;
+        return getGroups().getGroup(world, force);
     }
 
     private boolean updated = false;
@@ -263,6 +258,7 @@ public class ResidencePlayer {
 
     public void onQuit() {
         this.setLastSeen(System.currentTimeMillis());
+        this.updateLastKnownWorld();
         updated = false;
         save();
     }
@@ -401,6 +397,8 @@ public class ResidencePlayer {
     }
 
     public PlayerGroup getGroups() {
+        if (groups == null)
+            groups = new PlayerGroup(this);
         return groups;
     }
 
@@ -500,7 +498,10 @@ public class ResidencePlayer {
         if (getLastSeen() > 0L)
             map.put("Seen", getLastSeen());
 
-        map.putAll(groups.serialize());
+        if (getLastKnownWorld() != null)
+            map.put("World", getLastKnownWorld());
+
+        map.putAll(getGroups().serialize());
 
         return map;
     }
@@ -530,7 +531,13 @@ public class ResidencePlayer {
                 e.printStackTrace();
             }
         }
-
+        if (map.containsKey("World")) {
+            try {
+                rplayer.setLastKnownWorld((String) map.get("World"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         ResidencePlayerMaxValues.deserialize(uuid, map);
 
         rplayer.groups = PlayerGroup.deserialize(rplayer, map);
@@ -547,11 +554,24 @@ public class ResidencePlayer {
     }
 
     public long getLastSeen() {
-        
+
         return lastSeen;
     }
 
     public void setLastSeen(long lastSeen) {
         this.lastSeen = lastSeen;
+    }
+
+    public String getLastKnownWorld() {
+        return lastKnownWorld;
+    }
+
+    public void updateLastKnownWorld() {
+        if (this.getPlayer() != null)
+            this.lastKnownWorld = this.getPlayer().getWorld().getName();
+    }
+
+    public void setLastKnownWorld(String lastKnownWorld) {
+        this.lastKnownWorld = lastKnownWorld;
     }
 }

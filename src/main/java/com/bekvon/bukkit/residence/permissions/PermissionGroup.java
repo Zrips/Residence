@@ -562,8 +562,7 @@ public class PermissionGroup {
 
         lm.General_Separator.sendMessage(sender);
         
-        lm.Limits_PGroup.sendMessage(sender, Residence.getInstance().getPermissionManager().getPermissionsGroup(rPlayer.getName(),
-            player != null ? player.getWorld().getName() : Residence.getInstance().getConfigManager().getDefaultWorld()));
+        lm.Limits_PGroup.sendMessage(sender, rPlayer.getGroups().getPermissionGroup().getGroupName());
         
         lm.Limits_RGroup.sendMessage(sender, group.getGroupName());
         if (player != null && resadmin)

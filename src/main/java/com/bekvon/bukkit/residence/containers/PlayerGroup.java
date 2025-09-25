@@ -5,10 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.bukkit.entity.Player;
@@ -19,24 +16,9 @@ import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 
 public class PlayerGroup {
 
-    private static ConcurrentHashMap<UUID, PlayerGroup> playerGroups = new ConcurrentHashMap<UUID, PlayerGroup>();
-
-    public static @Nullable PlayerGroup getPlayerGroup(@Nonnull UUID uuid) {
-        return playerGroups.get(uuid);
-    }
-
-    public static void removePlayerGroup(@Nonnull UUID uuid) {
-        playerGroups.remove(uuid);
-    }
-
-    public static void addPlayerGroup(@Nonnull UUID uuid, @Nonnull PlayerGroup group) {
-        playerGroups.put(uuid, group);
-    }
-
     ResidencePlayer resPlayer;
     long lastCheck = 0L;
     HashMap<String, PermissionGroup> rGroups = new HashMap<String, PermissionGroup>();
-    HashMap<String, String> pGroups = new HashMap<String, String>();
 
     public PlayerGroup(ResidencePlayer resPlayer) {
         this.resPlayer = resPlayer;
@@ -50,21 +32,25 @@ public class PlayerGroup {
     }
 
     public void addGroup(String world, PermissionGroup group) {
+        if (group == null)
+            return;
         rGroups.put(world.toLowerCase(), group);
     }
 
+    public @Nullable PermissionGroup getGroup(boolean force) {
+        String world = resPlayer.getPlayer() != null ? resPlayer.getPlayer().getWorld().getName() : resPlayer.getLastKnownWorld() != null ? resPlayer.getLastKnownWorld() : Residence.getInstance()
+            .getConfigManager().getDefaultWorld();
+        return getGroup(world, force);
+    }
+
     public @Nullable PermissionGroup getGroup(String world) {
-        updateGroup(world, false);
-        return this.rGroups.get(world.toLowerCase());
+        return getGroup(world, false);
     }
 
-    public @Nullable String getPermissionGroup(String world) {
-        updateGroup(world, false);
-        return this.pGroups.get(world.toLowerCase());
-    }
-
-    public void addPermissionGroup(String world, String group) {
-        pGroups.put(world.toLowerCase(), group);
+    public @Nullable PermissionGroup getGroup(String world, boolean force) {
+        updateGroup(world, force);
+        PermissionGroup gr = this.rGroups.get(world.toLowerCase());
+        return gr != null ? gr : Residence.getInstance().getPermissionManager().getDefaultGroup();
     }
 
     public void updateGroup(String world, boolean force) {
@@ -73,7 +59,7 @@ public class PlayerGroup {
 
         this.lastCheck = System.currentTimeMillis();
 
-        if (world == null)
+        if (world == null || resPlayer == null || !resPlayer.isOnline())
             return;
 
         List<PermissionGroup> possibleGroups = new ArrayList<PermissionGroup>();
@@ -90,8 +76,6 @@ public class PlayerGroup {
         possibleGroups.add(getPermissionGroup());
 
         group = Residence.getInstance().getPermissionManager().getPermissionsGroup(resPlayer.getUniqueId(), world);
-
-        addPermissionGroup(world, group);
 
         PermissionGroup g = Residence.getInstance().getPermissionManager().getGroupByName(group);
 
@@ -119,23 +103,26 @@ public class PlayerGroup {
         }
     }
 
-    private PermissionGroup getPermissionGroup() {
-        Player player = resPlayer.getPlayer();
-        PermissionGroup group = Residence.getInstance().getPermissionManager().getDefaultGroup();
-        for (Entry<String, PermissionGroup> one : Residence.getInstance().getPermissionManager().getGroups().entrySet()) {
-            if (player != null && ResPerm.group_$1.hasPermission(player, one.getKey())) {
-                group = one.getValue();
+    public PermissionGroup getPermissionGroup() {
+
+        if (resPlayer.isOnline()) {
+            Player player = resPlayer.getPlayer();
+            PermissionGroup group = Residence.getInstance().getPermissionManager().getDefaultGroup();
+            for (Entry<String, PermissionGroup> one : Residence.getInstance().getPermissionManager().getGroups().entrySet()) {
+                if (player != null && ResPerm.group_$1.hasPermission(player, one.getKey())) {
+                    group = one.getValue();
+                }
             }
+
+            return group;
         }
-        return group;
+
+        PermissionGroup pg = getGroup(resPlayer.getLastKnownWorld() != null ? resPlayer.getLastKnownWorld() : Residence.getInstance().getConfigManager().getDefaultWorld());
+        return pg == null ? Residence.getInstance().getPermissionManager().getDefaultGroup() : pg;
     }
 
-    private boolean isDefault(PermissionGroup group) {
+    private static boolean isDefault(PermissionGroup group) {
         return Residence.getInstance().getPermissionManager().getDefaultGroup().equals(group);
-    }
-
-    private boolean isDefault(String group) {
-        return Residence.getInstance().getPermissionManager().getDefaultGroup().getGroupName().equalsIgnoreCase(group);
     }
 
     public Map<String, Object> serialize() {
@@ -146,11 +133,6 @@ public class PlayerGroup {
                 groups.put("RGroup." + one.getKey(), one.getValue().getGroupName());
         }
 
-        for (Entry<String, String> one : pGroups.entrySet()) {
-            if (!isDefault(one.getValue()))
-                groups.put("PGroup." + one.getKey(), one.getValue());
-        }
-
         return groups;
     }
 
@@ -159,17 +141,7 @@ public class PlayerGroup {
         if (!map.containsKey("PGroup") && !map.containsKey("RGroup"))
             return null;
 
-        PlayerGroup group = new PlayerGroup(rplayer);
-
-        Object pgroups = map.get("PGroup");
-
-        if (pgroups instanceof Map) {
-            for (Entry<String, Object> one : ((Map<String, Object>) pgroups).entrySet()) {
-                if (!(one.getValue() instanceof String))
-                    continue;
-                group.addPermissionGroup(one.getKey(), (String) one.getValue());
-            }
-        }
+        PlayerGroup group = rplayer.getGroups() != null ? rplayer.getGroups() : new PlayerGroup(rplayer);
 
         Object rgroups = map.get("RGroup");
         if (rgroups instanceof Map) {
@@ -186,7 +158,7 @@ public class PlayerGroup {
 
         group.setLastCkeck(System.currentTimeMillis());
 
-        return null;
+        return group;
     }
 
 }

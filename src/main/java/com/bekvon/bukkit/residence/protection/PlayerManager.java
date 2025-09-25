@@ -207,6 +207,7 @@ public class PlayerManager implements ResidencePlayerInterface {
             resPlayer.updatePlayer(player);
         }
         resPlayer.setLastSeen(System.currentTimeMillis());
+        resPlayer.updateLastKnownWorld();
         
         return resPlayer;
     }
