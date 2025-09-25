@@ -1,27 +1,23 @@
 package com.bekvon.bukkit.residence.listeners;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Powerable;
 import org.bukkit.block.data.type.Farmland;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
-import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -33,9 +29,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
-import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_13 implements Listener {
@@ -138,7 +132,6 @@ public class ResidenceListener1_13 implements Listener {
         if (plugin.isDisabledWorldListener(e.getHitBlock().getWorld()))
             return;
 
-
         Block block = e.getHitBlock().getLocation().clone().add(e.getHitBlockFace().getDirection()).getBlock();
 
         @NotNull
@@ -151,7 +144,7 @@ public class ResidenceListener1_13 implements Listener {
 
         if (res != null && res.getRaid().isUnderRaid())
             return;
-        
+
         Player player = Utils.entityToPlayer(e.getEntity());
 
         if (player != null) {
@@ -220,7 +213,7 @@ public class ResidenceListener1_13 implements Listener {
             FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation(), player);
 
             boolean hasUse = perms.playerHas(player, Flags.use, true);
-   
+
             if (perms.playerHas(player, result, hasUse))
                 return;
 

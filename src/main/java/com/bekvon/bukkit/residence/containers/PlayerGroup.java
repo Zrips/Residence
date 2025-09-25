@@ -3,20 +3,40 @@ package com.bekvon.bukkit.residence.containers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.OfflinePlayer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.bukkit.entity.Player;
+
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
-import com.bekvon.bukkit.residence.vaultinterface.ResidenceVaultAdapter;
 
 public class PlayerGroup {
 
+    private static ConcurrentHashMap<UUID, PlayerGroup> playerGroups = new ConcurrentHashMap<UUID, PlayerGroup>();
+
+    public static @Nullable PlayerGroup getPlayerGroup(@Nonnull UUID uuid) {
+        return playerGroups.get(uuid);
+    }
+
+    public static void removePlayerGroup(@Nonnull UUID uuid) {
+        playerGroups.remove(uuid);
+    }
+
+    public static void addPlayerGroup(@Nonnull UUID uuid, @Nonnull PlayerGroup group) {
+        playerGroups.put(uuid, group);
+    }
+
     ResidencePlayer resPlayer;
     long lastCheck = 0L;
-    HashMap<String, PermissionGroup> groups = new HashMap<String, PermissionGroup>();
+    HashMap<String, PermissionGroup> rGroups = new HashMap<String, PermissionGroup>();
+    HashMap<String, String> pGroups = new HashMap<String, String>();
 
     public PlayerGroup(ResidencePlayer resPlayer) {
         this.resPlayer = resPlayer;
@@ -30,12 +50,21 @@ public class PlayerGroup {
     }
 
     public void addGroup(String world, PermissionGroup group) {
-        groups.put(world, group);
+        rGroups.put(world.toLowerCase(), group);
     }
 
-    public PermissionGroup getGroup(String world) {
+    public @Nullable PermissionGroup getGroup(String world) {
         updateGroup(world, false);
-        return this.groups.get(world);
+        return this.rGroups.get(world.toLowerCase());
+    }
+
+    public @Nullable String getPermissionGroup(String world) {
+        updateGroup(world, false);
+        return this.pGroups.get(world.toLowerCase());
+    }
+
+    public void addPermissionGroup(String world, String group) {
+        pGroups.put(world.toLowerCase(), group);
     }
 
     public void updateGroup(String world, boolean force) {
@@ -43,20 +72,26 @@ public class PlayerGroup {
             return;
 
         this.lastCheck = System.currentTimeMillis();
+
+        if (world == null)
+            return;
+
         List<PermissionGroup> possibleGroups = new ArrayList<PermissionGroup>();
         String group = Residence.getInstance().getPermissionManager().getPlayersGroups().get(resPlayer.getUniqueId());
         if (group != null) {
             group = group.toLowerCase();
-            if (Residence.getInstance().getPermissionManager().getGroups().containsKey(group)) {
-                PermissionGroup g = Residence.getInstance().getPermissionManager().getGroups().get(group);
+            PermissionGroup g = Residence.getInstance().getPermissionManager().getGroupByName(group);
+            if (g != null) {
                 possibleGroups.add(g);
-                this.groups.put(world, g);
+                addGroup(world, g);
             }
         }
 
         possibleGroups.add(getPermissionGroup());
 
-        group = Residence.getInstance().getPermissionManager().getPermissionsGroup(resPlayer.getName(), world);
+        group = Residence.getInstance().getPermissionManager().getPermissionsGroup(resPlayer.getUniqueId(), world);
+
+        addPermissionGroup(world, group);
 
         PermissionGroup g = Residence.getInstance().getPermissionManager().getGroupByName(group);
 
@@ -78,9 +113,9 @@ public class PlayerGroup {
         }
 
         if (finalGroup == null || !Residence.getInstance().getPermissionManager().getGroups().containsValue(finalGroup)) {
-            this.groups.put(world, Residence.getInstance().getPermissionManager().getDefaultGroup());
+            addGroup(world, Residence.getInstance().getPermissionManager().getDefaultGroup());
         } else {
-            this.groups.put(world, finalGroup);
+            addGroup(world, finalGroup);
         }
     }
 
@@ -93,6 +128,65 @@ public class PlayerGroup {
             }
         }
         return group;
+    }
+
+    private boolean isDefault(PermissionGroup group) {
+        return Residence.getInstance().getPermissionManager().getDefaultGroup().equals(group);
+    }
+
+    private boolean isDefault(String group) {
+        return Residence.getInstance().getPermissionManager().getDefaultGroup().getGroupName().equalsIgnoreCase(group);
+    }
+
+    public Map<String, Object> serialize() {
+        Map<String, Object> groups = new HashMap<String, Object>();
+
+        for (Entry<String, PermissionGroup> one : rGroups.entrySet()) {
+            if (!isDefault(one.getValue()))
+                groups.put("RGroup." + one.getKey(), one.getValue().getGroupName());
+        }
+
+        for (Entry<String, String> one : pGroups.entrySet()) {
+            if (!isDefault(one.getValue()))
+                groups.put("PGroup." + one.getKey(), one.getValue());
+        }
+
+        return groups;
+    }
+
+    public static @Nullable PlayerGroup deserialize(ResidencePlayer rplayer, Map<String, Object> map) {
+
+        if (!map.containsKey("PGroup") && !map.containsKey("RGroup"))
+            return null;
+
+        PlayerGroup group = new PlayerGroup(rplayer);
+
+        Object pgroups = map.get("PGroup");
+
+        if (pgroups instanceof Map) {
+            for (Entry<String, Object> one : ((Map<String, Object>) pgroups).entrySet()) {
+                if (!(one.getValue() instanceof String))
+                    continue;
+                group.addPermissionGroup(one.getKey(), (String) one.getValue());
+            }
+        }
+
+        Object rgroups = map.get("RGroup");
+        if (rgroups instanceof Map) {
+            for (Entry<String, Object> one : ((Map<String, Object>) rgroups).entrySet()) {
+
+                if (!(one.getValue() instanceof String))
+                    continue;
+
+                PermissionGroup g = Residence.getInstance().getPermissionManager().getGroupByName((String) one.getValue());
+                if (g != null)
+                    group.addGroup(one.getKey(), g);
+            }
+        }
+
+        group.setLastCkeck(System.currentTimeMillis());
+
+        return null;
     }
 
 }

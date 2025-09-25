@@ -62,6 +62,16 @@ public class ResidenceVaultAdapter implements EconomyInterface, PermissionsInter
     }
 
     @Override
+    public String getPlayerGroup(UUID uuid, String world) {
+        @SuppressWarnings("deprecation")
+        String group = permissions.getPrimaryGroup(world, ResidencePlayer.getName(uuid));
+        if (group == null) {
+            return group;
+        }
+        return group.toLowerCase();
+    }
+
+    @Override
     public String getPlayerGroup(String player, String world) {
         @SuppressWarnings("deprecation")
         String group = permissions.getPrimaryGroup(world, player);

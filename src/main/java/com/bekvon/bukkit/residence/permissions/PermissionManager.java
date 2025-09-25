@@ -45,7 +45,6 @@ public class PermissionManager {
     protected Map<UUID, String> playersGroup;
     protected FlagPermissions globalFlagPerms;
 
-    protected HashMap<String, PlayerGroup> groupsMap = new HashMap<String, PlayerGroup>();
     private PermissionGroup defaultGroup = null;
     private Residence plugin;
 
@@ -96,22 +95,29 @@ public class PermissionManager {
     }
 
     public PermissionGroup getGroupByName(String group) {
-        group = group.toLowerCase();
-        if (!groups.containsKey(group)) {
-            return getDefaultGroup();
-        }
-        return groups.get(group);
+        PermissionGroup baseGroup = groups.get(group.toLowerCase());
+        return baseGroup == null ? getDefaultGroup() : baseGroup;
     }
 
     public String getPermissionsGroup(Player player) {
-        return this.getPermissionsGroup(player.getName(), player.getWorld().getName()).toLowerCase();
+        return this.getPermissionsGroup(player.getUniqueId(), player.getWorld().getName()).toLowerCase();
+    }
+
+    public String getPermissionsGroup(UUID uuid, String world) {
+        if (perms == null || !Residence.getInstance().isFullyLoaded())
+            return plugin.getConfigManager().getDefaultGroup().toLowerCase();
+        try {
+            return perms.getPlayerGroup(uuid, world).toLowerCase();
+        } catch (Exception e) {
+            return plugin.getConfigManager().getDefaultGroup().toLowerCase();
+        }
+
     }
 
     public String getPermissionsGroup(String player, String world) {
-        if (perms == null)
+        if (perms == null || !Residence.getInstance().isFullyLoaded())
             return plugin.getConfigManager().getDefaultGroup().toLowerCase();
-        if (!Residence.getInstance().isFullyLoaded())
-            return plugin.getConfigManager().getDefaultGroup().toLowerCase();
+
         try {
             return perms.getPlayerGroup(player, world).toLowerCase();
         } catch (Exception e) {

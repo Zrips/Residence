@@ -39,6 +39,8 @@ public class ResidencePlayer {
 
     private PlayerGroup groups = null;
 
+    private long lastSeen = 0L;
+
     private boolean saved = false;
 
     private static final int maxValue = 9999;
@@ -82,8 +84,7 @@ public class ResidencePlayer {
                     return mainResidence;
                 }
             }
-            for (String one : Residence.getInstance().getRentManager().getRentedLands(this.userName)) {
-                ClaimedResidence res = Residence.getInstance().getResidenceManager().getByName(one);
+            for (ClaimedResidence res : Residence.getInstance().getRentManager().getRentedLands(this.getUniqueId())) {
                 if (res != null) {
                     mainResidence = res;
                     return mainResidence;
@@ -261,6 +262,7 @@ public class ResidencePlayer {
     }
 
     public void onQuit() {
+        this.setLastSeen(System.currentTimeMillis());
         updated = false;
         save();
     }
@@ -495,6 +497,11 @@ public class ResidencePlayer {
         if (maxData != null)
             map.putAll(maxData.serialize());
 
+        if (getLastSeen() > 0L)
+            map.put("Seen", getLastSeen());
+
+        map.putAll(groups.serialize());
+
         return map;
     }
 
@@ -515,9 +522,20 @@ public class ResidencePlayer {
         if (name == null)
             return null;
 
+        ResidencePlayer rplayer = new ResidencePlayer(name, uuid);
+        if (map.containsKey("Seen")) {
+            try {
+                rplayer.setLastSeen((Long) map.get("Seen"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         ResidencePlayerMaxValues.deserialize(uuid, map);
 
-        return new ResidencePlayer(name, uuid);
+        rplayer.groups = PlayerGroup.deserialize(rplayer, map);
+
+        return rplayer;
     }
 
     public boolean isSaved() {
@@ -526,5 +544,14 @@ public class ResidencePlayer {
 
     public void setSaved(boolean saved) {
         this.saved = saved;
+    }
+
+    public long getLastSeen() {
+        
+        return lastSeen;
+    }
+
+    public void setLastSeen(long lastSeen) {
+        this.lastSeen = lastSeen;
     }
 }

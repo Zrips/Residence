@@ -31,7 +31,9 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.api.ResidencePlayerInterface;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
+import com.bekvon.bukkit.residence.containers.ResidencePlayerMaxValues;
 import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.economy.rent.RentManager;
 
 import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Messages.CMIMessages;
@@ -123,6 +125,11 @@ public class PlayerManager implements ResidencePlayerInterface {
             playersByName.put(to.toLowerCase(), residencePlayer);
     }
 
+    private static void convertUUID(UUID from, UUID to) {
+        RentManager.updateUUID(from, to);
+        ResidencePlayerMaxValues.updateUUID(from, to);
+    }
+
     public void addPlayer(ResidencePlayer resPlayer) {
         if (resPlayer == null)
             return;
@@ -137,16 +144,21 @@ public class PlayerManager implements ResidencePlayerInterface {
                 ResidencePlayer byTempUUID = playersByUUID.remove(byName.getUniqueId());
                 if (byTempUUID != null) {
 
-                    renameFile(byTempUUID.getUniqueId(), uuid);
+                    UUID from = byTempUUID.getUniqueId();
+                    UUID to = resPlayer.getUniqueId();
 
-                    byTempUUID.setUniqueId(resPlayer.getUniqueId());
+                    renameFile(from, uuid);
 
-                    playersByUUID.put(byTempUUID.getUniqueId(), byTempUUID);
+                    byTempUUID.setUniqueId(to);
+
+                    playersByUUID.put(from, byTempUUID);
 
                     if (!byName.equals(byTempUUID)) {
                         playersByName.remove(name.toLowerCase());
                         playersByName.put(name.toLowerCase(), byTempUUID);
                     }
+
+                    convertUUID(from, to);
 
                     byTempUUID.save();
 
@@ -194,6 +206,8 @@ public class PlayerManager implements ResidencePlayerInterface {
         } else {
             resPlayer.updatePlayer(player);
         }
+        resPlayer.setLastSeen(System.currentTimeMillis());
+        
         return resPlayer;
     }
 

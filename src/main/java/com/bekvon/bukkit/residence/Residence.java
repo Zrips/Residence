@@ -386,7 +386,6 @@ public class Residence extends JavaPlugin {
             ResidenceVersion = this.getDescription().getVersion();
             authlist = this.getDescription().getAuthors();
 
-            getPlayerManager().load();
 
             cmdFiller = new CommandFiller();
             cmdFiller.fillCommands();
@@ -439,6 +438,8 @@ public class Residence extends JavaPlugin {
             }
 
             this.getPermissionManager().startCacheClearScheduler();
+            
+            getPlayerManager().load();
 
             imanager = new WorldItemManager(this);
             wmanager = new WorldFlagManager(this);

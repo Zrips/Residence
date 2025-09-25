@@ -31,15 +31,14 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.utils.GetTime;
 
 import net.Zrips.CMILib.Container.PageInfo;
-import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class RentManager implements MarketRentInterface {
     private Set<ClaimedResidence> rentedLand;
     private Set<ClaimedResidence> rentableLand;
 
-    private Map<UUID, List<ClaimedResidence>> playerRentedLands = new ConcurrentHashMap<>();
-    private Map<String, List<ClaimedResidence>> byPlayerNameRentedLands = new ConcurrentHashMap<>();
+    private static Map<UUID, List<ClaimedResidence>> playerRentedLands = new ConcurrentHashMap<>();
+    private static Map<String, List<ClaimedResidence>> byPlayerNameRentedLands = new ConcurrentHashMap<>();
 
     private Residence plugin;
 
@@ -47,6 +46,12 @@ public class RentManager implements MarketRentInterface {
         this.plugin = plugin;
         rentedLand = new HashSet<ClaimedResidence>();
         rentableLand = new HashSet<ClaimedResidence>();
+    }
+
+    public static void updateUUID(UUID from, UUID to) {
+        List<ClaimedResidence> list = playerRentedLands.remove(from);
+        if (list != null)
+            playerRentedLands.put(to, list);
     }
 
     private void addRented(ClaimedResidence residence) {
@@ -141,6 +146,10 @@ public class RentManager implements MarketRentInterface {
             rentedLands.add(lm.Residence_List.getMessage("", res.getName(), world) + lm.Rent_Rented.getMessage());
         }
         return rentedLands;
+    }
+
+    public List<ClaimedResidence> getRentedLands(UUID uuid) {
+        return getRentedLands(uuid, false, null);
     }
 
     public List<ClaimedResidence> getRentedLands(UUID uuid, boolean onlyHidden) {

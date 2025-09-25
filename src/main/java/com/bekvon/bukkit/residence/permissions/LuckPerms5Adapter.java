@@ -23,16 +23,21 @@ public class LuckPerms5Adapter implements PermissionsInterface {
 
     @Override
     public String getPlayerGroup(Player player) {
-        User user = api.getUserManager().getUser(player.getUniqueId());
+        return getPlayerGroup(player.getUniqueId(), player.getWorld().getName());
+    }
+
+    @Override
+    @Deprecated
+    public String getPlayerGroup(String player, String world) {
+        User user = api.getUserManager().getUser(player);
         if (user == null)
             return "";
-
         return user.getPrimaryGroup();
     }
 
     @Override
-    public String getPlayerGroup(String player, String world) {
-        User user = api.getUserManager().getUser(player);
+    public String getPlayerGroup(UUID uuid, String world) {
+        User user = api.getUserManager().getUser(uuid);
         if (user == null)
             return "";
         return user.getPrimaryGroup();

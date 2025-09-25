@@ -19,6 +19,12 @@ public class ResidencePlayerMaxValues {
         return data.get(uuid);
     }
 
+    public static void updateUUID(UUID from, UUID to) {
+        ResidencePlayerMaxValues value = data.remove(from);
+        if (value != null)
+            data.put(to, value);
+    }
+
     private int maxRes = -1;
     private int maxRents = -1;
     private int maxSubzones = -1;
