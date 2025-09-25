@@ -69,7 +69,7 @@ public class ResidenceListener1_14 implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onVehicleDamage(VehicleDamageEvent event) {
         // Disabling listener if flag disabled globally
-        if (!Flags.destroy.isGlobalyEnabled())
+        if (!Flags.vehicledestroy.isGlobalyEnabled())
             return;
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getVehicle().getWorld()))
@@ -80,17 +80,17 @@ public class ResidenceListener1_14 implements Listener {
 
         Entity attacker = event.getAttacker();
         if (attacker instanceof Player) {
-            if (!FlagPermissions.has(event.getVehicle().getLocation(), (Player) attacker, Flags.destroy, FlagCombo.OnlyFalse))
+            if (!FlagPermissions.has(event.getVehicle().getLocation(), (Player) attacker, Flags.vehicledestroy, FlagCombo.OnlyFalse))
                 return;
         } else {
-            if (!FlagPermissions.has(event.getVehicle().getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
+            if (!FlagPermissions.has(event.getVehicle().getLocation(), Flags.vehicledestroy, FlagCombo.OnlyFalse))
                 return;
         }
 
         event.setCancelled(true);
 
         if (attacker instanceof Player)
-            lm.Flag_Deny.sendMessage((Player) attacker, Flags.destroy);
+            lm.Flag_Deny.sendMessage((Player) attacker, Flags.vehicledestroy);
 
     }
 }
