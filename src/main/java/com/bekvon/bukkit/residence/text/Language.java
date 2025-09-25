@@ -114,21 +114,6 @@ public class Language {
      * @param key - the key of the message
      * @return the message
      */
-    public List<String> getMessageList2(String key) {
-        if (!key.contains("Language.") && !key.contains("CommandHelp."))
-            key = "Language." + key;
-        String missing = "Missing locale for " + key;
-        if (customlocale.isList(key))
-            return ColorsArray(customlocale.getStringList(key));
-        return enlocale.getStringList(key).size() > 0 ? ColorsArray(enlocale.getStringList(key)) : Arrays.asList(missing);
-    }
-
-    /**
-     * Get the message with the correct key
-     * 
-     * @param key - the key of the message
-     * @return the message
-     */
     public List<String> getMessageList(lm lm) {
         String key = lm.getPath();
         if (!key.contains("Language.") && !key.contains("CommandHelp."))

@@ -13,31 +13,31 @@ public class Signs {
     }
 
     public void setLocation(Location loc) {
-	this.loc = loc;
+        this.loc = loc;
     }
 
     @Deprecated
     public Location GetLocation() {
-	return this.loc;
+        return getLocation();
     }
 
     public Location getLocation() {
-	return this.loc;
+        return this.loc;
     }
 
     public void setResidence(ClaimedResidence Residence) {
-	this.Residence = Residence;
-	if (Residence != null)
-	    Residence.getSignsInResidence().add(this);
+        this.Residence = Residence;
+        if (Residence != null)
+            Residence.getSignsInResidence().add(this);
     }
 
     public ClaimedResidence getResidence() {
-	return this.Residence;
+        return this.Residence;
     }
 
     @Deprecated
     public ClaimedResidence GetResidence() {
-	return this.Residence;
+        return getResidence();
     }
 
 }

@@ -16,9 +16,9 @@ import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 
 public class PlayerGroup {
 
-    ResidencePlayer resPlayer;
-    long lastCheck = 0L;
-    HashMap<String, PermissionGroup> rGroups = new HashMap<String, PermissionGroup>();
+    private ResidencePlayer resPlayer;
+    private long lastCheck = 0L;
+    private HashMap<String, PermissionGroup> rGroups = new HashMap<String, PermissionGroup>();
 
     public PlayerGroup(ResidencePlayer resPlayer) {
         this.resPlayer = resPlayer;

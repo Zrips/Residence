@@ -13,7 +13,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -62,11 +61,6 @@ public class InformationPager {
 
         pi.autoPagination(sender, command);
 
-    }
-
-    @Deprecated
-    public void printListInfo(CommandSender sender, String targetPlayer, TreeMap<String, ClaimedResidence> ownedResidences, int page, boolean resadmin, World world) {
-        printListInfo(sender, ResidencePlayer.getUUID(targetPlayer), ownedResidences, page, resadmin, world);
     }
 
     public void printListInfo(CommandSender sender, UUID uuid, TreeMap<String, ClaimedResidence> ownedResidences, int page, boolean resadmin, World world) {
@@ -153,14 +147,14 @@ public class InformationPager {
 
             String tpFlag = "";
             String moveFlag = "";
-            String msg = lm.Residence_ResList.getMessage(y + 1, res.getName(), res.getWorld(), tpFlag + moveFlag, ExtraString);
+            String msg = lm.Residence_ResList.getMessage(y + 1, res.getName(), res.getWorldName(), tpFlag + moveFlag, ExtraString);
 
             if (sender instanceof Player && !res.isOwner(sender)) {
                 tpFlag = res.getPermissions().playerHas((Player) sender, Flags.tp, true) ? lm.General_AllowedTeleportIcon.getMessage() : lm.General_BlockedTeleportIcon.getMessage();
                 moveFlag = res.getPermissions().playerHas(sender.getName(), Flags.move, true) ? lm.General_AllowedMovementIcon.getMessage() : lm.General_BlockedMovementIcon.getMessage();
 
                 if (res.isTrusted((Player) sender))
-                    msg = lm.Residence_TrustedResList.getMessage(y + 1, res.getName(), res.getWorld(), tpFlag + moveFlag, ExtraString);
+                    msg = lm.Residence_TrustedResList.getMessage(y + 1, res.getName(), res.getWorldName(), tpFlag + moveFlag, ExtraString);
             }
 
             RawMessage rm = new RawMessage();
@@ -230,7 +224,7 @@ public class InformationPager {
                 StringB.append("\n" + lm.Economy_LandForSale.getMessage() + " " + res.getSellPrice());
             }
 
-            String msg = lm.Residence_ResList.getMessage(i, res.getName(), res.getWorld(), "", ExtraString);
+            String msg = lm.Residence_ResList.getMessage(i, res.getName(), res.getWorldName(), "", ExtraString);
 
             msg = CMIChatColor.stripColor(msg + " " + StringB.toString().replace("\n", ""));
             msg = msg.replaceAll("\\s{2}", " ");
@@ -290,7 +284,7 @@ public class InformationPager {
                     StringB.append("\n " + lm.Economy_LandForSale.getMessage() + " " + res.getSellPrice());
                 }
 
-                String msg = lm.Residence_ResList.getMessage(y, res.getName(), res.getWorld(), "", ExtraString);
+                String msg = lm.Residence_ResList.getMessage(y, res.getName(), res.getWorldName(), "", ExtraString);
 
                 msg = CMIChatColor.stripColor(msg + " " + StringB.toString().replace("\n", ""));
                 msg = msg.replaceAll("\\s{2}", " ");
