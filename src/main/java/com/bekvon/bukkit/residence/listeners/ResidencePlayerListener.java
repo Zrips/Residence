@@ -1248,9 +1248,9 @@ public class ResidencePlayerListener implements Listener {
         Player player = event.getPlayer();
         if (player.hasMetadata("NPC"))
             return;
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
 
-        CMIMaterial mat = CMIMaterial.get(block);
+        CMIMaterial mat = CMIMaterial.get(block.getType());
         if (!ResAdmin.isResAdmin(player)) {
             boolean hasuse = perms.playerHas(player, Flags.use, true);
             boolean haspressure = perms.playerHas(player, Flags.pressure, hasuse);

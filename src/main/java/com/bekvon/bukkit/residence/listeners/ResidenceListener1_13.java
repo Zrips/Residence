@@ -10,6 +10,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
+import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,6 +22,7 @@ import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -29,7 +31,9 @@ import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
+import com.bekvon.bukkit.residence.utils.Utils;
 
+import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
@@ -121,39 +125,9 @@ public class ResidenceListener1_13 implements Listener {
 
     }
 
-//    @EventHandler(priority = EventPriority.LOWEST)
-//    public void onButtonHitWithProjectile(BlockRedstoneEvent e) {
-//
-//        if (tempButtonLocation == null)
-//            return;
-//
-//        // Disabling listener if flag disabled globally
-//        if (!Flags.button.isGlobalyEnabled())
-//            return;
-//
-//        if (e.getBlock() == null)
-//            return;
-//
-//        if (plugin.isDisabledWorldListener(e.getBlock().getWorld()))
-//            return;
-//
-//        Block block = e.getBlock();
-//
-//        if (!tempButtonLocation.equals(block.getLocation()) && !tempButtonLocation.clone().add(0, 1, 0).equals(block.getLocation()))
-//            return;
-//
-//        if (!CMIMaterial.isButton(block.getType()))
-//            return;
-//
-//        e.setNewCurrent(0);
-//    }
-
-//    private Location tempButtonLocation = null;
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onButtonHitWithProjectile(ProjectileHitEvent e) {
 
-//        tempButtonLocation = null;
         // Disabling listener if flag disabled globally
         if (!Flags.button.isGlobalyEnabled())
             return;
@@ -164,49 +138,61 @@ public class ResidenceListener1_13 implements Listener {
         if (plugin.isDisabledWorldListener(e.getHitBlock().getWorld()))
             return;
 
-        if (!(e.getEntity().getShooter() instanceof Player))
-            return;
-
-        Player player = (Player) e.getEntity().getShooter();
 
         Block block = e.getHitBlock().getLocation().clone().add(e.getHitBlockFace().getDirection()).getBlock();
 
-//        tempButtonLocation = block.getLocation().clone();
+        @NotNull
+        CMIMaterial cmat = CMIMaterial.get(block.getType());
 
-        if (!CMIMaterial.isButton(block.getType()))
+        if (!cmat.isButton() && !cmat.isPlate())
             return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-
-        boolean hasuse = perms.playerHas(player, Flags.use, true);
 
         ClaimedResidence res = ClaimedResidence.getByLoc(block.getLocation());
 
-        Flags result = FlagPermissions.getMaterialUseFlagList().get(block.getType());
-        if (result == null)
+        if (res != null && res.getRaid().isUnderRaid())
             return;
+        
+        Player player = Utils.entityToPlayer(e.getEntity());
 
-        if (perms.playerHas(player, result, hasuse))
-            return;
+        if (player != null) {
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
 
-        if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
-            return;
-        }
+            boolean hasuse = perms.playerHas(player, Flags.use, true);
 
-        switch (result) {
+            Flags result = FlagPermissions.getMaterialUseFlagList().get(block.getType());
+            if (result == null)
+                return;
+
+            if (perms.playerHas(player, result, hasuse))
+                return;
+
+            switch (result) {
             case button:
                 if (ResPerm.bypass_button.hasPermission(player, 10000L))
                     return;
                 break;
+            }
+            // The perfect spot, the earlier check sends exactly one deny message.
+            // Move it to the end and the players chat will be flooded with deny messages.
+            lm.Flag_Deny.sendMessage(player, result);
+        } else {
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+
+            boolean hasuse = perms.has(Flags.use, true);
+
+            Flags result = FlagPermissions.getMaterialUseFlagList().get(block.getType());
+
+            if (result == null)
+                return;
+
+            if (perms.has(result, hasuse))
+                return;
         }
 
         e.setCancelled(true);
 
-        // The perfect spot, the earlier check sends exactly one deny message.
-        // Move it to the end and the players chat will be flooded with deny messages.
-        lm.Flag_Deny.sendMessage(player, result);
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityInteractButton(EntityInteractEvent event) {
 
@@ -214,46 +200,40 @@ public class ResidenceListener1_13 implements Listener {
             return;
 
         Entity ent = event.getEntity();
-        if (!(ent instanceof Arrow) && !(ent instanceof Trident))
+        if (!(ent instanceof Arrow) && !(ent instanceof Trident) && !(ent instanceof Item))
             return;
 
-        if (!CMIMaterial.isButton(event.getBlock().getType()))
+        @NotNull
+        CMIMaterial cmat = CMIMaterial.get(event.getBlock().getType());
+
+        if (!cmat.isButton() && !cmat.isPlate())
             return;
 
-        ClaimedResidence res = ClaimedResidence.getByLoc(event.getBlock().getLocation());
-        if (res == null)
-            return;
+        Player player = Utils.entityToPlayer(ent);
 
-        if (!res.getPermissions().has(Flags.button, true)) {
-            event.setCancelled(true);
-            return;
-        }
+        if (player != null) {
 
-        Player player = null;
-        if (ent instanceof Arrow && ((Arrow) ent).getShooter() instanceof Player)
-            player = (Player) ((Arrow) ent).getShooter();
-        else if (ent instanceof Trident && ((Trident) ent).getShooter() instanceof Player)
-            player = (Player) ((Trident) ent).getShooter();
+            Flags result = FlagPermissions.getMaterialUseFlagList().get(event.getBlock().getType());
+            if (result == null)
+                return;
 
-        if (player == null) {
-            return;
-        }
+            FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation(), player);
 
-        FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation(), player);
-        boolean hasUse = perms.playerHas(player, Flags.use, true);
+            boolean hasUse = perms.playerHas(player, Flags.use, true);
+   
+            if (perms.playerHas(player, result, hasUse))
+                return;
 
-        Flags result = FlagPermissions.getMaterialUseFlagList().get(event.getBlock().getType());
-        if (result == null)
-            return;
-
-        if (perms.playerHas(player, result, hasUse))
-            return;
-
-        switch (result) {
+            switch (result) {
             case button:
                 if (ResPerm.bypass_button.hasPermission(player, 10000L))
                     return;
                 break;
+            }
+        } else {
+            FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
+            if (perms.has(Flags.button, perms.has(Flags.use, true)))
+                return;
         }
 
         event.setCancelled(true);

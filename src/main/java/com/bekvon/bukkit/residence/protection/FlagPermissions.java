@@ -244,6 +244,9 @@ public class FlagPermissions {
             if (one.isButton())
                 matUseFlagList.put(one.getMaterial(), Flags.button);
 
+            if (one.containsCriteria(CMIMC.PRESSUREPLATE))
+                matUseFlagList.put(one.getMaterial(), Flags.button);
+
             if (one.isBed()) {
                 matUseFlagList.put(one.getMaterial(), Flags.bed);
             }
