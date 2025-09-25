@@ -17,6 +17,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -193,29 +194,63 @@ public class ResidenceListener1_13 implements Listener {
         }
 
         switch (result) {
-        case button:
-            if (ResPerm.bypass_button.hasPermission(player, 10000L))
-                return;
-            break;
+            case button:
+                if (ResPerm.bypass_button.hasPermission(player, 10000L))
+                    return;
+                break;
         }
 
         e.setCancelled(true);
 
+        // The perfect spot, the earlier check sends exactly one deny message.
+        // Move it to the end and the players chat will be flooded with deny messages.
         lm.Flag_Deny.sendMessage(player, result);
-
-        if (Version.isCurrentHigher(Version.v1_13_R1) && e.getEntity() instanceof Arrow) {
-            dropAndRemove(e.getEntity(), ((Arrow) e.getEntity()).getItem());
-            return;
-        }
-
-        if (Version.isCurrentHigher(Version.v1_13_R1) && e.getEntity() instanceof Trident) {
-            dropAndRemove(e.getEntity(), ((Trident) e.getEntity()).getItem());
-            return;
-        }
-
-        return;
     }
+    
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onEntityInteractButton(EntityInteractEvent event) {
+        if (Version.isCurrentLower(Version.v1_13_R1))
+            return;
+        if (!CMIMaterial.isButton(event.getBlock().getType()))
+            return;
 
+        Entity ent = event.getEntity();
+        if (!(ent instanceof Arrow) && !(ent instanceof Trident))
+            return;
+
+        Player player = null;
+        if (ent instanceof Arrow && ((Arrow) ent).getShooter() instanceof Player)
+            player = (Player) ((Arrow) ent).getShooter();
+        else if (ent instanceof Trident && ((Trident) ent).getShooter() instanceof Player)
+            player = (Player) ((Trident) ent).getShooter();
+
+        if (player == null) {
+            event.setCancelled(true);
+            return;
+        }
+
+        FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation(), player);
+        boolean hasUse = perms.playerHas(player, Flags.use, true);
+        ClaimedResidence res = ClaimedResidence.getByLoc(event.getBlock().getLocation());
+
+        Flags result = FlagPermissions.getMaterialUseFlagList().get(event.getBlock().getType());
+        if (result == null)
+            return;
+        if (perms.playerHas(player, result, hasUse))
+            return;
+        if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player))
+            return;
+
+        switch (result) {
+            case button:
+                if (ResPerm.bypass_button.hasPermission(player, 10000L))
+                    return;
+                break;
+        }
+
+        event.setCancelled(true);
+    }
+}
     private void dropAndRemove(Entity ent, ItemStack item) {
         ent.getWorld().dropItemNaturally(ent.getLocation(), item.clone());
         ent.remove();
