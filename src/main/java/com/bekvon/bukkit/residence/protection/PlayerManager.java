@@ -35,8 +35,6 @@ import com.bekvon.bukkit.residence.containers.ResidencePlayerMaxValues;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.economy.rent.RentManager;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
-import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
 
@@ -178,18 +176,16 @@ public class PlayerManager implements ResidencePlayerInterface {
         }
     }
 
-    public void addPlayer(@Nonnull String name, @Nonnull UUID uuid) {
+    public ResidencePlayer addPlayer(@Nonnull String name, @Nonnull UUID uuid) {
 
         ResidencePlayer rp = getResidencePlayer(uuid);
-
-//        if (rp == null)
-//            rp = getResidencePlayer(name);
 
         if (rp == null && name != null && uuid != null) {
             rp = new ResidencePlayer(name, uuid);
             addPlayer(rp);
-            return;
         }
+
+        return rp;
     }
 
     public ResidencePlayer playerJoin(Player player) {
@@ -208,7 +204,7 @@ public class PlayerManager implements ResidencePlayerInterface {
         }
         resPlayer.setLastSeen(System.currentTimeMillis());
         resPlayer.updateLastKnownWorld();
-        
+
         return resPlayer;
     }
 
@@ -573,7 +569,9 @@ public class PlayerManager implements ResidencePlayerInterface {
                 String name = player.getName();
                 if (name == null)
                     continue;
-                addPlayer(name, player.getUniqueId());
+                ResidencePlayer rp = addPlayer(name, player.getUniqueId());
+                if (rp != null)
+                    rp.setLastSeen(player.getLastPlayed());
             } catch (Exception e) {
                 lm.consoleMessage("Failed to cache data of a player " + player.getUniqueId() + " (" + i + "/" + total + ")");
             }
