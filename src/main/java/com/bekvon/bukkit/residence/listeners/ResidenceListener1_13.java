@@ -145,7 +145,7 @@ public class ResidenceListener1_13 implements Listener {
         if (res != null && res.getRaid().isUnderRaid())
             return;
 
-        Player player = Utils.entityToPlayer(e.getEntity());
+        Player player = Utils.potentialProjectileToPlayer(e.getEntity());
 
         if (player != null) {
             FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
@@ -202,7 +202,7 @@ public class ResidenceListener1_13 implements Listener {
         if (!cmat.isButton() && !cmat.isPlate())
             return;
 
-        Player player = Utils.entityToPlayer(ent);
+        Player player = Utils.potentialProjectileToPlayer(ent);
 
         if (player != null) {
 

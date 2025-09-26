@@ -659,7 +659,7 @@ public class ResidencePlayerListener implements Listener {
             return;
         Player player = event.getPlayer();
 
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(player.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(player.getLocation(), player);
 
         FlagPermissions globalPerm = plugin.getWorldFlags().getPerms(player);
         boolean globalLimited = globalPerm.playerHas(player, Flags.command, FlagCombo.OnlyFalse);
@@ -1058,7 +1058,7 @@ public class ResidencePlayerListener implements Listener {
     }
 
     public static boolean isEmptyBlock(Block block) {
-        CMIMaterial cb = CMIMaterial.get(block);
+        CMIMaterial cb = CMIMaterial.get(block.getType());
 
         switch (cb) {
         case COBWEB:
@@ -1131,7 +1131,7 @@ public class ResidencePlayerListener implements Listener {
             return;
         if (ResAdmin.isResAdmin(player))
             return;
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
 
         boolean hasplace = perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true));
         if (hasplace)
@@ -1183,7 +1183,7 @@ public class ResidencePlayerListener implements Listener {
             return;
         if (ResAdmin.isResAdmin(player))
             return;
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
 
         boolean hasplace = perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true));
         if (hasplace)
@@ -1222,7 +1222,7 @@ public class ResidencePlayerListener implements Listener {
             return;
         if (ResAdmin.isResAdmin(player))
             return;
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
 
         boolean hasplace = perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true));
         if (hasplace)
@@ -1393,12 +1393,12 @@ public class ResidencePlayerListener implements Listener {
         if (res != null && res.isOwner(player))
             return;
 
-        CMIMaterial mat = CMIMaterial.get(block);
+        CMIMaterial mat = CMIMaterial.get(block.getType());
 
         if (!mat.equals(CMIMaterial.SWEET_BERRY_BUSH) && !mat.equals(CMIMaterial.CAVE_VINES) && !mat.equals(CMIMaterial.CAVE_VINES_PLANT))
             return;
 
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
 
         if (!perms.playerHas(player, Flags.harvest, true)) {
             lm.Flag_Deny.sendMessage(player, Flags.harvest);
@@ -1445,29 +1445,27 @@ public class ResidencePlayerListener implements Listener {
             return;
         }
 
-        CMIMaterial blockM = CMIMaterial.get(block);
-
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-            CMIMaterial btype = CMIMaterial.get(block);
+            CMIMaterial blockM = CMIMaterial.get(block.getType());
 
             if (heldItem.isDye() || heldItem.equals(CMIMaterial.GLOW_INK_SAC)) {
 
                 if (heldItem.equals(CMIMaterial.BONE_MEAL) &&
-                    (btype == CMIMaterial.GRASS_BLOCK ||
-                        btype == CMIMaterial.GRASS ||
-                        btype == CMIMaterial.SHORT_GRASS ||
-                        btype == CMIMaterial.TALL_GRASS ||
-                        btype == CMIMaterial.TALL_SEAGRASS ||
-                        btype == CMIMaterial.MOSS_BLOCK ||
-                        btype == CMIMaterial.BIG_DRIPLEAF_STEM ||
-                        btype == CMIMaterial.BIG_DRIPLEAF ||
-                        btype == CMIMaterial.SMALL_DRIPLEAF ||
-                        btype.isSapling()) ||
+                    (blockM == CMIMaterial.GRASS_BLOCK ||
+                        blockM == CMIMaterial.GRASS ||
+                        blockM == CMIMaterial.SHORT_GRASS ||
+                        blockM == CMIMaterial.TALL_GRASS ||
+                        blockM == CMIMaterial.TALL_SEAGRASS ||
+                        blockM == CMIMaterial.MOSS_BLOCK ||
+                        blockM == CMIMaterial.BIG_DRIPLEAF_STEM ||
+                        blockM == CMIMaterial.BIG_DRIPLEAF ||
+                        blockM == CMIMaterial.SMALL_DRIPLEAF ||
+                        blockM.isSapling()) ||
                     heldItem == CMIMaterial.COCOA_BEANS && blockM == CMIMaterial.JUNGLE_WOOD) {
-                    FlagPermissions tperms = plugin.getPermsByLocForPlayer(block.getRelative(event.getBlockFace()).getLocation(), player);
+                    FlagPermissions tperms = FlagPermissions.getPerms(block.getRelative(event.getBlockFace()).getLocation(), player);
                     if (!tperms.playerHas(player, Flags.build, true)) {
                         lm.Flag_Deny.sendMessage(player, Flags.build);
                         event.setCancelled(true);
@@ -1476,7 +1474,7 @@ public class ResidencePlayerListener implements Listener {
                 }
             }
             if (heldItem.equals(CMIMaterial.ARMOR_STAND) || heldItem.isBoat()) {
-                FlagPermissions tperms = plugin.getPermsByLocForPlayer(block.getRelative(event.getBlockFace()).getLocation(), player);
+                FlagPermissions tperms = FlagPermissions.getPerms(block.getRelative(event.getBlockFace()).getLocation(), player);
                 if (!tperms.playerHas(player, Flags.build, true)) {
                     lm.Flag_Deny.sendMessage(player, Flags.build);
                     event.setCancelled(true);
@@ -1490,7 +1488,7 @@ public class ResidencePlayerListener implements Listener {
 
             }
 
-            if (btype.isSign() && !perms.playerHas(player, Flags.use, true)) {
+            if (blockM.isSign() && !perms.playerHas(player, Flags.use, true)) {
                 lm.Flag_Deny.sendMessage(player, Flags.use);
                 event.setCancelled(true);
                 return;

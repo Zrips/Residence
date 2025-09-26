@@ -33,7 +33,7 @@ public class ResidenceListener1_21_8_Paper implements Listener {
     public static boolean shouldCancelKnockBack(Entity entity, Entity pushedBy) {
         Location loc = entity.getLocation();
 
-        Player player = Utils.entityToPlayer(pushedBy);
+        Player player = Utils.potentialProjectileToPlayer(pushedBy);
 
         if (Utils.isAnimal(entity))
             return flagCheck(loc, player, Flags.animalkilling);

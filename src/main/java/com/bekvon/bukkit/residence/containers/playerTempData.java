@@ -157,10 +157,8 @@ public class playerTempData {
     }
 
     public static ClaimedResidence getCurrentResidence(UUID uuid) {
-        // Extra check to prevent new entry being added for offline player
-        if (!playersTempData.containsKey(uuid))
-            return null;
-        return get(uuid).getCurrentResidence();
+        playerTempData record = playersTempData.get(uuid);
+        return record == null ? null : record.getCurrentResidence();
     }
 
     public long getLastEnterLeaveInformTime() {

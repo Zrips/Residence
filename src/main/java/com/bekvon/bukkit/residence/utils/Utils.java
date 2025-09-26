@@ -18,8 +18,6 @@ import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowman;
-import org.bukkit.entity.TNTPrimed;
-import org.bukkit.entity.Tameable;
 import org.bukkit.entity.WaterMob;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -34,31 +32,26 @@ public class Utils {
     public Utils() {
     }
 
-    public static Player entityToPlayer(Entity entity) {
-        if (entity instanceof Player) {
+    public static Player potentialProjectileToPlayer(Entity entity) {
+        entity = potentialProjectileToEntity(entity);
+        if (entity instanceof Player)
             return (Player) entity;
-        } else if (entity instanceof Projectile) {
+        return null;
+    }
+
+    public static Entity potentialProjectileToEntity(Entity entity) {
+        if (entity instanceof Projectile) {
             Projectile projectile = (Projectile) entity;
             Object shooter = projectile.getShooter();
             if (shooter instanceof Player) {
                 return (Player) shooter;
             }
             if (shooter instanceof Entity) {
-                return entityToPlayer((Entity) shooter);
-            }
-        } else if (entity instanceof Tameable) {
-            Tameable tameable = (Tameable) entity;
-            if (tameable.getOwner() instanceof Player) {
-                return (Player) tameable.getOwner();
-            }
-        } else if (entity instanceof TNTPrimed) {
-            TNTPrimed tnt = (TNTPrimed) entity;
-            if (tnt.getSource() instanceof Player) {
-                return entityToPlayer(tnt.getSource());
+                return potentialProjectileToEntity((Entity) shooter);
             }
         }
 
-        return null;
+        return entity;
     }
 
     public static Block getTargetBlock(Player player, int distance, boolean ignoreNoneSolids) {
