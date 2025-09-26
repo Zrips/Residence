@@ -232,9 +232,7 @@ public class ResidenceEntityListener implements Listener {
 
         if (res.getPermissions().playerHas(cause, Flags.animalkilling, FlagCombo.OnlyFalse)) {
             lm.Residence_FlagDeny.sendMessage(cause, Flags.animalkilling, res.getName());
-            attackevent.setCancelled(true);
-            if (damager instanceof Arrow)
-                damager.remove();
+            event.setCancelled(true);
         }
 
     }
@@ -315,8 +313,6 @@ public class ResidenceEntityListener implements Listener {
         FlagPermissions world = plugin.getWorldFlags().getPerms(entity.getWorld().getName());
         if (!perms.has(Flags.animalkilling, world.has(Flags.animalkilling, true))) {
             event.setCancelled(true);
-            if (damager instanceof Arrow)
-                damager.remove();
         }
     }
 
@@ -473,8 +469,6 @@ public class ResidenceEntityListener implements Listener {
         if (res.getPermissions().playerHas(cause, Flags.mobkilling, FlagCombo.OnlyFalse)) {
             lm.Residence_FlagDeny.sendMessage(cause, Flags.mobkilling, res.getName());
             event.setCancelled(true);
-            if (damager instanceof Arrow)
-                damager.remove();
         }
     }
 
@@ -1680,9 +1674,6 @@ public class ResidenceEntityListener implements Listener {
         if (isOnFire)
             ent.setFireTicks(0);
         event.setCancelled(true);
-
-        if (damager instanceof Arrow)
-            damager.remove();
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
