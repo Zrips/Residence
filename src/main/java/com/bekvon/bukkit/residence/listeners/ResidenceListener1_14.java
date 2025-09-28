@@ -80,6 +80,9 @@ public class ResidenceListener1_14 implements Listener {
 
         Entity attacker = event.getAttacker();
         if (attacker instanceof Player) {
+            if (ResAdmin.isResAdmin((Player) attacker)) {
+                return;
+            }
             if (!FlagPermissions.has(event.getVehicle().getLocation(), (Player) attacker, Flags.vehicledestroy, FlagCombo.OnlyFalse))
                 return;
         } else {
