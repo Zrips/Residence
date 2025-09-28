@@ -4,11 +4,10 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Farmland;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Trident;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,8 +21,8 @@ import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
@@ -120,69 +119,83 @@ public class ResidenceListener1_13 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onButtonHitWithProjectile(ProjectileHitEvent e) {
-
+    public void onButtonHitWithProjectile(ProjectileHitEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.button.isGlobalyEnabled())
             return;
-
-        if (e.getHitBlock() == null)
+        // Avoid Projectile getWorld NPE
+        if (event.getHitBlock() == null)
             return;
 
-        if (plugin.isDisabledWorldListener(e.getHitBlock().getWorld()))
+        if (plugin.isDisabledWorldListener(event.getHitBlock().getWorld()))
             return;
 
-        Block block = e.getHitBlock().getLocation().clone().add(e.getHitBlockFace().getDirection()).getBlock();
+        Block block = event.getHitBlock().getLocation().clone().add(event.getHitBlockFace().getDirection()).getBlock();
 
         @NotNull
         CMIMaterial cmat = CMIMaterial.get(block.getType());
+        boolean isButton = cmat.isButton();
+        boolean isPlate = cmat.isPlate();
 
-        if (!cmat.isButton() && !cmat.isPlate())
+        if (!isButton && !isPlate)
             return;
 
         ClaimedResidence res = ClaimedResidence.getByLoc(block.getLocation());
-
         if (res != null && res.getRaid().isUnderRaid())
             return;
 
-        Player player = Utils.potentialProjectileToPlayer(e.getEntity());
+        Flags targetFlag = null;
+        if (isButton) {
+            targetFlag = Flags.button;
 
-        if (player != null) {
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-
-            boolean hasuse = perms.playerHas(player, Flags.use, true);
-
-            Flags result = FlagPermissions.getMaterialUseFlagList().get(block.getType());
-            if (result == null)
-                return;
-
-            if (perms.playerHas(player, result, hasuse))
-                return;
-
-            switch (result) {
-            case button:
-                if (ResPerm.bypass_button.hasPermission(player, 10000L))
-                    return;
-                break;
-            }
-            // The perfect spot, the earlier check sends exactly one deny message.
-            // Move it to the end and the players chat will be flooded with deny messages.
-            lm.Flag_Deny.sendMessage(player, result);
-        } else {
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
-
-            boolean hasuse = perms.has(Flags.use, true);
-
-            Flags result = FlagPermissions.getMaterialUseFlagList().get(block.getType());
-
-            if (result == null)
-                return;
-
-            if (perms.has(result, hasuse))
-                return;
+        // Button or a Plate, for easier future additions
+        } else if (isPlate) {
+            targetFlag = Flags.pressure;
         }
 
-        e.setCancelled(true);
+        Player player = Utils.potentialProjectileToPlayer(event.getEntity());
+        if (player != null) {
+
+            if (ResAdmin.isResAdmin(player))
+                return;
+
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+            boolean hasUse = perms.playerHas(player, Flags.use, true);
+
+            if (isButton) {
+                if (perms.playerHas(player, targetFlag, hasUse))
+                    return;
+
+            // Button or a Plate, for easier future additions
+            } else if (isPlate) {
+                if (perms.playerHas(player, targetFlag, hasUse))
+                    return;
+            }
+
+            // The perfect spot, the earlier check sends exactly one deny msgs
+            // Deny msgs for the EntityInteractEvent below to avoid chat spam
+            // Send matching deny msgs for flag types
+            lm.Flag_Deny.sendMessage(player, targetFlag);
+
+        //Check when the entity has no player source
+        } else {
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+            boolean hasUse = perms.has(Flags.use, true);
+
+            if (isButton) {
+                if (perms.has(targetFlag, hasUse)) {
+                    return;
+                }
+
+            // Button or a Plate, for easier future additions
+            } else if (isPlate) {
+                if (perms.has(targetFlag, hasUse)) {
+                    return;
+                }
+            }
+        }
+
+        event.setCancelled(true);
 
     }
 
@@ -192,43 +205,66 @@ public class ResidenceListener1_13 implements Listener {
         if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
             return;
 
-        Entity ent = event.getEntity();
-        if (!(ent instanceof Arrow) && !(ent instanceof Trident) && !(ent instanceof Item))
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Projectile) && !(entity instanceof Item)) {
             return;
+        }
 
         @NotNull
         CMIMaterial cmat = CMIMaterial.get(event.getBlock().getType());
+        boolean isButton = cmat.isButton();
+        boolean isPlate = cmat.isPlate();
 
-        if (!cmat.isButton() && !cmat.isPlate())
+        if (!isButton && !isPlate)
             return;
 
-        Player player = Utils.potentialProjectileToPlayer(ent);
+        Flags targetFlag = null;
+        if (isButton) {
+            targetFlag = Flags.button;
 
+        // Button or a Plate, for easier future additions
+        } else if (isPlate) {
+            targetFlag = Flags.pressure;
+        }
+
+        Player player = Utils.potentialProjectileToPlayer(entity);
         if (player != null) {
 
-            Flags result = FlagPermissions.getMaterialUseFlagList().get(event.getBlock().getType());
-            if (result == null)
+            if (ResAdmin.isResAdmin(player))
                 return;
 
             FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation(), player);
-
             boolean hasUse = perms.playerHas(player, Flags.use, true);
 
-            if (perms.playerHas(player, result, hasUse))
-                return;
-
-            switch (result) {
-            case button:
-                if (ResPerm.bypass_button.hasPermission(player, 10000L))
+            if (isButton) {
+                if (perms.playerHas(player, targetFlag, hasUse))
                     return;
-                break;
+
+            // Button or a Plate, for easier future additions
+            } else if (isPlate) {
+                if (perms.playerHas(player, targetFlag, hasUse))
+                    return;
             }
+
+        //Check when the entity has no player source
         } else {
             FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
-            if (perms.has(Flags.button, perms.has(Flags.use, true)))
-                return;
+            boolean hasUse = perms.has(Flags.use, true);
+
+            if (isButton) {
+                if (perms.has(targetFlag, hasUse)) {
+                    return;
+                }
+
+            // Button or a Plate, for easier future additions
+            } else if (isPlate) {
+                if (perms.has(targetFlag, hasUse)) {
+                    return;
+                }
+            } 
         }
 
         event.setCancelled(true);
+
     }
 }
