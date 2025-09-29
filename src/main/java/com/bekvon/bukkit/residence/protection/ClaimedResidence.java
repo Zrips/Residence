@@ -1454,25 +1454,18 @@ public class ClaimedResidence {
 //	}
 
         try {
-            if (Residence.getInstance().getConfigManager().isNewSaveMechanic()) {
-                if (enterMessage != null || leaveMessage != null) {
-                    MinimizeMessages min = Residence.getInstance().getResidenceManager().addMessageToTempCache(this.getWorld(), enterMessage,
-                        leaveMessage);
-                    if (min == null) {
-                        if (enterMessage != null)
-                            root.put("EnterMessage", enterMessage);
-                        if (leaveMessage != null)
-                            root.put("LeaveMessage", leaveMessage);
-                    } else {
-                        if (min.getId() > 0)
-                            root.put("Messages", min.getId());
-                    }
+            if (enterMessage != null || leaveMessage != null) {
+                MinimizeMessages min = Residence.getInstance().getResidenceManager().addMessageToTempCache(this.getWorldName(), enterMessage,
+                    leaveMessage);
+                if (min == null) {
+                    if (enterMessage != null)
+                        root.put("EnterMessage", enterMessage);
+                    if (leaveMessage != null)
+                        root.put("LeaveMessage", leaveMessage);
+                } else {
+                    if (min.getId() > 0)
+                        root.put("Messages", min.getId());
                 }
-            } else {
-                if (enterMessage != null)
-                    root.put("EnterMessage", enterMessage);
-                if (leaveMessage != null)
-                    root.put("LeaveMessage", leaveMessage);
             }
         } catch (Throwable e) {
             lm.consoleMessage("Failed to save residence (" + getName() + ")!");
@@ -1532,14 +1525,8 @@ public class ClaimedResidence {
             e.printStackTrace();
         }
 
-        if (Residence.getInstance().getConfigManager().isNewSaveMechanic()) {
-            for (Entry<String, CuboidArea> entry : areas.entrySet()) {
-                areamap.put(entry.getKey(), entry.getValue().newSave());
-            }
-        } else {
-            for (Entry<String, CuboidArea> entry : areas.entrySet()) {
-                areamap.put(entry.getKey(), entry.getValue().save());
-            }
+        for (Entry<String, CuboidArea> entry : areas.entrySet()) {
+            areamap.put(entry.getKey(), entry.getValue().newSave());
         }
 
         root.put("Areas", areamap);
@@ -1558,20 +1545,11 @@ public class ClaimedResidence {
 
         try {
             if (tpLoc != null) {
-                if (Residence.getInstance().getConfigManager().isNewSaveMechanic()) {
-                    root.put("TPLoc",
-                        convertDouble(tpLoc.getX()) + ":" + convertDouble(tpLoc.getY()) + ":"
-                            + convertDouble(tpLoc.getZ()) + ":" + convertDouble(PitchYaw == null ? 0 : PitchYaw.getX()) + ":"
-                            + convertDouble(PitchYaw == null ? 0 : PitchYaw.getY()));
-                } else {
-                    Map<String, Object> tpmap = new HashMap<String, Object>();
-                    tpmap.put("X", convertDouble(this.tpLoc.getX()));
-                    tpmap.put("Y", convertDouble(this.tpLoc.getY()));
-                    tpmap.put("Z", convertDouble(this.tpLoc.getZ()));
-                    tpmap.put("Pitch", convertDouble(PitchYaw == null ? 0 : this.PitchYaw.getX()));
-                    tpmap.put("Yaw", convertDouble(PitchYaw == null ? 0 : this.PitchYaw.getY()));
-                    root.put("TPLoc", tpmap);
-                }
+                root.put("TPLoc",
+                    convertDouble(tpLoc.getX()) + ":" + convertDouble(tpLoc.getY()) + ":"
+                        + convertDouble(tpLoc.getZ()) + ":" + convertDouble(PitchYaw == null ? 0 : PitchYaw.getX()) + ":"
+                        + convertDouble(PitchYaw == null ? 0 : PitchYaw.getY()));
+
             }
         } catch (Throwable e) {
             e.printStackTrace();

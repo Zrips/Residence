@@ -196,17 +196,6 @@ public class CuboidArea {
         return world != null ? world.getName() : worldName;
     }
 
-    public Map<String, Object> save() {
-        Map<String, Object> root = new LinkedHashMap<>();
-        root.put("X1", this.highPoints.getBlockX());
-        root.put("Y1", this.highPoints.getBlockY());
-        root.put("Z1", this.highPoints.getBlockZ());
-        root.put("X2", this.lowPoints.getBlockX());
-        root.put("Y2", this.lowPoints.getBlockY());
-        root.put("Z2", this.lowPoints.getBlockZ());
-        return root;
-    }
-
     public String newSave() {
         return lowPoints.getBlockX() + ":" + lowPoints.getBlockY() + ":" + lowPoints.getBlockZ() + ":" + highPoints.getBlockX() + ":" + highPoints.getBlockY() + ":" + highPoints.getBlockZ();
     }

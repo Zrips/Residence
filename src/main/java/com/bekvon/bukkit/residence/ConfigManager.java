@@ -107,7 +107,6 @@ public class ConfigManager {
     protected int chatPrefixLength;
     protected int leaseCheckInterval;
     protected int autoSaveInt;
-    protected boolean NewSaveMechanic;
 
     private int ItemPickUpDelay;
 
@@ -936,8 +935,6 @@ public class ConfigManager {
 
         c.addComment("Global.SaveInterval", "The interval, in minutes, between residence saves.");
         autoSaveInt = c.get("Global.SaveInterval", 10);
-        c.addComment("Global.NewSaveMechanic", "New save mechanic can minimize save file couple times and speedup save/load time in general", "Bigger files have bigger impact");
-        NewSaveMechanic = c.get("Global.NewSaveMechanic", true);
 
         c.addComment("Global.Backup.AutoCleanUp.Use",
             "Do you want to automatically remove backup files from main backup folder if they are older than defined day amount");
@@ -1907,10 +1904,6 @@ public class ConfigManager {
 
     public int getAutoSaveInterval() {
         return autoSaveInt;
-    }
-
-    public boolean isNewSaveMechanic() {
-        return NewSaveMechanic;
     }
 
     // backup stuff   
