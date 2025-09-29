@@ -2,8 +2,18 @@ package com.bekvon.bukkit.residence.utils;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+
+import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.DelayTeleport;
+
+import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
+import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class Teleporting {
 
@@ -39,5 +49,40 @@ public class Teleporting {
 
     public static void addTeleportDelay(UUID uuid, DelayTeleport tpDelayRecord) {
         teleportDelayMap.put(uuid, tpDelayRecord);
+    }
+
+    public static CompletableFuture<Boolean> teleport(Player player, Location loc) {
+        return teleport(player, loc, TeleportCause.PLUGIN);
+    }
+
+    public static CompletableFuture<Boolean> teleport(Player player, Location loc, TeleportCause cause) {
+
+        if (player == null || !player.isOnline() || loc == null)
+            return CompletableFuture.completedFuture(false);
+
+        return teleport((Entity) player, loc, cause);
+    }
+
+    public static CompletableFuture<Boolean> teleport(Entity entity, Location loc) {
+        return teleport(entity, loc, TeleportCause.PLUGIN);
+    }
+
+    public static CompletableFuture<Boolean> teleport(Entity entity, Location loc, TeleportCause cause) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        try {
+            CMIScheduler.runTask(Residence.getInstance(), () -> {
+                PaperLib.teleportAsync(entity, loc, cause)
+                    .whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            future.completeExceptionally(ex);
+                        } else {
+                            future.complete(result);
+                        }
+                    });
+            });
+        } catch (Throwable e) {
+            future.completeExceptionally(e);
+        }
+        return future;
     }
 }

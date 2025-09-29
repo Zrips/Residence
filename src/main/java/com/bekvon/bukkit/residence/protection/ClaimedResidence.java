@@ -1333,7 +1333,7 @@ public class ClaimedResidence {
             Teleporting.cancelTeleportDelay(targetPlayer.getUniqueId());
 
             targetPlayer.closeInventory();
-            PaperLib.teleportAsync(targetPlayer, targloc);
+            Teleporting.teleport(targetPlayer, targloc);
             if (near)
                 lm.Residence_TeleportNear.sendMessage(targetPlayer);
             else
@@ -1360,7 +1360,7 @@ public class ClaimedResidence {
 
         if (Version.isAsyncProcessing()) {
 
-            CompletableFuture<Boolean> future = PaperLib.teleportAsync(targetPlayer, targloc);
+            CompletableFuture<Boolean> future = Teleporting.teleport(targetPlayer, targloc);
             future.thenAccept(result -> {
                 if (result) {
                     if (near)
@@ -2038,7 +2038,7 @@ public class ClaimedResidence {
                 }
 
                 loc1.add(0, 0.4, 0);
-                PaperLib.teleportAsync(player, loc1).thenApply(success -> {
+                Teleporting.teleport(player, loc1).thenApply(success -> {
                     if (success)
                         lm.Residence_Kicked.sendMessage(player);
                     else
@@ -2049,7 +2049,7 @@ public class ClaimedResidence {
             return true;
         }
 
-        PaperLib.teleportAsync(player, loc, TeleportCause.PLUGIN).thenApply(success -> {
+        Teleporting.teleport(player, loc, TeleportCause.PLUGIN).thenApply(success -> {
             if (success)
                 lm.Residence_Kicked.sendMessage(player);
             else
