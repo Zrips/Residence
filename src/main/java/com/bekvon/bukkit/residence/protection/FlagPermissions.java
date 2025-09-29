@@ -388,11 +388,11 @@ public class FlagPermissions {
         if (uuid == null)
             return null;
 
-        Map<String, Boolean> flags = playerFlags.get(uuid);
+        Map<String, Boolean> flags = getPlayerFlags().get(uuid);
 
         if (flags == null && allowCreate) {
             flags = Collections.synchronizedMap(new HashMap<String, Boolean>());
-            playerFlags.put(uuid, flags);
+            getPlayerFlags().put(uuid, flags);
         }
 
         flags = getFlagsByPlayerName(flags, uuid);
@@ -421,7 +421,7 @@ public class FlagPermissions {
 
         flags.putAll(namedFlags);
 
-        playerFlags.computeIfAbsent(uuid, k -> new HashMap<String, Boolean>()).putAll(namedFlags);
+        getPlayerFlags().computeIfAbsent(uuid, k -> new HashMap<String, Boolean>()).putAll(namedFlags);
         playerFlagsByName.remove(name);
 
         return flags;
@@ -441,20 +441,20 @@ public class FlagPermissions {
             uuid = ResidencePlayer.getUUID(name);
 
         if (uuid != null)
-            flags = playerFlags.get(uuid);
+            flags = getPlayerFlags().get(uuid);
 
         if (flags == null) {
             flags = playerFlagsByName.get(name);
             if (uuid != null && !PlayerManager.isTempUUID(uuid) && flags != null) {
                 flags = playerFlagsByName.remove(name);
-                playerFlags.put(uuid, flags);
+                getPlayerFlags().put(uuid, flags);
             }
         }
 
         if (flags == null && allowCreate) {
             flags = Collections.synchronizedMap(new HashMap<String, Boolean>());
             if (uuid != null) {
-                playerFlags.put(uuid, flags);
+                getPlayerFlags().put(uuid, flags);
             } else {
                 playerFlagsByName.put(name, flags);
             }
@@ -496,7 +496,7 @@ public class FlagPermissions {
     public void removeAllPlayerFlags(UUID uuid) {
         if (uuid == null)
             return;
-        playerFlags.remove(uuid);
+        getPlayerFlags().remove(uuid);
     }
 
     public void removeAllGroupFlags(String group) {
@@ -784,7 +784,7 @@ public class FlagPermissions {
 
         if (Residence.getInstance().getConfigManager().isNewSaveMechanic()) {
             Map<String, Object> playerFlagsClone = new HashMap<String, Object>();
-            for (Entry<UUID, Map<String, Boolean>> one : playerFlags.entrySet()) {
+            for (Entry<UUID, Map<String, Boolean>> one : getPlayerFlags().entrySet()) {
                 MinimizeFlags min = Residence.getInstance().getResidenceManager().addFlagsTempCache(world, one.getValue());
                 playerFlagsClone.put(one.getKey().toString(), min.getId());
             }
@@ -815,7 +815,7 @@ public class FlagPermissions {
 
         } else {
 
-            HashMap<String, Map<String, Boolean>> flags = cloneUUID(playerFlags);
+            HashMap<String, Map<String, Boolean>> flags = cloneUUID(getPlayerFlags());
 
             flags.putAll(cloneName(playerFlagsByName));
 
@@ -866,37 +866,53 @@ public class FlagPermissions {
                     old = false;
                 break;
             }
-            if (old)
-                newperms.playerFlags = (Map) root.get("PlayerFlags");
-            else {
-                if (newperms instanceof ResidencePermissions) {
-                    Map<UUID, Map<String, Boolean>> byUUID = new HashMap<UUID, Map<String, Boolean>>();
-                    Map<String, Map<String, Boolean>> byName = new HashMap<String, Map<String, Boolean>>();
 
-                    Map<String, Boolean> ft = new HashMap<String, Boolean>();
-                    for (Entry<String, Integer> one : ((HashMap<String, Integer>) root.get("PlayerFlags")).entrySet()) {
-                        ft = Residence.getInstance().getResidenceManager().getChacheFlags(((ResidencePermissions) newperms).getWorldName(), one.getValue());
-                        if (ft != null && !ft.isEmpty()) {
+            Map<UUID, Map<String, Boolean>> byUUID = new HashMap<UUID, Map<String, Boolean>>();
+            Map<String, Map<String, Boolean>> byName = new HashMap<String, Map<String, Boolean>>();
 
-                            if (one.getKey().length() == 36 && one.getKey().contains("-")) {
-                                try {
-                                    UUID uuid = UUID.fromString(one.getKey());
-                                    byUUID.put(uuid, new HashMap<String, Boolean>(ft));
-                                    continue;
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
+            if (old) {
+                Map<String, Map<String, Boolean>> temp = (Map) root.get("PlayerFlags");
 
-                            byName.put(one.getKey(), new HashMap<String, Boolean>(ft));
+                for (Entry<String, Map<String, Boolean>> one : temp.entrySet()) {
+
+                    if (one.getKey().length() == 36 && one.getKey().contains("-")) {
+                        try {
+                            UUID uuid = UUID.fromString(one.getKey());
+                            byUUID.put(uuid, one.getValue());
+                            continue;
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
-                    if (!byUUID.isEmpty())
-                        newperms.playerFlags = byUUID;
-                    if (!byName.isEmpty())
-                        newperms.playerFlagsByName = byName;
+                    byName.put(one.getKey(), one.getValue());
+                    newperms.getPlayerFlagsByName().put(one.getKey(), new HashMap<String, Boolean>(one.getValue()));
+                }
+
+            } else if (newperms instanceof ResidencePermissions) {
+                Map<String, Boolean> ft = new HashMap<String, Boolean>();
+                for (Entry<String, Integer> one : ((HashMap<String, Integer>) root.get("PlayerFlags")).entrySet()) {
+                    ft = Residence.getInstance().getResidenceManager().getChacheFlags(((ResidencePermissions) newperms).getWorldName(), one.getValue());
+                    if (ft == null || ft.isEmpty())
+                        continue;
+
+                    if (one.getKey().length() == 36 && one.getKey().contains("-")) {
+                        try {
+                            UUID uuid = UUID.fromString(one.getKey());
+                            byUUID.put(uuid, new HashMap<String, Boolean>(ft));
+                            continue;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    byName.put(one.getKey(), new HashMap<String, Boolean>(ft));
                 }
             }
+
+            if (!byUUID.isEmpty())
+                newperms.playerFlags = byUUID;
+            if (!byName.isEmpty())
+                newperms.playerFlagsByName = byName;
         }
 
         if (root.containsKey("GroupFlags")) {
@@ -1172,7 +1188,7 @@ public class FlagPermissions {
             return "";
 
         StringBuilder sbuild = new StringBuilder();
-        Set<Entry<UUID, Map<String, Boolean>>> set = playerFlags.entrySet();
+        Set<Entry<UUID, Map<String, Boolean>>> set = getPlayerFlags().entrySet();
         synchronized (set) {
             Iterator<Entry<UUID, Map<String, Boolean>>> it = set.iterator();
             while (it.hasNext()) {
@@ -1220,7 +1236,7 @@ public class FlagPermissions {
 
     public String listPlayersFlags() {
         StringBuilder sbuild = new StringBuilder();
-        Set<Entry<UUID, Map<String, Boolean>>> set = playerFlags.entrySet();
+        Set<Entry<UUID, Map<String, Boolean>>> set = getPlayerFlags().entrySet();
         synchronized (set) {
             Iterator<Entry<UUID, Map<String, Boolean>>> it = set.iterator();
             while (it.hasNext()) {
@@ -1284,14 +1300,14 @@ public class FlagPermissions {
 
         ResidencePlayer rplayer = ResidencePlayer.get(uuid);
 
-        Set<Entry<UUID, Map<String, Boolean>>> set = playerFlags.entrySet();
+        Set<Entry<UUID, Map<String, Boolean>>> set = getPlayerFlags().entrySet();
         synchronized (set) {
             Iterator<Entry<UUID, Map<String, Boolean>>> it = set.iterator();
             boolean random = true;
 
             UUID addedOwn = null;
             if (rplayer != null) {
-                Map<String, Boolean> own = playerFlags.get(rplayer.getUniqueId());
+                Map<String, Boolean> own = getPlayerFlags().get(rplayer.getUniqueId());
                 if (own != null) {
                     addedOwn = uuid;
                     random = addPlayerFlagToRM(rm, uuid, own, random);
@@ -1421,16 +1437,16 @@ public class FlagPermissions {
         if (text != null)
             rm.addText(text);
 
-        PageInfo pi = new PageInfo(10, playerFlags.size() + playerFlagsByName.size(), page);
+        PageInfo pi = new PageInfo(10, getPlayerFlags().size() + playerFlagsByName.size(), page);
 
-        Set<Entry<UUID, Map<String, Boolean>>> set = playerFlags.entrySet();
+        Set<Entry<UUID, Map<String, Boolean>>> set = getPlayerFlags().entrySet();
         synchronized (set) {
             Iterator<Entry<UUID, Map<String, Boolean>>> it = set.iterator();
             UUID addedOwn = null;
 
             ResidencePlayer rplayer = ResidencePlayer.get(sender);
             if (rplayer != null) {
-                Map<String, Boolean> own = playerFlags.get(rplayer.getUniqueId());
+                Map<String, Boolean> own = getPlayerFlags().get(rplayer.getUniqueId());
                 if (own != null) {
                     addedOwn = rplayer.getUniqueId();
                     if (!pi.isContinue()) {
