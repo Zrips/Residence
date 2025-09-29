@@ -24,6 +24,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -46,6 +47,7 @@ import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.MinimizeFlags;
 import com.bekvon.bukkit.residence.containers.MinimizeMessages;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
+import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.dynmap.DynMapListeners;
 import com.bekvon.bukkit.residence.dynmap.DynMapManager;
@@ -386,7 +388,6 @@ public class Residence extends JavaPlugin {
             ResidenceVersion = this.getDescription().getVersion();
             authlist = this.getDescription().getAuthors();
 
-
             cmdFiller = new CommandFiller();
             cmdFiller.fillCommands();
 
@@ -438,7 +439,7 @@ public class Residence extends JavaPlugin {
             }
 
             this.getPermissionManager().startCacheClearScheduler();
-            
+
             getPlayerManager().load();
 
             imanager = new WorldItemManager(this);
@@ -1452,5 +1453,15 @@ public class Residence extends JavaPlugin {
 
     public boolean isFullyLoaded() {
         return fullyLoaded;
+    }
+
+    @Deprecated
+    public boolean isResAdminOn(CommandSender sender) {
+        return ResAdmin.isResAdmin(sender);
+    }
+
+    @Deprecated
+    public boolean isResAdminOn(Player player) {
+        return ResAdmin.isResAdmin(player);
     }
 }
