@@ -390,7 +390,7 @@ public class RandomTp {
             Teleporting.cancelTeleportDelay(targetPlayer.getUniqueId());
 
             targetPlayer.closeInventory();
-            PaperLib.teleportAsync(targetPlayer, loc);
+            Teleporting.teleport(targetPlayer, loc);
             lm.RandomTeleport_TeleportSuccess.sendMessage(targetPlayer, loc.getX(), loc.getY(), loc.getZ());
         }, plugin.getConfigManager().getTeleportDelay() * 20L);
 
@@ -400,7 +400,7 @@ public class RandomTp {
 
     public void performInstantTp(Location loc, Player targetPlayer) {
         targetPlayer.closeInventory();
-        PaperLib.teleportAsync(targetPlayer, loc);
+        Teleporting.teleport(targetPlayer, loc);
 
         lm.RandomTeleport_TeleportSuccess.sendMessage(targetPlayer, loc.getX(), loc.getY(), loc.getZ());
     }

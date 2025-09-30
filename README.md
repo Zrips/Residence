@@ -39,7 +39,7 @@ Residence is available via JitPack (https://jitpack.io/), making integration int
 <dependency>
     <groupId>com.github.Zrips</groupId>
     <artifactId>Residence</artifactId>
-    <version>6.0.0.0</version>
+    <version>6.0.0.1</version>
 </dependency>
 ```
 

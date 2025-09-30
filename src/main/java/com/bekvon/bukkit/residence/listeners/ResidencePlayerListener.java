@@ -909,7 +909,7 @@ public class ResidencePlayerListener implements Listener {
             }
             lm.Residence_FlagDeny.sendMessage(player, Flags.nofly, location.getWorld().getName());
             player.closeInventory();
-            PaperLib.teleportAsync(player, location);
+            Teleporting.teleport(player, location);
 
             player.setFlying(false);
             player.setAllowFlight(false);
@@ -2148,7 +2148,7 @@ public class ResidencePlayerListener implements Listener {
             if (land) {
                 Location loc = getFlyTeleportLocation(player, oldRes);
                 player.closeInventory();
-                PaperLib.teleportAsync(player, loc);
+                Teleporting.teleport(player, loc);
             }
             player.setFlying(false);
             player.setAllowFlight(false);
@@ -2382,7 +2382,7 @@ public class ResidencePlayerListener implements Listener {
 
             boolean handled = handleNewLocation(player, locto, true);
             if (!handled) {
-                PaperLib.teleportAsync(event.getVehicle(), event.getFrom());
+                Teleporting.teleport(event.getVehicle(), event.getFrom());
             }
 
             if (Teleporting.getTeleportDelayMap().isEmpty())
@@ -2398,17 +2398,6 @@ public class ResidencePlayerListener implements Listener {
         }
     }
 
-    private boolean teleport(Player player, Location loc) {
-
-        if (player == null || !player.isOnline() || loc == null)
-            return false;
-        try {
-            PaperLib.teleportAsync(player, loc);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void PlayerToggleFlightEvent(PlayerToggleFlightEvent event) {
@@ -2573,7 +2562,7 @@ public class ResidencePlayerListener implements Listener {
             if (info != null && info.getTimesTeleported() > 5) {
                 boolean kicked = res.kickFromResidence(player);
                 if (!kicked)
-                    teleport(player, lastLoc);
+                    Teleporting.teleport(player, lastLoc);
                 return false;
             }
 
@@ -2581,7 +2570,7 @@ public class ResidencePlayerListener implements Listener {
                 if (player.getLocation().equals(lastLoc))
                     res.kickFromResidence(player);
                 else
-                    teleport(player, lastLoc);
+                    Teleporting.teleport(player, lastLoc);
             }
             return false;
         }
