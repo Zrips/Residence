@@ -246,7 +246,7 @@ public class ResidenceListener1_13 implements Listener {
                     return;
             }
 
-        //Check when the entity has no player source
+        // Check when the entity has no player source
         } else {
             FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
             boolean hasUse = perms.has(Flags.use, true);
