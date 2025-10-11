@@ -1002,8 +1002,6 @@ public class ResidencePlayerListener implements Listener {
         case "ENCHANTING_TABLE":
         case "DAYLIGHT_DETECTOR":
         case "DAYLIGHT_DETECTOR_INVERTED":
-        case "SUSPICIOUS_GRAVEL":
-        case "SUSPICIOUS_SAND":
             return true;
         default:
             break;
