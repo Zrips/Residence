@@ -32,6 +32,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
@@ -1111,6 +1112,24 @@ public class ResidenceEntityListener implements Listener {
         for (Block block : preserve) {
             event.blockList().remove(block);
         }
+    }
+
+    // Various zombies break the door
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onEntityBreakDoor(EntityBreakDoorEvent event) {
+
+        Block block = event.getBlock();
+        if (block == null)
+            return;
+
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
+
+        if (plugin.getPermsByLoc(block.getLocation()).has(Flags.destroy, true))
+            return;
+
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
