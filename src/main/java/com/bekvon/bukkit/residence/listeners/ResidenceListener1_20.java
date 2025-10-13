@@ -21,6 +21,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_20 implements Listener {
 
@@ -89,28 +90,90 @@ public class ResidenceListener1_20 implements Listener {
 
     }
 
-    // For objects like decorative pots
+    // Projectile hit chorus_flower decorated_pot pointed_dripstone
+    // Brush sweep SuspiciousBlocks
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPotBreak(EntityChangeBlockEvent event) {
+    public void onProjectilePlayerChangeBlock(EntityChangeBlockEvent event) {
+
+        Block block = event.getBlock();
+        if (block == null)
+            return;
 
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
+        if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
-        if (!(event.getEntity() instanceof Projectile))
-            return;
+        // Only check projectile
+        if (event.getEntity() instanceof Projectile) {
+            Projectile projectile = (Projectile) event.getEntity();
 
-        Projectile projectile = (Projectile) event.getEntity();
+            Player player = null;
 
-        Player player = null;
+            // Get projectile player source
+            if (projectile.getShooter() instanceof Player) {
+                player = (Player) projectile.getShooter();
+            }
 
-        if (projectile.getShooter() instanceof Player)
-            player = (Player) projectile.getShooter();
+            // have player source
+            if (player != null) {
 
-        if (player != null && player.hasMetadata("NPC"))
-            return;
+                if (ResAdmin.isResAdmin(player))
+                    return;
 
-        if (!ResidenceBlockListener.canBreakBlock(player, event.getBlock().getLocation(), true))
+                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+                if (perms.playerHas(player, Flags.destroy, true))
+                    return;
+
+                lm.Flag_Deny.sendMessage(player, Flags.destroy);
+
+                event.setCancelled(true);
+                return;
+
+            }
+            // Not player source
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+            if (perms.has(Flags.destroy, true))
+                return;
+
             event.setCancelled(true);
+            return;
+
+        // Event not triggered by projectile
+        // Only versions 1.20+ have brush
+        }else if (Version.isCurrentLower(Version.v1_20_R1))
+            return;
+
+        // Only check player
+        if (!(event.getEntity() instanceof Player))
+            return;
+
+        Player player = (Player) event.getEntity();
+
+        // Get main/off hand
+        CMIMaterial mainHand = CMIMaterial.get(player.getInventory().getItemInMainHand());
+        CMIMaterial offHand = CMIMaterial.get(player.getInventory().getItemInOffHand());
+        boolean heldItem =
+                (mainHand != null && mainHand.equals(CMIMaterial.BRUSH)) ||
+                (offHand != null && offHand.equals(CMIMaterial.BRUSH));
+
+        CMIMaterial blockM = CMIMaterial.get(block.getType());
+
+        // Only check Brush interact SuspiciousBlocks
+        if (!(heldItem &&
+                (blockM == CMIMaterial.SUSPICIOUS_SAND ||
+                 blockM == CMIMaterial.SUSPICIOUS_GRAVEL)))
+            return;
+
+        if (ResAdmin.isResAdmin(player))
+            return;
+
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+        if (perms.playerHas(player, Flags.brush, perms.has(Flags.destroy, true)))
+            return;
+
+        lm.Flag_Deny.sendMessage(player, Flags.brush);
+
+        event.setCancelled(true);
+
     }
 }
