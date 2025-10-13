@@ -21,7 +21,6 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_20 implements Listener {
 
@@ -139,32 +138,30 @@ public class ResidenceListener1_20 implements Listener {
             return;
 
         // Event not triggered by projectile
-        // Only versions 1.20+ have SuspiciousBlocks
-        }else if (Version.isCurrentLower(Version.v1_20_R1))
-            return;
+        } else {
+            // Only check SuspiciousBlocks
+            CMIMaterial blockM = CMIMaterial.get(block.getType());
+            if (!(blockM == CMIMaterial.SUSPICIOUS_SAND ||
+                  blockM == CMIMaterial.SUSPICIOUS_GRAVEL))
+                return;
 
-        // Only check player
-        if (!(event.getEntity() instanceof Player))
-            return;
+            // Only check player
+            if (!(event.getEntity() instanceof Player))
+                return;
 
-        // Only check SuspiciousBlocks
-        CMIMaterial blockM = CMIMaterial.get(block.getType());
-        if (!(blockM == CMIMaterial.SUSPICIOUS_SAND ||
-              blockM == CMIMaterial.SUSPICIOUS_GRAVEL))
-            return;
+            Player player = (Player) event.getEntity();
 
-        Player player = (Player) event.getEntity();
+            if (ResAdmin.isResAdmin(player))
+                return;
 
-        if (ResAdmin.isResAdmin(player))
-            return;
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, Flags.brush, perms.has(Flags.destroy, true)))
+                return;
 
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-        if (perms.playerHas(player, Flags.brush, perms.has(Flags.destroy, true)))
-            return;
+            lm.Flag_Deny.sendMessage(player, Flags.brush);
 
-        lm.Flag_Deny.sendMessage(player, Flags.brush);
+            event.setCancelled(true);
 
-        event.setCancelled(true);
-
+        }
     }
 }
