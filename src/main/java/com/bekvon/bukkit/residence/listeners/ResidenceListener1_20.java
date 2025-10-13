@@ -91,7 +91,7 @@ public class ResidenceListener1_20 implements Listener {
     }
 
     // Projectile hit chorus_flower decorated_pot pointed_dripstone
-    // Brush sweep SuspiciousBlocks
+    // Sweep SuspiciousBlocks
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onProjectilePlayerChangeBlock(EntityChangeBlockEvent event) {
 
@@ -139,7 +139,7 @@ public class ResidenceListener1_20 implements Listener {
             return;
 
         // Event not triggered by projectile
-        // Only versions 1.20+ have brush
+        // Only versions 1.20+ have SuspiciousBlocks
         }else if (Version.isCurrentLower(Version.v1_20_R1))
             return;
 
@@ -147,22 +147,13 @@ public class ResidenceListener1_20 implements Listener {
         if (!(event.getEntity() instanceof Player))
             return;
 
-        Player player = (Player) event.getEntity();
-
-        // Get main/off hand
-        CMIMaterial mainHand = CMIMaterial.get(player.getInventory().getItemInMainHand());
-        CMIMaterial offHand = CMIMaterial.get(player.getInventory().getItemInOffHand());
-        boolean heldItem =
-                (mainHand != null && mainHand.equals(CMIMaterial.BRUSH)) ||
-                (offHand != null && offHand.equals(CMIMaterial.BRUSH));
-
+        // Only check SuspiciousBlocks
         CMIMaterial blockM = CMIMaterial.get(block.getType());
-
-        // Only check Brush interact SuspiciousBlocks
-        if (!(heldItem &&
-                (blockM == CMIMaterial.SUSPICIOUS_SAND ||
-                 blockM == CMIMaterial.SUSPICIOUS_GRAVEL)))
+        if (!(blockM == CMIMaterial.SUSPICIOUS_SAND ||
+              blockM == CMIMaterial.SUSPICIOUS_GRAVEL))
             return;
+
+        Player player = (Player) event.getEntity();
 
         if (ResAdmin.isResAdmin(player))
             return;
