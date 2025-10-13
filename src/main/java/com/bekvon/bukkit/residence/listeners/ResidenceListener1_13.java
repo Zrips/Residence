@@ -230,6 +230,7 @@ public class ResidenceListener1_13 implements Listener {
         // Easier future addition
         } else if (isPlate) {
             targetFlag = Flags.pressure;
+
         }
 
         // Only get projectile player source
@@ -256,6 +257,7 @@ public class ResidenceListener1_13 implements Listener {
 
                 event.setCancelled(true);
                 return;
+
             }
 
         // Entity not player source
