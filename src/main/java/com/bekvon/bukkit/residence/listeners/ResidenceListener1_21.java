@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -120,37 +119,5 @@ public class ResidenceListener1_21 implements Listener {
 
         // Removing weaving effect on death as there is no other way to properly handle this effect inside residence
         ent.removePotionEffect(PotionEffectType.WEAVING);
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onFenceLeashInteract(PlayerInteractEntityEvent event) {
-
-        // Disabling listener if flag disabled globally
-        if (!Flags.leash.isGlobalyEnabled())
-            return;
-
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getRightClicked().getWorld()))
-            return;
-        Player player = event.getPlayer();
-
-        Entity entity = event.getRightClicked();
-
-        if (!(entity instanceof Boat))
-            return;
-
-        if (ResAdmin.isResAdmin(player))
-            return;
-
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
-
-        if (res == null)
-            return;
-
-        if (res.getPermissions().playerHas(player, Flags.leash, FlagCombo.OnlyFalse)) {
-            lm.Residence_FlagDeny.sendMessage(player, Flags.leash, res.getName());
-            event.setCancelled(true);
-            player.updateInventory();
-        }
     }
 }
