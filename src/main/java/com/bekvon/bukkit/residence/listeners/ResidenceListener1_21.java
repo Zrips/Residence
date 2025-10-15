@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -26,6 +25,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
+import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class ResidenceListener1_21 implements Listener {
@@ -122,35 +122,29 @@ public class ResidenceListener1_21 implements Listener {
         ent.removePotionEffect(PotionEffectType.WEAVING);
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onFenceLeashInteract(PlayerInteractEntityEvent event) {
-
-        // Disabling listener if flag disabled globally
-        if (!Flags.leash.isGlobalyEnabled())
-            return;
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onCopperGolemInteract(PlayerInteractEntityEvent event) {
 
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getRightClicked().getWorld()))
+        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
-        Player player = event.getPlayer();
-
+        
         Entity entity = event.getRightClicked();
-
-        if (!(entity instanceof Boat))
+        if (CMIEntityType.get(entity) != CMIEntityType.COPPER_GOLEM)
             return;
+        
+        Player player = event.getPlayer();
 
         if (ResAdmin.isResAdmin(player))
             return;
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
-
-        if (res == null)
+        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
+        if (perms.playerHas(player, Flags.copper, perms.has(Flags.animalkilling, true)))
             return;
 
-        if (res.getPermissions().playerHas(player, Flags.leash, FlagCombo.OnlyFalse)) {
-            lm.Residence_FlagDeny.sendMessage(player, Flags.leash, res.getName());
-            event.setCancelled(true);
-            player.updateInventory();
-        }
+        lm.Flag_Deny.sendMessage(player, Flags.copper);
+
+        event.setCancelled(true);
+
     }
 }
