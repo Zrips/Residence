@@ -123,7 +123,7 @@ public class ResidenceListener1_21 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onCopperGolemInteract(PlayerInteractEntityEvent event) {
+    public void onInteractCopperGolem(PlayerInteractEntityEvent event) {
 
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
