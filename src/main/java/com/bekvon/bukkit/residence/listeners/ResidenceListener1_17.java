@@ -96,7 +96,7 @@ public class ResidenceListener1_17 implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerChangeCopper(EntityChangeBlockEvent event) {
 
         Block block = event.getBlock();
