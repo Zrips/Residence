@@ -468,7 +468,7 @@ public class ResidenceEntityListener implements Listener {
 
         lm.Flag_Deny.sendMessage(player, Flags.leash);
 
-            event.setCancelled(true);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -491,7 +491,7 @@ public class ResidenceEntityListener implements Listener {
 
         lm.Flag_Deny.sendMessage(player, Flags.leash);
 
-            event.setCancelled(true);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -516,7 +516,7 @@ public class ResidenceEntityListener implements Listener {
 
         lm.Flag_Deny.sendMessage(player, Flags.leash);
 
-            event.setCancelled(true);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
