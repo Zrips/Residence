@@ -188,7 +188,8 @@ public class Utils {
             ent instanceof Snowman ||
             ent instanceof IronGolem ||
             // crude approach to include Allay and be multi version supported
-            ent.getClass().getSimpleName().equals("CraftAllay"));
+            ent.getClass().getSimpleName().equals("CraftAllay") ||
+            ent.getClass().getSimpleName().equals("CraftCopperGolem"));
     }
 
     public static boolean isArmorStandEntity(EntityType ent) {

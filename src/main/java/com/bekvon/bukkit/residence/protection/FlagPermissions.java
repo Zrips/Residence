@@ -263,6 +263,14 @@ public class FlagPermissions {
                     addMaterialToUseFlag(one.getMaterial(), Flags.cake);
             }
 
+            if (Version.isCurrentEqualOrHigher(Version.v1_21_R6)) {
+                if (one.containsCriteria(CMIMC.COPPERCHEST))
+                    addMaterialToUseFlag(one.getMaterial(), Flags.container);
+
+                if (one.containsCriteria(CMIMC.SHELF))
+                    addMaterialToUseFlag(one.getMaterial(), Flags.container);
+            }
+
         }
 
         if (CMIMaterial.DAYLIGHT_DETECTOR.getMaterial() != null)
