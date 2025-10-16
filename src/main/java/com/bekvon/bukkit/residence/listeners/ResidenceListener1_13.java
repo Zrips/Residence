@@ -202,19 +202,24 @@ public class ResidenceListener1_13 implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityInteractButton(EntityInteractEvent event) {
 
-        if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
+        Block block = event.getBlock();
+        if (block == null)
+            return;
+
+        if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
         Entity entity = event.getEntity();
-        if (!(entity instanceof Projectile) && !(entity instanceof Item)) {
+        // Only check Projectile and DropItem
+        if (!(entity instanceof Projectile) && !(entity instanceof Item))
             return;
-        }
 
         @NotNull
-        CMIMaterial cmat = CMIMaterial.get(event.getBlock().getType());
+        CMIMaterial cmat = CMIMaterial.get(block.getType());
         boolean isButton = cmat.isButton();
         boolean isPlate = cmat.isPlate();
 
+        // Only check Button and Plate
         if (!isButton && !isPlate)
             return;
 
@@ -222,49 +227,60 @@ public class ResidenceListener1_13 implements Listener {
         if (isButton) {
             targetFlag = Flags.button;
 
-        // Button or a Plate, for easier future additions
+        // Easier future addition
         } else if (isPlate) {
             targetFlag = Flags.pressure;
+
         }
 
+        // Only get projectile player source
         Player player = Utils.potentialProjectileToPlayer(entity);
         if (player != null) {
 
             if (ResAdmin.isResAdmin(player))
                 return;
 
-            FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation(), player);
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
             boolean hasUse = perms.playerHas(player, Flags.use, true);
 
             if (isButton) {
                 if (perms.playerHas(player, targetFlag, hasUse))
                     return;
 
-            // Button or a Plate, for easier future additions
+                event.setCancelled(true);
+                return;
+
+            // Easier future addition
             } else if (isPlate) {
                 if (perms.playerHas(player, targetFlag, hasUse))
                     return;
+
+                event.setCancelled(true);
+                return;
+
             }
 
-        //Check when the entity has no player source
+        // Entity not player source
         } else {
-            FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
             boolean hasUse = perms.has(Flags.use, true);
 
             if (isButton) {
-                if (perms.has(targetFlag, hasUse)) {
+                if (perms.has(targetFlag, hasUse))
                     return;
-                }
 
-            // Button or a Plate, for easier future additions
+                event.setCancelled(true);
+                return;
+
+            // Easier future addition
             } else if (isPlate) {
-                if (perms.has(targetFlag, hasUse)) {
+                if (perms.has(targetFlag, hasUse))
                     return;
-                }
+
+                event.setCancelled(true);
+                return;
+
             } 
         }
-
-        event.setCancelled(true);
-
     }
 }
