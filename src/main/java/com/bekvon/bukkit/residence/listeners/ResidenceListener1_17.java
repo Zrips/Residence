@@ -14,13 +14,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerBucketEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -98,54 +96,36 @@ public class ResidenceListener1_17 implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerInteractRespawn(PlayerInteractEvent event) {
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerChangeCopper(EntityChangeBlockEvent event) {
 
-        if (event.getPlayer() == null)
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
-            return;
-        try {
-            if (event.getHand() != EquipmentSlot.HAND && event.getHand() != EquipmentSlot.OFF_HAND)
-                return;
-        } catch (Exception e) {
-        }
-        Player player = event.getPlayer();
-
-        Block block = event.getClickedBlock();
+        Block block = event.getBlock();
         if (block == null)
             return;
 
-        Material mat = block.getType();
-
-        if (!CMIMaterial.isCopperBlock(mat))
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-        if (res == null)
+        if (!(event.getEntity() instanceof Player))
             return;
 
-        ItemStack item = null;
-        if (event.getHand() == EquipmentSlot.OFF_HAND) {
-            item = CMILib.getInstance().getReflectionManager().getItemInOffHand(player);
-        } else {
-            item = CMILib.getInstance().getReflectionManager().getItemInMainHand(player);
-        }
-
-        if (item == null || item.getType().equals(Material.AIR))
+        if (!CMIMaterial.isCopperBlock(block.getType()))
             return;
-        boolean waxed = CMIMaterial.isWaxedCopper(mat);
 
-        if ((CMIMaterial.get(item).equals(CMIMaterial.HONEYCOMB) && !waxed || item.getType().toString().contains("_AXE") && CMIMaterial.getCopperStage(mat) > 1) &&
-            !res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.copper, FlagCombo.TrueOrNone) && !ResAdmin.isResAdmin(player)) {
+        Player player = (Player) event.getEntity();
 
-            lm.Residence_FlagDeny.sendMessage(player, Flags.copper, res.getName());
-            event.setCancelled(true);
-        }
+        if (ResAdmin.isResAdmin(player))
+            return;
+
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+        if (perms.playerHas(player, Flags.copper, perms.has(Flags.destroy, true)))
+            return;
+
+        lm.Flag_Deny.sendMessage(player, Flags.copper);
+
+        event.setCancelled(true);
+
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
