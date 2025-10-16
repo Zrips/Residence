@@ -32,6 +32,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
@@ -45,6 +46,7 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
+import org.bukkit.event.player.PlayerUnleashEntityEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
@@ -446,40 +448,54 @@ public class ResidenceEntityListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void AnimalLeash(PlayerLeashEntityEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.leash.isGlobalyEnabled())
-            return;
+
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
             return;
-        Player player = event.getPlayer();
 
         Entity entity = event.getEntity();
 
-        if (!Utils.isAnimal(entity))
-            return;
+        Player player = event.getPlayer();
 
         if (ResAdmin.isResAdmin(player))
             return;
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
-
-        if (res == null)
+        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
+        if (perms.playerHas(player, Flags.leash, true))
             return;
-        if (res.getPermissions().playerHas(player, Flags.leash, FlagCombo.OnlyFalse)) {
-            lm.Residence_FlagDeny.sendMessage(player, Flags.leash, res.getName());
-            event.setCancelled(true);
-        }
+
+        lm.Flag_Deny.sendMessage(player, Flags.leash);
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void AnimalUnleash(PlayerUnleashEntityEvent event) {
+
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
+            return;
+
+        Entity entity = event.getEntity();
+
+        Player player = event.getPlayer();
+
+        if (ResAdmin.isResAdmin(player))
+            return;
+
+        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
+        if (perms.playerHas(player, Flags.leash, true))
+            return;
+
+        lm.Flag_Deny.sendMessage(player, Flags.leash);
+
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onFenceLeashInteract(PlayerInteractEntityEvent event) {
-
-        // Disabling listener if flag disabled globally
-        if (!Flags.leash.isGlobalyEnabled())
-            return;
 
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getRightClicked().getWorld()))
@@ -488,40 +504,19 @@ public class ResidenceEntityListener implements Listener {
 
         Entity entity = event.getRightClicked();
 
-        boolean holdingShears = false;
-
-        if (entity instanceof LivingEntity && ((LivingEntity) event.getRightClicked()).isLeashed()) {
-            ItemStack usedItem = null;
-            if (Version.isCurrentEqualOrHigher(Version.v1_9_R1)) {
-                EquipmentSlot slot = event.getHand();
-                if (slot == EquipmentSlot.OFF_HAND) {
-                    usedItem = player.getInventory().getItemInOffHand();
-                } else {
-                    usedItem = player.getInventory().getItemInMainHand();
-                }
-            } else {
-                usedItem = player.getItemInHand();
-            }
-            if (usedItem != null && CMIMaterial.get(usedItem).equals(CMIMaterial.SHEARS)) {
-                holdingShears = true;
-            }
-        }
-
-        if (CMIEntityType.get(entity.getType()) != CMIEntityType.LEASH_KNOT && !holdingShears)
+        if (CMIEntityType.get(entity.getType()) != CMIEntityType.LEASH_KNOT)
             return;
 
         if (ResAdmin.isResAdmin(player))
             return;
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
-
-        if (res == null)
+        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
+        if (perms.playerHas(player, Flags.leash, true))
             return;
 
-        if (res.getPermissions().playerHas(player, Flags.leash, FlagCombo.OnlyFalse)) {
-            lm.Residence_FlagDeny.sendMessage(player, Flags.leash, res.getName());
-            event.setCancelled(true);
-        }
+        lm.Flag_Deny.sendMessage(player, Flags.leash);
+
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1111,6 +1106,24 @@ public class ResidenceEntityListener implements Listener {
         for (Block block : preserve) {
             event.blockList().remove(block);
         }
+    }
+
+    // Various zombies break the door
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onEntityBreakDoor(EntityBreakDoorEvent event) {
+
+        Block block = event.getBlock();
+        if (block == null)
+            return;
+
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
+
+        if (plugin.getPermsByLoc(block.getLocation()).has(Flags.destroy, true))
+            return;
+
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
