@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerUnleashEntityEvent;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -37,6 +38,29 @@ public class ResidenceListener1_08 implements Listener {
             event.setCancelled(true);
             lm.Flag_Deny.sendMessage(player, Flags.container);
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void AnimalUnleash(PlayerUnleashEntityEvent event) {
+
+        // disabling event on world
+        if (Residence.getInstance().isDisabledWorldListener(event.getEntity().getWorld()))
+            return;
+
+        Entity entity = event.getEntity();
+
+        Player player = event.getPlayer();
+
+        if (ResAdmin.isResAdmin(player))
+            return;
+
+        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
+        if (perms.playerHas(player, Flags.leash, true))
+            return;
+
+        lm.Flag_Deny.sendMessage(player, Flags.leash);
+
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

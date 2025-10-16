@@ -471,29 +471,6 @@ public class ResidenceEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void AnimalUnleash(PlayerUnleashEntityEvent event) {
-
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
-            return;
-
-        Entity entity = event.getEntity();
-
-        Player player = event.getPlayer();
-
-        if (ResAdmin.isResAdmin(player))
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
-        if (perms.playerHas(player, Flags.leash, true))
-            return;
-
-        lm.Flag_Deny.sendMessage(player, Flags.leash);
-
-        event.setCancelled(true);
-    }
-
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onFenceLeashInteract(PlayerInteractEntityEvent event) {
 
