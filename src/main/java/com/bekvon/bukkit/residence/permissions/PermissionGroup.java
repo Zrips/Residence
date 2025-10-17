@@ -12,6 +12,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -561,9 +563,9 @@ public class PermissionGroup {
         Player player = rPlayer.getPlayer();
 
         lm.General_Separator.sendMessage(sender);
-        
+
         lm.Limits_PGroup.sendMessage(sender, rPlayer.getGroups().getPermissionGroup().getGroupName());
-        
+
         lm.Limits_RGroup.sendMessage(sender, group.getGroupName());
         if (player != null && resadmin)
             lm.Limits_Admin.sendMessage(sender, Residence.getInstance().getPermissionManager().isResidenceAdmin(sender));
@@ -629,4 +631,23 @@ public class PermissionGroup {
         return zmax;
     }
 
+    public static @Nullable PermissionGroup getGroup(@NotNull Player player) {
+        return getGroup(player.getUniqueId(), null);
+    }
+
+    public static @Nullable PermissionGroup getGroup(@NotNull UUID uuid) {
+        return getGroup(uuid, null);
+    }
+
+    public static @Nullable PermissionGroup getGroup(@NotNull UUID uuid, @Nullable String world) {
+        ResidencePlayer player = ResidencePlayer.get(uuid);
+        
+        if (player == null) 
+            return null;
+        
+        if (world == null)
+            return player.getGroup();
+        
+        return player.getGroup(world);
+    }
 }

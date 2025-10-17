@@ -577,7 +577,10 @@ public class FlagPermissions {
         if (player == null)
             return false;
 
-        PermissionGroup group = ResidencePlayer.get(player).getGroup();
+        PermissionGroup group = PermissionGroup.getGroup(player);
+        if (group == null)
+            return false;
+
         return this.playerCheck(player, flag.toString(), this.groupCheck(group, flag.toString(), this.has(flag, def)));
     }
 
@@ -594,7 +597,10 @@ public class FlagPermissions {
         if (!flag.isGlobalyEnabled())
             return true;
 
-        PermissionGroup group = ResidencePlayer.get(uuid).getGroup(world);
+        PermissionGroup group = PermissionGroup.getGroup(uuid, world);
+        if (group == null)
+            return false;
+
         return this.playerCheck(uuid, flag.toString(), this.groupCheck(group, flag.toString(), this.has(flag, def)));
     }
 
@@ -602,7 +608,10 @@ public class FlagPermissions {
         if (uuid == null)
             return false;
 
-        PermissionGroup group = ResidencePlayer.get(uuid).getGroup(world);
+        PermissionGroup group = PermissionGroup.getGroup(uuid, world);
+        if (group == null)
+            return false;
+
         return this.playerCheck(uuid, flag, this.groupCheck(group, flag, this.has(flag, def)));
     }
 
