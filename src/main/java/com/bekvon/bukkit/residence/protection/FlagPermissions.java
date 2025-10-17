@@ -292,10 +292,10 @@ public class FlagPermissions {
         addMaterialToUseFlag(Material.FLOWER_POT, Flags.flowerpot);
         addMaterialToUseFlag(Material.BEACON, Flags.beacon);
         addMaterialToUseFlag(Material.JUKEBOX, Flags.container);
-        
+
         addMaterialToUseFlag(Material.CHEST, Flags.container);
         addMaterialToUseFlag(Material.TRAPPED_CHEST, Flags.container);
-        
+
         addMaterialToUseFlag(Material.HOPPER, Flags.container);
         addMaterialToUseFlag(Material.DROPPER, Flags.container);
         addMaterialToUseFlag(Material.FURNACE, Flags.container);
@@ -1292,6 +1292,9 @@ public class FlagPermissions {
                 i++;
 
                 String playerName = ResidencePlayer.getName(nextEnt.getKey());
+
+                if (playerName == null)
+                    playerName = "UNKNOWN";
 
                 if (i <= playersToShow)
                     random = addPlayerFlagToRM(rm, playerName, nextEnt.getValue(), random);
