@@ -292,7 +292,6 @@ public class FlagPermissions {
         addMaterialToUseFlag(Material.FLOWER_POT, Flags.flowerpot);
         addMaterialToUseFlag(Material.BEACON, Flags.beacon);
         addMaterialToUseFlag(Material.JUKEBOX, Flags.container);
-        addMaterialToUseFlag(Material.TRAPPED_CHEST, Flags.container);
         addMaterialToUseFlag(Material.HOPPER, Flags.container);
         addMaterialToUseFlag(Material.DROPPER, Flags.container);
         addMaterialToUseFlag(Material.FURNACE, Flags.container);
