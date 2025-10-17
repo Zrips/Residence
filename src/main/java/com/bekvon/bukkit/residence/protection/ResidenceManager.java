@@ -13,14 +13,17 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
@@ -55,6 +58,7 @@ import com.bekvon.bukkit.residence.utils.GetTime;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.PageInfo;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -728,60 +732,89 @@ public class ResidenceManager implements ResidenceInterface {
     }
 
     private void regenerateArea(ClaimedResidence res) {
-        if (Version.isCurrentLower(Version.v1_13_R1) || !plugin.getConfigManager().isUseClean() || !plugin.getConfigManager().getCleanWorlds().contains(res.getWorldName()))
+
+        if (Version.isCurrentLower(Version.v1_13_R1)
+            || !plugin.getConfigManager().isUseClean()
+            || !plugin.getConfigManager().getCleanWorlds().contains(res.getWorldName().toLowerCase()))
             return;
 
         CuboidArea[] arr = res.getAreaArray();
-        CMIScheduler.runTaskAsynchronously(plugin, () -> {
-            ChunkSnapshot chunkSnapshot = null;
-            int chunkX = 0;
-            int chunkZ = 0;
-            Set<Location> locations = new HashSet<Location>();
-            for (CuboidArea area : arr) {
-                Location low = area.getLowLocation().clone();
-                Location high = area.getHighLocation().clone();
+        List<Supplier<CompletableFuture<Void>>> tasks = new ArrayList<>();
 
-                if (high.getBlockY() <= plugin.getConfigManager().getCleanLevel())
-                    continue;
+        for (CuboidArea area : arr) {
+            Location low = area.getLowLocation().clone();
+            Location high = area.getHighLocation().clone();
 
-                if (low.getBlockY() < plugin.getConfigManager().getCleanLevel())
-                    low.setY(plugin.getConfigManager().getCleanLevel());
-                World world = low.getWorld();
-                for (int x = low.getBlockX(); x <= high.getBlockX(); x++) {
-                    for (int z = low.getBlockZ(); z <= high.getBlockZ(); z++) {
-                        int hy = world.getHighestBlockYAt(x, z);
-                        if (high.getBlockY() < hy)
-                            hy = high.getBlockY();
+            if (high.getBlockY() <= plugin.getConfigManager().getCleanLevel())
+                continue;
 
-                        int cx = Math.abs(x % 16);
-                        int cz = Math.abs(z % 16);
-                        if (chunkSnapshot == null || x >> 4 != chunkX || z >> 4 != chunkZ) {
-                            if (!world.getBlockAt(x, 0, z).getChunk().isLoaded()) {
-                                world.getBlockAt(x, 0, z).getChunk().load();
-                                chunkSnapshot = world.getBlockAt(x, 0, z).getChunk().getChunkSnapshot(false, false, false);
-                                world.getBlockAt(x, 0, z).getChunk().unload();
-                            } else {
-                                chunkSnapshot = world.getBlockAt(x, 0, z).getChunk().getChunkSnapshot();
+            if (low.getBlockY() < plugin.getConfigManager().getCleanLevel())
+                low.setY(plugin.getConfigManager().getCleanLevel());
+            World world = low.getWorld();
+
+            for (ChunkRef chunkRef : area.getChunks()) {
+                tasks.add(() -> CMIScheduler.runAtLocation(plugin, high.getWorld(), chunkRef.getX(), chunkRef.getZ(), () -> {
+
+                    if (!plugin.isEnabled() || Bukkit.getServer().isStopping())
+                        return;
+
+                    Set<Location> locations = ConcurrentHashMap.newKeySet();
+
+                    ChunkSnapshot chunkSnapshot = null;
+                    for (int x = chunkRef.getX() * 16; x <= chunkRef.getX() * 16 + 15; x++) {
+                        for (int z = chunkRef.getZ() * 16; z <= chunkRef.getZ() * 16 + 15; z++) {
+
+                            int hy = world.getHighestBlockYAt(x, z);
+                            if (high.getBlockY() < hy)
+                                hy = high.getBlockY();
+
+                            int cx = Math.abs(x % 16);
+                            int cz = Math.abs(z % 16);
+
+                            if (chunkSnapshot == null) {
+                                if (!world.getBlockAt(x, 0, z).getChunk().isLoaded()) {
+                                    world.getBlockAt(x, 0, z).getChunk().load();
+                                    chunkSnapshot = world.getBlockAt(x, 0, z).getChunk().getChunkSnapshot(false, false, false);
+                                    world.getBlockAt(x, 0, z).getChunk().unload();
+                                } else {
+                                    chunkSnapshot = world.getBlockAt(x, 0, z).getChunk().getChunkSnapshot();
+                                }
                             }
-                            chunkX = x >> 4;
-                            chunkZ = z >> 4;
-                        }
 
-                        if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
-                            for (int y = low.getBlockY(); y <= hy; y++) {
-                                BlockData type = chunkSnapshot.getBlockData(cx, y, cz);
-                                if (!plugin.getConfigManager().getCleanBlocks().contains(type.getMaterial()))
-                                    continue;
-                                locations.add(new Location(world, x, y, z));
+                            if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
+                                for (int y = low.getBlockY(); y <= hy; y++) {
+                                    BlockData type = chunkSnapshot.getBlockData(cx, y, cz);
+                                    if (!plugin.getConfigManager().getCleanBlocks().contains(type.getMaterial()))
+                                        continue;
+                                    locations.add(new Location(world, x, y, z));
+                                }
                             }
                         }
                     }
-                }
+
+                    for (Location one : locations) {
+                        if (plugin.isEnabled() && !Bukkit.getServer().isStopping())
+                            one.getBlock().setType(Material.AIR);
+                    }
+                }));
             }
-            for (Location one : locations) {
-                CMIScheduler.runAtLocation(plugin, one, () -> one.getBlock().setType(Material.AIR));
-            }
-        });
+        }
+
+        CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
+
+        for (Supplier<CompletableFuture<Void>> task : tasks) {
+            chain = chain.thenCompose(v -> {
+                if (!plugin.isEnabled() || Bukkit.getServer().isStopping())
+                    return CompletableFuture.completedFuture(null);
+                return task.get();
+            }).thenCompose(v -> delay());
+        }
+    }
+
+    private CompletableFuture<Void> delay() {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        CMIScheduler.runTaskLater(plugin, () -> future.complete(null), 1);
+        return future;
     }
 
     public boolean removeAllByOwner(String owner) {
