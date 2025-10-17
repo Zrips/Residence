@@ -4,10 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 
@@ -69,7 +68,8 @@ public class RentedLand {
     public Map<String, Object> save() {
         Map<String, Object> rentables = new HashMap<>();
         rentables.put("Player", getRenterName());
-        rentables.put("UUID", getUniqueId().toString());
+        if (getUniqueId() != null)
+            rentables.put("UUID", getUniqueId().toString());
         rentables.put("StartTime", startTime);
         rentables.put("EndTime", endTime);
         rentables.put("AutoRefresh", AutoPay);
