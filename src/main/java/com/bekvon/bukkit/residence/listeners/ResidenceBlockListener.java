@@ -68,6 +68,7 @@ import com.bekvon.bukkit.residence.utils.Utils;
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Container.CMIBlock;
 import net.Zrips.CMILib.Container.CMIWorld;
+import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
 
@@ -413,7 +414,7 @@ public class ResidenceBlockListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
         Block block = event.getBlock();
-        if (!CMIMaterial.isChest(block.getType()))
+        if (!CMIMaterial.get(block.getType()).containsCriteria(CMIMC.CHEST))
             return;
 
         if (plugin.getPlayerManager().getResidenceCount(player.getUniqueId()) != 0)
@@ -459,7 +460,7 @@ public class ResidenceBlockListener implements Listener {
 
         Material type = block.getType();
 
-        if (!CMIMaterial.isChest(type))
+        if (!CMIMaterial.get(type).containsCriteria(CMIMC.CHEST))
             return;
 
         ClaimedResidence orRes = plugin.getResidenceManager().getByLoc(block.getLocation());
@@ -486,7 +487,7 @@ public class ResidenceBlockListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
         Block block = event.getBlock();
-        if (!CMIMaterial.isChest(block.getType()))
+        if (!CMIMaterial.get(block.getType()).containsCriteria(CMIMC.CHEST))
             return;
 
         if (plugin.getPlayerManager().getResidenceCount(player.getUniqueId()) != 0)

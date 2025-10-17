@@ -233,9 +233,6 @@ public class FlagPermissions {
             if (one.isTrapDoor())
                 matUseFlagList.put(one.getMaterial(), Flags.door);
 
-            if (one.isChest())
-                matUseFlagList.put(one.getMaterial(), Flags.container);
-
             if (one.isShulkerBox())
                 matUseFlagList.put(one.getMaterial(), Flags.container);
 
@@ -267,6 +264,9 @@ public class FlagPermissions {
             }
 
             if (Version.isCurrentEqualOrHigher(Version.v1_21_R6)) {
+                if (one.containsCriteria(CMIMC.COPPERCHEST))
+                    addMaterialToUseFlag(one.getMaterial(), Flags.container);
+
                 if (one.containsCriteria(CMIMC.SHELF))
                     addMaterialToUseFlag(one.getMaterial(), Flags.container);
             }
@@ -292,6 +292,10 @@ public class FlagPermissions {
         addMaterialToUseFlag(Material.FLOWER_POT, Flags.flowerpot);
         addMaterialToUseFlag(Material.BEACON, Flags.beacon);
         addMaterialToUseFlag(Material.JUKEBOX, Flags.container);
+        
+        addMaterialToUseFlag(Material.CHEST, Flags.container);
+        addMaterialToUseFlag(Material.TRAPPED_CHEST, Flags.container);
+        
         addMaterialToUseFlag(Material.HOPPER, Flags.container);
         addMaterialToUseFlag(Material.DROPPER, Flags.container);
         addMaterialToUseFlag(Material.FURNACE, Flags.container);
