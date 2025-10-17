@@ -24,8 +24,10 @@ public class removeall implements cmd {
         String target = args.length == 1 ? args[0] : sender.getName();
 
         if (resadmin) {
-            plugin.getResidenceManager().removeAllByOwner(target);
-            lm.Residence_RemovePlayersResidences.sendMessage(sender, target);
+            if (plugin.getResidenceManager().removeAllByOwner(target))
+                lm.Residence_RemovePlayersResidences.sendMessage(sender, target);
+            else
+                lm.Invalid_Player.sendMessage(sender);
         } else {
             lm.General_NoPermission.sendMessage(sender);
         }

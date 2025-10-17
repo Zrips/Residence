@@ -784,11 +784,14 @@ public class ResidenceManager implements ResidenceInterface {
         });
     }
 
-    public void removeAllByOwner(String owner) {
+    public boolean removeAllByOwner(String owner) {
         ResidencePlayer rPlayer = ResidencePlayer.get(owner);
+        if (rPlayer == null)
+            return false;
         for (ClaimedResidence oneRes : rPlayer.getResList()) {
             removeResidence(rPlayer, oneRes, true);
         }
+        return true;
     }
 
     public int getOwnedZoneCount(UUID playerUUID) {
