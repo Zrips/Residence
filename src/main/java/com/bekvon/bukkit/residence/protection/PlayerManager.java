@@ -16,9 +16,6 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -26,6 +23,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.api.ResidencePlayerInterface;
@@ -176,7 +175,7 @@ public class PlayerManager implements ResidencePlayerInterface {
         }
     }
 
-    public ResidencePlayer addPlayer(@Nonnull String name, @Nonnull UUID uuid) {
+    public ResidencePlayer addPlayer(@NotNull String name, @NotNull UUID uuid) {
 
         ResidencePlayer rp = getResidencePlayer(uuid);
 
