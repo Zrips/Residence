@@ -24,7 +24,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
@@ -753,48 +752,7 @@ public class ResidenceManager implements ResidenceInterface {
 
             for (ChunkRef chunkRef : area.getChunks()) {
                 tasks.add(() -> CMIScheduler.runAtLocation(plugin, high.getWorld(), chunkRef.getX(), chunkRef.getZ(), () -> {
-
-                    if (!plugin.isEnabled() || Bukkit.getServer().isStopping())
-                        return;
-
-                    Set<Location> locations = ConcurrentHashMap.newKeySet();
-
-                    ChunkSnapshot chunkSnapshot = null;
-                    for (int x = chunkRef.getX() * 16; x <= chunkRef.getX() * 16 + 15; x++) {
-                        for (int z = chunkRef.getZ() * 16; z <= chunkRef.getZ() * 16 + 15; z++) {
-
-                            int hy = world.getHighestBlockYAt(x, z);
-                            if (high.getBlockY() < hy)
-                                hy = high.getBlockY();
-
-                            int cx = Math.abs(x % 16);
-                            int cz = Math.abs(z % 16);
-
-                            if (chunkSnapshot == null) {
-                                if (!world.getBlockAt(x, 0, z).getChunk().isLoaded()) {
-                                    world.getBlockAt(x, 0, z).getChunk().load();
-                                    chunkSnapshot = world.getBlockAt(x, 0, z).getChunk().getChunkSnapshot(false, false, false);
-                                    world.getBlockAt(x, 0, z).getChunk().unload();
-                                } else {
-                                    chunkSnapshot = world.getBlockAt(x, 0, z).getChunk().getChunkSnapshot();
-                                }
-                            }
-
-                            if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
-                                for (int y = low.getBlockY(); y <= hy; y++) {
-                                    BlockData type = chunkSnapshot.getBlockData(cx, y, cz);
-                                    if (!plugin.getConfigManager().getCleanBlocks().contains(type.getMaterial()))
-                                        continue;
-                                    locations.add(new Location(world, x, y, z));
-                                }
-                            }
-                        }
-                    }
-
-                    for (Location one : locations) {
-                        if (plugin.isEnabled() && !Bukkit.getServer().isStopping())
-                            one.getBlock().setType(Material.AIR);
-                    }
+                    cleaner(chunkRef, world, high, low);
                 }));
             }
         }
@@ -807,6 +765,51 @@ public class ResidenceManager implements ResidenceInterface {
                     return CompletableFuture.completedFuture(null);
                 return task.get();
             }).thenCompose(v -> delay());
+        }
+    }
+
+    private void cleaner(ChunkRef chunkRef, World world, Location high, Location low) {
+
+        if (!plugin.isEnabled() || Bukkit.getServer().isStopping())
+            return;
+
+        Set<Location> locations = ConcurrentHashMap.newKeySet();
+
+        ChunkSnapshot chunkSnapshot = null;
+        for (int x = chunkRef.getX() * 16; x <= chunkRef.getX() * 16 + 15; x++) {
+            for (int z = chunkRef.getZ() * 16; z <= chunkRef.getZ() * 16 + 15; z++) {
+
+                int hy = world.getHighestBlockYAt(x, z);
+                if (high.getBlockY() < hy)
+                    hy = high.getBlockY();
+
+                int cx = Math.abs(x % 16);
+                int cz = Math.abs(z % 16);
+
+                if (chunkSnapshot == null) {
+                    if (!world.getBlockAt(x, 0, z).getChunk().isLoaded()) {
+                        world.getBlockAt(x, 0, z).getChunk().load();
+                        chunkSnapshot = world.getBlockAt(x, 0, z).getChunk().getChunkSnapshot(false, false, false);
+                        world.getBlockAt(x, 0, z).getChunk().unload();
+                    } else {
+                        chunkSnapshot = world.getBlockAt(x, 0, z).getChunk().getChunkSnapshot();
+                    }
+                }
+
+                if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
+                    for (int y = low.getBlockY(); y <= hy; y++) {
+                        BlockData type = chunkSnapshot.getBlockData(cx, y, cz);
+                        if (!plugin.getConfigManager().getCleanBlocks().contains(type.getMaterial()))
+                            continue;
+                        locations.add(new Location(world, x, y, z));
+                    }
+                }
+            }
+        }
+
+        for (Location one : locations) {
+            if (plugin.isEnabled() && !Bukkit.getServer().isStopping())
+                one.getBlock().setType(Material.AIR);
         }
     }
 
@@ -1343,7 +1346,7 @@ public class ResidenceManager implements ResidenceInterface {
                     List<ChunkRef> chunks = getChunks(residence);
 
                     if (chunks.size() > 1000000)
-                        lm.consoleMessage(ChatColor.YELLOW + "Detected extensively big residence area (" + currentEntry.getKey() + ") which covers " + chunks
+                        lm.consoleMessage(CMIChatColor.YELLOW + "Detected extensively big residence area (" + currentEntry.getKey() + ") which covers " + chunks
                             .size() + " chunks!");
 
                     for (ChunkRef chunk : chunks) {
@@ -1361,7 +1364,7 @@ public class ResidenceManager implements ResidenceInterface {
 
                     residences.put(resName, residence);
                 } catch (Exception ex) {
-                    lm.consoleMessage(ChatColor.RED + "Failed to load residence (" + currentEntry.getKey() + ")! Reason:" + ex.getMessage() + " Error Log:");
+                    lm.consoleMessage(CMIChatColor.RED + "Failed to load residence (" + currentEntry.getKey() + ")! Reason:" + ex.getMessage() + " Error Log:");
                     Logger.getLogger(ResidenceManager.class.getName()).log(Level.SEVERE, null, ex);
                     if (plugin.getConfigManager().stopOnSaveError()) {
                         throw new RuntimeException(ex);
@@ -1379,12 +1382,10 @@ public class ResidenceManager implements ResidenceInterface {
             return retRes;
 
         int i = 0;
-        int y = 0;
         for (Entry<String, Object> res : root.entrySet()) {
             if (i >= 100)
                 i = 0;
             i++;
-            y++;
             try {
                 @SuppressWarnings("unchecked")
                 ClaimedResidence residence = ClaimedResidence.load(worldName, (Map<String, Object>) res.getValue(), null, plugin);
@@ -1426,7 +1427,7 @@ public class ResidenceManager implements ResidenceInterface {
                 residences.put(resName.toLowerCase(), residence);
 
             } catch (Exception ex) {
-                lm.consoleMessage(ChatColor.RED + "Failed to load residence (" + res.getKey() + ")! Reason:" + ex.getMessage() + " Error Log:");
+                lm.consoleMessage(CMIChatColor.RED + "Failed to load residence (" + res.getKey() + ")! Reason:" + ex.getMessage() + " Error Log:");
                 Logger.getLogger(ResidenceManager.class.getName()).log(Level.SEVERE, null, ex);
                 if (plugin.getConfigManager().stopOnSaveError()) {
                     throw (ex);
@@ -1619,9 +1620,9 @@ public class ResidenceManager implements ResidenceInterface {
         chunkResidences.remove(world);
         chunkResidences.put(world, new HashMap<ChunkRef, List<ClaimedResidence>>());
         if (count == 0) {
-            sender.sendMessage(ChatColor.RED + "No residences found in world: " + ChatColor.YELLOW + world);
+            sender.sendMessage(CMIChatColor.RED + "No residences found in world: " + CMIChatColor.YELLOW + world);
         } else {
-            sender.sendMessage(ChatColor.RED + "Removed " + ChatColor.YELLOW + count + ChatColor.RED + " residences in world: " + ChatColor.YELLOW + world);
+            sender.sendMessage(CMIChatColor.RED + "Removed " + CMIChatColor.YELLOW + count + CMIChatColor.RED + " residences in world: " + CMIChatColor.YELLOW + world);
         }
     }
 
