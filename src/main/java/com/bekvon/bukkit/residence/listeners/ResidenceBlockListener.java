@@ -413,7 +413,7 @@ public class ResidenceBlockListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
         Block block = event.getBlock();
-        if (block.getType() != Material.CHEST && block.getType() != Material.TRAPPED_CHEST)
+        if (!CMIMaterial.isChest(block.getType()))
             return;
 
         if (plugin.getPlayerManager().getResidenceCount(player.getUniqueId()) != 0)
@@ -459,7 +459,7 @@ public class ResidenceBlockListener implements Listener {
 
         Material type = block.getType();
 
-        if (type != Material.CHEST && type != Material.TRAPPED_CHEST)
+        if (!CMIMaterial.isChest(type))
             return;
 
         ClaimedResidence orRes = plugin.getResidenceManager().getByLoc(block.getLocation());
@@ -486,7 +486,7 @@ public class ResidenceBlockListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
         Block block = event.getBlock();
-        if (block.getType() != Material.CHEST && block.getType() != Material.TRAPPED_CHEST)
+        if (!CMIMaterial.isChest(block.getType()))
             return;
 
         if (plugin.getPlayerManager().getResidenceCount(player.getUniqueId()) != 0)
