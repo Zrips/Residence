@@ -778,7 +778,11 @@ public class ResidenceManager implements ResidenceInterface {
         ChunkSnapshot chunkSnapshot = null;
         for (int x = chunkRef.getX() * 16; x <= chunkRef.getX() * 16 + 15; x++) {
             for (int z = chunkRef.getZ() * 16; z <= chunkRef.getZ() * 16 + 15; z++) {
-
+                
+                // Limit to exact residence area
+                if (x < low.getBlockX() || x > high.getBlockX() || z < low.getBlockZ() || z > high.getBlockZ())
+		    continue;
+ 
                 int hy = world.getHighestBlockYAt(x, z);
                 if (high.getBlockY() < hy)
                     hy = high.getBlockY();
