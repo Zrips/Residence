@@ -33,21 +33,20 @@ public class contract implements cmd {
         Location loc = player.getLocation();
 
         for (String one : args) {
+
             if (res == null) {
                 ClaimedResidence temp = plugin.getResidenceManager().getByName(one);
                 if (temp != null) {
                     res = temp;
-                } else {
+                } else
                     res = plugin.getResidenceManager().getByLoc(loc);
-                }
-                continue;
             }
+
             if (amount == -1) {
                 try {
                     amount = Integer.parseInt(one);
                     continue;
                 } catch (NumberFormatException e) {
-                    return false;
                 }
             }
         }
@@ -82,11 +81,11 @@ public class contract implements cmd {
             lm.Area_NonExist.sendMessage(sender);
             return false;
         }
-        
+
         plugin.getSelectionManager().placeLoc1(player, area.getHighLocation(), false);
         plugin.getSelectionManager().placeLoc2(player, area.getLowLocation(), false);
 
-        amount = CMINumber.clamp(amount, 1, 5000);
+        amount = CMINumber.clamp(amount, 1, Integer.MAX_VALUE);
 
         if (!plugin.getSelectionManager().contract(player, amount))
             return true;

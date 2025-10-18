@@ -17,6 +17,7 @@ import com.bekvon.bukkit.residence.protection.CuboidArea;
 
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class expand implements cmd {
 
@@ -33,21 +34,20 @@ public class expand implements cmd {
         Location loc = player.getLocation();
 
         for (String one : args) {
+
             if (res == null) {
                 ClaimedResidence temp = plugin.getResidenceManager().getByName(one);
                 if (temp != null) {
                     res = temp;
-                } else {
+                } else
                     res = plugin.getResidenceManager().getByLoc(loc);
-                }
-                continue;
             }
+
             if (amount == -1) {
                 try {
                     amount = Integer.parseInt(one);
                     continue;
                 } catch (NumberFormatException e) {
-                    return false;
                 }
             }
         }
@@ -86,7 +86,7 @@ public class expand implements cmd {
         plugin.getSelectionManager().placeLoc1(player, area.getHighLocation(), false);
         plugin.getSelectionManager().placeLoc2(player, area.getLowLocation(), false);
 
-        amount = CMINumber.clamp(amount, 1, 5000);
+        amount = CMINumber.clamp(amount, 1, Integer.MAX_VALUE);
 
         plugin.getSelectionManager().modify(player, false, amount);
 
@@ -94,6 +94,8 @@ public class expand implements cmd {
             if (plugin.getWorldEdit() != null && plugin.getWorldEditTool().equals(plugin.getConfigManager().getSelectionTool())) {
                 plugin.getSelectionManager().worldEdit(player);
             }
+
+            CMIDebug.d(plugin.getSelectionManager().getSelectionCuboid(player).getXSize(), plugin.getSelectionManager().getSelectionCuboid(player).getZSize());
 
             res.replaceArea(player, plugin.getSelectionManager().getSelectionCuboid(player), areaName, resadmin);
             return true;

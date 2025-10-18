@@ -548,10 +548,58 @@ public class ClaimedResidence {
                 lm.Area_DiffWorld.sendMessage(player);
             return false;
         }
+
+        // Check size limitations before checking collisions
+        // This is to have better performance when player tries to expand residence to extreme sizes and we might want to avoid the collision check in that entire area
+        if (!resadmin && player != null) {
+
+            if (!getPermissions().hasResidencePermission(player, true) && !getPermissions().playerHas(player, Flags.admin, FlagCombo.OnlyTrue)) {
+                lm.General_NoPermission.sendMessage(player);
+                return false;
+            }
+            if (getParent() != null) {
+                if (!getParent().containsLoc(newarea.getHighLocation()) || !getParent().containsLoc(newarea.getLowLocation())) {
+                    lm.Area_NotWithinParent.sendMessage(player);
+                    return false;
+                }
+                if (!getParent().getPermissions().hasResidencePermission(player, true)
+                    && !getParent().getPermissions().playerHas(player, Flags.subzone, FlagCombo.OnlyTrue)) {
+                    lm.Residence_ParentNoPermission.sendMessage(player);
+                    return false;
+                }
+            }
+
+            PermissionGroup group = PermissionGroup.getGroup(player);
+            if (!group.canCreateResidences() && !ResPerm.resize.hasPermission(player, true)) {
+                return false;
+            }
+
+            if (oldarea.getSize() < newarea.getSize()
+                && (!this.isSubzone() && !isSmallerThanMax(player, newarea, resadmin)
+                    || this.isSubzone() && !isSmallerThanMaxSubzone(player, newarea, resadmin))) {
+                lm.Area_SizeLimit.sendMessage(player);
+                return false;
+            }
+
+            if (group.getLowestYAllowed() > newarea.getLowVector().getBlockY()) {
+                lm.Area_LowLimit.sendMessage(player, String.format("%d", group.getLowestYAllowed()));
+                return false;
+            }
+
+            if (group.getHighestYAllowed() < newarea.getHighVector().getBlockY()) {
+                lm.Area_HighLimit.sendMessage(player, String.format("%d", group.getHighestYAllowed()));
+                return false;
+            }
+
+            if (!isBiggerThanMin(player, newarea, resadmin))
+                return false;
+        }
+
         if (getParent() == null) {
             String collideResidence = Residence.getInstance().getResidenceManager().checkAreaCollision(newarea, this);
             ClaimedResidence cRes = Residence.getInstance().getResidenceManager().getByName(collideResidence);
             if (cRes != null && player != null) {
+
                 lm.Area_Collision.sendMessage(player, cRes.getName());
                 Visualizer v = new Visualizer(player);
                 v.setAreas(this.getAreaArray());
@@ -600,6 +648,7 @@ public class ClaimedResidence {
                 }
             }
         }
+
         // Don't remove subzones that are not in the area anymore, show colliding areas
         String[] szs = listSubzones();
         for (String sz : szs) {
@@ -634,51 +683,14 @@ public class ClaimedResidence {
 
         if (!resadmin && player != null) {
 
-            if (!getPermissions().hasResidencePermission(player, true) && !getPermissions().playerHas(player, Flags.admin, FlagCombo.OnlyTrue)) {
-                lm.General_NoPermission.sendMessage(player);
-                return false;
-            }
-            if (getParent() != null) {
-                if (!getParent().containsLoc(newarea.getHighLocation()) || !getParent().containsLoc(newarea.getLowLocation())) {
-                    lm.Area_NotWithinParent.sendMessage(player);
-                    return false;
-                }
-                if (!getParent().getPermissions().hasResidencePermission(player, true)
-                    && !getParent().getPermissions().playerHas(player, Flags.subzone, FlagCombo.OnlyTrue)) {
-                    lm.Residence_ParentNoPermission.sendMessage(player);
-                    return false;
-                }
-            }
-            ResidencePlayer rPlayer = Residence.getInstance().getPlayerManager().getResidencePlayer(player);
-            PermissionGroup group = rPlayer.getGroup();
-            if (!group.canCreateResidences() && !ResPerm.resize.hasPermission(player, true)) {
-                return false;
-            }
-
-            if (oldarea.getSize() < newarea.getSize()
-                && (!this.isSubzone() && !isSmallerThanMax(player, newarea, resadmin)
-                    || this.isSubzone() && !isSmallerThanMaxSubzone(player, newarea, resadmin))) {
-                lm.Area_SizeLimit.sendMessage(player);
-                return false;
-            }
-            if (group.getLowestYAllowed() > newarea.getLowVector().getBlockY()) {
-                lm.Area_LowLimit.sendMessage(player, String.format("%d", group.getLowestYAllowed()));
-                return false;
-            }
-            if (group.getHighestYAllowed() < newarea.getHighVector().getBlockY()) {
-                lm.Area_HighLimit.sendMessage(player, String.format("%d", group.getHighestYAllowed()));
-                return false;
-            }
-
-            if (!isBiggerThanMin(player, newarea, resadmin))
-                return false;
-
             if (!resadmin) {
                 if (Residence.getInstance().getWorldGuard() != null && Residence.getInstance().getWorldGuardUtil().isSelectionInArea(player))
                     return false;
                 if (Residence.getInstance().isKingdomsPresent() && Residence.getInstance().getKingdomsUtil().isSelectionInArea(player))
                     return false;
             }
+
+            PermissionGroup group = PermissionGroup.getGroup(player);
 
             if (Residence.getInstance().getConfigManager().isChargeOnExpansion() && getParent() == null && Residence.getInstance().getConfigManager().enableEconomy() && !resadmin) {
                 double chargeamount = newarea.getCost(group) - oldarea.getCost(group);
