@@ -17,13 +17,14 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
@@ -62,11 +63,9 @@ import com.bekvon.bukkit.residence.utils.Teleporting;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
 import net.Zrips.CMILib.Locale.LC;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Version.Version;
-import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class ClaimedResidence {
@@ -134,7 +133,7 @@ public class ClaimedResidence {
     }
 
     public boolean isForSell() {
-        return Residence.getInstance().getTransactionManager().isForSale(this.getName());
+        return Residence.getInstance().getTransactionManager().isForSale(this);
     }
 
     public boolean isForRent() {
@@ -271,8 +270,8 @@ public class ClaimedResidence {
             return false;
         }
 
-        if (area.getYSize() < group.getMinY()) {
-            lm.Area_ToSmallY.sendMessage(player, area.getYSize(), group.getMinY());
+        if (area.getYSize() < group.getMinYSize()) {
+            lm.Area_ToSmallY.sendMessage(player, area.getYSize(), group.getMinYSize());
             return false;
         }
 
@@ -316,8 +315,8 @@ public class ClaimedResidence {
             return false;
         }
 
-        if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && area.getYSize() > group.getMaxY()) {
-            lm.Area_ToBigY.sendMessage(player, area.getYSize(), group.getMaxY());
+        if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && area.getYSize() > group.getMaxYSize()) {
+            lm.Area_ToBigY.sendMessage(player, area.getYSize(), group.getMaxYSize());
             return false;
         }
 
@@ -338,7 +337,7 @@ public class ClaimedResidence {
             return false;
         }
 
-        if (area.getYSize() > group.getSubzoneMaxY() + (-group.getMinY())) {
+        if (area.getYSize() > group.getSubzoneMaxY() + (-group.getMinYSize())) {
             lm.Area_ToBigY.sendMessage(player, area.getYSize(), group.getSubzoneMaxY());
             return false;
         }
@@ -376,7 +375,7 @@ public class ClaimedResidence {
         String NName = name;
         name = name.toLowerCase();
 
-        if (areas.containsKey(NName)) {
+        if (containsArea(NName)) {
             if (player != null) {
                 lm.Area_Exists.sendMessage(player);
             }
@@ -389,7 +388,7 @@ public class ClaimedResidence {
 
         if (!resadmin && Residence.getInstance().getConfigManager().getEnforceAreaInsideArea() && this.getParent() == null) {
             boolean inside = false;
-            for (CuboidArea are : areas.values()) {
+            for (CuboidArea are : getAreaMap().values()) {
                 if (are.isAreaWithinArea(area)) {
                     inside = true;
                 }
@@ -484,7 +483,7 @@ public class ClaimedResidence {
                 return false;
             }
 
-            if (areas.size() >= group.getMaxPhysicalPerResidence()) {
+            if (getAreaMap().size() >= group.getMaxPhysicalPerResidence()) {
                 lm.Area_MaxPhysical.sendMessage(player);
                 return false;
             }
@@ -495,13 +494,13 @@ public class ClaimedResidence {
                 return false;
             }
 
-            if (group.getMinHeight() > area.getLowVector().getBlockY()) {
-                lm.Area_LowLimit.sendMessage(player, String.format("%d", group.getMinHeight()));
+            if (group.getLowestYAllowed() > area.getLowVector().getBlockY()) {
+                lm.Area_LowLimit.sendMessage(player, String.format("%d", group.getLowestYAllowed()));
                 return false;
             }
 
-            if (group.getMaxHeight() < area.getHighVector().getBlockY()) {
-                lm.Area_HighLimit.sendMessage(player, String.format("%d", group.getMaxHeight()));
+            if (group.getHighestYAllowed() < area.getHighVector().getBlockY()) {
+                lm.Area_HighLimit.sendMessage(player, String.format("%d", group.getHighestYAllowed()));
                 return false;
             }
 
@@ -527,7 +526,7 @@ public class ClaimedResidence {
             return false;
 
         Residence.getInstance().getResidenceManager().removeChunkList(this);
-        areas.put(name, area);
+        addAreaByName(name, area);
         Residence.getInstance().getResidenceManager().calculateChunks(this);
         return true;
     }
@@ -538,12 +537,12 @@ public class ClaimedResidence {
 
     public boolean replaceArea(Player player, CuboidArea newarea, String name, boolean resadmin) {
 
-        if (!areas.containsKey(name)) {
+        if (!containsArea(name)) {
             if (player != null)
                 lm.Area_NonExist.sendMessage(player);
             return false;
         }
-        CuboidArea oldarea = areas.get(name);
+        CuboidArea oldarea = getArea(name);
         if (!newarea.getWorld().getName().equalsIgnoreCase(perms.getWorldName())) {
             if (player != null)
                 lm.Area_DiffWorld.sendMessage(player);
@@ -662,12 +661,12 @@ public class ClaimedResidence {
                 lm.Area_SizeLimit.sendMessage(player);
                 return false;
             }
-            if (group.getMinHeight() > newarea.getLowVector().getBlockY()) {
-                lm.Area_LowLimit.sendMessage(player, String.format("%d", group.getMinHeight()));
+            if (group.getLowestYAllowed() > newarea.getLowVector().getBlockY()) {
+                lm.Area_LowLimit.sendMessage(player, String.format("%d", group.getLowestYAllowed()));
                 return false;
             }
-            if (group.getMaxHeight() < newarea.getHighVector().getBlockY()) {
-                lm.Area_HighLimit.sendMessage(player, String.format("%d", group.getMaxHeight()));
+            if (group.getHighestYAllowed() < newarea.getHighVector().getBlockY()) {
+                lm.Area_HighLimit.sendMessage(player, String.format("%d", group.getHighestYAllowed()));
                 return false;
             }
 
@@ -704,7 +703,7 @@ public class ClaimedResidence {
         }
 
         Residence.getInstance().getResidenceManager().removeChunkList(this);
-        areas.put(name, newarea);
+        addAreaByName(name, newarea);
         Residence.getInstance().getResidenceManager().calculateChunks(this);
 
         lm.Area_Update.sendMessage(player);
@@ -858,20 +857,6 @@ public class ClaimedResidence {
         return get;
     }
 
-    public String getSubzoneNameByRes(ClaimedResidence res) {
-        Set<Entry<String, ClaimedResidence>> set = subzones.entrySet();
-        for (Entry<String, ClaimedResidence> entry : set) {
-            if (entry.getValue() == res) {
-                return entry.getValue().getResidenceName();
-            }
-            String n = entry.getValue().getSubzoneNameByRes(res);
-            if (n != null) {
-                return entry.getValue().getResidenceName() + "." + n;
-            }
-        }
-        return null;
-    }
-
     public String[] getSubzoneList() {
         ArrayList<String> zones = new ArrayList<>();
         Set<String> set = subzones.keySet();
@@ -884,7 +869,7 @@ public class ClaimedResidence {
     }
 
     public boolean checkCollision(CuboidArea area) {
-        for (CuboidArea checkarea : areas.values()) {
+        for (CuboidArea checkarea : getAreaMap().values()) {
             if (checkarea != null && checkarea.checkCollision(area)) {
                 return true;
             }
@@ -893,7 +878,7 @@ public class ClaimedResidence {
     }
 
     public boolean containsLoc(Location loc) {
-        for (CuboidArea key : areas.values()) {
+        for (CuboidArea key : getAreaMap().values()) {
             if (key.containsLoc(loc)) {
                 if (getParent() != null)
                     return getParent().containsLoc(loc);
@@ -940,7 +925,7 @@ public class ClaimedResidence {
     }
 
     public long getTotalSize() {
-        Collection<CuboidArea> set = areas.values();
+        Collection<CuboidArea> set = getAreaMap().values();
         long size = 0;
         if (!Residence.getInstance().getConfigManager().isNoCostForYBlocks())
             for (CuboidArea entry : set) {
@@ -954,20 +939,12 @@ public class ClaimedResidence {
     }
 
     public long getXZSize() {
-        Collection<CuboidArea> set = areas.values();
+        Collection<CuboidArea> set = getAreaMap().values();
         long size = 0;
         for (CuboidArea entry : set) {
             size = size + (entry.getXSize() * entry.getZSize());
         }
         return size;
-    }
-
-    public CuboidArea[] getAreaArray() {
-        return areas.values().toArray(new CuboidArea[0]);
-    }
-
-    public Map<String, CuboidArea> getAreaMap() {
-        return areas;
     }
 
     public ResidencePermissions getPermissions() {
@@ -1024,15 +1001,15 @@ public class ClaimedResidence {
     }
 
     public CuboidArea getMainArea() {
-        CuboidArea area = areas.get(this.isSubzone() ? this.getResidenceName() : "main");
-        if (area == null && !areas.isEmpty()) {
-            return areas.entrySet().iterator().next().getValue();
+        CuboidArea area = getArea(this.isSubzone() ? this.getResidenceName() : "main");
+        if (area == null && !getAreaMap().isEmpty()) {
+            return getAreaMap().entrySet().iterator().next().getValue();
         }
         return area;
     }
 
     public CuboidArea getAreaByLoc(Location loc) {
-        for (CuboidArea thisarea : areas.values()) {
+        for (CuboidArea thisarea : getAreaMap().values()) {
             if (thisarea.containsLoc(loc)) {
                 return thisarea;
             }
@@ -1090,7 +1067,7 @@ public class ClaimedResidence {
             ClaimedResidence res = getSubzones().get(i);
             if (res == null)
                 continue;
-            rm.addText(ChatColor.GREEN + res.getResidenceName() + ChatColor.YELLOW + " - " + lm.General_Owner.getMessage(res.getOwner()))
+            rm.addText(CMIChatColor.GREEN + res.getResidenceName() + CMIChatColor.YELLOW + " - " + lm.General_Owner.getMessage(res.getOwner()))
                 .addHover("Teleport to " + res.getName())
                 .addCommand("res tp " + res.getName());
             rm.show(sender);
@@ -1101,7 +1078,7 @@ public class ClaimedResidence {
 
     public void printAreaList(Player player, int page) {
         ArrayList<String> temp = new ArrayList<>();
-        for (String area : areas.keySet()) {
+        for (String area : getAreaMap().keySet()) {
             temp.add(area);
         }
         Residence.getInstance().getInfoPageManager().printInfo(player, "res area list " + this.getName(), lm.General_PhysicalAreas.getMessage(), temp, page);
@@ -1109,7 +1086,7 @@ public class ClaimedResidence {
 
     public void printAdvancedAreaList(Player player, int page) {
         ArrayList<String> temp = new ArrayList<>();
-        for (Entry<String, CuboidArea> entry : areas.entrySet()) {
+        for (Entry<String, CuboidArea> entry : getAreaMap().entrySet()) {
             CuboidArea a = entry.getValue();
             Location h = a.getHighLocation();
             Location l = a.getLowLocation();
@@ -1122,9 +1099,9 @@ public class ClaimedResidence {
     }
 
     public String[] getAreaList() {
-        String arealist[] = new String[areas.size()];
+        String arealist[] = new String[getAreaMap().size()];
         int i = 0;
-        for (Entry<String, CuboidArea> entry : areas.entrySet()) {
+        for (Entry<String, CuboidArea> entry : getAreaMap().entrySet()) {
             arealist[i] = entry.getKey();
             i++;
         }
@@ -1383,16 +1360,21 @@ public class ClaimedResidence {
 
     }
 
-    public String getAreaIDbyLoc(Location loc) {
-        for (Entry<String, CuboidArea> area : areas.entrySet()) {
+    @Deprecated
+    public @Nullable String getAreaIDbyLoc(@NotNull Location loc) {
+        return getAreaNameByLoc(loc);
+    }
+
+    public @Nullable String getAreaNameByLoc(@NotNull Location loc) {
+        for (Entry<String, CuboidArea> area : getAreaMap().entrySet()) {
             if (area.getValue().containsLoc(loc))
                 return area.getKey();
         }
         return null;
     }
 
-    public CuboidArea getCuboidAreabyName(String name) {
-        for (Entry<String, CuboidArea> area : areas.entrySet()) {
+    public @Nullable CuboidArea getCuboidAreabyName(@NotNull String name) {
+        for (Entry<String, CuboidArea> area : getAreaMap().entrySet()) {
             if (area.getKey().equals(name))
                 return area.getValue();
         }
@@ -1401,17 +1383,17 @@ public class ClaimedResidence {
 
     public void removeArea(String id) {
         Residence.getInstance().getResidenceManager().removeChunkList(this);
-        areas.remove(id);
+        removeAreaByName(id);
         Residence.getInstance().getResidenceManager().calculateChunks(this);
     }
 
     public void removeArea(Player player, String id, boolean resadmin) {
         if (this.getPermissions().hasResidencePermission(player, true) || resadmin) {
-            if (!areas.containsKey(id)) {
+            if (!containsArea(id)) {
                 lm.Area_NonExist.sendMessage(player);
                 return;
             }
-            if (areas.size() == 1 && !Residence.getInstance().getConfigManager().allowEmptyResidences()) {
+            if (getAreaMap().size() == 1 && !Residence.getInstance().getConfigManager().allowEmptyResidences()) {
                 lm.Area_RemoveLast.sendMessage(player);
                 return;
             }
@@ -1525,7 +1507,7 @@ public class ClaimedResidence {
             e.printStackTrace();
         }
 
-        for (Entry<String, CuboidArea> entry : areas.entrySet()) {
+        for (Entry<String, CuboidArea> entry : getAreaMap().entrySet()) {
             areamap.put(entry.getKey(), entry.getValue().newSave());
         }
 
@@ -1654,10 +1636,10 @@ public class ClaimedResidence {
         for (Entry<String, Object> map : areamap.entrySet()) {
             if (map.getValue() instanceof String) {
                 // loading new same format
-                res.areas.put(map.getKey(), CuboidArea.newLoad((String) map.getValue(), res.perms.getWorldName()));
+                res.addAreaByName(map.getKey(), CuboidArea.newLoad((String) map.getValue(), res.perms.getWorldName()));
             } else {
                 // loading old format
-                res.areas.put(map.getKey(), CuboidArea.load((Map<String, Object>) map.getValue(), res.perms.getWorldName()));
+                res.addAreaByName(map.getKey(), CuboidArea.load((Map<String, Object>) map.getValue(), res.perms.getWorldName()));
             }
         }
 
@@ -1765,10 +1747,6 @@ public class ClaimedResidence {
         return res;
     }
 
-    public int getAreaCount() {
-        return areas.size();
-    }
-
     public boolean renameSubzone(String oldName, String newName) {
         return this.renameSubzone(null, oldName, newName, true);
     }
@@ -1828,17 +1806,19 @@ public class ClaimedResidence {
         }
 
         if (player == null || perms.hasResidencePermission(player, true) || resadmin) {
-            if (areas.containsKey(newName)) {
+
+            if (containsArea(newName)) {
                 lm.Area_Exists.sendMessage(player);
                 return false;
             }
-            CuboidArea area = areas.get(oldName);
+
+            CuboidArea area = getArea(oldName);
             if (area == null) {
                 lm.Area_InvalidName.sendMessage(player);
                 return false;
             }
-            areas.put(newName, area);
-            areas.remove(oldName);
+            addAreaByName(newName, area);
+            removeAreaByName(oldName);
             lm.Area_Rename.sendMessage(player, oldName, newName);
             return true;
         }
@@ -1846,8 +1826,32 @@ public class ClaimedResidence {
         return false;
     }
 
+    public CuboidArea[] getAreaArray() {
+        return getAreaMap().values().toArray(new CuboidArea[0]);
+    }
+
+    public Map<String, CuboidArea> getAreaMap() {
+        return areas;
+    }
+
+    public int getAreaCount() {
+        return getAreaMap().size();
+    }
+
+    public boolean containsArea(String name) {
+        return getAreaMap().containsKey(name.toLowerCase());
+    }
+
     public CuboidArea getArea(String name) {
-        return areas.get(name);
+        return getAreaMap().get(name.toLowerCase());
+    }
+
+    private void addAreaByName(String newName, CuboidArea area) {
+        getAreaMap().put(newName.toLowerCase(), area);
+    }
+
+    private CuboidArea removeAreaByName(String name) {
+        return getAreaMap().remove(name.toLowerCase());
     }
 
     public String getName() {
