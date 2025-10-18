@@ -72,6 +72,8 @@ public class CuboidArea {
     }
 
     public boolean containsLoc(Location loc) {
+        if (loc == null)
+            return false;
         return containsLoc(loc.toVector(), loc.getWorld().getName());
     }
 

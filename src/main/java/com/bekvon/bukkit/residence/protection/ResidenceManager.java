@@ -32,6 +32,7 @@ import org.bukkit.World;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.api.ResidenceInterface;
@@ -92,7 +93,7 @@ public class ResidenceManager implements ResidenceInterface {
     }
 
     @Override
-    public ClaimedResidence getByLoc(Location loc) {
+    public @Nullable ClaimedResidence getByLoc(@Nullable Location loc) {
 
         if (loc == null)
             return null;
@@ -169,21 +170,6 @@ public class ResidenceManager implements ResidenceInterface {
             }
         }
         return res;
-    }
-
-    @Override
-    public String getSubzoneNameByRes(ClaimedResidence res) {
-        Set<Entry<String, ClaimedResidence>> set = residences.entrySet();
-        for (Entry<String, ClaimedResidence> check : set) {
-            if (check.getValue() == res) {
-                return check.getKey();
-            }
-            String n = check.getValue().getSubzoneNameByRes(res);
-            if (n != null) {
-                return n;
-            }
-        }
-        return null;
     }
 
     @Override
@@ -778,11 +764,11 @@ public class ResidenceManager implements ResidenceInterface {
         ChunkSnapshot chunkSnapshot = null;
         for (int x = chunkRef.getX() * 16; x <= chunkRef.getX() * 16 + 15; x++) {
             for (int z = chunkRef.getZ() * 16; z <= chunkRef.getZ() * 16 + 15; z++) {
-                
-                // Limit to exact residence area
+
+                // Limit to exact residence area 
                 if (x < low.getBlockX() || x > high.getBlockX() || z < low.getBlockZ() || z > high.getBlockZ())
-		    continue;
- 
+                    continue;
+
                 int hy = world.getHighestBlockYAt(x, z);
                 if (high.getBlockY() < hy)
                     hy = high.getBlockY();

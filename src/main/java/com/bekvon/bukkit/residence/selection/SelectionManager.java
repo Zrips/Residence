@@ -953,12 +953,7 @@ public class SelectionManager {
         }
         CuboidArea area = this.getSelectionCuboid(player);
 
-        int MIN_HEIGHT = 0;
-
-        try {
-            MIN_HEIGHT = CMIWorld.getMinHeight(area.getWorld());
-        } catch (Throwable e) {
-        }
+        int MIN_HEIGHT = CMIWorld.getMinHeight(area.getWorld());
 
         switch (d) {
         case DOWN:

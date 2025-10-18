@@ -1000,12 +1000,22 @@ public class ClaimedResidence {
         lm.Residence_MessageChange.sendMessage(sender);
     }
 
-    public CuboidArea getMainArea() {
-        CuboidArea area = getArea(this.isSubzone() ? this.getResidenceName() : "main");
-        if (area == null && !getAreaMap().isEmpty()) {
-            return getAreaMap().entrySet().iterator().next().getValue();
+    public String getMainAreaName() {
+        String name = this.isSubzone() ? this.getResidenceName() : "main";
+        CuboidArea area = getArea(name);
+
+        if (area != null)
+            return name;
+
+        if (!getAreaMap().isEmpty()) {
+            return getAreaMap().entrySet().iterator().next().getKey();
         }
-        return area;
+
+        return name;
+    }
+
+    public CuboidArea getMainArea() {
+        return getArea(getMainAreaName());
     }
 
     public CuboidArea getAreaByLoc(Location loc) {
