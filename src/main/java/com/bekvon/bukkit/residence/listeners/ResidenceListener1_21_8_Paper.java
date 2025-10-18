@@ -5,7 +5,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -14,10 +13,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
-import net.Zrips.CMILib.Entities.CMIEntityType;
-
 import io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent;
-import io.papermc.paper.event.entity.ItemTransportingEntityValidateTargetEvent;
 
 public class ResidenceListener1_21_8_Paper implements Listener {
 
@@ -66,27 +62,5 @@ public class ResidenceListener1_21_8_Paper implements Listener {
                 return true;
         }
         return false;
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onCopperGolemInteract(ItemTransportingEntityValidateTargetEvent event) {
-
-        Entity entity = event.getEntity();
-        if (entity == null)
-            return;
-
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(entity.getWorld()))
-            return;
-
-        if (CMIEntityType.get(entity) != CMIEntityType.COPPER_GOLEM)
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
-        if (perms.has(Flags.golemopenchest, perms.has(Flags.container, true)))
-            return;
-
-        event.setAllowed(false);
-
     }
 }

@@ -77,6 +77,7 @@ import com.bekvon.bukkit.residence.listeners.ResidenceListener1_20;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_8_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_8_Spigot;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_9_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener;
 import com.bekvon.bukkit.residence.permissions.PermissionManager;
 import com.bekvon.bukkit.residence.persistance.YMLSaveHelper;
@@ -635,6 +636,11 @@ public class Residence extends JavaPlugin {
                         pm.registerEvents(new ResidenceListener1_21_8_Paper(this), this);
                     else
                         pm.registerEvents(new ResidenceListener1_21_8_Spigot(this), this);
+                }
+
+                if (Version.isCurrentEqualOrHigher(Version.v1_21_R6)) {
+                    if (Version.isPaperBranch())
+                        pm.registerEvents(new ResidenceListener1_21_9_Paper(this), this);
                 }
 
                 plistener = new ResidencePlayerListener(this);
