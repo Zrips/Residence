@@ -119,7 +119,7 @@ public class ResidenceListener1_17 implements Listener {
             return;
 
         FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-        if (perms.playerHas(player, Flags.copper, perms.has(Flags.destroy, true)))
+        if (perms.playerHas(player, Flags.copper, perms.playerHas(player, Flags.destroy, true)))
             return;
 
         lm.Flag_Deny.sendMessage(player, Flags.copper);
