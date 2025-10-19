@@ -205,7 +205,7 @@ public class ResidenceListener1_13 implements Listener {
         Block block = event.getBlock();
         if (block == null)
             return;
-
+        // disabling event on world
         if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
@@ -223,16 +223,6 @@ public class ResidenceListener1_13 implements Listener {
         if (!isButton && !isPlate)
             return;
 
-        Flags targetFlag = null;
-        if (isButton) {
-            targetFlag = Flags.button;
-
-        // Easier future addition
-        } else if (isPlate) {
-            targetFlag = Flags.pressure;
-
-        }
-
         // Only get projectile player source
         Player player = Utils.potentialProjectileToPlayer(entity);
         if (player != null) {
@@ -244,17 +234,15 @@ public class ResidenceListener1_13 implements Listener {
             boolean hasUse = perms.playerHas(player, Flags.use, true);
 
             if (isButton) {
-                if (perms.playerHas(player, targetFlag, hasUse))
+                if (perms.playerHas(player, Flags.button, hasUse))
                     return;
-
                 event.setCancelled(true);
                 return;
 
             // Easier future addition
             } else if (isPlate) {
-                if (perms.playerHas(player, targetFlag, hasUse))
+                if (perms.playerHas(player, Flags.pressure, hasUse))
                     return;
-
                 event.setCancelled(true);
                 return;
 
@@ -266,21 +254,19 @@ public class ResidenceListener1_13 implements Listener {
             boolean hasUse = perms.has(Flags.use, true);
 
             if (isButton) {
-                if (perms.has(targetFlag, hasUse))
+                if (perms.has(Flags.button, hasUse))
                     return;
-
                 event.setCancelled(true);
                 return;
 
             // Easier future addition
             } else if (isPlate) {
-                if (perms.has(targetFlag, hasUse))
+                if (perms.has(Flags.pressure, hasUse))
                     return;
-
                 event.setCancelled(true);
                 return;
 
-            } 
+            }
         }
     }
 }
