@@ -378,6 +378,11 @@ public class SelectionManager {
         this.afterSelectionUpdate(player, force);
     }
 
+    public void placeLoc(Player player, Location loc1, Location loc2, boolean show) {
+        placeLoc1(player, loc1, false);
+        placeLoc2(player, loc2, show);
+    }
+
     public void placeLoc1(Player player, Location loc) {
         placeLoc1(player, loc, false);
     }
