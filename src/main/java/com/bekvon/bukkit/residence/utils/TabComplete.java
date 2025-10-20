@@ -12,19 +12,17 @@ import org.bukkit.util.StringUtil;
 
 import com.bekvon.bukkit.residence.Residence;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
-
 public class TabComplete implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-	List<String> completionList = new ArrayList<>();
-	if (args.length >= 1) {
-	    Set<String> Commands = Residence.getInstance().getHelpPages().getSubCommands(sender, args);
-	    String PartOfCommand = args[args.length - 1];
-	    StringUtil.copyPartialMatches(PartOfCommand, Commands, completionList);
-	    Collections.sort(completionList);
-	}
-	return completionList;
+        List<String> completionList = new ArrayList<>();
+        if (args.length >= 1) {
+            Set<String> commands = Residence.getInstance().getHelpPages().getSubCommands(sender, args);
+            String partOfCommand = args[args.length - 1];
+            StringUtil.copyPartialMatches(partOfCommand, commands, completionList);
+            Collections.sort(completionList);
+        }
+        return completionList;
     }
 }

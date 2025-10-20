@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,8 +22,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.event.ResidenceCommandEvent;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
-import net.Zrips.CMILib.Messages.CMIMessages;
+import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class ResidenceCommandListener implements CommandExecutor {
@@ -72,7 +70,7 @@ public class ResidenceCommandListener implements CommandExecutor {
                 Player player = (Player) sender;
                 if (plugin.getPermissionManager().isResidenceAdmin(player) && ResPerm.topadmin.hasPermission(player)) {
                     plugin.reloadPlugin();
-                    sender.sendMessage(ChatColor.GREEN + "[Residence] Reloaded config.");
+                    sender.sendMessage(CMIChatColor.GREEN + "[Residence] Reloaded config.");
                     lm.consoleMessage("Reloaded by " + player.getName() + ".");
                 } else
                     lm.General_NoPermission.sendMessage(player);
@@ -86,10 +84,10 @@ public class ResidenceCommandListener implements CommandExecutor {
             if (!(sender instanceof Player) || sender instanceof Player && plugin.getPermissionManager().isResidenceAdmin(sender) && ResPerm.topadmin.hasPermission(sender)) {
                 try {
                     plugin.loadYml();
-                    sender.sendMessage(ChatColor.GREEN + "[Residence] Reloaded save file...");
+                    sender.sendMessage(CMIChatColor.GREEN + "[Residence] Reloaded save file...");
                 } catch (Exception ex) {
-                    sender.sendMessage(ChatColor.RED + "[Residence] Unable to reload the save file, exception occured!");
-                    sender.sendMessage(ChatColor.RED + ex.getMessage());
+                    sender.sendMessage(CMIChatColor.RED + "[Residence] Unable to reload the save file, exception occured!");
+                    sender.sendMessage(CMIChatColor.RED + ex.getMessage());
                     Logger.getLogger(Residence.getInstance().getClass().getName()).log(Level.SEVERE, null, ex);
                 }
             } else

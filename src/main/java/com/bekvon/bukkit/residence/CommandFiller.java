@@ -7,15 +7,21 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.CommandStatus;
+import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 
 public class CommandFiller {
 
@@ -48,6 +54,26 @@ public class CommandFiller {
             cmdList.add(one.getKey());
         }
         return cmdList;
+    }
+
+    public Set<String> getCommands(CommandSender sender) {
+
+        Set<String> cmds = CommandList.keySet();
+
+        if (!(sender instanceof Player))
+            return cmds;
+
+        Set<String> copy = new HashSet<String>();
+
+        for (String one : cmds) {
+
+            if (!ResPerm.command_$1.hasPermission(sender, one.toLowerCase()))
+                continue;
+
+            copy.add(one);
+        }
+
+        return copy;
     }
 
     public Map<String, CommandStatus> fillCommands() {
@@ -89,7 +115,7 @@ public class CommandFiller {
         return CommandList;
     }
 
-    public static List<String> getClassesFromPackage(String pckgname) throws ClassNotFoundException {
+    private static List<String> getClassesFromPackage(String pckgname) throws ClassNotFoundException {
         List<String> result = new ArrayList<String>();
         try {
             for (URL jarURL : ((URLClassLoader) Residence.class.getClassLoader()).getURLs()) {

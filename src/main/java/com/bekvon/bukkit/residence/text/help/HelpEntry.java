@@ -17,6 +17,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.ResidenceCommandListener;
 import com.bekvon.bukkit.residence.Placeholders.Placeholder.CMIPlaceHolders;
@@ -79,10 +80,6 @@ public class HelpEntry {
             return;
         }
 
-//	String separator = Residence.getInstance().msg(lm.InformationPage_SmallSeparator);
-
-//	sender.sendMessage(separator + " " + Residence.getInstance().msg(lm.General_HelpPageHeader, path, page, pi.getTotalPages()) + " " + separator);
-
         for (int i = pi.getStart(); i <= pi.getEnd(); i++) {
             if (helplines.get(i).getCommand() != null) {
                 HelpEntry sub = this.getSubEntry(helplines.get(i).getCommand());
@@ -140,6 +137,9 @@ public class HelpEntry {
                     continue;
 
                 if (!ResidenceCommandListener.getAdminCommands().contains(entry.getName().toLowerCase()) && resadmin)
+                    continue;
+
+                if (!ResPerm.command_$1.hasPermission(sender, entry.getName()))
                     continue;
 
             } else {
@@ -300,10 +300,13 @@ public class HelpEntry {
         if (args.length > 0) {
             HashMap<String, List<String>> mp = new HashMap<String, List<String>>();
             List<String> base = new ArrayList<String>();
-            for (Entry<String, HashMap<String, List<String>>> one : Residence.getInstance().getLocaleManager().CommandTab.entrySet()) {
+
+            for (Entry<String, HashMap<String, List<String>>> one : LocaleManager.CommandTab.entrySet()) {
                 if (one.getKey().startsWith(args[0].toLowerCase())) {
                     mp.putAll(one.getValue());
-                    base.add(one.getKey());
+
+                    if (ResPerm.command_$1.hasPermission(sender, one.getKey()))
+                        base.add(one.getKey());
                 }
             }
 
@@ -341,7 +344,7 @@ public class HelpEntry {
                     ArgsList.add(getMp(mp));
                 }
             } else {
-                for (String one : Residence.getInstance().getLocaleManager().CommandTab.keySet()) {
+                for (String one : LocaleManager.CommandTab.keySet()) {
                     if (ResPerm.command_$1.hasPermission(sender, one))
                         subCommands.add(one);
                 }
