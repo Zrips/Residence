@@ -56,12 +56,10 @@ public class ResidenceListener1_14 implements Listener {
         if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
             return;
 
-        Entity entity = event.getEntity();
-
-        if (entity.getType() != EntityType.RAVAGER)
+        if (event.getEntity().getType() != EntityType.RAVAGER)
             return;
 
-        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation());
+        FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
         if (perms.has(Flags.destroy, true))
             return;
 
