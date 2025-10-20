@@ -27,73 +27,71 @@ public class ResidenceListener1_14 implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
-    public void onJump(PlayerTakeLecternBookEvent event) {
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onLecternBookTake(PlayerTakeLecternBookEvent event) {
 
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getLectern().getWorld()))
             return;
-        if (ResAdmin.isResAdmin(event.getPlayer())) {
-            return;
-        }
 
-        if (FlagPermissions.has(event.getLectern().getLocation(), event.getPlayer(), Flags.container, FlagCombo.TrueOrNone))
+        Player player = event.getPlayer();
+
+        if (ResAdmin.isResAdmin(player))
             return;
+
+        FlagPermissions perms = FlagPermissions.getPerms(event.getLectern().getLocation(), player);
+        if (perms.playerHas(player, Flags.container, true))
+            return;
+
+        lm.Flag_Deny.sendMessage(player, Flags.container);
+
         event.setCancelled(true);
-        lm.Flag_Deny.sendMessage(event.getPlayer(), Flags.container);
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onRavager(EntityChangeBlockEvent event) {
 
-        // Disabling listener if flag disabled globally
-        if (!Flags.destroy.isGlobalyEnabled())
-            return;
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
             return;
-        if (event.isCancelled())
+
+        Entity entity = event.getEntity();
+
+        if (entity.getType() != EntityType.RAVAGER)
             return;
 
-        Entity ent = event.getEntity();
-
-        if (ent.getType() != EntityType.RAVAGER)
-            return;
-
-        if (!FlagPermissions.has(event.getBlock().getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
+        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation());
+        if (perms.has(Flags.destroy, true))
             return;
 
         event.setCancelled(true);
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onVehicleDamage(VehicleDamageEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.vehicledestroy.isGlobalyEnabled())
-            return;
+
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getVehicle().getWorld()))
             return;
 
-        if (event.isCancelled())
-            return;
-
         Entity attacker = event.getAttacker();
         if (attacker instanceof Player) {
-            if (ResAdmin.isResAdmin((Player) attacker)) {
+
+            Player player = (Player) attacker;
+
+            if (ResAdmin.isResAdmin(player))
                 return;
-            }
-            if (!FlagPermissions.has(event.getVehicle().getLocation(), (Player) attacker, Flags.vehicledestroy, FlagCombo.OnlyFalse))
+
+            FlagPermissions perms = FlagPermissions.getPerms(event.getVehicle().getLocation(), player);
+            if (perms.playerHas(player, Flags.vehicledestroy, true))
                 return;
-        } else {
-            if (!FlagPermissions.has(event.getVehicle().getLocation(), Flags.vehicledestroy, FlagCombo.OnlyFalse))
-                return;
+
+            lm.Flag_Deny.sendMessage(player, Flags.vehicledestroy);
+
+            event.setCancelled(true);
+
         }
-
-        event.setCancelled(true);
-
-        if (attacker instanceof Player)
-            lm.Flag_Deny.sendMessage((Player) attacker, Flags.vehicledestroy);
-
     }
 }
