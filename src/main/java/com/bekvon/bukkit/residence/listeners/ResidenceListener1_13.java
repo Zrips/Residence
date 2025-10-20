@@ -1,5 +1,7 @@
 package com.bekvon.bukkit.residence.listeners;
 
+import java.util.Objects;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
@@ -17,6 +19,7 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.projectiles.BlockProjectileSource;
 import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -29,6 +32,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_13 implements Listener {
@@ -148,7 +152,7 @@ public class ResidenceListener1_13 implements Listener {
         if (isButton) {
             targetFlag = Flags.button;
 
-        // Button or a Plate, for easier future additions
+            // Button or a Plate, for easier future additions
         } else if (isPlate) {
             targetFlag = Flags.pressure;
         }
@@ -166,10 +170,9 @@ public class ResidenceListener1_13 implements Listener {
                 if (perms.playerHas(player, targetFlag, hasUse))
                     return;
 
-            // Button or a Plate, for easier future additions
-            } else if (isPlate) {
-                if (perms.playerHas(player, targetFlag, hasUse))
-                    return;
+                // Button or a Plate, for easier future additions
+            } else if (isPlate && perms.playerHas(player, targetFlag, hasUse)) {
+                return;
             }
 
             // The perfect spot, the earlier check sends exactly one deny msgs
@@ -177,8 +180,13 @@ public class ResidenceListener1_13 implements Listener {
             // Send matching deny msgs for flag types
             lm.Flag_Deny.sendMessage(player, targetFlag);
 
-        //Check when the entity has no player source
+            //Check when the entity has no player source
         } else {
+
+            // Check potential block as a shooter which should be allowed if its inside same residence            
+            if (Utils.isSourceBlockInsideSameResidence(event.getEntity(), res))
+                return;
+
             FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
             boolean hasUse = perms.has(Flags.use, true);
 
@@ -187,11 +195,9 @@ public class ResidenceListener1_13 implements Listener {
                     return;
                 }
 
-            // Button or a Plate, for easier future additions
-            } else if (isPlate) {
-                if (perms.has(targetFlag, hasUse)) {
-                    return;
-                }
+                // Button or a Plate, for easier future additions
+            } else if (isPlate && perms.has(targetFlag, hasUse)) {
+                return;
             }
         }
 
@@ -239,7 +245,7 @@ public class ResidenceListener1_13 implements Listener {
                 event.setCancelled(true);
                 return;
 
-            // Easier future addition
+                // Easier future addition
             } else if (isPlate) {
                 if (perms.playerHas(player, Flags.pressure, hasUse))
                     return;
@@ -248,8 +254,13 @@ public class ResidenceListener1_13 implements Listener {
 
             }
 
-        // Entity not player source
+            // Entity not player source
         } else {
+
+            // Check potential block as a shooter which should be allowed if its inside same residence            
+            if (Utils.isSourceBlockInsideSameResidence(entity, ClaimedResidence.getByLoc(block.getLocation())))
+                return;
+
             FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
             boolean hasUse = perms.has(Flags.use, true);
 
@@ -259,7 +270,7 @@ public class ResidenceListener1_13 implements Listener {
                 event.setCancelled(true);
                 return;
 
-            // Easier future addition
+                // Easier future addition
             } else if (isPlate) {
                 if (perms.has(Flags.pressure, hasUse))
                     return;

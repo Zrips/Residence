@@ -3,6 +3,7 @@ package com.bekvon.bukkit.residence.utils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,7 +23,12 @@ import org.bukkit.entity.WaterMob;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.util.BlockIterator;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
@@ -37,6 +43,22 @@ public class Utils {
         if (entity instanceof Player)
             return (Player) entity;
         return null;
+    }
+
+    public static boolean isSourceBlockInsideSameResidence(@NotNull Entity potentialProjecticle, @Nullable ClaimedResidence targetResidence) {
+        // Check potential block as a shooter which should be allowed if its inside same residence
+        if (!(potentialProjecticle instanceof Projectile))
+            return false;
+
+        @NotNull
+        Projectile projectile = (Projectile) potentialProjecticle;
+        if (!(projectile.getShooter() instanceof BlockProjectileSource))
+            return false;
+
+        BlockProjectileSource bps = (BlockProjectileSource) projectile.getShooter();
+        ClaimedResidence bres = ClaimedResidence.getByLoc(bps.getBlock().getLocation());
+        ClaimedResidence res = targetResidence == null ? ClaimedResidence.getByLoc(potentialProjecticle.getLocation()) : targetResidence;
+        return Objects.equals(res, bres);
     }
 
     public static Entity potentialProjectileToEntity(Entity entity) {
