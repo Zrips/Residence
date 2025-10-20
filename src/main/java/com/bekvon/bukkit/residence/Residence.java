@@ -449,8 +449,6 @@ public class Residence extends JavaPlugin {
             chatmanager = new ChatManager();
             rentmanager = new RentManager(this);
 
-            localeManager = new LocaleManager(this);
-
             ShopSignUtilManager = new ShopSignUtil(this);
             RandomTpManager = new RandomTp(this);
 //	    townManager = new TownManager(this);
@@ -560,6 +558,7 @@ public class Residence extends JavaPlugin {
             pmanager = new PermissionListManager(this);
 
             getLocaleManager().LoadLang(getConfigManager().getLanguage());
+            
             getLM().LanguageReload();
 
             if (firstenable) {
@@ -943,6 +942,8 @@ public class Residence extends JavaPlugin {
     }
 
     public LocaleManager getLocaleManager() {
+        if (localeManager == null)
+            localeManager = new LocaleManager(this);
         return localeManager;
     }
 

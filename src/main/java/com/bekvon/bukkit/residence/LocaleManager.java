@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -27,11 +24,12 @@ import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.text.help.HelpEntry;
 
+import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 
 public class LocaleManager {
 
-    public HashMap<String, HashMap<String, List<String>>> CommandTab = new HashMap<String, HashMap<String, List<String>>>();
+    public static HashMap<String, HashMap<String, List<String>>> CommandTab = new HashMap<String, HashMap<String, List<String>>>();
     private Residence plugin;
 
     public String path = "CommandHelp.SubCommands.res.SubCommands.";
@@ -42,17 +40,21 @@ public class LocaleManager {
     }
 
     public static void addTabCompleteMain(Object cl, String... tabs) {
+        addTabCompleteMain(cl.getClass().getSimpleName().toLowerCase(), tabs);
+    }
+
+    public static void addTabCompleteMain(String commandName, String... tabs) {
         HashMap<String, List<String>> mp = new HashMap<String, List<String>>();
         mp.put("", Arrays.asList(tabs));
-        Residence.getInstance().getLocaleManager().CommandTab.put(cl.getClass().getSimpleName().toLowerCase(), mp);
+        CommandTab.put(commandName.toLowerCase(), mp);
     }
 
     public static void addTabCompleteSub(Object cl, String subCmd, String... tabs) {
-        HashMap<String, List<String>> mp = Residence.getInstance().getLocaleManager().CommandTab.get(cl.getClass().getSimpleName().toLowerCase());
+        HashMap<String, List<String>> mp = CommandTab.get(cl.getClass().getSimpleName().toLowerCase());
         if (mp == null)
             mp = new HashMap<String, List<String>>();
         mp.put(subCmd.toLowerCase(), Arrays.asList(tabs));
-        Residence.getInstance().getLocaleManager().CommandTab.put(cl.getClass().getSimpleName().toLowerCase(), mp);
+        CommandTab.put(cl.getClass().getSimpleName().toLowerCase(), mp);
     }
 
     private static YamlConfiguration loadConfiguration(BufferedReader in, String language) {
@@ -60,10 +62,8 @@ public class LocaleManager {
         YamlConfiguration config = new YamlConfiguration();
         try {
             config.load(in);
-        } catch (FileNotFoundException ex) {
-        } catch (IOException ex) {
-        } catch (InvalidConfigurationException ex) {
-            lm.consoleMessage(ChatColor.RED + "[Residence] Your locale file for " + language + " is incorect! Use http://yaml-online-parser.appspot.com/ to find issue.");
+        } catch (Exception ex) {
+            lm.consoleMessage(CMIChatColor.RED + "[Residence] Your locale file for " + language + " is incorect! Use http://yaml-online-parser.appspot.com/ to find issue.");
             return null;
         }
 
