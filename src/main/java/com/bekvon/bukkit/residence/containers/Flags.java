@@ -143,26 +143,11 @@ public enum Flags {
         Player, Residence, Both
     }
 
-    @Deprecated
-    private Flags(int id, int data, FlagMode flagMode, String desc, boolean enabled) {
-        this(CMIMaterial.get(id, data), flagMode, desc, enabled);
-    }
-
     private Flags(CMIMaterial icon, FlagMode flagMode, String desc, boolean enabled) {
         this.icon = icon;
         this.flagMode = flagMode;
         this.desc = desc;
         this.enabled = enabled;
-    }
-
-    @Deprecated
-    public int getId() {
-        return icon.getId();
-    }
-
-    @Deprecated
-    public int getData() {
-        return icon.getData();
     }
 
     public String getName() {
