@@ -23,7 +23,7 @@ Global:
     anchor: true
     # Applies to: Both
     # Allows or denys animal killing
-    animalkilling: false
+    animalkilling: true
     # Applies to: Residence
     # Allows or denys animal spawns
     animals: true
@@ -56,7 +56,7 @@ Global:
     brush: true
     # Applies to: Both
     # Allows or denys building
-    build: false
+    build: true
     # Applies to: Residence
     # Allows or denys Mob combustion in residences
     burn: true
@@ -110,7 +110,7 @@ Global:
     decay: true
     # Applies to: Both
     # Allows or denys only destruction of blocks, overrides the build flag
-    destroy: false
+    destroy: true
     # Applies to: Both
     # Allows or denys players to use redstone repeaters
     diode: true
@@ -236,7 +236,7 @@ Global:
     lavaflow: true
     # Applies to: Both
     # Allows or denys aninal leash
-    leash: false
+    leash: true
     # Applies to: Both
     # Allows or denys players to use levers
     lever: true
