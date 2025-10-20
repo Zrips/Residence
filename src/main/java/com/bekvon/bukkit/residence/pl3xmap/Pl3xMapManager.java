@@ -19,7 +19,7 @@ import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.bekvon.bukkit.residence.utils.GetTime;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
-import net.Zrips.CMILib.Messages.CMIMessages;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.pl3x.map.core.Pl3xMap;
 import net.pl3x.map.core.markers.Point;
@@ -183,6 +183,9 @@ public class Pl3xMapManager {
     private void handleResidenceAdd(ClaimedResidence res, int depth) {
 
         if (res == null)
+            return;
+
+        if (plugin.getConfigManager().HiddenPlayerResidences.contains(res.getOwner().toLowerCase()))
             return;
 
         if (res.getPermissions().has("hidden", false) && plugin.getConfigManager().Pl3xMapHideHidden) {

@@ -198,6 +198,9 @@ public class DynMapManager {
         if (res == null)
             return;
 
+        if (plugin.getConfigManager().HiddenPlayerResidences.contains(res.getOwner().toLowerCase()))
+            return;
+
         boolean hidden = res.getPermissions().has("hidden", false);
         if (hidden && plugin.getConfigManager().DynMapHideHidden) {
             fireUpdateRemove(res, depth);

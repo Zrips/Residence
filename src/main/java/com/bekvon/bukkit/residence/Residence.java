@@ -423,6 +423,8 @@ public class Residence extends JavaPlugin {
                 }
             }
 
+            getPlayerManager().load();
+            
             getConfigManager().UpdateFlagFile();
 
             getFlagUtilManager().load();
@@ -438,7 +440,6 @@ public class Residence extends JavaPlugin {
 
             this.getPermissionManager().startCacheClearScheduler();
 
-            getPlayerManager().load();
 
             imanager = new WorldItemManager(this);
             wmanager = new WorldFlagManager(this);

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -34,6 +35,7 @@ import com.bekvon.bukkit.residence.containers.ELMessageType;
 import com.bekvon.bukkit.residence.containers.EconomyType;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.RandomTeleport;
+import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
@@ -46,6 +48,7 @@ import net.Zrips.CMILib.Effects.CMIEffectManager.CMIParticle;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Locale.YmlMaker;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Version.Version;
 
@@ -301,6 +304,7 @@ public class ConfigManager {
     public List<String> Pl3xMapVisibleRegions;
     public List<String> Pl3xMapHiddenRegions;
     // Pl3xMap
+    public List<String> HiddenPlayerResidences = new ArrayList<String>();
 
     // Raid
     public static boolean RaidEnabled = false;
@@ -1500,6 +1504,11 @@ public class ConfigManager {
         Pl3xMapVisibleRegions = c.get("Pl3xMap.VisibleRegions", new ArrayList<String>());
         c.addComment("Pl3xMap.HiddenRegions", "Hides region on map even if its not hidden in game");
         Pl3xMapHiddenRegions = c.get("Pl3xMap.HiddenRegions", new ArrayList<String>());
+
+        c.addComment("HiddenPlayerResidences", "List of player names whose residences should be hidden in Dynmap or Pl3xMap independent of their settings");
+        HiddenPlayerResidences = c.get("HiddenPlayerResidences", new ArrayList<String>());
+        CMIList.toLowerCase(HiddenPlayerResidences);
+
 
         c.addComment("Raid", "In development");
 
