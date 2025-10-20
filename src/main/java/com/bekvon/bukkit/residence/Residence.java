@@ -20,7 +20,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -47,7 +46,6 @@ import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.MinimizeFlags;
 import com.bekvon.bukkit.residence.containers.MinimizeMessages;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
-import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.dynmap.DynMapListeners;
 import com.bekvon.bukkit.residence.dynmap.DynMapManager;
@@ -118,6 +116,7 @@ import com.earth2me.essentials.Essentials;
 import com.residence.mcstats.Metrics;
 import com.residence.zip.ZipLibrary;
 
+import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -211,8 +210,6 @@ public class Residence extends JavaPlugin {
 
     private Placeholder Placeholder;
     private boolean PlaceholderAPIEnabled = false;
-
-    private String prefix = ChatColor.GREEN + "[" + ChatColor.GOLD + "Residence" + ChatColor.GREEN + "]" + ChatColor.GRAY;
 
     public boolean isSpigot() {
         return spigotPlatform;
@@ -558,7 +555,7 @@ public class Residence extends JavaPlugin {
             pmanager = new PermissionListManager(this);
 
             getLocaleManager().LoadLang(getConfigManager().getLanguage());
-            
+
             getLM().LanguageReload();
 
             if (firstenable) {
@@ -1443,7 +1440,7 @@ public class Residence extends JavaPlugin {
     }
 
     public String getPrefix() {
-        return prefix;
+        return CMIChatColor.GREEN + "[" + CMIChatColor.GOLD + "Residence" + CMIChatColor.GREEN + "]" + CMIChatColor.GRAY;
     }
 
     public int getWorldGuardVersion() {

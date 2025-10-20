@@ -8,7 +8,7 @@ import net.Zrips.CMILib.Items.CMIMaterial;
 public enum Flags {
     anvil(CMIMaterial.ANVIL, FlagMode.Both, "Allows or denys interaction with anvil", true),
     admin(CMIMaterial.BEDROCK, FlagMode.Player, "Gives a player permission to change flags on a residence", true),
-    animalkilling(CMIMaterial.CHICKEN, FlagMode.Both, "Allows or denys animal killing", false),
+    animalkilling(CMIMaterial.CHICKEN, FlagMode.Both, "Allows or denys animal killing", true),
     animals(CMIMaterial.PIG_SPAWN_EGG, FlagMode.Residence, "Allows or denys animal spawns", true),
     anchor(CMIMaterial.RESPAWN_ANCHOR, FlagMode.Both, "Allows or denys respawn anchor usage", true),
     anvilbreak(CMIMaterial.ANVIL, FlagMode.Residence, "Allows or denys anvil break in residence", true),
@@ -20,7 +20,7 @@ public enum Flags {
     honeycomb(CMIMaterial.BEE_NEST, FlagMode.Both, "Allows or denys players to get honeycomb", true),
     beacon(CMIMaterial.BEACON, FlagMode.Both, "Allows or denys interaction with beacon", true),
     brew(CMIMaterial.BREWING_STAND, FlagMode.Both, "Allows or denys players to use brewing stands", true),
-    build(CMIMaterial.BRICKS, FlagMode.Both, "Allows or denys building", false),
+    build(CMIMaterial.BRICKS, FlagMode.Both, "Allows or denys building", true),
     burn(CMIMaterial.TORCH, FlagMode.Residence, "Allows or denys Mob combustion in residences", true),
     button(CMIMaterial.OAK_BUTTON, FlagMode.Both, "Allows or denys players to use buttons", true),
     boarding(CMIMaterial.ACACIA_BOAT, FlagMode.Residence, "Allows or denys animal boarding in residences", true),
@@ -32,23 +32,23 @@ public enum Flags {
     cmonsters(CMIMaterial.CREEPER_SPAWN_EGG, FlagMode.Residence, "Allows or denys custom monster spawns", true),
     commandblock(CMIMaterial.COMMAND_BLOCK, FlagMode.Both, "Allows or denys command block interaction", false),
     command(CMIMaterial.COMMAND_BLOCK, FlagMode.Both, "Allows or denys comamnd use in residences", false),
-    container(CMIMaterial.CHEST_MINECART, FlagMode.Both, "Allows or denys use of furnaces, chests, dispensers, etc...", false),
-    coords(CMIMaterial.COMPASS, FlagMode.Residence, "Hides residence coordinates", true), 
+    container(CMIMaterial.CHEST_MINECART, FlagMode.Both, "Allows or denys use of furnaces, chests, dispensers, etc...", true),
+    coords(CMIMaterial.COMPASS, FlagMode.Residence, "Hides residence coordinates", true),
     copper(CMIMaterial.IRON_BLOCK, FlagMode.Both, "Allows to modify copper blocks", true),
     craft(CMIMaterial.STONE, FlagMode.Residence, "Gives table, enchant, brew flags", true),
-    creeper(CMIMaterial.CREEPER_SPAWN_EGG, FlagMode.Residence, "Allow or deny creeper explosions", false),
+    creeper(CMIMaterial.CREEPER_SPAWN_EGG, FlagMode.Residence, "Allow or deny creeper explosions", true),
     dragongrief(CMIMaterial.DIRT, FlagMode.Residence, "Prevents ender dragon block griefing", true),
     day(CMIMaterial.DANDELION, FlagMode.Residence, "Sets day time in residence", true),
     dye(CMIMaterial.ORANGE_DYE, FlagMode.Both, "Allows or denys sheep dyeing", true),
     damage(CMIMaterial.GOLDEN_SWORD, FlagMode.Residence, "Allows or denys all entity damage within the residence", false),
     decay(CMIMaterial.OAK_LEAVES, FlagMode.Residence, "Allows or denys leave decay in the residence", true),
-    destroy(CMIMaterial.END_STONE, FlagMode.Both, "Allows or denys only destruction of blocks, overrides the build flag", false),
+    destroy(CMIMaterial.END_STONE, FlagMode.Both, "Allows or denys only destruction of blocks, overrides the build flag", true),
     dryup(CMIMaterial.BLUE_STAINED_GLASS_PANE, FlagMode.Residence, "Prevents land from drying up", true),
     diode(CMIMaterial.REPEATER, FlagMode.Both, "Allows or denys players to use redstone repeaters", true),
     door(CMIMaterial.OAK_DOOR, FlagMode.Both, "Allows or denys players to use doors and trapdoors", true),
     egg(CMIMaterial.EGG, FlagMode.Both, "Allows or denys interaction with dragon egg", true),
     enchant(CMIMaterial.ENCHANTING_TABLE, FlagMode.Both, "Allows or denys players to use enchanting tables", true),
-    explode(CMIMaterial.TNT_MINECART, FlagMode.Residence, "Allows or denys explosions in residences", false),
+    explode(CMIMaterial.TNT_MINECART, FlagMode.Residence, "Allows or denys explosions in residences", true),
     elytra(CMIMaterial.ELYTRA, FlagMode.Both, "Allows or denys elytra usage in residences", false),
     enderpearl(CMIMaterial.ENDER_PEARL, FlagMode.Both, "Allow or disallow teleporting to the residence with enderpearl", true),
     fallinprotection(CMIMaterial.SAND, FlagMode.Residence, "Protects from blocks falling into residence", true),
@@ -56,14 +56,14 @@ public enum Flags {
     feed(CMIMaterial.COOKED_BEEF, FlagMode.Residence, "Setting to true makes the residence feed its occupants", true),
     friendlyfire(CMIMaterial.SUNFLOWER, FlagMode.Player, "Allow or disallow friendly fire", false),
     fireball(CMIMaterial.FIRE_CHARGE, FlagMode.Residence, "Allows or denys fire balls in residences", true),
-    firespread(CMIMaterial.BLAZE_POWDER, FlagMode.Residence, "Allows or denys fire spread", false),
+    firespread(CMIMaterial.BLAZE_POWDER, FlagMode.Residence, "Allows or denys fire spread", true),
     flowinprotection(CMIMaterial.OAK_BOAT, FlagMode.Residence, "Allows or denys liquid flow into residence", true),
     flow(CMIMaterial.LILY_PAD, FlagMode.Residence, "Allows or denys liquid flow", true),
     flowerpot(CMIMaterial.FLOWER_POT, FlagMode.Both, "Allows or denys interaction with flower pot", true),
     grow(CMIMaterial.WHEAT_SEEDS, FlagMode.Residence, "Allows or denys plant growing", true),
     glow(CMIMaterial.SEA_LANTERN, FlagMode.Residence, "Players will start glowing when entering residence", true),
     goathorn(CMIMaterial.GOAT_HORN, FlagMode.Both, "Allows or denys goat horn usage", true),
-	golemopenchest(CMIMaterial.COPPER_GOLEM_STATUE, FlagMode.Residence, "Allow or deny golem open chest", true),
+    golemopenchest(CMIMaterial.COPPER_GOLEM_STATUE, FlagMode.Residence, "Allow or deny golem open chest", true),
     harvest(CMIMaterial.SWEET_BERRIES, FlagMode.Both, "Allows harvesting", true),
     hotfloor(CMIMaterial.MAGMA_BLOCK, FlagMode.Residence, "Prevent damage from magma blocks", true),
     hidden(CMIMaterial.GLASS_PANE, FlagMode.Residence, "Hides residence from list or listall commands", false),
@@ -79,7 +79,7 @@ public enum Flags {
     keepinv(CMIMaterial.LEATHER_HELMET, FlagMode.Residence, "Players keeps inventory after death", false),
     keepexp(CMIMaterial.GOLDEN_APPLE, FlagMode.Residence, "Players keeps exp after death", false),
     lavaflow(CMIMaterial.LAVA_BUCKET, FlagMode.Residence, "Allows or denys lava flow, overrides flow", true),
-    leash(CMIMaterial.LEAD, FlagMode.Both, "Allows or denys aninal leash", false),
+    leash(CMIMaterial.LEAD, FlagMode.Both, "Allows or denys aninal leash", true),
     lever(CMIMaterial.LEVER, FlagMode.Both, "Allows or denys players to use levers", true),
     mobexpdrop(CMIMaterial.MELON_SEEDS, FlagMode.Residence, "Prevents mob droping exp on death", true),
     mobitemdrop(CMIMaterial.COCOA_BEANS, FlagMode.Residence, "Prevents mob droping items on death", true),
@@ -112,7 +112,7 @@ public enum Flags {
     skulk(CMIMaterial.SCULK_CATALYST, FlagMode.Residence, "Prevents skulk catalyst spreading", true),
     snowball(CMIMaterial.SNOWBALL, FlagMode.Residence, "Prevents snowball knockback", true),
     sanimals(CMIMaterial.RABBIT_SPAWN_EGG, FlagMode.Residence, "Allows or denys spawner or spawn egg animal spawns", true),
-    shear(CMIMaterial.SHEARS, FlagMode.Both, "Allows or denys sheep shear", false),
+    shear(CMIMaterial.SHEARS, FlagMode.Both, "Allows or denys sheep shear", true),
     smonsters(CMIMaterial.ZOMBIE_SPAWN_EGG, FlagMode.Residence, "Allows or denys spawner or spawn egg monster spawns", true),
     subzone(CMIMaterial.GRAY_STAINED_GLASS_PANE, FlagMode.Both, "Allow a player to make subzones in the residence", true),
     title(CMIMaterial.PAPER, FlagMode.Residence, "Shows or hides enter/leave message in residence", true),
@@ -121,8 +121,8 @@ public enum Flags {
     tp(CMIMaterial.END_PORTAL_FRAME, FlagMode.Both, "Allow or disallow teleporting to the residence", true),
     trade(CMIMaterial.EMERALD, FlagMode.Both, "Allows or denys villager trading in residence", true),
     trample(CMIMaterial.DIRT, FlagMode.Residence, "Allows or denys crop trampling in residence", true),
-    use(CMIMaterial.STONE_PRESSURE_PLATE, FlagMode.Both, "Allows or denys use of doors, lever, buttons, etc...", false),
-    vehicledestroy(CMIMaterial.MINECART, FlagMode.Both, "Allows or denys vehicle destroy", false),
+    use(CMIMaterial.STONE_PRESSURE_PLATE, FlagMode.Both, "Allows or denys use of doors, lever, buttons, etc...", true),
+    vehicledestroy(CMIMaterial.MINECART, FlagMode.Both, "Allows or denys vehicle destroy", true),
     witherspawn(CMIMaterial.WITHER_SKELETON_SKULL, FlagMode.Residence, "Allows or denys wither spawning", true),
     phantomspawn(CMIMaterial.BROWN_WOOL, FlagMode.Residence, "Allows or denys phantom spawning", true),
     witherdamage(CMIMaterial.WITHER_SKELETON_SKULL, FlagMode.Residence, "Allows or denys wither damage", true),
@@ -140,107 +140,107 @@ public enum Flags {
     private Set<String> groups = null;
 
     public static enum FlagMode {
-	Player, Residence, Both
+        Player, Residence, Both
     }
 
     @Deprecated
     private Flags(int id, int data, FlagMode flagMode, String desc, boolean enabled) {
-	this(CMIMaterial.get(id, data), flagMode, desc, enabled);
+        this(CMIMaterial.get(id, data), flagMode, desc, enabled);
     }
 
     private Flags(CMIMaterial icon, FlagMode flagMode, String desc, boolean enabled) {
-	this.icon = icon;
-	this.flagMode = flagMode;
-	this.desc = desc;
-	this.enabled = enabled;
+        this.icon = icon;
+        this.flagMode = flagMode;
+        this.desc = desc;
+        this.enabled = enabled;
     }
 
     @Deprecated
     public int getId() {
-	return icon.getId();
+        return icon.getId();
     }
 
     @Deprecated
     public int getData() {
-	return icon.getData();
+        return icon.getData();
     }
 
     public String getName() {
-	return getTranslated() == null ? this.name() : getTranslated();
+        return getTranslated() == null ? this.name() : getTranslated();
     }
 
     public FlagMode getFlagMode() {
-	return flagMode;
+        return flagMode;
     }
 
     public String getDesc() {
-	return this.desc;
+        return this.desc;
     }
 
     public void setDesc(String desc) {
-	this.desc = desc;
+        this.desc = desc;
     }
 
     public boolean isEnabled() {
-	return globalyEnabled ? enabled : false;
+        return globalyEnabled ? enabled : false;
     }
 
     public void setEnabled(boolean enabled) {
-	this.enabled = enabled;
+        this.enabled = enabled;
     }
 
     public static Flags getFlag(String flag) {
-	for (Flags f : Flags.values()) {
-	    if (f.toString().equalsIgnoreCase(flag))
-		return f;
-	    if (f.getTranslated() != null && f.getTranslated().equalsIgnoreCase(flag))
-		return f;
-	}
-	return null;
+        for (Flags f : Flags.values()) {
+            if (f.toString().equalsIgnoreCase(flag))
+                return f;
+            if (f.getTranslated() != null && f.getTranslated().equalsIgnoreCase(flag))
+                return f;
+        }
+        return null;
     }
 
     public boolean isGlobalyEnabled() {
-	return globalyEnabled;
+        return globalyEnabled;
     }
 
     public void setGlobalyEnabled(boolean globalyEnabled) {
-	this.globalyEnabled = globalyEnabled;
+        this.globalyEnabled = globalyEnabled;
     }
 
     public String getTranslated() {
-	return translated;
+        return translated;
     }
 
     public void setTranslated(String translated) {
-	this.translated = translated == null ? null : translated.replace(" ", "");
+        this.translated = translated == null ? null : translated.replace(" ", "");
     }
 
     public CMIMaterial getIcon() {
-	return icon;
+        return icon;
     }
 
     public void setIcon(CMIMaterial icon) {
-	this.icon = icon;
+        this.icon = icon;
     }
 
     public boolean isInGroup(String group) {
-	if (groups == null)
-	    return false;
+        if (groups == null)
+            return false;
 
-	return groups.contains(group.toLowerCase());
+        return groups.contains(group.toLowerCase());
     }
 
     public void addGroup(String group) {
-	if (groups == null)
-	    groups = new HashSet<String>();
-	groups.add(group.toLowerCase());
+        if (groups == null)
+            groups = new HashSet<String>();
+        groups.add(group.toLowerCase());
     }
 
     public Set<String> getGroups() {
-	return groups;
+        return groups;
     }
 
     public void resetGroups() {
-	this.groups = null;
+        this.groups = null;
     }
 }

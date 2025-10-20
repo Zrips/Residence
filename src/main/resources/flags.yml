@@ -16,249 +16,374 @@ Global:
   # This gives permission to change certain flags to all groups, unless specifically denied to the group.
   FlagPermission:
     # Applies to: Player
+    # Gives a player permission to change flags on a residence
     admin: true
     # Applies to: Both
+    # Allows or denys respawn anchor usage
     anchor: true
     # Applies to: Both
+    # Allows or denys animal killing
     animalkilling: false
     # Applies to: Residence
+    # Allows or denys animal spawns
     animals: true
     # Applies to: Both
+    # Allows or denys interaction with anvil
     anvil: true
     # Applies to: Residence
+    # Allows or denys anvil break in residence
     anvilbreak: true
     # Applies to: Residence
+    # If set to true, restores previous look of area (WordEdit required)
     backup: false
     # Applies to: Both
+    # Allows or denys deposit/withdraw money from res bank
     bank: true
     # Applies to: Both
+    # Allows or denys interaction with beacon
     beacon: true
     # Applies to: Both
+    # Allows or denys players to use beds
     bed: true
+    # Applies to: Residence
+    # Allows or denys animal boarding in residences
+    boarding: true
     # Applies to: Both
+    # Allows or denys players to use brewing stands
     brew: true
     # Applies to: Both
-    build: false
-    # Applies to: Residence
-    burn: true
-    # Applies to: Both
-    button: true
-    # Applies to: Both
-    cake: true
-    # Applies to: Residence
-    canimals: true
-    # Applies to: Both
-    chat: true
-    # Applies to: Both
-    chorustp: true
-    # Applies to: Residence
-    cmonsters: true
-    # Applies to: Both
-    command: false
-    # Applies to: Both
-    commandblock: false
-    # Applies to: Both
-    container: false
-    # Applies to: Residence
-    coords: true
-    # Applies to: Residence
-    craft: true
-    # Applies to: Residence
-    creeper: false
-    # Applies to: Residence
-    damage: false
-    # Applies to: Residence
-    day: true
-    # Applies to: Residence
-    decay: true
-    # Applies to: Both
-    destroy: false
-    # Applies to: Both
-    diode: true
-    # Applies to: Both
-    door: true
-    # Applies to: Residence
-    dragongrief: true
-    # Applies to: Residence
-    dryup: true
-    # Applies to: Both
-    dye: true
-    # Applies to: Both
-    egg: true
-    # Applies to: Both
-    enchant: true
-    # Applies to: Both
-    enderpearl: true
-    # Applies to: Residence
-    explode: false
-    # Applies to: Residence
-    falldamage: true
-    # Applies to: Residence
-    fallinprotection: true
-    # Applies to: Residence
-    feed: true
-    # Applies to: Residence
-    fireball: true
-    # Applies to: Residence
-    firespread: false
-    # Applies to: Residence
-    flow: true
-    # Applies to: Both
-    flowerpot: true
-    # Applies to: Residence
-    flowinprotection: true
-    # Applies to: Both
-    fly: false
-    # Applies to: Player
-    friendlyfire: false
-    # Applies to: Residence
-    glow: true
-    # Applies to: Residence
-    grow: true
-    # Applies to: Residence
-    healing: true
-    # Applies to: Residence
-    hidden: false
-    # Applies to: Both
-    honey: true
-    # Applies to: Both
-    honeycomb: true
-    # Applies to: Both
-    hook: false
-    # Applies to: Residence
-    hotfloor: true
-    # Applies to: Residence
-    iceform: true
-    # Applies to: Residence
-    icemelt: true
-    # Applies to: Both
-    ignite: false
-    # Applies to: Both
-    itemdrop: true
-    # Applies to: Both
-    itempickup: true
-    # Applies to: Residence
-    jump2: false
-    # Applies to: Residence
-    jump3: false
-    # Applies to: Residence
-    keepexp: false
-    # Applies to: Residence
-    keepinv: false
-    # Applies to: Residence
-    lavaflow: true
-    # Applies to: Both
-    leash: false
-    # Applies to: Both
-    lever: true
-    # Applies to: Residence
-    mobexpdrop: true
-    # Applies to: Residence
-    mobitemdrop: true
-    # Applies to: Both
-    mobkilling: true
-    # Applies to: Residence
-    monsters: true
-    # Applies to: Both
-    move: true
-    # Applies to: Both
-    nametag: true
-    # Applies to: Residence
-    nanimals: true
-    # Applies to: Residence
-    night: true
-    # Applies to: Residence
-    nmonsters: true
-    # Applies to: Residence
-    nodurability: false
-    # Applies to: Both
-    nofly: false
-    # Applies to: Residence
-    nomobs: true
-    # Applies to: Both
-    note: true
-    # Applies to: Residence
-    overridepvp: false
-    # Applies to: Residence
-    phantomspawn: true
-    # Applies to: Residence
-    piston: true
-    # Applies to: Residence
-    pistonprotection: true
-    # Applies to: Both
-    place: true
-    # Applies to: Both
-    pressure: true
-    # Applies to: Residence
-    pvp: false
-    # Applies to: Residence
-    rain: true
-    # Applies to: Residence
-    respawn: false
-    # Applies to: Both
-    riding: true
-    # Applies to: Residence
-    sanimals: true
-    # Applies to: Both
-    shear: false
-    # Applies to: Residence
-    shoot: true
-    # Applies to: Residence
-    shop: true
-    # Applies to: Residence
-    smonsters: true
-    # Applies to: Residence
-    snowball: true
-    # Applies to: Residence
-    snowtrail: true
-    # Applies to: Residence
-    spread: true
-    # Applies to: Both
-    subzone: true
-    # Applies to: Residence
-    sun: true
-    # Applies to: Both
-    table: true
-    # Applies to: Residence
-    title: true
-    # Applies to: Residence
-    tnt: false
-    # Applies to: Both
-    tp: true
-    # Applies to: Both
-    trade: true
-    # Applies to: Residence
-    trample: true
-    # Applies to: Both
-    use: false
-    # Applies to: Both
-    vehicledestroy: false
-    # Applies to: Residence
-    waterflow: true
-    # Applies to: Residence
-    witherdamage: true
-    # Applies to: Residence
-    witherdestruction: true
-    # Applies to: Residence
-    witherspawn: true
-    # Applies to: Residence
-    wspeed1: true
-    # Applies to: Residence
-    wspeed2: true
-    # Applies to: Both
+    # Allows or denys block brushing
     brush: true
     # Applies to: Both
-    copper: true
+    # Allows or denys building
+    build: false
+    # Applies to: Residence
+    # Allows or denys Mob combustion in residences
+    burn: true
     # Applies to: Both
+    # Allows or denys players to use buttons
+    button: true
+    # Applies to: Both
+    # Allows or denys players to eat cake
+    cake: true
+    # Applies to: Residence
+    # Allows or denys custom animal spawns
+    canimals: true
+    # Applies to: Both
+    # Allows to join residence chat room
+    chat: true
+    # Applies to: Both
+    # Allow or disallow teleporting to the residence with chorus fruit
+    chorustp: true
+    # Applies to: Residence
+    # Allows or denys custom monster spawns
+    cmonsters: true
+    # Applies to: Both
+    # Allows or denys comamnd use in residences
+    command: false
+    # Applies to: Both
+    # Allows or denys command block interaction
+    commandblock: false
+    # Applies to: Both
+    # Allows or denys use of furnaces, chests, dispensers, etc...
+    container: false
+    # Applies to: Residence
+    # Hides residence coordinates
+    coords: true
+    # Applies to: Both
+    # Allows to modify copper blocks
+    copper: true
+    # Applies to: Residence
+    # Gives table, enchant, brew flags
+    craft: true
+    # Applies to: Residence
+    # Allow or deny creeper explosions
+    creeper: false
+    # Applies to: Residence
+    # Allows or denys all entity damage within the residence
+    damage: false
+    # Applies to: Residence
+    # Sets day time in residence
+    day: true
+    # Applies to: Residence
+    # Allows or denys leave decay in the residence
+    decay: true
+    # Applies to: Both
+    # Allows or denys only destruction of blocks, overrides the build flag
+    destroy: false
+    # Applies to: Both
+    # Allows or denys players to use redstone repeaters
+    diode: true
+    # Applies to: Both
+    # Allows or denys players to use doors and trapdoors
+    door: true
+    # Applies to: Residence
+    # Prevents ender dragon block griefing
+    dragongrief: true
+    # Applies to: Residence
+    # Prevents land from drying up
+    dryup: true
+    # Applies to: Both
+    # Allows or denys sheep dyeing
+    dye: true
+    # Applies to: Both
+    # Allows or denys interaction with dragon egg
+    egg: true
+    # Applies to: Both
+    # Allows or denys elytra usage in residences
     elytra: false
     # Applies to: Both
-    goathorn: true
+    # Allows or denys players to use enchanting tables
+    enchant: true
     # Applies to: Both
+    # Allow or disallow teleporting to the residence with enderpearl
+    enderpearl: true
+    # Applies to: Residence
+    # Allows or denys explosions in residences
+    explode: false
+    # Applies to: Residence
+    # Protects players from fall damage
+    falldamage: true
+    # Applies to: Residence
+    # Protects from blocks falling into residence
+    fallinprotection: true
+    # Applies to: Residence
+    # Setting to true makes the residence feed its occupants
+    feed: true
+    # Applies to: Residence
+    # Allows or denys fire balls in residences
+    fireball: true
+    # Applies to: Residence
+    # Allows or denys fire spread
+    firespread: false
+    # Applies to: Residence
+    # Allows or denys liquid flow
+    flow: true
+    # Applies to: Both
+    # Allows or denys interaction with flower pot
+    flowerpot: true
+    # Applies to: Residence
+    # Allows or denys liquid flow into residence
+    flowinprotection: true
+    # Applies to: Both
+    # Toggles fly for players in residence
+    fly: false
+    # Applies to: Player
+    # Allow or disallow friendly fire
+    friendlyfire: false
+    # Applies to: Residence
+    # Players will start glowing when entering residence
+    glow: true
+    # Applies to: Both
+    # Allows or denys goat horn usage
+    goathorn: true
+    # Applies to: Residence
+    # Allow or deny golem open chest
+    golemopenchest: true
+    # Applies to: Residence
+    # Allows or denys plant growing
+    grow: true
+    # Applies to: Both
+    # Allows harvesting
     harvest: false
     # Applies to: Residence
+    # Setting to true makes the residence heal its occupants
+    healing: true
+    # Applies to: Residence
+    # Hides residence from list or listall commands
+    hidden: false
+    # Applies to: Both
+    # Allows or denys players to get honey
+    honey: true
+    # Applies to: Both
+    # Allows or denys players to get honeycomb
+    honeycomb: true
+    # Applies to: Both
+    # Allows or denys fishing rod hooking entities
+    hook: false
+    # Applies to: Residence
+    # Prevent damage from magma blocks
+    hotfloor: true
+    # Applies to: Residence
+    # Prevents from ice forming
+    iceform: true
+    # Applies to: Residence
+    # Prevents ice from melting
+    icemelt: true
+    # Applies to: Both
+    # Allows or denys fire ignition
+    ignite: false
+    # Applies to: Both
+    # Allows or denys item drop
+    itemdrop: true
+    # Applies to: Both
+    # Allows or denys item pickup
+    itempickup: true
+    # Applies to: Residence
+    # Allows to jump 2 blocks high
+    jump2: false
+    # Applies to: Residence
+    # Allows to jump 3 blocks high
+    jump3: false
+    # Applies to: Residence
+    # Players keeps exp after death
+    keepexp: false
+    # Applies to: Residence
+    # Players keeps inventory after death
+    keepinv: false
+    # Applies to: Residence
+    # Allows or denys lava flow, overrides flow
+    lavaflow: true
+    # Applies to: Both
+    # Allows or denys aninal leash
+    leash: false
+    # Applies to: Both
+    # Allows or denys players to use levers
+    lever: true
+    # Applies to: Residence
+    # Prevents mob droping exp on death
+    mobexpdrop: true
+    # Applies to: Residence
+    # Prevents mob droping items on death
+    mobitemdrop: true
+    # Applies to: Both
+    # Allows or denys mob killing
+    mobkilling: true
+    # Applies to: Residence
+    # Allows or denys monster spawns
+    monsters: true
+    # Applies to: Both
+    # Allows or denys movement in the residence
+    move: true
+    # Applies to: Both
+    # Allows or denys name tag usage
+    nametag: true
+    # Applies to: Residence
+    # Allows or denys natural animal spawns
+    nanimals: true
+    # Applies to: Residence
+    # Sets night time in residence
+    night: true
+    # Applies to: Residence
+    # Allows or denys natural monster spawns
+    nmonsters: true
+    # Applies to: Residence
+    # Prevents item durability loss
+    nodurability: false
+    # Applies to: Both
+    # Allows or denys fly in residence
+    nofly: false
+    # Applies to: Residence
+    # Prevents monsters from entering residence. Requires AutoMobRemoval to be enabled
+    nomobs: true
+    # Applies to: Both
+    # Allows or denys players to use note blocks
+    note: true
+    # Applies to: Residence
+    # Allows or denys phantom spawning
+    phantomspawn: true
+    # Applies to: Residence
+    # Allow or deny pistons from pushing or pulling blocks in the residence
+    piston: true
+    # Applies to: Residence
+    # Enables or disabled piston block move in or out of residence
+    pistonprotection: true
+    # Applies to: Both
+    # Allows or denys only placement of blocks, overrides the build flag
+    place: true
+    # Applies to: Both
+    # Allows or denys players to use pressure plates
+    pressure: true
+    # Applies to: Residence
+    # Allow or deny pvp in the residence
+    pvp: false
+    # Applies to: Residence
+    # Sets weather to rainny in residence
+    rain: true
+    # Applies to: Residence
+    # Automaticaly respawns player
+    respawn: false
+    # Applies to: Both
+    # Prevent riding a horse
+    riding: true
+    # Applies to: Residence
+    # Setting to true makes the residence clean bad effects from its occupants
     safezone: false
     # Applies to: Residence
-    skulk: true
+    # Allows or denys spawner or spawn egg animal spawns
+    sanimals: true
+    # Applies to: Both
+    # Allows or denys sheep shear
+    shear: false
+    # Applies to: Residence
+    # Allows or denys shooting projectile in area
+    shoot: true
+    # Applies to: Residence
+    # Adds residence to special residence shop list
+    shop: true
+    # Applies to: Residence
+    # Prevents skulk catalyst spreading
+    skulk: false
+    # Applies to: Residence
+    # Allows or denys spawner or spawn egg monster spawns
+    smonsters: true
+    # Applies to: Residence
+    # Prevents snowball knockback
+    snowball: true
+    # Applies to: Residence
+    # Prevents snowman snow trails
+    snowtrail: true
+    # Applies to: Residence
+    # Prevents block spreading
+    spread: true
+    # Applies to: Both
+    # Allow a player to make subzones in the residence
+    subzone: true
+    # Applies to: Residence
+    # Sets weather to sunny in residence
+    sun: true
+    # Applies to: Both
+    # Allows or denys players to use workbenches
+    table: true
+    # Applies to: Residence
+    # Shows or hides enter/leave message in residence
+    title: true
+    # Applies to: Residence
+    # Allow or deny tnt explosions
+    tnt: false
+    # Applies to: Both
+    # Allow or disallow teleporting to the residence
+    tp: true
+    # Applies to: Both
+    # Allows or denys villager trading in residence
+    trade: true
+    # Applies to: Residence
+    # Allows or denys crop trampling in residence
+    trample: true
+    # Applies to: Both
+    # Allows or denys use of doors, lever, buttons, etc...
+    use: false
+    # Applies to: Both
+    # Allows or denys vehicle destroy
+    vehicledestroy: false
+    # Applies to: Residence
+    # Allows or denys water flow, overrides flow
+    waterflow: true
+    # Applies to: Residence
+    # Allows or denys wither damage
+    witherdamage: true
+    # Applies to: Residence
+    # Allows or denys wither block damage
+    witherdestruction: true
+    # Applies to: Residence
+    # Allows or denys wither spawning
+    witherspawn: true
+    # Applies to: Residence
+    # Change players walk speed in residence to %1
+    wspeed1: true
+    # Applies to: Residence
+    # Change players walk speed in residence to %1
+    wspeed2: true
   # This sets GUI items to represent each flag, if not given, then gray wool will be used
   FlagGui:
     admin: BEDROCK
@@ -383,6 +508,8 @@ Global:
     harvest: SWEET_BERRIES
     safezone: APPLE
     skulk: SCULK_CATALYST
+    boarding: ACACIA_BOAT
+    golemopenchest: COPPER_GOLEM_STATUE
   # These are default flags applied to all residences from any user group.
   ResidenceDefault:
     build: false

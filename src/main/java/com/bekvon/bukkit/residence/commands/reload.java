@@ -15,6 +15,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.WorldFlagManager;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+import net.Zrips.CMILib.Messages.CMIMessages;
 
 public class reload implements cmd {
 
@@ -34,17 +35,17 @@ public class reload implements cmd {
             plugin.getLM().LanguageReload();
             plugin.getLocaleManager().LoadLang(plugin.getConfigManager().getLanguage());
             LocaleManager.parseHelpEntries();
-            sender.sendMessage(plugin.getPrefix() + " Reloaded language file.");
+            CMIMessages.sendMessage(sender, plugin.getPrefix() + " Reloaded language file.");
             return true;
         case "config":
             plugin.getConfigManager().UpdateConfigFile();
-            sender.sendMessage(plugin.getPrefix() + " Reloaded config file.");
+            CMIMessages.sendMessage(sender, plugin.getPrefix() + " Reloaded config file.");
             return true;
         case "groups":
             plugin.getConfigManager().loadGroups();
             plugin.gmanager = new PermissionManager(plugin);
             plugin.wmanager = new WorldFlagManager(plugin);
-            sender.sendMessage(plugin.getPrefix() + " Reloaded groups file.");
+            CMIMessages.sendMessage(sender, plugin.getPrefix() + " Reloaded groups file.");
             return true;
         case "flags":
             plugin.getConfigManager().loadFlags();
@@ -52,7 +53,7 @@ public class reload implements cmd {
             plugin.imanager = new WorldItemManager(plugin);
             plugin.wmanager = new WorldFlagManager(plugin);
             FlagPermissions.initValidFlags();
-            sender.sendMessage(plugin.getPrefix() + " Reloaded flags file.");
+            CMIMessages.sendMessage(sender, plugin.getPrefix() + " Reloaded flags file.");
             return true;
         }
         return false;

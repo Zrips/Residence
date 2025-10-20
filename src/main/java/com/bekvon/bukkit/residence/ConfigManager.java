@@ -542,7 +542,7 @@ public class ConfigManager {
             "Alternativly, you can simply use the item ID in the list, but its less descriptive and harder to see what the list allows or dissallows at a glance");
 
         for (Flags fl : Flags.values()) {
-            cfg.addComment("Global.FlagPermission." + fl, "Applies to: " + fl.getFlagMode());
+            cfg.addComment("Global.FlagPermission." + fl, "Applies to: " + fl.getFlagMode(), fl.getDesc());
         }
 
         cfg.save();
