@@ -2,6 +2,7 @@ package com.bekvon.bukkit.residence.listeners;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -16,9 +17,11 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
+import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Logs.CMIDebug;
@@ -31,8 +34,16 @@ public class ResidenceListener1_20 implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onSignWax(PlayerInteractEvent event) {
+
+        Player player = event.getPlayer();
+        if (player == null)
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(player.getWorld()))
+            return;
+
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
@@ -46,12 +57,10 @@ public class ResidenceListener1_20 implements Listener {
         if (!CMIMaterial.isSign(block.getType()))
             return;
 
-        if (ResPerm.bypass_build.hasPermission(event.getPlayer(), 10000L))
+        if (ResPerm.bypass_build.hasPermission(player, 10000L))
             return;
 
-        Player player = event.getPlayer();
-
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(block.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
 
         if (perms.playerHas(player, Flags.build, true))
             return;
@@ -63,27 +72,27 @@ public class ResidenceListener1_20 implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onSignInteract(PlayerSignOpenEvent event) {
 
-        if (event.getPlayer() == null)
+        Player player = event.getPlayer();
+        if (player == null)
             return;
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
+        if (plugin.isDisabledWorldListener(player.getWorld()))
             return;
 
-        Player player = event.getPlayer();
         if (player.hasMetadata("NPC"))
             return;
 
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(event.getSign().getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(event.getSign().getLocation(), player);
 
-        boolean hasuse = perms.playerHas(player, Flags.use, FlagCombo.TrueOrNone);
+        boolean hasUse = perms.playerHas(player, Flags.use, FlagCombo.TrueOrNone);
         boolean hasBuild = perms.playerHas(player, Flags.build, FlagCombo.TrueOrNone);
 
-        if (hasuse && hasBuild || ResAdmin.isResAdmin(player))
+        if (hasUse && hasBuild || ResAdmin.isResAdmin(player))
             return;
 
         event.setCancelled(true);
 
-        if (!hasuse)
+        if (!hasUse)
             lm.Flag_Deny.sendMessage(player, Flags.use);
         else
             lm.Flag_Deny.sendMessage(player, Flags.build);
@@ -103,9 +112,10 @@ public class ResidenceListener1_20 implements Listener {
         if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
+        Entity entity = event.getEntity();
         // Only check projectile
-        if (event.getEntity() instanceof Projectile) {
-            Projectile projectile = (Projectile) event.getEntity();
+        if (entity instanceof Projectile) {
+            Projectile projectile = (Projectile) entity;
 
             Player player = null;
 
@@ -125,12 +135,15 @@ public class ResidenceListener1_20 implements Listener {
                     return;
 
                 lm.Flag_Deny.sendMessage(player, Flags.destroy);
-
                 event.setCancelled(true);
                 return;
 
             }
             // Not player source
+            // Check potential block as a shooter which should be allowed if its inside same residence
+            if (Utils.isSourceBlockInsideSameResidence(entity, ClaimedResidence.getByLoc(block.getLocation())))
+                return;
+
             FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
             if (perms.has(Flags.destroy, true))
                 return;
@@ -138,20 +151,19 @@ public class ResidenceListener1_20 implements Listener {
             event.setCancelled(true);
             return;
 
-            // Event not triggered by projectile
         }
-
+        // Event not triggered by projectile
         // Only check SuspiciousBlocks
         CMIMaterial blockM = CMIMaterial.get(block.getType());
-        if (!(blockM == CMIMaterial.SUSPICIOUS_SAND ||
-            blockM == CMIMaterial.SUSPICIOUS_GRAVEL))
+        if (blockM != CMIMaterial.SUSPICIOUS_SAND &&
+            blockM != CMIMaterial.SUSPICIOUS_GRAVEL)
             return;
 
         // Only check player
-        if (!(event.getEntity() instanceof Player))
+        if (!(entity instanceof Player))
             return;
 
-        Player player = (Player) event.getEntity();
+        Player player = (Player) entity;
 
         if (ResAdmin.isResAdmin(player))
             return;
@@ -161,7 +173,6 @@ public class ResidenceListener1_20 implements Listener {
             return;
 
         lm.Flag_Deny.sendMessage(player, Flags.brush);
-
         event.setCancelled(true);
     }
 }
