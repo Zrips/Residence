@@ -7,10 +7,12 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
@@ -146,5 +148,35 @@ public class ResidenceListener1_21 implements Listener {
 
         event.setCancelled(true);
 
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onFishingBobberHit(ProjectileHitEvent event) {
+        // anti NPE
+        Entity HitEntity = event.getHitEntity();
+        if (HitEntity == null)
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(HitEntity.getWorld()))
+            return;
+
+        Projectile hook = event.getEntity();
+        // only fishing_bobber
+        if (CMIEntityType.get(hook) != CMIEntityType.FISHING_BOBBER)
+            return;
+        // have player source
+        if (!(hook.getShooter() instanceof Player))
+            return;
+
+        Player player = (Player) hook.getShooter();
+        if (ResAdmin.isResAdmin(player))
+            return;
+
+        FlagPermissions perms = FlagPermissions.getPerms(HitEntity.getLocation(), player);
+        if (perms.playerHas(player, Flags.hook, true))
+            return;
+
+        lm.Flag_Deny.sendMessage(player, Flags.hook);
+        event.setCancelled(true);
     }
 }
