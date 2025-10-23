@@ -200,7 +200,7 @@ Global:
     honeycomb: true
     # Applies to: Both
     # Allows or denys fishing rod hooking entities
-    hook: false
+    hook: true
     # Applies to: Residence
     # Prevent damage from magma blocks
     hotfloor: true
@@ -396,6 +396,7 @@ Global:
     bank: ENDER_CHEST
     beacon: BEACON
     bed: WHITE_BED
+    boarding: ACACIA_BOAT
     brew: BREWING_STAND
     build: BRICKS
     burn: TORCH
@@ -435,6 +436,7 @@ Global:
     fly: ORANGE_CARPET
     friendlyfire: SUNFLOWER
     glow: SEA_LANTERN
+    golemopenchest: COPPER_GOLEM_STATUE
     grow: WHEAT_SEEDS
     healing: POTION
     hidden: GLASS_PANE
@@ -508,90 +510,93 @@ Global:
     harvest: SWEET_BERRIES
     safezone: APPLE
     skulk: SCULK_CATALYST
-    boarding: ACACIA_BOAT
-    golemopenchest: COPPER_GOLEM_STATUE
   # These are default flags applied to all residences from any user group.
   ResidenceDefault:
-    build: false
-    destroy: false
-    use: false
-    container: false
-    pvp: false
-    tnt: false
-    creeper: false
-    ignite: false
-    firespread: false
-    vehicledestroy: false
     animalkilling: false
+    build: false
+    container: false
+    creeper: false
+    destroy: false
+    explode: false
+    firespread: false
+    harvest: false
     hook: false
-    shear: false
+    ignite: false
     leash: false
     pistonprotection: true
-    tp: false
-    explode: false
-    harvest: false
+    pvp: false
+    shear: false
     skulk: false
+    tnt: false
+    tp: false
+    use: false
+    vehicledestroy: false
   # These are default flags applied to the residence creator of any group.
   CreatorDefault:
-    build: true
-    destroy: true
-    move: true
-    use: true
-    ignite: true
-    container: true
     animalkilling: true
-    mobkilling: true
-    vehicledestroy: true
-    trade: true
-    shear: true
-    leash: true
+    build: true
+    container: true
+    destroy: true
     harvest: true
+    hook: true
+    ignite: true
+    leash: true
+    mobkilling: true
+    move: true
+    shear: true
+    trade: true
+    use: true
+    vehicledestroy: true
   # These are default flags applied to the residence renter of any group.
   RentedDefault:
-    container: true
-    ignite: true
-    move: true
-    trade: true
-    mobkilling: true
-    shear: true
-    build: true
-    use: true
-    destroy: true
-    vehicledestroy: true
-    leash: true
-    animalkilling: true
     admin: true
+    animalkilling: true
+    build: true
+    container: true
+    destroy: true
     harvest: true
+    hook: true
+    ignite: true
+    leash: true
+    mobkilling: true
+    move: true
+    shear: true
+    trade: true
+    use: true
+    vehicledestroy: true
   # These are grouped flags, so when using /res pset nickname redstone true, player will get all flags in list, same when setting to false or removing them.
   GroupedFlags:
     redstone:
     - note
-    - pressure
-    - lever
     - button
     - diode
+    - lever
+    - pressure
     craft:
     - brew
-    - table
     - enchant
+    - table
     # This group of flags will be used for padd sub command
     trusted:
-    - use
-    - tp
-    - build
-    - destroy
-    - container
-    - move
-    - leash
     - animalkilling
-    - mobkilling
-    - shear
-    - chat
     - beacon
+    - build
+    - chat
+    - container
+    - destroy
     - harvest
+    - hook
+    - leash
+    - mobkilling
+    - move
+    - shear
+    - trade
+    - tp
+    - use
+    - vehicledestroy
     fire:
-    - ignite
     - firespread
+    - ignite
   # Completely disables defined flag which will no longer be accesable even with resadmin command
   # Can save some of the server processing resources if you don't want to utilize specific checks for specific flags
   TotalFlagDisabling:
