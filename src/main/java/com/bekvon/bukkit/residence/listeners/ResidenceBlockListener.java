@@ -925,15 +925,16 @@ public class ResidenceBlockListener implements Listener {
         if (CMIMaterial.get(event.getBlock()) == CMIMaterial.DROPPER)
             return;
 
+        CMIMaterial cmat = CMIMaterial.get(event.getItem());
         if (targetres == null && location.getBlockY() >= plugin.getConfigManager().getPlaceLevel() && plugin.getConfigManager().getNoPlaceWorlds().contains(location
             .getWorld().getName())) {
-            ItemStack mat = event.getItem();
-            if (plugin.getConfigManager().isNoLavaPlace() && mat.getType() == Material.LAVA_BUCKET) {
+            if (plugin.getConfigManager().isNoLavaPlace() && cmat == CMIMaterial.LAVA_BUCKET) {
                 event.setCancelled(true);
                 return;
             }
 
-            if (plugin.getConfigManager().isNoWaterPlace() && mat.getType() == Material.WATER_BUCKET) {
+            if (plugin.getConfigManager().isNoWaterPlace() &&
+                    (cmat == CMIMaterial.WATER_BUCKET || cmat.containsCriteria(CMIMC.BUCKETANIMAL))) {
                 event.setCancelled(true);
                 return;
             }
@@ -942,7 +943,16 @@ public class ResidenceBlockListener implements Listener {
         ClaimedResidence sourceres = plugin.getResidenceManager().getByLoc(event.getBlock().getLocation());
 
         if ((sourceres == null && targetres != null || sourceres != null && targetres == null || sourceres != null && targetres != null && !sourceres.getName().equals(
-            targetres.getName())) && (event.getItem().getType() == Material.LAVA_BUCKET || event.getItem().getType() == Material.WATER_BUCKET)) {
+                targetres.getName())) &&
+                (cmat == CMIMaterial.BUCKET ||
+                 cmat == CMIMaterial.LAVA_BUCKET ||
+                 cmat == CMIMaterial.WATER_BUCKET ||
+                 cmat == CMIMaterial.POWDER_SNOW_BUCKET ||
+                 cmat == CMIMaterial.TNT ||
+                 cmat == CMIMaterial.BONE_MEAL ||
+                 cmat.containsCriteria(CMIMC.BOAT) ||
+                 cmat.containsCriteria(CMIMC.MINECART) ||
+                 cmat.containsCriteria(CMIMC.BUCKETANIMAL))) {
             event.setCancelled(true);
         }
     }
