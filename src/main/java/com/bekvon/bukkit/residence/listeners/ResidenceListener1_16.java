@@ -9,16 +9,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
-import org.bukkit.inventory.EquipmentSlot;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
-import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
-
-import net.Zrips.CMILib.Version.Version;
+import com.bekvon.bukkit.residence.protection.FlagPermissions;
 
 public class ResidenceListener1_16 implements Listener {
 
@@ -33,40 +29,29 @@ public class ResidenceListener1_16 implements Listener {
 
         if (!event.getCause().equals(LightningStrikeEvent.Cause.TRIDENT))
             return;
-
-        if (!Flags.animalkilling.isGlobalyEnabled())
-            return;
-
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getWorld()))
             return;
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(event.getLightning().getLocation());
-
-        if (res == null)
+        FlagPermissions perms = FlagPermissions.getPerms(event.getLightning().getLocation());
+        if (perms.has(Flags.animalkilling, true))
             return;
 
-        if (res.getPermissions().has(Flags.animalkilling, FlagCombo.OnlyFalse))
-            event.setCancelled(true);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteractRespawn(PlayerInteractEvent event) {
 
+        Player player = event.getPlayer();
         if (event.getPlayer() == null)
             return;
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
+        if (plugin.isDisabledWorldListener(player.getWorld()))
             return;
 
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
-        try {
-            if (Version.isCurrentHigher(Version.v1_8_R3) && event.getHand() != EquipmentSlot.HAND)
-                return;
-        } catch (Exception e) {
-        }
-        Player player = event.getPlayer();
 
         Block block = event.getClickedBlock();
         if (block == null)
@@ -75,24 +60,28 @@ public class ResidenceListener1_16 implements Listener {
         Material mat = block.getType();
 
         if (mat.equals(Material.RESPAWN_ANCHOR)) {
-            ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-            if (res == null)
+            if (ResAdmin.isResAdmin(player))
                 return;
 
-            if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.anchor, FlagCombo.OnlyTrue) && !ResAdmin.isResAdmin(player)) {
-                lm.Residence_FlagDeny.sendMessage(player, Flags.anchor, res.getName());
-                event.setCancelled(true);
-            }
-        } else if (mat.equals(Material.REDSTONE_WIRE)) {
-
-            ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-            if (res == null)
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, Flags.anchor, perms.playerHas(player, Flags.destroy, true)))
                 return;
 
-            if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.build, FlagCombo.TrueOrNone) && !ResAdmin.isResAdmin(player)) {
-                lm.Residence_FlagDeny.sendMessage(player, Flags.build, res.getName());
-                event.setCancelled(true);
-            }
+            lm.Flag_Deny.sendMessage(player, Flags.anchor);
+            event.setCancelled(true);
+            return;
+        }
+
+        if (mat.equals(Material.REDSTONE_WIRE)) {
+            if (ResAdmin.isResAdmin(player))
+                return;
+
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, Flags.build, true))
+                return;
+
+            lm.Flag_Deny.sendMessage(player, Flags.build);
+            event.setCancelled(true);
         }
     }
 }
