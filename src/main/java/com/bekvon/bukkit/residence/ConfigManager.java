@@ -163,6 +163,7 @@ public class ConfigManager {
     protected boolean chatEnable;
     private boolean chatListening;
     private ELMessageType EnterLeaveMessageType;
+    private ELMessageType FlagDenyMessageType;
 
     protected boolean ActionBarOnSelection;
     protected boolean visualizer;
@@ -1214,6 +1215,11 @@ public class ConfigManager {
         if (EnterLeaveMessageType == null || Version.isCurrentEqualOrLower(Version.v1_7_R4))
             EnterLeaveMessageType = ELMessageType.ActionBar;
 
+        c.addComment("Global.Messages.FlagDenyMessages", "Defines where you want to send residence FlagDeny messages. Possible options: " + ELMessageType.getAllValuesAsString());
+        FlagDenyMessageType = ELMessageType.getByName(c.get("Global.Messages.FlagDenyMessages", old.toString()));
+        if (FlagDenyMessageType == null || Version.isCurrentEqualOrLower(Version.v1_7_R4))
+            FlagDenyMessageType = ELMessageType.ChatBox;
+
         ActionBarOnSelection = c.get("Global.ActionBar.ShowOnSelection", true);
 
         c.addComment("Global.ResidenceChatEnable", "Enable or disable residence chat channels.");
@@ -1426,6 +1432,7 @@ public class ConfigManager {
         if (Couldroncompatibility) {
             useVisualizer = false;
             EnterLeaveMessageType = ELMessageType.ChatBox;
+            FlagDenyMessageType = ELMessageType.ChatBox;
             ActionBarOnSelection = false;
         }
 
@@ -2249,6 +2256,10 @@ public class ConfigManager {
         return EnterLeaveMessageType;
     }
 
+    public ELMessageType getFlagDenyMessageType() {
+        return FlagDenyMessageType;
+    }
+
     public boolean isEnterAnimation() {
         return EnterAnimation;
     }
@@ -2380,4 +2391,5 @@ public class ConfigManager {
 //    public boolean isTownEnabled() {
 //	return TownEnabled;
 //    }
+
 }
