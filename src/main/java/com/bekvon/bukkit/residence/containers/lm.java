@@ -10,7 +10,9 @@ import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.Residence;
 
+import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Colors.CMIChatColor;
+import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 
 public enum lm {
     Invalid_Player("&cInvalid player name..."),
@@ -604,12 +606,46 @@ public enum lm {
 
         if (Residence.getInstance().getLM().containsKey(getPath())) {
             String msg = Residence.getInstance().getLM().getMessage(this, variables);
-            if (msg.length() > 0)
+
+            if (msg.length() > 0) {
+                if (this == lm.Flag_Deny || this == lm.Residence_FlagDeny) {
+                    // only player trigger FlagDeny msg
+                    Player player = (Player) sender;
+                    if (player.hasMetadata("NPC"))
+                        return;
+                    switch (Residence.getInstance().getConfigManager().getFlagDenyMessageType()) {
+                        case ActionBar:
+                            CMIActionBar.send(player, msg);
+                            break;
+                        case ChatBox:
+                            player.sendMessage(msg);
+                            break;
+                        case TitleBar:
+                            String title = msg;
+                            String subtitle = "";
+                            if (title.contains("\\n")) {
+                                String[] parts = title.split("\\\\n", 2);
+                                title = parts[0];
+                                subtitle = parts.length > 1 ? parts[1] : "";
+                            }
+                            CMITitleMessage.send(player, title, subtitle);
+                            break;
+                        default:
+                            break;
+                    }
+                    return;
+                }
+                // not FlagDeny msg
                 sender.sendMessage(msg);
-        } else {
-            String msg = getPath();
-            if (msg.length() > 0)
-                sender.sendMessage(msg);
+                return;
+            }
+            // msg is empty
+            return;
+        }
+        // not matching path in language, use default path msg
+        String msg = getPath();
+        if (msg.length() > 0) {
+            sender.sendMessage(msg);
         }
     }
 
@@ -629,4 +665,5 @@ public enum lm {
     public static void consoleMessage(String message, boolean prefix) {
         Bukkit.getConsoleSender().sendMessage(CMIChatColor.translate((prefix ? Residence.getInstance().getPrefix() + " &f" : "") + message));
     }
+
 }
