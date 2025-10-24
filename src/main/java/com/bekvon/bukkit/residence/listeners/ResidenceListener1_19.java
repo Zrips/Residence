@@ -109,13 +109,19 @@ public class ResidenceListener1_19 implements Listener {
         if (source == null || dest == null) {
             return;
         }
+
         ClaimedResidence sourceRes = ClaimedResidence.getByLoc(source.getLocation());
         ClaimedResidence destRes = ClaimedResidence.getByLoc(dest.getLocation());
+
         // ignore source & dest not in Res
         if (sourceRes == null && destRes == null) {
             return;
         }
-        // source & dest not in Same Residence
+        // ignore source & dest in Same Res
+        if (sourceRes != null && destRes != null && sourceRes.equals(destRes)) {
+            return;
+        }
+        // source & dest not in Same Res
         if (sourceRes != null && destRes != null && !sourceRes.equals(destRes)) {
             event.setCancelled(true);
             return;
