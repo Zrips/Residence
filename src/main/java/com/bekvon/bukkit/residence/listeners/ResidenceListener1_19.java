@@ -1,6 +1,5 @@
 package com.bekvon.bukkit.residence.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -20,6 +19,8 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
+
+import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class ResidenceListener1_19 implements Listener {
 
@@ -88,11 +89,11 @@ public class ResidenceListener1_19 implements Listener {
     }
 
     private void breakHopper(Inventory hopperInventory) {
+        Location hopperLoc = hopperInventory.getLocation();
+        if (hopperLoc == null)
+            return;
         // delay 1 tick break, ensure after event cancel
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            Location hopperLoc = hopperInventory.getLocation();
-            if (hopperLoc == null)
-                return;
+        CMIScheduler.runAtLocationLater(plugin, hopperLoc, () -> {
             Block block = hopperLoc.getBlock();
             // only hopper
             if (block == null || !(block.getType().equals(Material.HOPPER)))
