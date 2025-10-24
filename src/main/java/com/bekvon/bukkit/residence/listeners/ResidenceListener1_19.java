@@ -106,12 +106,15 @@ public class ResidenceListener1_19 implements Listener {
 
         Inventory source = event.getSource();
         Inventory dest = event.getDestination();
-        if (source == null || dest == null)
+        if (source == null || dest == null) {
             return;
-
+        }
         ClaimedResidence sourceRes = ClaimedResidence.getByLoc(source.getLocation());
         ClaimedResidence destRes = ClaimedResidence.getByLoc(dest.getLocation());
-
+        // ignore source & dest not in Res
+        if (sourceRes == null && destRes == null) {
+            return;
+        }
         // source & dest not in Same Residence
         if (sourceRes != null && destRes != null && !sourceRes.equals(destRes)) {
             event.setCancelled(true);
@@ -128,6 +131,5 @@ public class ResidenceListener1_19 implements Listener {
             event.setCancelled(true);
             breakHopper(source);
         }
-        // ignore source & dest not in Res
     }
 }
