@@ -9,6 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
+import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -199,6 +200,33 @@ public class ResidenceListener1_09 implements Listener {
                 event.getEntity().remove();
                 break;
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onFrostWalker(EntityBlockFormEvent event) {
+
+        Entity entity = event.getEntity();
+        if (entity == null)
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(entity.getWorld()))
+            return;
+
+        if (entity instanceof Player) {
+            Player player = (Player) entity;
+
+            if (player.hasMetadata("NPC"))
+                return;
+
+            if (ResAdmin.isResAdmin(player))
+                return;
+
+            FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation(), player);
+            if (perms.playerHas(player, Flags.build, true))
+                return;
+
+            event.setCancelled(true);
         }
     }
 }
