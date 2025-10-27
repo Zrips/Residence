@@ -23,6 +23,9 @@ public class ResidenceListener1_21_9_Paper implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCopperGolemInteract(ItemTransportingEntityValidateTargetEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.golemopenchest.isGlobalyEnabled())
+            return;
 
         Entity entity = event.getEntity();
         if (entity == null)

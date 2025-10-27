@@ -28,6 +28,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Entities.CMIEntityType;
+import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class ResidenceListener1_21 implements Listener {
@@ -47,9 +48,8 @@ public class ResidenceListener1_21 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void OnVehicleEnterEvent(VehicleEnterEvent event) {
-
         // Disabling listener if flag disabled globally
-        if (!Flags.leash.isGlobalyEnabled())
+        if (!Flags.boarding.isGlobalyEnabled())
             return;
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getVehicle().getWorld()))
@@ -63,15 +63,14 @@ public class ResidenceListener1_21 implements Listener {
         if (!Utils.isAnimal(entity))
             return;
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
-
-        if (res == null)
-            return;
-
-        if (res.getPermissions().has(Flags.boarding, FlagCombo.OnlyFalse)) {
+        if (FlagPermissions.getPerms(entity.getLocation()).has(Flags.boarding, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
             return;
         }
+
+        ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
+        if (res == null)
+            return;
 
         Player closest = null;
         double dist = 32D;
@@ -126,7 +125,9 @@ public class ResidenceListener1_21 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onInteractCopperGolem(PlayerInteractEntityEvent event) {
-
+        // Disabling listener if flag disabled globally
+        if (!Flags.copper.isGlobalyEnabled())
+            return;
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
@@ -140,18 +141,29 @@ public class ResidenceListener1_21 implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
 
+        CMIMaterial mainHand = CMIMaterial.get(player.getInventory().getItemInMainHand());
+        CMIMaterial offHand = CMIMaterial.get(player.getInventory().getItemInOffHand());
+
+        // Avoid overwriting Leash Flag, Lead Shears
+        // Only held Axe or Honeycomb
+        if ((mainHand == null || !(mainHand.equals(CMIMaterial.HONEYCOMB) || mainHand.toString().contains("_AXE"))) &&
+            (offHand == null || !(offHand.equals(CMIMaterial.HONEYCOMB) || offHand.toString().contains("_AXE")))) {
+            return;
+        }
+
         FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
         if (perms.playerHas(player, Flags.copper, perms.playerHas(player, Flags.animalkilling, true)))
             return;
 
         lm.Flag_Deny.sendMessage(player, Flags.copper);
-
         event.setCancelled(true);
-
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onFishingBobberHit(ProjectileHitEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.hook.isGlobalyEnabled())
+            return;
         // anti NPE
         Entity HitEntity = event.getHitEntity();
         if (HitEntity == null)

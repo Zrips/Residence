@@ -45,8 +45,6 @@ public class ResidenceListener1_13 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onLandDryFade(BlockFadeEvent event) {
-        if (Version.isCurrentLower(Version.v1_13_R1))
-            return;
         // Disabling listener if flag disabled globally
         if (!Flags.dryup.isGlobalyEnabled())
             return;
@@ -76,8 +74,6 @@ public class ResidenceListener1_13 implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLandDryPhysics(BlockPhysicsEvent event) {
-        if (Version.isCurrentLower(Version.v1_13_R1))
-            return;
         // Disabling listener if flag disabled globally
         if (!Flags.dryup.isGlobalyEnabled())
             return;
@@ -110,7 +106,10 @@ public class ResidenceListener1_13 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onSignInteract(PlayerInteractEvent event) {
+    public void onTrampleTurtleEgg(PlayerInteractEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.destroy.isGlobalyEnabled())
+            return;
         if (!event.getAction().equals(Action.PHYSICAL) || !event.getClickedBlock().getType().equals(Material.TURTLE_EGG))
             return;
         if (!ResidenceBlockListener.canBreakBlock(event.getPlayer(), event.getClickedBlock(), true))
@@ -123,9 +122,9 @@ public class ResidenceListener1_13 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onButtonHitWithProjectile(ProjectileHitEvent event) {
+    public void onProjectileHitButtonPlate(ProjectileHitEvent event) {
         // Disabling listener if flag disabled globally
-        if (!Flags.button.isGlobalyEnabled())
+        if (!Flags.use.isGlobalyEnabled())
             return;
         // Avoid Projectile getWorld NPE
         if (event.getHitBlock() == null)
@@ -206,7 +205,10 @@ public class ResidenceListener1_13 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onEntityInteractButton(EntityInteractEvent event) {
+    public void onEntityTouchButtonPlate(EntityInteractEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.use.isGlobalyEnabled())
+            return;
 
         Block block = event.getBlock();
         if (block == null)

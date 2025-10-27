@@ -24,12 +24,20 @@ import com.bekvon.bukkit.residence.utils.Utils;
 public class ResidenceListener1_08 implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractAtArmoStand(PlayerInteractAtEntityEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.container.isGlobalyEnabled())
+            return;
+
         Player player = event.getPlayer();
-        if (ResAdmin.isResAdmin(player))
+        // disabling event on world
+        if (Residence.getInstance().isDisabledWorldListener(player.getWorld()))
             return;
 
         Entity ent = event.getRightClicked();
         if (!Utils.isArmorStandEntity(ent.getType()))
+            return;
+
+        if (ResAdmin.isResAdmin(player))
             return;
 
         FlagPermissions perms = FlagPermissions.getPerms(ent.getLocation(), player);
@@ -42,12 +50,14 @@ public class ResidenceListener1_08 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void AnimalUnleash(PlayerUnleashEntityEvent event) {
-
-        // disabling event on world
-        if (Residence.getInstance().isDisabledWorldListener(event.getEntity().getWorld()))
+        // Disabling listener if flag disabled globally
+        if (!Flags.leash.isGlobalyEnabled())
             return;
 
         Entity entity = event.getEntity();
+        // disabling event on world
+        if (Residence.getInstance().isDisabledWorldListener(entity.getWorld()))
+            return;
 
         Player player = event.getPlayer();
 
@@ -65,13 +75,15 @@ public class ResidenceListener1_08 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockExplodeEvent(BlockExplodeEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.explode.isGlobalyEnabled())
+            return;
 
         Location loc = event.getBlock().getLocation();
-
+        // disabling event on world
         if (Residence.getInstance().isDisabledWorldListener(loc.getWorld()))
             return;
-        if (event.isCancelled())
-            return;
+
         FlagPermissions world = FlagPermissions.getPerms(loc.getWorld());
         List<Block> preserve = new ArrayList<Block>();
         for (Block block : event.blockList()) {

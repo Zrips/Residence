@@ -29,7 +29,9 @@ public class ResidenceListener1_14 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onLecternBookTake(PlayerTakeLecternBookEvent event) {
-
+        // Disabling listener if flag disabled globally
+        if (!Flags.container.isGlobalyEnabled())
+            return;
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getLectern().getWorld()))
             return;
@@ -51,7 +53,9 @@ public class ResidenceListener1_14 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onRavager(EntityChangeBlockEvent event) {
-
+        // Disabling listener if flag disabled globally
+        if (!Flags.destroy.isGlobalyEnabled())
+            return;
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
             return;
@@ -69,7 +73,9 @@ public class ResidenceListener1_14 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onVehicleDamage(VehicleDamageEvent event) {
-
+        // Disabling listener if flag disabled globally
+        if (!Flags.vehicledestroy.isGlobalyEnabled())
+            return;
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getVehicle().getWorld()))
             return;

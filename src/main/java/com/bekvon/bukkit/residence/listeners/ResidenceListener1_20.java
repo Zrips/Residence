@@ -36,6 +36,9 @@ public class ResidenceListener1_20 implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onSignWax(PlayerInteractEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.build.isGlobalyEnabled())
+            return;
 
         Player player = event.getPlayer();
         if (player == null)
@@ -71,6 +74,9 @@ public class ResidenceListener1_20 implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onSignInteract(PlayerSignOpenEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.build.isGlobalyEnabled())
+            return;
 
         Player player = event.getPlayer();
         if (player == null)
@@ -103,6 +109,9 @@ public class ResidenceListener1_20 implements Listener {
     // Sweep SuspiciousBlocks
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onProjectilePlayerChangeBlock(EntityChangeBlockEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.destroy.isGlobalyEnabled())
+            return;
 
         Block block = event.getBlock();
         if (block == null)
