@@ -31,7 +31,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
-import com.bekvon.bukkit.residence.containers.ELMessageType;
+import com.bekvon.bukkit.residence.containers.GenMessageType;
 import com.bekvon.bukkit.residence.containers.EconomyType;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.RandomTeleport;
@@ -162,7 +162,8 @@ public class ConfigManager {
     protected CMIChatColor chatColor;
     protected boolean chatEnable;
     private boolean chatListening;
-    private ELMessageType EnterLeaveMessageType;
+    private GenMessageType GeneralMessageType;
+    protected List<String> MessageType;
 
     protected boolean ActionBarOnSelection;
     protected boolean visualizer;
@@ -1204,15 +1205,18 @@ public class ConfigManager {
         c.addComment("Global.RentCheckInterval", "The interval, in minutes, between residence rent expiration checks (if the rent system is enabled).");
         rentCheckInterval = c.get("Global.RentCheckInterval", 10);
 
-        ELMessageType old = c.getC().isBoolean("Global.ActionBar.General") && c.getC().getBoolean("Global.ActionBar.General") ? ELMessageType.ActionBar
-            : ELMessageType.ActionBar;
-        old = c.getC().isBoolean("Global.TitleBar.EnterLeave") && c.getC().getBoolean("Global.TitleBar.EnterLeave") ? ELMessageType.TitleBar : old;
+        GenMessageType old = c.getC().isBoolean("Global.ActionBar.General") && c.getC().getBoolean("Global.ActionBar.General") ? GenMessageType.ActionBar
+            : GenMessageType.ActionBar;
+        old = c.getC().isBoolean("Global.TitleBar.EnterLeave") && c.getC().getBoolean("Global.TitleBar.EnterLeave") ? GenMessageType.TitleBar : old;
 
-        c.addComment("Global.Messages.GeneralMessages", "Defines where you want to send residence enter/leave/deny move and similar messages. Possible options: " + ELMessageType.getAllValuesAsString(),
+        c.addComment("Global.Messages.GeneralMessages", "Defines where you want to send residence enter/leave/deny move and similar messages. Possible options: " + GenMessageType.getAllValuesAsString(),
             "TitleBar can have %subtitle% variable to define second line");
-        EnterLeaveMessageType = ELMessageType.getByName(c.get("Global.Messages.GeneralMessages", old.toString()));
-        if (EnterLeaveMessageType == null || Version.isCurrentEqualOrLower(Version.v1_7_R4))
-            EnterLeaveMessageType = ELMessageType.ActionBar;
+        GeneralMessageType = GenMessageType.getByName(c.get("Global.Messages.GeneralMessages", old.toString()));
+        if (GeneralMessageType == null || Version.isCurrentEqualOrLower(Version.v1_7_R4))
+            GeneralMessageType = GenMessageType.ActionBar;
+
+        c.addComment("Global.Messages.MessageType", "Classified under Language MessageType of GeneralMessages");
+        MessageType = new ArrayList<>(c.get("Global.Messages.MessageType", Arrays.asList("Flag_Deny", "Residence_FlagDeny", "General_NoPVPZone")));
 
         ActionBarOnSelection = c.get("Global.ActionBar.ShowOnSelection", true);
 
@@ -1425,7 +1429,7 @@ public class ConfigManager {
         Couldroncompatibility = c.get("Global.Couldroncompatibility", false);
         if (Couldroncompatibility) {
             useVisualizer = false;
-            EnterLeaveMessageType = ELMessageType.ChatBox;
+            GeneralMessageType = GenMessageType.ChatBox;
             ActionBarOnSelection = false;
         }
 
@@ -2245,8 +2249,12 @@ public class ConfigManager {
         return CanTeleportIncludeOwner;
     }
 
-    public ELMessageType getEnterLeaveMessageType() {
-        return EnterLeaveMessageType;
+    public GenMessageType getGeneralMessageType() {
+        return GeneralMessageType;
+    }
+
+    public List<String> getMessageType() {
+        return MessageType;
     }
 
     public boolean isEnterAnimation() {
