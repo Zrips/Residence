@@ -26,6 +26,9 @@ public class WorldFlagManager {
 
     public WorldFlagManager(Residence plugin) {
         this.plugin = plugin;
+    }
+
+    public void load() {
         globaldefaults = new FlagPermissions();
         worldperms = new HashMap<>();
         groupperms = new HashMap<>();

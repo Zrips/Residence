@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -83,12 +82,10 @@ import com.bekvon.bukkit.residence.pl3xmap.Pl3xMapListeners;
 import com.bekvon.bukkit.residence.pl3xmap.Pl3xMapManager;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
-import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.protection.LeaseManager;
 import com.bekvon.bukkit.residence.protection.PermissionListManager;
 import com.bekvon.bukkit.residence.protection.PlayerManager;
 import com.bekvon.bukkit.residence.protection.ResidenceManager;
-import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.bekvon.bukkit.residence.protection.WorldFlagManager;
 import com.bekvon.bukkit.residence.raid.ResidenceRaidListener;
 import com.bekvon.bukkit.residence.selection.AutoSelection;
@@ -136,60 +133,58 @@ public class Residence extends JavaPlugin {
 
     private boolean fullyLoaded = false;
 
-    protected String ResidenceVersion;
-    protected List<String> authlist;
-    protected ResidenceManager rmanager;
-    protected SelectionManager smanager;
-    public PermissionManager gmanager;
-    protected ConfigManager configManager;
+    private String ResidenceVersion;
+    private List<String> authlist;
+    private ResidenceManager rmanager;
+    private SelectionManager smanager;
+    private PermissionManager gmanager;
+    private ConfigManager configManager;
 
-    protected boolean spigotPlatform = false;
-
-    protected SignUtil signmanager;
+    private SignUtil signmanager;
 
     protected ResidencePlayerListener plistener;
 
-    protected ResidenceCommandListener commandManager;
+    private ResidenceCommandListener commandManager;
 
-    protected TransactionManager tmanager;
-    protected PermissionListManager pmanager;
-    protected LeaseManager leasemanager;
-    public WorldItemManager imanager;
-    public WorldFlagManager wmanager;
-    protected RentManager rentmanager;
-    protected ChatManager chatmanager;
-    protected Server server;
-    protected LocaleManager localeManager;
-    protected Language newLanguageManager;
-    protected PlayerManager PlayerManager;
-    protected FlagUtil FlagUtilManager;
-    protected ShopSignUtil ShopSignUtilManager;
+    private TransactionManager tmanager;
+    private PermissionListManager pmanager;
+    private LeaseManager leasemanager;
+    private WorldItemManager imanager;
+    private WorldFlagManager wmanager;
+    private RentManager rentmanager;
+    private ChatManager chatmanager;
+    private Server server;
+    private LocaleManager localeManager;
+    private Language newLanguageManager;
+    private PlayerManager PlayerManager;
+    private FlagUtil FlagUtilManager;
+    private ShopSignUtil ShopSignUtilManager;
 //    private TownManager townManager;
-    protected RandomTp RandomTpManager;
-    protected DynMapManager DynManager;
-    protected Pl3xMapManager Pl3xManager;
-    protected Sorting SortingManager;
-    protected AutoSelection AutoSelectionManager;
-    protected WESchematicManager SchematicManager;
+    private RandomTp RandomTpManager;
+    private DynMapManager DynManager;
+    private Pl3xMapManager Pl3xManager;
+    private Sorting SortingManager;
+    private AutoSelection AutoSelectionManager;
+    private WESchematicManager SchematicManager;
     private InformationPager InformationPagerManager;
     private WorldGuardInterface worldGuardUtil;
     private int wepVersion = 6;
     private KingdomsUtil kingdomsUtil;
 
-    protected CommandFiller cmdFiller;
+    private CommandFiller cmdFiller;
 
-    protected ZipLibrary zip;
+    private ZipLibrary zip;
 
-    protected boolean firstenable = true;
-    protected EconomyInterface economy;
+    private boolean firstenable = true;
+    private EconomyInterface economy;
     public File dataFolder;
-    protected CMITask leaseBukkitId = null;
-    protected CMITask rentBukkitId = null;
-    protected CMITask healBukkitId = null;
-    protected CMITask feedBukkitId = null;
-    protected CMITask effectRemoveBukkitId = null;
-    protected CMITask despawnMobsBukkitId = null;
-    protected CMITask autosaveBukkitId = null;
+    private CMITask leaseBukkitId = null;
+    private CMITask rentBukkitId = null;
+    private CMITask healBukkitId = null;
+    private CMITask feedBukkitId = null;
+    private CMITask effectRemoveBukkitId = null;
+    private CMITask despawnMobsBukkitId = null;
+    private CMITask autosaveBukkitId = null;
 
     private boolean SlimeFun = false;
     private boolean BigDoors = false;
@@ -210,10 +205,6 @@ public class Residence extends JavaPlugin {
 
     private Placeholder Placeholder;
     private boolean PlaceholderAPIEnabled = false;
-
-    public boolean isSpigot() {
-        return spigotPlatform;
-    }
 
     public Map<UUID, SafeLocationCache> getTeleportMap() {
         return teleportMap;
@@ -239,7 +230,7 @@ public class Residence extends JavaPlugin {
 
     public ResidenceInterface getResidenceManagerAPI() {
         if (ResidenceAPI == null)
-            ResidenceAPI = rmanager;
+            ResidenceAPI = getResidenceManager();
         return ResidenceAPI;
     }
 
@@ -255,20 +246,20 @@ public class Residence extends JavaPlugin {
 
     public MarketRentInterface getMarketRentManagerAPI() {
         if (MarketRentAPI == null)
-            MarketRentAPI = rentmanager;
+            MarketRentAPI = getRentManager();
         return MarketRentAPI;
     }
 
     public MarketBuyInterface getMarketBuyManagerAPI() {
         if (MarketBuyAPI == null)
-            MarketBuyAPI = tmanager;
+            MarketBuyAPI = getTransactionManager();
         return MarketBuyAPI;
 
     }
 
     public ChatInterface getResidenceChatAPI() {
         if (ChatAPI == null)
-            ChatAPI = chatmanager;
+            ChatAPI = getChatManager();
         return ChatAPI;
     }
 
@@ -283,23 +274,23 @@ public class Residence extends JavaPlugin {
     }
     // API end
 
-    private Runnable doHeals = () -> plistener.doHeals();
+    private Runnable doHeals = () -> getPlayerListener().doHeals();
 
-    private Runnable doFeed = () -> plistener.feed();
+    private Runnable doFeed = () -> getPlayerListener().feed();
 
-    private Runnable removeBadEffects = () -> plistener.badEffects();
+    private Runnable removeBadEffects = () -> getPlayerListener().badEffects();
 
-    private Runnable DespawnMobs = () -> plistener.DespawnMobs();
+    private Runnable DespawnMobs = () -> getPlayerListener().DespawnMobs();
 
     private Runnable rentExpire = () -> {
-        rentmanager.checkCurrentRents();
+        getRentManager().checkCurrentRents();
         if (getConfigManager().showIntervalMessages()) {
             lm.consoleMessage("- Rent Expirations checked!");
         }
     };
 
     private Runnable leaseExpire = () -> {
-        leasemanager.doExpirations();
+        getLeaseManager().doExpirations();
         if (getConfigManager().showIntervalMessages()) {
             lm.consoleMessage("- Lease Expirations checked!");
         }
@@ -386,10 +377,7 @@ public class Residence extends JavaPlugin {
             ResidenceVersion = this.getDescription().getVersion();
             authlist = this.getDescription().getAuthors();
 
-            cmdFiller = new CommandFiller();
-            cmdFiller.fillCommands();
-
-            SortingManager = new Sorting();
+            getCommandFiller().fillCommands();
 
             if (!dataFolder.isDirectory())
                 dataFolder.mkdirs();
@@ -424,31 +412,16 @@ public class Residence extends JavaPlugin {
             }
 
             getPlayerManager().load();
-            
+
             getConfigManager().UpdateFlagFile();
 
             getFlagUtilManager().load();
 
-            try {
-                Class<?> c = Class.forName("org.bukkit.entity.Player");
-                for (Method one : c.getDeclaredMethods()) {
-                    if (one.getName().equalsIgnoreCase("Spigot"))
-                        spigotPlatform = true;
-                }
-            } catch (Exception e) {
-            }
-
             this.getPermissionManager().startCacheClearScheduler();
 
+            getItemManager().load();
+            getWorldFlags().load();
 
-            imanager = new WorldItemManager(this);
-            wmanager = new WorldFlagManager(this);
-
-            chatmanager = new ChatManager();
-            rentmanager = new RentManager(this);
-
-            ShopSignUtilManager = new ShopSignUtil(this);
-            RandomTpManager = new RandomTp(this);
 //	    townManager = new TownManager(this);
 
             InformationPagerManager = new InformationPager(this);
@@ -486,7 +459,6 @@ public class Residence extends JavaPlugin {
             if (BigDoors) {
                 try {
                     BigDoorsManager.register(this);
-                    BigDoors = true;
                 } catch (Throwable e) {
                     BigDoors = false;
                     e.printStackTrace();
@@ -547,12 +519,6 @@ public class Residence extends JavaPlugin {
                 }
             }
 
-            rmanager = new ResidenceManager(this);
-
-            leasemanager = new LeaseManager(this);
-
-            tmanager = new TransactionManager(this);
-
             pmanager = new PermissionListManager(this);
 
             getLocaleManager().LoadLang(getConfigManager().getLanguage());
@@ -583,7 +549,6 @@ public class Residence extends JavaPlugin {
                 throw e;
             }
 
-            signmanager = new SignUtil(this);
             getSignUtil().LoadSigns();
 
             if (getConfigManager().isUseResidenceFileClean())
@@ -640,20 +605,16 @@ public class Residence extends JavaPlugin {
                         pm.registerEvents(new ResidenceListener1_21_9_Paper(this), this);
                 }
 
-                plistener = new ResidencePlayerListener(this);
-
                 pm.registerEvents(new ResidenceBlockListener(this), this);
-                pm.registerEvents(plistener, this);
+                pm.registerEvents(getPlayerListener(), this);
                 pm.registerEvents(new ResidenceEntityListener(this), this);
                 pm.registerEvents(new ShopListener(this), this);
                 pm.registerEvents(new ResidenceRaidListener(), this);
 
                 firstenable = false;
             } else {
-                plistener.reload();
+                getPlayerListener().reload();
             }
-
-            AutoSelectionManager = new AutoSelection(this);
 
             if (setupPlaceHolderAPI()) {
                 lm.consoleMessage("PlaceholderAPI was found - Enabling capabilities.");
@@ -757,18 +718,9 @@ public class Residence extends JavaPlugin {
     }
 
     public SignUtil getSignUtil() {
+        if (signmanager == null)
+            signmanager = new SignUtil(this);
         return signmanager;
-    }
-
-    public boolean validName(String name) {
-        if (name.contains(":") || name.contains(".") || name.contains("|")) {
-            return false;
-        }
-        if (getConfigManager().getResidenceNameRegex() == null) {
-            return true;
-        }
-        String namecheck = name.replaceAll(getConfigManager().getResidenceNameRegex(), "");
-        return name.equals(namecheck);
     }
 
     private void setWorldEdit() {
@@ -840,12 +792,13 @@ public class Residence extends JavaPlugin {
     public CommandFiller getCommandFiller() {
         if (cmdFiller == null) {
             cmdFiller = new CommandFiller();
-            cmdFiller.fillCommands();
         }
         return cmdFiller;
     }
 
     public ResidenceManager getResidenceManager() {
+        if (rmanager == null)
+            rmanager = new ResidenceManager(this);
         return rmanager;
     }
 
@@ -884,14 +837,20 @@ public class Residence extends JavaPlugin {
     }
 
     public AutoSelection getAutoSelectionManager() {
+        if (AutoSelectionManager == null)
+            AutoSelectionManager = new AutoSelection(this);
         return AutoSelectionManager;
     }
 
     public Sorting getSortingManager() {
+        if (SortingManager == null)
+            SortingManager = new Sorting();
         return SortingManager;
     }
 
     public RandomTp getRandomTpManager() {
+        if (RandomTpManager == null)
+            RandomTpManager = new RandomTp(this);
         return RandomTpManager;
     }
 
@@ -904,6 +863,8 @@ public class Residence extends JavaPlugin {
     }
 
     public LeaseManager getLeaseManager() {
+        if (leasemanager == null)
+            leasemanager = new LeaseManager(this);
         return leasemanager;
     }
 
@@ -924,18 +885,26 @@ public class Residence extends JavaPlugin {
     }
 
     public TransactionManager getTransactionManager() {
+        if (tmanager == null)
+            tmanager = new TransactionManager(this);
         return tmanager;
     }
 
     public WorldItemManager getItemManager() {
+        if (imanager == null)
+            imanager = new WorldItemManager(this);
         return imanager;
     }
 
     public WorldFlagManager getWorldFlags() {
+        if (wmanager == null)
+            wmanager = new WorldFlagManager(this);
         return wmanager;
     }
 
     public RentManager getRentManager() {
+        if (rentmanager == null)
+            rentmanager = new RentManager(this);
         return rentmanager;
     }
 
@@ -954,10 +923,14 @@ public class Residence extends JavaPlugin {
     }
 
     public ResidencePlayerListener getPlayerListener() {
+        if (plistener == null)
+            plistener = new ResidencePlayerListener(this);
         return plistener;
     }
 
     public ChatManager getChatManager() {
+        if (chatmanager == null)
+            chatmanager = new ChatManager();
         return chatmanager;
     }
 
@@ -1032,7 +1005,7 @@ public class Residence extends JavaPlugin {
         if (!worldFolder.isDirectory())
             worldFolder.mkdirs();
         YMLSaveHelper syml;
-        Map<String, Object> save = rmanager.save();
+        Map<String, Object> save = getResidenceManager().save();
         for (Entry<String, Object> entry : save.entrySet()) {
 
             boolean emptyRecord = false;
@@ -1071,7 +1044,7 @@ public class Residence extends JavaPlugin {
         File tmpFile = new File(saveFolder, "tmp_forsale.yml");
         yml = new YMLSaveHelper(tmpFile);
         yml.save();
-        yml.getRoot().put("Economy", tmanager.save());
+        yml.getRoot().put("Economy", getTransactionManager().save());
         yml.save();
         if (ymlSaveLoc.isFile()) {
             File backupFolder = new File(saveFolder, "Backup");
@@ -1088,7 +1061,7 @@ public class Residence extends JavaPlugin {
         ymlSaveLoc = new File(saveFolder, "leases.yml");
         tmpFile = new File(saveFolder, "tmp_leases.yml");
         yml = new YMLSaveHelper(tmpFile);
-        yml.getRoot().put("Leases", leasemanager.save());
+        yml.getRoot().put("Leases", getLeaseManager().save());
         yml.save();
         if (ymlSaveLoc.isFile()) {
             File backupFolder = new File(saveFolder, "Backup");
@@ -1122,7 +1095,7 @@ public class Residence extends JavaPlugin {
         ymlSaveLoc = new File(saveFolder, "rent.yml");
         tmpFile = new File(saveFolder, "tmp_rent.yml");
         yml = new YMLSaveHelper(tmpFile);
-        yml.getRoot().put("RentSystem", rentmanager.save());
+        yml.getRoot().put("RentSystem", getRentManager().save());
         yml.save();
         if (ymlSaveLoc.isFile()) {
             File backupFolder = new File(saveFolder, "Backup");
@@ -1238,19 +1211,18 @@ public class Residence extends JavaPlugin {
             getResidenceManager().load(worlds);
 
             // Getting shop residences
-            Map<String, ClaimedResidence> resList = rmanager.getResidences();
+            Map<String, ClaimedResidence> resList = getResidenceManager().getResidences();
             for (Entry<String, ClaimedResidence> one : resList.entrySet()) {
-                addShops(one.getValue());
+                this.getResidenceManager().addShops(one.getValue());
             }
 
             loadFile = new File(saveFolder, "forsale.yml");
             if (loadFile.isFile()) {
                 yml = new YMLSaveHelper(loadFile);
                 yml.load();
-                tmanager = new TransactionManager(this);
                 Map<String, Object> root = yml.getRoot();
                 if (root != null)
-                    tmanager.load((Map) root.get("Economy"));
+                    getTransactionManager().load((Map) root.get("Economy"));
             }
             loadFile = new File(saveFolder, "leases.yml");
             if (loadFile.isFile()) {
@@ -1258,7 +1230,7 @@ public class Residence extends JavaPlugin {
                 yml.load();
                 Map<String, Object> root = yml.getRoot();
                 if (root != null)
-                    leasemanager = getLeaseManager().load((Map) root.get("Leases"));
+                    getLeaseManager().load((Map) root.get("Leases"));
             }
             loadFile = new File(saveFolder, "permlists.yml");
             if (loadFile.isFile()) {
@@ -1274,22 +1246,13 @@ public class Residence extends JavaPlugin {
                 yml.load();
                 Map<String, Object> root = yml.getRoot();
                 if (root != null)
-                    rentmanager.load((Map) root.get("RentSystem"));
+                    getRentManager().load((Map) root.get("RentSystem"));
             }
 
             return true;
         } catch (Exception ex) {
             Logger.getLogger(Residence.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;
-        }
-    }
-
-    private void addShops(ClaimedResidence res) {
-        ResidencePermissions perms = res.getPermissions();
-        if (perms.has(Flags.shop, FlagCombo.OnlyTrue, false))
-            rmanager.addShop(res);
-        for (ClaimedResidence one : res.getSubzones()) {
-            addShops(one);
         }
     }
 

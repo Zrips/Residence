@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Entity;
@@ -28,6 +29,8 @@ import org.bukkit.util.BlockIterator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
@@ -36,6 +39,44 @@ import net.Zrips.CMILib.Version.Version;
 public class Utils {
 
     public Utils() {
+    }
+
+    public static boolean verifyResidenceName(@Nullable CommandSender sender, @NotNull String name) {
+
+        if (name == null)
+            return false;
+
+        if (!verifyResidenceNameCharacters(name)) {
+            if (sender != null)
+                lm.Invalid_NameCharacters.sendMessage(sender);
+            return false;
+        }
+        if (!verifyResidenceNameLength(name)) {
+            if (sender != null)
+                lm.Invalid_NameLegth.sendMessage(sender, Residence.getInstance().getConfigManager().getResidenceNameLength());
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean verifyResidenceNameCharacters(@NotNull String name) {
+
+        if (name == null)
+            return false;
+
+        if (name.contains(":") || name.contains(".") || name.contains("|"))
+            return false;
+
+        if (Residence.getInstance().getConfigManager().getResidenceNameRegex() == null)
+            return true;
+
+        return name.equals(name.replaceAll(Residence.getInstance().getConfigManager().getResidenceNameRegex(), ""));
+    }
+
+    public static boolean verifyResidenceNameLength(@NotNull String name) {
+        if (name == null)
+            return false;
+        return name.length() <= Residence.getInstance().getConfigManager().getResidenceNameLength();
     }
 
     public static Player potentialProjectileToPlayer(Entity entity) {

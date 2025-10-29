@@ -188,6 +188,7 @@ public class ConfigManager {
     protected boolean stopOnSaveError;
 
     protected String namefix;
+    protected int nameLength;
     protected boolean showIntervalMessages;
     protected boolean ShowNoobMessage;
     protected boolean NewPlayerUse;
@@ -1269,6 +1270,9 @@ public class ConfigManager {
         c.addComment("This is the residence name filter, that filters out invalid characters.  Google 'Java RegEx' or 'Java Regular Expressions' for more info on how they work.");
         namefix = c.get("Global.ResidenceNameRegex", "[^a-zA-Z0-9\\-\\_]");
 
+        c.addComment("Max length of residence name", "Can't be higher than 256");
+        nameLength = CMINumber.clamp(c.get("Global.ResidenceNameLength", 64), 1, 256);
+
         c.addComment("Global.ShowIntervalMessages", "Setting this to true sends a message to the console every time Residence does a rent expire check or a lease expire check.");
         showIntervalMessages = c.get("Global.ShowIntervalMessages", false);
 
@@ -1512,7 +1516,6 @@ public class ConfigManager {
         c.addComment("HiddenPlayerResidences", "List of player names whose residences should be hidden in Dynmap or Pl3xMap independent of their settings");
         HiddenPlayerResidences = c.get("HiddenPlayerResidences", new ArrayList<String>());
         CMIList.toLowerCase(HiddenPlayerResidences);
-
 
         c.addComment("Raid", "In development");
 
@@ -1767,6 +1770,10 @@ public class ConfigManager {
 
     public String getResidenceNameRegex() {
         return namefix;
+    }
+
+    public int getResidenceNameLength() {
+        return nameLength;
     }
 
     public boolean isExtraEnterMessage() {

@@ -9,10 +9,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.itemlist.WorldItemManager;
-import com.bekvon.bukkit.residence.permissions.PermissionManager;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
-import com.bekvon.bukkit.residence.protection.WorldFlagManager;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.Messages.CMIMessages;
@@ -43,15 +40,15 @@ public class reload implements cmd {
             return true;
         case "groups":
             plugin.getConfigManager().loadGroups();
-            plugin.gmanager = new PermissionManager(plugin);
-            plugin.wmanager = new WorldFlagManager(plugin);
+            plugin.getPermissionManager().load();
+            plugin.getWorldFlags().load();
             CMIMessages.sendMessage(sender, plugin.getPrefix() + " Reloaded groups file.");
             return true;
         case "flags":
             plugin.getConfigManager().loadFlags();
-            plugin.gmanager = new PermissionManager(plugin);
-            plugin.imanager = new WorldItemManager(plugin);
-            plugin.wmanager = new WorldFlagManager(plugin);
+            plugin.getPermissionManager().load();
+            plugin.getItemManager().load();
+            plugin.getWorldFlags().load();
             FlagPermissions.initValidFlags();
             CMIMessages.sendMessage(sender, plugin.getPrefix() + " Reloaded flags file.");
             return true;

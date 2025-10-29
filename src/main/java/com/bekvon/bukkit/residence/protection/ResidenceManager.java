@@ -54,6 +54,7 @@ import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.GetTime;
+import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
@@ -180,6 +181,15 @@ public class ResidenceManager implements ResidenceInterface {
             shops.add(res);
     }
 
+    public void addShops(ClaimedResidence res) {
+        ResidencePermissions perms = res.getPermissions();
+        if (perms.has(Flags.shop, FlagCombo.OnlyTrue, false))
+            addShop(res);
+        for (ClaimedResidence one : res.getSubzones()) {
+            addShops(one);
+        }
+    }
+
     @Override
     public void addShop(ClaimedResidence res) {
         shops.add(res);
@@ -235,10 +245,10 @@ public class ResidenceManager implements ResidenceInterface {
     }
 
     public boolean addResidence(Player player, String owner, UUID ownerUUId, String resName, Location loc1, Location loc2, boolean resadmin) {
-        if (!plugin.validName(resName)) {
-            lm.Invalid_NameCharacters.sendMessage(player);
+
+        if (!Utils.verifyResidenceName(player, resName))
             return false;
-        }
+
         if (loc1 == null || loc2 == null || !loc1.getWorld().getName().equals(loc2.getWorld().getName())) {
             lm.Select_Points.sendMessage(player);
             return false;
@@ -1460,10 +1470,9 @@ public class ResidenceManager implements ResidenceInterface {
             return false;
         }
 
-        if (!plugin.validName(newName)) {
-            lm.Invalid_NameCharacters.sendMessage(sender);
+        if (!Utils.verifyResidenceName(sender, newName))
             return false;
-        }
+
         ClaimedResidence res = this.getByName(oldName);
         if (res == null) {
             lm.Invalid_Residence.sendMessage(sender);

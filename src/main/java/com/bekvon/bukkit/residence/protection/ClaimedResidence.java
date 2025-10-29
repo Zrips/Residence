@@ -59,6 +59,7 @@ import com.bekvon.bukkit.residence.utils.LocationUtil;
 import com.bekvon.bukkit.residence.utils.LocationValidity;
 import com.bekvon.bukkit.residence.utils.SafeLocationCache;
 import com.bekvon.bukkit.residence.utils.Teleporting;
+import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
@@ -357,12 +358,9 @@ public class ClaimedResidence {
     }
 
     public boolean addArea(Player player, CuboidArea area, String name, boolean resadmin, boolean chargeMoney) {
-        if (!Residence.getInstance().validName(name)) {
-            if (player != null) {
-                lm.Invalid_NameCharacters.sendMessage(player);
-            }
+
+        if (!Utils.verifyResidenceName(player, name))
             return false;
-        }
 
         if (Math.abs(area.getLowVector().getBlockX()) > 30000000 || Math.abs(area.getHighVector().getBlockX()) > 30000000 ||
             Math.abs(area.getLowVector().getBlockZ()) > 30000000 || Math.abs(area.getHighVector().getBlockZ()) > 30000000) {
@@ -746,12 +744,11 @@ public class ClaimedResidence {
         return false;
     }
 
-    public boolean addSubzone(Player player, String owner, Location loc1, Location loc2, String name,
-        boolean resadmin) {
-        if (!Residence.getInstance().validName(name)) {
-            lm.Invalid_NameCharacters.sendMessage(player);
+    public boolean addSubzone(Player player, String owner, Location loc1, Location loc2, String name, boolean resadmin) {
+
+        if (!Utils.verifyResidenceName(player, name))
             return false;
-        }
+
         if (!(this.containsLoc(loc1) && this.containsLoc(loc2))) {
             lm.Subzone_SelectInside.sendMessage(player);
             return false;
@@ -1779,12 +1776,12 @@ public class ClaimedResidence {
 
     public boolean renameSubzone(CommandSender sender, String oldName, String newName, boolean resadmin) {
 
-        if (!Residence.getInstance().validName(newName)) {
-            lm.Invalid_NameCharacters.sendMessage(sender);
+        if (!Utils.verifyResidenceName(sender, newName))
             return false;
-        }
+
         if (oldName == null)
             return false;
+        
         if (newName == null)
             return false;
         String newN = newName;
@@ -1817,10 +1814,9 @@ public class ClaimedResidence {
     }
 
     public boolean renameArea(Player player, String oldName, String newName, boolean resadmin) {
-        if (!Residence.getInstance().validName(newName)) {
-            lm.Invalid_NameCharacters.sendMessage(player);
+
+        if (!Utils.verifyResidenceName(player, newName))
             return false;
-        }
 
         if (this.getRaid().isRaidInitialized() && !resadmin) {
             lm.Raid_cantDo.sendMessage(player);

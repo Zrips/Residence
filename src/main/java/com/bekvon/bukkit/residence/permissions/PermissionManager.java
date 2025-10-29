@@ -28,7 +28,6 @@ import org.bukkit.plugin.PluginManager;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
-import com.bekvon.bukkit.residence.containers.PlayerGroup;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
@@ -53,6 +52,10 @@ public class PermissionManager {
 
     public PermissionManager(Residence plugin) {
         this.plugin = plugin;
+        load();
+    }
+
+    public void load() {
         try {
             groups = new LinkedHashMap<String, PermissionGroup>();
             playersGroup = Collections.synchronizedMap(new HashMap<UUID, String>());

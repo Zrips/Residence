@@ -266,10 +266,12 @@ public class LeaseManager {
     }
 
     @SuppressWarnings("unchecked")
-    public LeaseManager load(@SuppressWarnings("rawtypes") Map root) {
-        LeaseManager l = new LeaseManager(plugin);
+    public void load(@SuppressWarnings("rawtypes") Map root) {
+
         if (root == null)
-            return l;
+            return;
+        
+        leaseExpireTime.clear();
 
         for (Object val : root.values()) {
             if (!(val instanceof Long)) {
@@ -284,9 +286,9 @@ public class LeaseManager {
             if (res == null)
                 continue;
             res.setLeaseExpireTime(one.getValue());
-            l.leaseExpireTime.add(res);
+            leaseExpireTime.add(res);
         }
 
-        return l;
+        return;
     }
 }
