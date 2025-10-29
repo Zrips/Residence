@@ -725,6 +725,22 @@ public class ResidenceManager implements ResidenceInterface {
         }
     }
 
+    public void giveBackOwnerMoneyForResidence(ClaimedResidence res) {
+        if (res.isServerLand())
+            return;
+
+        double giveBack = 0D;
+
+        if (res.getParent() == null && plugin.getConfigManager().enableEconomy() && plugin.getConfigManager().useResMoneyBack())
+            giveBack += res.getWorth();
+
+        if (res.getBank().getStoredMoneyD() > 0 && plugin.getConfigManager().isResBankBack())
+            giveBack += res.getBank().getStoredMoneyD();
+
+        if (giveBack > 0)
+            plugin.getTransactionManager().giveEconomyMoney(res.getOwnerUUID(), giveBack);
+    }
+
     private void regenerateArea(ClaimedResidence res) {
 
         if (Version.isCurrentLower(Version.v1_13_R1)
@@ -1635,8 +1651,10 @@ public class ResidenceManager implements ResidenceInterface {
             plugin.getTransactionManager().removeFromSale(ClaimedResidence.getByName(name + "." + oneSub.getResidenceName()), removeSigns);
         }
         plugin.getPlayerManager().removeResFromPlayer(res.getOwnerUUID(), res);
-        plugin.getRentManager().removeRentable(ClaimedResidence.getByName(name), removeSigns);
-        plugin.getTransactionManager().removeFromSale(ClaimedResidence.getByName(name), removeSigns);
+        plugin.getRentManager().removeRentable(res, removeSigns);
+        plugin.getTransactionManager().removeFromSale(res, removeSigns);
+
+        giveBackOwnerMoneyForResidence(res);
     }
 
     public int getResidenceCount() {
