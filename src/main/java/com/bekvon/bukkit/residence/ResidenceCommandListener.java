@@ -9,12 +9,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import com.Zrips.CMI.commands.list.killall;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.cmd;
@@ -23,6 +26,7 @@ import com.bekvon.bukkit.residence.event.ResidenceCommandEvent;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class ResidenceCommandListener implements CommandExecutor {
@@ -49,8 +53,24 @@ public class ResidenceCommandListener implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-//	if (args.length < 3)
-//	    return true;
+        try {
+            if (sender instanceof BlockCommandSender) {
+                for (int i = 0; i < args.length; i++) {
+                    String one = args[i];
+
+                    if (!one.startsWith("@"))
+                        continue;
+
+                    List<Entity> ent = Bukkit.selectEntities(sender, one.toLowerCase());
+                    if (ent.isEmpty())
+                        continue;
+
+                    if (one.equalsIgnoreCase("@p") || one.equalsIgnoreCase("@r") || one.equalsIgnoreCase("@e"))
+                        args[i] = ent.get(0).getName();
+                }
+            }
+        } catch (Throwable e) {
+        }
 
         String cmdName = command.getName().toLowerCase();
 

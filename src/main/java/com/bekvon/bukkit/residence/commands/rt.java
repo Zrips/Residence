@@ -26,6 +26,7 @@ public class rt implements cmd {
     @Override
     @CommandAnnotation(simple = true, priority = 2500)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
+
         if (args.length != 0 && args.length != 1 && args.length != 2) {
             return false;
         }
