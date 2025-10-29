@@ -14,7 +14,10 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 public class ResidenceListener1_10 implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 
-    public void onPlayerFireInteract(EntityDamageEvent event) {
+    public void onEntityHotFloorDamage(EntityDamageEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.hotfloor.isGlobalyEnabled())
+            return;
         // disabling event on world
         if (Residence.getInstance().isDisabledWorldListener(event.getEntity().getWorld()))
             return;

@@ -29,6 +29,7 @@ public class ResidenceListener1_12 implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerPickupItemEvent(EntityPickupItemEvent event) {
+        // Disabling listener if flag disabled globally
         if (!Flags.itempickup.isGlobalyEnabled())
             return;
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(event.getItem().getLocation());
@@ -53,6 +54,9 @@ public class ResidenceListener1_12 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onItemDamage(PlayerItemDamageEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.nodurability.isGlobalyEnabled())
+            return;
         // disabling event on world
         if (Residence.getInstance().isDisabledWorldListener(event.getPlayer().getWorld()))
             return;

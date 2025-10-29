@@ -9,6 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
+import org.bukkit.entity.Snowman;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -44,19 +45,22 @@ public class ResidenceListener1_09 implements Listener {
 
     @EventHandler
     public void EntityToggleGlideEvent(EntityToggleGlideEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.elytra.isGlobalyEnabled())
+            return;
 
+        Entity entity = event.getEntity();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
+        if (plugin.isDisabledWorldListener(entity.getWorld()))
             return;
 
-        if (!(event.getEntity() instanceof Player))
+        if (!(entity instanceof Player))
             return;
 
-        if (ResAdmin.isResAdmin(event.getEntity())) {
-            return;
-        }
+        Player player = (Player) entity;
 
-        Player player = (Player) event.getEntity();
+        if (ResAdmin.isResAdmin(player))
+            return;
 
         FlagPermissions perms = FlagPermissions.getPerms(player);
 
@@ -75,6 +79,9 @@ public class ResidenceListener1_09 implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceChange(ResidenceChangedEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.elytra.isGlobalyEnabled())
+            return;
 
         ClaimedResidence newRes = event.getTo();
 
@@ -111,6 +118,10 @@ public class ResidenceListener1_09 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onLingeringSplashPotion(LingeringPotionSplashEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.pvp.isGlobalyEnabled())
+            return;
+
         ProjectileHitEvent ev = event;
         ThrownPotion potion = (ThrownPotion) ev.getEntity();
 
@@ -143,7 +154,9 @@ public class ResidenceListener1_09 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onLingeringEffectApply(AreaEffectCloudApplyEvent event) {
-
+        // Disabling listener if flag disabled globally
+        if (!Flags.pvp.isGlobalyEnabled())
+            return;
         // disabling event on world
         if (Residence.getInstance().isDisabledWorldListener(event.getEntity().getWorld()))
             return;
@@ -205,6 +218,9 @@ public class ResidenceListener1_09 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onFrostWalker(EntityBlockFormEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.build.isGlobalyEnabled())
+            return;
 
         Entity entity = event.getEntity();
         if (entity == null)
@@ -224,6 +240,18 @@ public class ResidenceListener1_09 implements Listener {
 
             FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation(), player);
             if (perms.playerHas(player, Flags.build, true))
+                return;
+
+            event.setCancelled(true);
+            return;
+        }
+
+        // SnowGolem already has SnowTrail Flag
+        // Check all entity trigger FrostWalker
+        // ArmorStand Skeleton Zombies ..
+        if (!(entity instanceof Snowman)) {
+            FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
+            if (perms.has(Flags.build, true))
                 return;
 
             event.setCancelled(true);

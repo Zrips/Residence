@@ -52,6 +52,9 @@ public class ResidenceListener1_17 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.place.isGlobalyEnabled())
+            return;
 
         if (ResidenceBlockListener.canPlaceBlock(event.getPlayer(), event.getBlock(), true))
             return;
@@ -74,6 +77,9 @@ public class ResidenceListener1_17 implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerBucketEntityEvent(PlayerBucketEntityEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.animalkilling.isGlobalyEnabled())
+            return;
 
         Player player = event.getPlayer();
         if (ResAdmin.isResAdmin(player))
@@ -98,6 +104,9 @@ public class ResidenceListener1_17 implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerChangeCopper(EntityChangeBlockEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.copper.isGlobalyEnabled())
+            return;
 
         Block block = event.getBlock();
         if (block == null)
@@ -129,7 +138,7 @@ public class ResidenceListener1_17 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onLandDryPhysics(BlockPhysicsEvent event) {
+    public void onPowderSnowPhysics(BlockPhysicsEvent event) {
 
         // Disabling listener if flag disabled globally
         if (!Flags.place.isGlobalyEnabled())

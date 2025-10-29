@@ -13,6 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
+import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
@@ -29,17 +31,19 @@ public class ResidenceListener1_15 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractBeeHive(PlayerInteractEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.destroy.isGlobalyEnabled())
+            return;
 
-        if (event.getPlayer() == null)
+        Player player = event.getPlayer();
+        if (player == null)
             return;
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
+        if (plugin.isDisabledWorldListener(player.getWorld()))
             return;
 
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
-
-        Player player = event.getPlayer();
 
         Block block = event.getClickedBlock();
         if (block == null)
@@ -50,6 +54,9 @@ public class ResidenceListener1_15 implements Listener {
         if (!mat.equals(Material.BEE_NEST) && !mat.equals(Material.BEEHIVE))
             return;
 
+        if (ResAdmin.isResAdmin(player))
+            return;
+
         ItemStack iih = event.getItem();
         CMIMaterial heldItem = CMIMaterial.get(iih);
 
@@ -57,28 +64,27 @@ public class ResidenceListener1_15 implements Listener {
             if (CMILib.getInstance().getReflectionManager().getHoneyLevel(block) < CMILib.getInstance().getReflectionManager().getMaxHoneyLevel(block)) {
                 return;
             }
-            ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-            if (res == null)
+
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, Flags.honey, perms.playerHas(player, Flags.destroy, true)))
                 return;
-            if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.honey, FlagCombo.TrueOrNone)) {
-                lm.Residence_FlagDeny.sendMessage(player, Flags.honey, res.getName());
-                event.setCancelled(true);
-                return;
-            }
+
+            lm.Flag_Deny.sendMessage(player, Flags.honey);
+            event.setCancelled(true);
+            return;
         }
 
         if (heldItem.equals(CMIMaterial.SHEARS)) {
             if (CMILib.getInstance().getReflectionManager().getHoneyLevel(block) < CMILib.getInstance().getReflectionManager().getMaxHoneyLevel(block)) {
                 return;
             }
-            ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-            if (res == null)
+
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, Flags.honeycomb, perms.playerHas(player, Flags.destroy, true)))
                 return;
-            if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.honeycomb, FlagCombo.TrueOrNone)) {
-                lm.Residence_FlagDeny.sendMessage(player, Flags.honeycomb, res.getName());
-                event.setCancelled(true);
-                return;
-            }
+
+            lm.Flag_Deny.sendMessage(player, Flags.honeycomb);
+            event.setCancelled(true);
         }
     }
 }
