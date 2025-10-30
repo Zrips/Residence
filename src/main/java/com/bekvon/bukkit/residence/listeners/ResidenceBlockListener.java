@@ -912,17 +912,22 @@ public class ResidenceBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onDispense(BlockDispenseEvent event) {
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
-            return;
-        if (event.isCancelled())
+        // Disabling listener if flag disabled globally
+        if (!Flags.build.isGlobalyEnabled())
             return;
 
-        Location location = new Location(event.getBlock().getWorld(), event.getVelocity().getBlockX(), event.getVelocity().getBlockY(), event.getVelocity().getBlockZ());
+        Block block = event.getBlock();
+        if (block == null)
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
+
+        Location location = new Location(block.getWorld(), event.getVelocity().getBlockX(), event.getVelocity().getBlockY(), event.getVelocity().getBlockZ());
 
         ClaimedResidence targetres = plugin.getResidenceManager().getByLoc(location);
 
-        if (CMIMaterial.get(event.getBlock()) == CMIMaterial.DROPPER)
+        if (CMIMaterial.get(block) == CMIMaterial.DROPPER)
             return;
 
         CMIMaterial cmat = CMIMaterial.get(event.getItem());
@@ -940,21 +945,22 @@ public class ResidenceBlockListener implements Listener {
             }
         }
 
-        ClaimedResidence sourceres = plugin.getResidenceManager().getByLoc(event.getBlock().getLocation());
+        ClaimedResidence sourceres = plugin.getResidenceManager().getByLoc(block.getLocation());
 
-        if ((sourceres == null && targetres != null || sourceres != null && targetres == null || sourceres != null && targetres != null && !sourceres.getName().equals(
-                targetres.getName())) &&
-                (cmat == CMIMaterial.BUCKET ||
-                 cmat == CMIMaterial.LAVA_BUCKET ||
-                 cmat == CMIMaterial.WATER_BUCKET ||
-                 cmat == CMIMaterial.POWDER_SNOW_BUCKET ||
-                 cmat == CMIMaterial.TNT ||
-                 cmat == CMIMaterial.BONE_MEAL ||
-                 cmat.containsCriteria(CMIMC.BOAT) ||
-                 cmat.containsCriteria(CMIMC.MINECART) ||
-                 cmat.containsCriteria(CMIMC.BUCKETANIMAL))) {
-            event.setCancelled(true);
+        // ignore target not in Res
+        if (targetres == null) {
+            return;
         }
+        // ignore source & target in same Res
+        if (sourceres != null && targetres != null && sourceres.getName().equals(targetres.getName())) {
+            return;
+        }
+        // check targetRes build
+        if (FlagPermissions.getPerms(location).has(Flags.build, true)) {
+            return;
+        }
+
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
