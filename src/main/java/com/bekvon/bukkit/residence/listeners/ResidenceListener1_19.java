@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
@@ -52,6 +53,9 @@ public class ResidenceListener1_19 implements Listener {
             return;
 
         if (!horn.getType().equals(Material.GOAT_HORN))
+            return;
+
+        if (ResAdmin.isResAdmin(player))
             return;
 
         FlagPermissions perms = FlagPermissions.getPerms(player.getLocation(), player);
@@ -114,23 +118,37 @@ public class ResidenceListener1_19 implements Listener {
         if (sourceRes == null && destRes == null) {
             return;
         }
+
         // ignore source & dest in Same Res
         if (sourceRes != null && destRes != null && sourceRes.equals(destRes)) {
             return;
         }
+
         // source & dest not in Same Res
         if (sourceRes != null && destRes != null && !sourceRes.equals(destRes)) {
+            if ((sourceRes.getPermissions().has(Flags.container, true)) &&
+                (destRes.getPermissions().has(Flags.container, true))) {
+                return;
+            }
             event.setCancelled(true);
             return;
         }
+
         // source in Res, dest not in Res
         if (sourceRes != null && destRes == null) {
+            if (sourceRes.getPermissions().has(Flags.container, true)) {
+                return;
+            }
             event.setCancelled(true);
             breakHopper(dest);
             return;
         }
+
         // dest in Res, source not in Res
         if (sourceRes == null && destRes != null) {
+            if (destRes.getPermissions().has(Flags.container, true)) {
+                return;
+            }
             event.setCancelled(true);
             breakHopper(source);
         }
