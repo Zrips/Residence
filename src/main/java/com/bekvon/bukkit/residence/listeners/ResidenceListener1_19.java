@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
-import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
@@ -53,9 +52,6 @@ public class ResidenceListener1_19 implements Listener {
             return;
 
         if (!horn.getType().equals(Material.GOAT_HORN))
-            return;
-
-        if (ResAdmin.isResAdmin(player))
             return;
 
         FlagPermissions perms = FlagPermissions.getPerms(player.getLocation(), player);
