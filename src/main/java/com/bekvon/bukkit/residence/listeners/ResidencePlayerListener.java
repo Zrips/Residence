@@ -25,6 +25,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -1608,51 +1609,33 @@ public class ResidencePlayerListener implements Listener {
         }
     }
 
-    private static boolean canRide(Entity entity) {
-
-        CMIEntityType type = CMIEntityType.get(entity);
-
-        if (type == null)
-            return false;
-
-        switch (type) {
-        case HORSE:
-        case DONKEY:
-        case PIG:
-        case LLAMA:
-        case TRADER_LLAMA:
-        case STRIDER:
-        case SKELETON_HORSE:
-        case ZOMBIE_HORSE:
-        case MULE:
-        case CAMEL:
-        case HAPPY_GHAST:
-            return true;
-        default:
-            return false;
-        }
-
-    }
-
     private static boolean canHaveContainer(Entity entity) {
 
+        if (Version.isCurrentEqualOrHigher(Version.v1_19_R1)) {
+            return ResidenceListener1_19.canHaveContainer1_19(entity);
+        }
+
         CMIEntityType type = CMIEntityType.get(entity);
 
         if (type == null)
             return false;
 
         switch (type) {
-        case HORSE:
-        case DONKEY:
-        case LLAMA:
-            return true;
-        default:
-            return false;
+            case DONKEY:
+            case HORSE:
+            case LLAMA:
+            case MULE:
+            case SKELETON_HORSE:
+            case TRADER_LLAMA:
+            case ZOMBIE_HORSE:
+                return true;
+            default:
+                return false;
+            }
         }
-    }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerInteractWithHorse(PlayerInteractEntityEvent event) {
+    public void onPlayerInteractVehicleInv(PlayerInteractEntityEvent event) {
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
@@ -1681,7 +1664,7 @@ public class ResidencePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerInteractWithRidable(PlayerInteractEntityEvent event) {
+    public void onPlayerRideVehicle(PlayerInteractEntityEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.riding.isGlobalyEnabled())
             return;
@@ -1694,7 +1677,17 @@ public class ResidencePlayerListener implements Listener {
 
         Entity ent = event.getRightClicked();
 
-        if (!canRide(ent))
+        CMIEntityType type = CMIEntityType.get(ent);
+
+        // Non-rideable Vehicles
+        if (type == CMIEntityType.CHEST_MINECART ||
+            type == CMIEntityType.COMMAND_BLOCK_MINECART ||
+            type == CMIEntityType.FURNACE_MINECART ||
+            type == CMIEntityType.HOPPER_MINECART ||
+            type == CMIEntityType.TNT_MINECART)
+            return;
+
+        if (!(ent instanceof Vehicle))
             return;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
@@ -1727,6 +1720,7 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         if (!type.equals(CMIEntityType.CHEST_MINECART) &&
+            !type.equals(CMIEntityType.FURNACE_MINECART) &&
             !type.equals(CMIEntityType.HOPPER_MINECART) &&
             !type.equals(CMIEntityType.ALLAY))
             return;
@@ -1739,32 +1733,6 @@ public class ResidencePlayerListener implements Listener {
 
         if (!hasContainerBypass && !res.isOwner(player) && res.getPermissions().playerHas(player, Flags.container, FlagCombo.OnlyFalse)) {
             lm.Residence_FlagDeny.sendMessage(player, Flags.container, res.getName());
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerInteractWithMinecart(PlayerInteractEntityEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.riding.isGlobalyEnabled())
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-        Player player = event.getPlayer();
-        if (ResAdmin.isResAdmin(player))
-            return;
-
-        Entity ent = event.getRightClicked();
-
-        if (ent.getType() != EntityType.MINECART && !(ent instanceof Boat))
-            return;
-
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
-        if (res == null)
-            return;
-        if (!res.isOwner(player) && res.getPermissions().playerHas(player, Flags.riding, FlagCombo.OnlyFalse)) {
-            lm.Residence_FlagDeny.sendMessage(player, Flags.riding, res.getName());
             event.setCancelled(true);
         }
     }

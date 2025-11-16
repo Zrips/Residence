@@ -2,12 +2,16 @@ package com.bekvon.bukkit.residence.listeners;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.ChestBoat;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -133,5 +137,41 @@ public class ResidenceListener1_19 implements Listener {
             }
             event.setCancelled(true);
         }
+    }
+
+    // if Flag_riding is true
+    // riding InventoryVehicle: check Flag_container when opening Vehicle Inventory
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerOpenVehicleInv(InventoryOpenEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.container.isGlobalyEnabled())
+            return;
+
+        if (!(event.getPlayer() instanceof Player))
+            return;
+
+        Player player = (Player) event.getPlayer();
+
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(player.getWorld()))
+            return;
+
+        if (canHaveContainer1_19(player.getVehicle())) {
+
+            if (ResAdmin.isResAdmin(player))
+                return;
+
+            FlagPermissions perms = FlagPermissions.getPerms(player.getLocation(), player);
+            if (perms.playerHas(player, Flags.container, true))
+                return;
+
+            lm.Flag_Deny.sendMessage(player, Flags.container);
+            event.setCancelled(true);
+        }
+    }
+
+    // Cover All 1.19+ Vehicles with an Inventory interface
+    public static boolean canHaveContainer1_19(Entity entity) {
+        return (entity instanceof AbstractHorse || entity instanceof ChestBoat);
     }
 }
