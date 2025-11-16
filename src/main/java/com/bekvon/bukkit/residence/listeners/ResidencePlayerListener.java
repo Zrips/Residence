@@ -1621,18 +1621,18 @@ public class ResidencePlayerListener implements Listener {
             return false;
 
         switch (type) {
-            case DONKEY:
-            case HORSE:
-            case LLAMA:
-            case MULE:
-            case SKELETON_HORSE:
-            case TRADER_LLAMA:
-            case ZOMBIE_HORSE:
-                return true;
-            default:
-                return false;
-            }
+        case DONKEY:
+        case HORSE:
+        case LLAMA:
+        case MULE:
+        case SKELETON_HORSE:
+        case TRADER_LLAMA:
+        case ZOMBIE_HORSE:
+            return true;
+        default:
+            return false;
         }
+    }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractVehicleInv(PlayerInteractEntityEvent event) {
