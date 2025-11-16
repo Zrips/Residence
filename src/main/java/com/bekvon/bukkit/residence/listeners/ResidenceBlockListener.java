@@ -1153,15 +1153,18 @@ public class ResidenceBlockListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
 
+        Block clickedBlock = event.getClickedBlock();
+        if (clickedBlock == null)
+            return;
+
         Player player = event.getPlayer();
-        FlagPermissions perms = FlagPermissions.getPerms(event.getClickedBlock().getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(clickedBlock.getLocation(), player);
 
         if (perms.playerHas(player, Flags.ignite, true) || ResAdmin.isResAdmin(player))
             return;
 
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK ||
-            event.getClickedBlock() == null ||
-            !CMIMaterial.get(event.getClickedBlock()).equals(CMIMaterial.TNT) ||
+            !CMIMaterial.get(clickedBlock.getType()).equals(CMIMaterial.TNT) ||
             event.getItem() == null ||
             !CMIMaterial.get(event.getItem()).equals(CMIMaterial.FLINT_AND_STEEL))
             return;
