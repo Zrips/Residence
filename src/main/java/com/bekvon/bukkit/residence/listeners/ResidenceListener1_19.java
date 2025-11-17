@@ -156,12 +156,13 @@ public class ResidenceListener1_19 implements Listener {
         if (plugin.isDisabledWorldListener(player.getWorld()))
             return;
 
-        if (canHaveContainer1_19(player.getVehicle())) {
+        Entity vehicle = player.getVehicle();
+        if (canHaveContainer1_19(vehicle)) {
 
             if (ResAdmin.isResAdmin(player))
                 return;
 
-            FlagPermissions perms = FlagPermissions.getPerms(player.getLocation(), player);
+            FlagPermissions perms = FlagPermissions.getPerms(vehicle.getLocation(), player);
             if (perms.playerHas(player, Flags.container, true))
                 return;
 
