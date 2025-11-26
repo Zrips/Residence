@@ -1407,7 +1407,7 @@ public class ResidencePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (!Version.isCurrentEqualOrLower(Version.v1_16_R3) || !Flags.place.isGlobalyEnabled())
+        if (Version.isCurrentEqualOrHigher(Version.v1_17_R1) || !Flags.place.isGlobalyEnabled())
             return;
 
         if (ResidenceBlockListener.canPlaceBlock(event.getPlayer(), event.getBlock(), true))
