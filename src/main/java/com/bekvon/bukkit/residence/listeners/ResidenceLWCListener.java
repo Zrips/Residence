@@ -2,16 +2,20 @@ package com.bekvon.bukkit.residence.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -20,6 +24,7 @@ import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import com.bekvon.bukkit.residence.protection.ResidenceManager.ChunkRef;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.scripting.event.LWCAccessEvent;
 import com.griefcraft.scripting.event.LWCBlockInteractEvent;
@@ -38,173 +43,227 @@ import com.griefcraft.scripting.event.LWCRedstoneEvent;
 import com.griefcraft.scripting.event.LWCReloadEvent;
 import com.griefcraft.scripting.event.LWCSendLocaleEvent;
 
-import net.Zrips.CMILib.Container.CMILocation;
-import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class ResidenceLWCListener implements com.griefcraft.scripting.Module {
 
-    public static void register(Plugin plugin) {
-        com.griefcraft.lwc.LWC.getInstance().getModuleLoader().registerModule(plugin, new ResidenceLWCListener());
-    }
+	public static void register(Plugin plugin) {
+		com.griefcraft.lwc.LWC.getInstance().getModuleLoader().registerModule(plugin, new ResidenceLWCListener());
+	}
 
-    public static void removeLwcFromResidence(final Player player, final ClaimedResidence res) {
-        if (Version.isCurrentLower(Version.v1_13_R1))
-            return;
+	private static CompletableFuture<Integer> removeLwcFromResidence(final ClaimedResidence res) {
 
-        CMIScheduler.runTaskAsynchronously(Residence.getInstance(), () -> {
-            long time = System.currentTimeMillis();
-            com.griefcraft.lwc.LWC lwc = com.griefcraft.lwc.LWC.getInstance();
-            if (lwc == null)
-                return;
-            if (res == null)
-                return;
-            int i = 0;
+		if (Version.isCurrentLower(Version.v1_13_R1))
+			return CompletableFuture.completedFuture(0);
 
-            com.griefcraft.cache.ProtectionCache cache = lwc.getProtectionCache();
+		CuboidArea[] arr = res.getAreaArray();
+		List<Supplier<CompletableFuture<Integer>>> tasks = new ArrayList<>();
 
-            List<Material> list = Residence.getInstance().getConfigManager().getLwcMatList();
+		for (CuboidArea area : arr) {
+			Location low = area.getLowLocation().clone();
+			Location high = area.getHighLocation().clone();
 
-            List<Block> block = new ArrayList<Block>();
+			World world = low.getWorld();
 
-            try {
-                ChunkSnapshot chunkSnapshot = null;
-                int chunkX = 0;
-                int chunkZ = 0;
-                for (CuboidArea area : res.getAreaArray()) {
-                    Location low = area.getLowLocation();
-                    Location high = area.getHighLocation();
-                    World world = low.getWorld();
-                    for (int x = low.getBlockX(); x <= high.getBlockX(); x++) {
-                        for (int z = low.getBlockZ(); z <= high.getBlockZ(); z++) {
-                            int hy = world.getHighestBlockYAt(x, z);
-                            if (high.getBlockY() < hy)
-                                hy = high.getBlockY();
-                            int cx = Math.abs(x % 16);
-                            int cz = Math.abs(z % 16);
-                            if (chunkSnapshot == null || x >> 4 != chunkX || z >> 4 != chunkZ) {
-                                if (!world.getBlockAt(x, 0, z).getChunk().isLoaded()) {
-                                    world.getBlockAt(x, 0, z).getChunk().load();
-                                    chunkSnapshot = world.getBlockAt(x, 0, z).getChunk().getChunkSnapshot(false, false, false);
-                                    world.getBlockAt(x, 0, z).getChunk().unload();
-                                } else {
-                                    chunkSnapshot = world.getBlockAt(x, 0, z).getChunk().getChunkSnapshot();
-                                }
-                                chunkX = x >> 4;
-                                chunkZ = z >> 4;
-                            }
+			for (ChunkRef chunkRef : area.getChunks()) {
+				tasks.add(() -> {
 
-                            int minY = Math.max(low.getBlockY(), CMIWorld.getMinHeight(area.getWorld()));
+					CompletableFuture<Integer> f = new CompletableFuture<>();
 
-                            if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
-                                for (int y = minY; y <= hy; y++) {
-                                    BlockData type = chunkSnapshot.getBlockData(cx, y, cz);
-                                    if (!list.contains(type.getMaterial()))
-                                        continue;
-                                    block.add(world.getBlockAt(x, y, z));
-                                }
-                            } else {
-                                for (int y = minY; y <= hy; y++) {
-                                    Material type = CMILocation.getBlockTypeSafe(new Location(world, x, y, z));
-                                    if (!list.contains(type))
-                                        continue;
-                                    block.add(world.getBlockAt(x, y, z));
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+					CMIScheduler.runAtLocation(
+							Residence.getInstance(),
+							high.getWorld(),
+							chunkRef.getX(),
+							chunkRef.getZ(),
+							() -> {
+								int cleaned = cleaner(chunkRef, world, high, low);
+								f.complete(cleaned);
+							});
 
-            for (Block b : block) {
-                com.griefcraft.model.Protection prot = cache.getProtection(b);
-                if (prot == null)
-                    continue;
-                prot.remove();
-                i++;
-            }
+					return f;
+				});
+			}
+		}
 
-            if (i > 0)
-                lm.Residence_LwcRemoved.sendMessage(player, i, System.currentTimeMillis() - time);
-        });
-    }
+		CompletableFuture<Integer> chain = CompletableFuture.completedFuture(0);
 
-    @Override
-    public void load(LWC lwc) {
-    }
+		for (Supplier<CompletableFuture<Integer>> task : tasks) {
+			chain = chain.thenCompose(totalSoFar -> {
+				if (!Residence.getInstance().isEnabled() || Bukkit.getServer().isStopping())
+					return CompletableFuture.completedFuture(totalSoFar);
 
-    @Override
-    public void onReload(LWCReloadEvent event) {
-    }
+				return task.get().thenApply(result -> totalSoFar + result);
+			}).thenCompose(updated -> delay().thenApply(v -> updated));
+		}
 
-    @Override
-    public void onAccessRequest(LWCAccessEvent event) {
-    }
+		return chain;
+	}
 
-    @Override
-    public void onDropItem(LWCDropItemEvent event) {
-    }
+	private static CompletableFuture<Void> delay() {
+		CompletableFuture<Void> future = new CompletableFuture<>();
+		CMIScheduler.runTaskLater(Residence.getInstance(), () -> future.complete(null), 1);
+		return future;
+	}
 
-    @Override
-    public void onCommand(LWCCommandEvent event) {
-    }
+	private static int cleaner(ChunkRef chunkRef, World world, Location high, Location low) {
 
-    @Override
-    public void onRedstone(LWCRedstoneEvent event) {
-    }
+		if (Version.isCurrentLower(Version.v1_13_R1))
+			return 0;
 
-    @Override
-    public void onDestroyProtection(LWCProtectionDestroyEvent event) {
-    }
+		LWC lwc = LWC.getInstance();
 
-    @Override
-    public void onProtectionInteract(LWCProtectionInteractEvent event) {
-    }
+		if (lwc == null)
+			return 0;
 
-    @Override
-    public void onBlockInteract(LWCBlockInteractEvent event) {
-    }
+		if (!Residence.getInstance().isEnabled() || Bukkit.getServer().isStopping())
+			return 0;
 
-    @Override
-    public void onRegisterProtection(LWCProtectionRegisterEvent event) {
-        Player player = event.getPlayer();
-        FlagPermissions perms = Residence.getInstance().getPermsByLocForPlayer(event.getBlock().getLocation(), player);
-        boolean hasuse = perms.playerHas(player, Flags.use, true);
-        if (!perms.playerHas(player, Flags.container, hasuse) && !ResPerm.bypass_container.hasPermission(player, 10000L)) {
-            event.setCancelled(true);
-            lm.Flag_Deny.sendMessage(player, Flags.container);
-        }
-    }
+		Set<Location> locations = ConcurrentHashMap.newKeySet();
 
-    @Override
-    public void onPostRegistration(LWCProtectionRegistrationPostEvent event) {
-    }
+		ChunkSnapshot chunkSnapshot = null;
 
-    @Override
-    public void onPostRemoval(LWCProtectionRemovePostEvent event) {
-    }
+		for (int x = chunkRef.getX() * 16; x <= chunkRef.getX() * 16 + 15; x++) {
+			for (int z = chunkRef.getZ() * 16; z <= chunkRef.getZ() * 16 + 15; z++) {
 
-    @Override
-    public void onSendLocale(LWCSendLocaleEvent event) {
-    }
+				// Limit to exact residence area
+				if (x < low.getBlockX() || x > high.getBlockX() || z < low.getBlockZ() || z > high.getBlockZ())
+					continue;
 
-    @Override
-    public void onEntityInteract(LWCEntityInteractEvent arg0) {
-    }
+				int hy = world.getHighestBlockYAt(x, z);
+				if (high.getBlockY() < hy)
+					hy = high.getBlockY();
 
-    @Override
-    public void onEntityInteractProtection(LWCProtectionInteractEntityEvent arg0) {
-    }
+				int cx = x & 15;
+				int cz = z & 15;
 
-    @Override
-    public void onMagnetPull(LWCMagnetPullEvent arg0) {
-    }
+				if (chunkSnapshot == null) {
+					@NotNull
+					Chunk chunk = world.getBlockAt(x, 0, z).getChunk();
+					if (chunk.isLoaded()) {
+						chunkSnapshot = chunk.getChunkSnapshot();
+					} else {
+						chunk.load();
+						chunkSnapshot = chunk.getChunkSnapshot(true, true, false);
+						chunk.unload();
+					}
+				}
 
-    @Override
-    public void onRegisterEntity(LWCProtectionRegisterEntityEvent arg0) {
-    }
+				for (int y = low.getBlockY(); y <= hy; y++) {
+					@NotNull
+					Material type = chunkSnapshot.getBlockType(cx, y, cz);
+
+					if (!Residence.getInstance().getConfigManager().getLwcMatList().contains(type))
+						continue;
+
+					locations.add(new Location(world, x, y, z));
+				}
+			}
+		}
+
+		com.griefcraft.cache.ProtectionCache cache = lwc.getProtectionCache();
+
+		int i = 0;
+
+		for (Location one : locations) {
+			if (!Residence.getInstance().isEnabled() || Bukkit.getServer().isStopping())
+				continue;
+
+			com.griefcraft.model.Protection prot = cache.getProtection(one.getBlock());
+			if (prot == null)
+				continue;
+			prot.remove();
+			i++;
+		}
+
+		return i;
+	}
+
+	public static void removeLwcFromResidence(final Player player, final ClaimedResidence res) {
+
+		if (Version.isCurrentLower(Version.v1_13_R1))
+			return;
+
+		long time = System.currentTimeMillis();
+		removeLwcFromResidence(res).thenAccept(i -> {
+			if (i > 0)
+				lm.Residence_LwcRemoved.sendMessage(player, i, System.currentTimeMillis() - time);
+		});
+	}
+
+	@Override
+	public void load(LWC lwc) {
+	}
+
+	@Override
+	public void onReload(LWCReloadEvent event) {
+	}
+
+	@Override
+	public void onAccessRequest(LWCAccessEvent event) {
+	}
+
+	@Override
+	public void onDropItem(LWCDropItemEvent event) {
+	}
+
+	@Override
+	public void onCommand(LWCCommandEvent event) {
+	}
+
+	@Override
+	public void onRedstone(LWCRedstoneEvent event) {
+	}
+
+	@Override
+	public void onDestroyProtection(LWCProtectionDestroyEvent event) {
+	}
+
+	@Override
+	public void onProtectionInteract(LWCProtectionInteractEvent event) {
+	}
+
+	@Override
+	public void onBlockInteract(LWCBlockInteractEvent event) {
+	}
+
+	@Override
+	public void onRegisterProtection(LWCProtectionRegisterEvent event) {
+		Player player = event.getPlayer();
+		FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation(), player);
+		boolean hasuse = perms.playerHas(player, Flags.use, true);
+		if (!perms.playerHas(player, Flags.container, hasuse) && !ResPerm.bypass_container.hasPermission(player, 10000L)) {
+			event.setCancelled(true);
+			lm.Flag_Deny.sendMessage(player, Flags.container);
+		}
+	}
+
+	@Override
+	public void onPostRegistration(LWCProtectionRegistrationPostEvent event) {
+	}
+
+	@Override
+	public void onPostRemoval(LWCProtectionRemovePostEvent event) {
+	}
+
+	@Override
+	public void onSendLocale(LWCSendLocaleEvent event) {
+	}
+
+	@Override
+	public void onEntityInteract(LWCEntityInteractEvent arg0) {
+	}
+
+	@Override
+	public void onEntityInteractProtection(LWCProtectionInteractEntityEvent arg0) {
+	}
+
+	@Override
+	public void onMagnetPull(LWCMagnetPullEvent arg0) {
+	}
+
+	@Override
+	public void onRegisterEntity(LWCProtectionRegisterEntityEvent arg0) {
+	}
 
 }
