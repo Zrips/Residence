@@ -15,6 +15,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.type.Dispenser;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -912,18 +913,24 @@ public class ResidenceBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onDispense(BlockDispenseEvent event) {
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
-            return;
-        if (event.isCancelled())
+        // Disabling listener if flag disabled globally
+        if (!Flags.build.isGlobalyEnabled())
             return;
 
-        Location location = new Location(event.getBlock().getWorld(), event.getVelocity().getBlockX(), event.getVelocity().getBlockY(), event.getVelocity().getBlockZ());
+        Block block = event.getBlock();
+        if (block == null)
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
+
+        if (CMIMaterial.get(block) != CMIMaterial.DISPENSER)
+            return;
+
+        // target location
+        Location location = block.getRelative(((Dispenser) block.getBlockData()).getFacing()).getLocation();
 
         ClaimedResidence targetres = plugin.getResidenceManager().getByLoc(location);
-
-        if (CMIMaterial.get(event.getBlock()) == CMIMaterial.DROPPER)
-            return;
 
         CMIMaterial cmat = CMIMaterial.get(event.getItem());
         if (targetres == null && location.getBlockY() >= plugin.getConfigManager().getPlaceLevel() && plugin.getConfigManager().getNoPlaceWorlds().contains(location
@@ -940,21 +947,23 @@ public class ResidenceBlockListener implements Listener {
             }
         }
 
-        ClaimedResidence sourceres = plugin.getResidenceManager().getByLoc(event.getBlock().getLocation());
-
-        if ((sourceres == null && targetres != null || sourceres != null && targetres == null || sourceres != null && targetres != null && !sourceres.getName().equals(
-                targetres.getName())) &&
-                (cmat == CMIMaterial.BUCKET ||
-                 cmat == CMIMaterial.LAVA_BUCKET ||
-                 cmat == CMIMaterial.WATER_BUCKET ||
-                 cmat == CMIMaterial.POWDER_SNOW_BUCKET ||
-                 cmat == CMIMaterial.TNT ||
-                 cmat == CMIMaterial.BONE_MEAL ||
-                 cmat.containsCriteria(CMIMC.BOAT) ||
-                 cmat.containsCriteria(CMIMC.MINECART) ||
-                 cmat.containsCriteria(CMIMC.BUCKETANIMAL))) {
-            event.setCancelled(true);
+        // target not Res
+        if (targetres == null) {
+            return;
         }
+
+        ClaimedResidence sourceres = plugin.getResidenceManager().getByLoc(block.getLocation());
+        // source & target in same Res
+        if (sourceres != null && targetres != null && sourceres.getName().equals(targetres.getName())) {
+            return;
+        }
+
+        // check targetRes Flag_build
+        if (FlagPermissions.getPerms(location).has(Flags.build, true)) {
+            return;
+        }
+
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1144,15 +1153,18 @@ public class ResidenceBlockListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
 
+        Block clickedBlock = event.getClickedBlock();
+        if (clickedBlock == null)
+            return;
+
         Player player = event.getPlayer();
-        FlagPermissions perms = FlagPermissions.getPerms(event.getClickedBlock().getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(clickedBlock.getLocation(), player);
 
         if (perms.playerHas(player, Flags.ignite, true) || ResAdmin.isResAdmin(player))
             return;
 
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK ||
-            event.getClickedBlock() == null ||
-            !CMIMaterial.get(event.getClickedBlock()).equals(CMIMaterial.TNT) ||
+            !CMIMaterial.get(clickedBlock.getType()).equals(CMIMaterial.TNT) ||
             event.getItem() == null ||
             !CMIMaterial.get(event.getItem()).equals(CMIMaterial.FLINT_AND_STEEL))
             return;
