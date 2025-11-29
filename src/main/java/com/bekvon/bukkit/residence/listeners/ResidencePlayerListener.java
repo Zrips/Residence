@@ -1860,6 +1860,13 @@ public class ResidencePlayerListener implements Listener {
             lm.Flag_Deny.sendMessage(player, Flags.nametag);
             event.setCancelled(true);
 
+        } else {
+            if (perms.playerHas(player, Flags.nametag, true))
+                return;
+
+            lm.Flag_Deny.sendMessage(player, Flags.nametag);
+            event.setCancelled(true);
+
         }
     }
 
