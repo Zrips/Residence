@@ -1849,25 +1849,17 @@ public class ResidencePlayerListener implements Listener {
             if (perms.playerHas(player, Flags.nametag, animal))
                 return;
 
-            lm.Flag_Deny.sendMessage(player, Flags.nametag);
-            event.setCancelled(true);
-
         } else if (ResidenceEntityListener.isMonster(entity)) {
             boolean monster = perms.playerHas(player, Flags.mobkilling, true);
             if (perms.playerHas(player, Flags.nametag, monster))
                 return;
 
-            lm.Flag_Deny.sendMessage(player, Flags.nametag);
-            event.setCancelled(true);
-
-        } else {
-            if (perms.playerHas(player, Flags.nametag, true))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.nametag);
-            event.setCancelled(true);
+        } else if (perms.playerHas(player, Flags.nametag, true)) {
+            return;
 
         }
+        lm.Flag_Deny.sendMessage(player, Flags.nametag);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
