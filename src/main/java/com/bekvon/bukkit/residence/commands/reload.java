@@ -41,7 +41,7 @@ public class reload implements cmd {
         case "groups":
             plugin.getConfigManager().loadGroups();
             plugin.getPermissionManager().load();
-            plugin.getWorldFlags().load();
+            plugin.getWorldFlags().load(); 
             CMIMessages.sendMessage(sender, plugin.getPrefix() + " Reloaded groups file.");
             return true;
         case "flags":
