@@ -911,6 +911,7 @@ public class ResidenceBlockListener implements Listener {
         }
     }
 
+    @SuppressWarnings("removal")
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onDispense(BlockDispenseEvent event) {
         // Disabling listener if flag disabled globally
@@ -928,7 +929,7 @@ public class ResidenceBlockListener implements Listener {
             return;
 
         // target location
-        Location location = block.getRelative(((Dispenser) block.getBlockData()).getFacing()).getLocation();
+        Location location = Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? block.getRelative(((Dispenser) block.getBlockData()).getFacing()).getLocation() : block.getRelative((((org.bukkit.material.Dispenser)((org.bukkit.block.Dispenser) block).getData()).getFacing())).getLocation();
 
         ClaimedResidence targetres = plugin.getResidenceManager().getByLoc(location);
 
