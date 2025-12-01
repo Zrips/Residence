@@ -61,7 +61,12 @@ public class expand implements cmd {
 			return true;
 		}
 
-		if (res.isSubzone() && !resadmin && !ResPerm.command_expand_subzone.hasPermission(player, lm.Subzone_CantExpand))
+        if (!resadmin && !res.isOwner(player)) {
+            lm.Residence_NotOwner.sendMessage(sender);
+            return true;
+        }
+
+        if (res.isSubzone() && !resadmin && !ResPerm.command_expand_subzone.hasPermission(player, lm.Subzone_CantExpand))
 			return true;
 
 		if (!res.isSubzone() && !resadmin && !ResPerm.command_$1.hasPermission(player, lm.Residence_CantExpandResidence, this.getClass().getSimpleName()))
