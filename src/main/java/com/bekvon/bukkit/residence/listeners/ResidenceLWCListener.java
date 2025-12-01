@@ -25,7 +25,10 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.ResidenceManager.ChunkRef;
+import com.griefcraft.cache.ProtectionCache;
 import com.griefcraft.lwc.LWC;
+import com.griefcraft.model.Protection;
+import com.griefcraft.scripting.Module;
 import com.griefcraft.scripting.event.LWCAccessEvent;
 import com.griefcraft.scripting.event.LWCBlockInteractEvent;
 import com.griefcraft.scripting.event.LWCCommandEvent;
@@ -46,10 +49,10 @@ import com.griefcraft.scripting.event.LWCSendLocaleEvent;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
-public class ResidenceLWCListener implements com.griefcraft.scripting.Module {
+public class ResidenceLWCListener implements Module {
 
 	public static void register(Plugin plugin) {
-		com.griefcraft.lwc.LWC.getInstance().getModuleLoader().registerModule(plugin, new ResidenceLWCListener());
+		LWC.getInstance().getModuleLoader().registerModule(plugin, new ResidenceLWCListener());
 	}
 
 	private static CompletableFuture<Integer> removeLwcFromResidence(final ClaimedResidence res) {
@@ -68,19 +71,8 @@ public class ResidenceLWCListener implements com.griefcraft.scripting.Module {
 
 			for (ChunkRef chunkRef : area.getChunks()) {
 				tasks.add(() -> {
-
 					CompletableFuture<Integer> f = new CompletableFuture<>();
-
-					CMIScheduler.runAtLocation(
-							Residence.getInstance(),
-							high.getWorld(),
-							chunkRef.getX(),
-							chunkRef.getZ(),
-							() -> {
-								int cleaned = cleaner(chunkRef, world, high, low);
-								f.complete(cleaned);
-							});
-
+					CMIScheduler.runAtLocation(Residence.getInstance(), high.getWorld(), chunkRef.getX(), chunkRef.getZ(), () -> f.complete(cleaner(chunkRef, world, high, low)));
 					return f;
 				});
 			}
@@ -92,7 +84,6 @@ public class ResidenceLWCListener implements com.griefcraft.scripting.Module {
 			chain = chain.thenCompose(totalSoFar -> {
 				if (!Residence.getInstance().isEnabled() || Bukkit.getServer().isStopping())
 					return CompletableFuture.completedFuture(totalSoFar);
-
 				return task.get().thenApply(result -> totalSoFar + result);
 			}).thenCompose(updated -> delay().thenApply(v -> updated));
 		}
@@ -161,7 +152,7 @@ public class ResidenceLWCListener implements com.griefcraft.scripting.Module {
 			}
 		}
 
-		com.griefcraft.cache.ProtectionCache cache = lwc.getProtectionCache();
+		ProtectionCache cache = lwc.getProtectionCache();
 
 		int i = 0;
 
@@ -169,7 +160,7 @@ public class ResidenceLWCListener implements com.griefcraft.scripting.Module {
 			if (!Residence.getInstance().isEnabled() || Bukkit.getServer().isStopping())
 				continue;
 
-			com.griefcraft.model.Protection prot = cache.getProtection(one.getBlock());
+			Protection prot = cache.getProtection(one.getBlock());
 			if (prot == null)
 				continue;
 			prot.remove();
