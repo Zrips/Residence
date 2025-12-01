@@ -142,12 +142,12 @@ public class ResidencePermissions extends FlagPermissions {
 
         world = world == null ? this.world : world;
 
-        if (!isEventCallsSuspended() && Residence.getInstance().isFullyLoaded()) {
-            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag.toString(), FlagType.PLAYER, ResidencePlayer.getName(uuid), def);
-            Residence.getInstance().getServ().getPluginManager().callEvent(fc);
-            if (fc.isOverriden())
-                return fc.getOverrideValue();
-        }
+//        if (!isEventCallsSuspended() && Residence.getInstance().isFullyLoaded()) {
+//            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag.toString(), FlagType.PLAYER, ResidencePlayer.getName(uuid), def);
+//            Residence.getInstance().getServ().getPluginManager().callEvent(fc);
+//            if (fc.isOverriden())
+//                return fc.getOverrideValue();
+//        }
         return super.playerHas(uuid, world, flag, def);
     }
 
@@ -158,12 +158,12 @@ public class ResidencePermissions extends FlagPermissions {
 
         world = world == null ? this.world : world;
 
-        if (!isEventCallsSuspended() && Residence.getInstance().isFullyLoaded()) {
-            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag.toString(), FlagType.PLAYER, ResidencePlayer.getName(uuid), def);
-            Residence.getInstance().getServ().getPluginManager().callEvent(fc);
-            if (fc.isOverriden())
-                return fc.getOverrideValue();
-        }
+//        if (!isEventCallsSuspended() && Residence.getInstance().isFullyLoaded()) {
+//            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag.toString(), FlagType.PLAYER, ResidencePlayer.getName(uuid), def);
+//            Residence.getInstance().getServ().getPluginManager().callEvent(fc);
+//            if (fc.isOverriden())
+//                return fc.getOverrideValue();
+//        }
         return super.playerHas(uuid, world, flag, def);
     }
 
@@ -185,12 +185,12 @@ public class ResidencePermissions extends FlagPermissions {
 
     @Override
     public boolean groupHas(String group, String flag, boolean def) {
-        if (!isEventCallsSuspended() && Residence.getInstance().isFullyLoaded()) {
-            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag, FlagType.GROUP, group, def);
-            Residence.getInstance().getServ().getPluginManager().callEvent(fc);
-            if (fc.isOverriden())
-                return fc.getOverrideValue();
-        }
+//        if (!isEventCallsSuspended() && Residence.getInstance().isFullyLoaded()) {
+//            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag, FlagType.GROUP, group, def);
+//            Residence.getInstance().getServ().getPluginManager().callEvent(fc);
+//            if (fc.isOverriden())
+//                return fc.getOverrideValue();
+//        }
         return super.groupHas(group, flag, def);
     }
 
@@ -247,12 +247,12 @@ public class ResidencePermissions extends FlagPermissions {
 
     @Override
     public boolean has(String flag, boolean def, boolean checkParent) {
-        if (!isEventCallsSuspended() && Residence.getInstance().isFullyLoaded()) {
-            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag, FlagType.RESIDENCE, null, def);
-            Residence.getInstance().getServ().getPluginManager().callEvent(fc);
-            if (fc.isOverriden())
-                return fc.getOverrideValue();
-        }
+//        if (!isEventCallsSuspended() && Residence.getInstance().isFullyLoaded()) {
+//            ResidenceFlagCheckEvent fc = new ResidenceFlagCheckEvent(residence, flag, FlagType.RESIDENCE, null, def);
+//            Residence.getInstance().getServ().getPluginManager().callEvent(fc);
+//            if (fc.isOverriden())
+//                return fc.getOverrideValue();
+//        }
         return super.has(flag, def, checkParent);
     }
 
