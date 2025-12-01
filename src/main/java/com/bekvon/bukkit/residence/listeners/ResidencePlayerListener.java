@@ -1817,13 +1817,18 @@ public class ResidencePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerInteractAtArmoStand(PlayerInteractEntityEvent event) {
-
-        Player player = event.getPlayer();
-        if (ResAdmin.isResAdmin(player))
+    public void onPlayerUseNameTag(PlayerInteractEntityEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.nametag.isGlobalyEnabled())
             return;
 
-        Entity ent = event.getRightClicked();
+        Player player = event.getPlayer();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(player.getWorld()))
+            return;
+
+        if (ResAdmin.isResAdmin(player))
+            return;
 
         ItemStack item = CMIItemStack.getItemInMainHand(player);
 
@@ -1836,12 +1841,25 @@ public class ResidencePlayerListener implements Listener {
         if (!CMIMaterial.get(item).equals(CMIMaterial.NAME_TAG))
             return;
 
-        FlagPermissions perms = Residence.getInstance().getPermsByLocForPlayer(ent.getLocation(), player);
+        Entity entity = event.getRightClicked();
+        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
 
-        if (perms.playerHas(player, Flags.nametag, FlagCombo.OnlyFalse)) {
-            event.setCancelled(true);
-            lm.Flag_Deny.sendMessage(player, Flags.nametag);
+        if (Utils.isAnimal(entity)){
+            boolean animal = perms.playerHas(player, Flags.animalkilling, true);
+            if (perms.playerHas(player, Flags.nametag, animal))
+                return;
+
+        } else if (ResidenceEntityListener.isMonster(entity)) {
+            boolean monster = perms.playerHas(player, Flags.mobkilling, true);
+            if (perms.playerHas(player, Flags.nametag, monster))
+                return;
+
+        } else if (perms.playerHas(player, Flags.nametag, true)) {
+            return;
+
         }
+        lm.Flag_Deny.sendMessage(player, Flags.nametag);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
