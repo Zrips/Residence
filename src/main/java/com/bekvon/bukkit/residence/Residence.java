@@ -68,6 +68,7 @@ import com.bekvon.bukkit.residence.listeners.ResidenceListener1_13;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_14;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_15;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_16;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_16_5_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_17;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_19;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_20;
@@ -584,6 +585,12 @@ public class Residence extends JavaPlugin {
                     pm.registerEvents(new ResidenceListener1_15(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_16_R1))
                     pm.registerEvents(new ResidenceListener1_16(this), this);
+
+                if (Version.isCurrentEqualOrHigher(Version.v1_16_R3) && Version.isCurrentSubEqualOrHigher(5) || Version.isCurrentEqualOrHigher(Version.v1_17_R1)) {
+                    if (Version.isPaperBranch())
+                        pm.registerEvents(new ResidenceListener1_16_5_Paper(this), this);
+                }
+
                 if (Version.isCurrentEqualOrHigher(Version.v1_17_R1))
                     pm.registerEvents(new ResidenceListener1_17(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_19_R1))
