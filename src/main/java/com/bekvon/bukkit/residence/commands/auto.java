@@ -24,6 +24,7 @@ import com.bekvon.bukkit.residence.protection.CuboidArea;
 import com.bekvon.bukkit.residence.selection.SelectionManager.Selection;
 
 import net.Zrips.CMILib.Container.CMINumber;
+import net.Zrips.CMILib.Container.CMIVectorInt3D;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.RawMessages.RawMessage;
@@ -85,9 +86,9 @@ public class auto implements cmd {
         failReason result = failReason.area;
 
         if (plugin.getConfigManager().isARCOldMethod())
-            result = resize(plugin, player, cuboid, true, length);
+            result = resize(player, cuboid, true, length);
         else
-            result = optimizedResize(plugin, player, cuboid, true, length);
+            result = optimizedResize(player, cuboid, true, length);
 
         if (!result.equals(failReason.none)) {
             return true;
@@ -217,8 +218,8 @@ public class auto implements cmd {
         return maxV;
     }
 
-    public static failReason resize(Residence plugin, Player player, CuboidArea cuboid, boolean checkBalance, int max) {
-
+    public static failReason resize(Player player, CuboidArea cuboid, boolean checkBalance, int max) {
+        Residence plugin = Residence.getInstance();
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
 
@@ -366,8 +367,13 @@ public class auto implements cmd {
         maxMap.put(dir, maxV);
     }
 
-    public static failReason optimizedResize(Residence plugin, Player player, CuboidArea cuboid, boolean checkBalance, int max) {
+    public static failReason optimizedResize(Player player, CuboidArea cuboid, boolean checkBalance, int max) {
+		return optimizedResize(player, cuboid, checkBalance, new CMIVectorInt3D(max, max, max));
+    }
 
+    public static failReason optimizedResize(Player player, CuboidArea cuboid, boolean checkBalance, CMIVectorInt3D max) {
+
+        Residence plugin = Residence.getInstance();
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
 
@@ -396,17 +402,17 @@ public class auto implements cmd {
 
         int maxZ = getMax(groupMaxZ);
 
-        if (maxX > max && max > 0)
-            maxX = max;
+        if (maxX > max.getX() && max.getX() > 0)
+            maxX = max.getX();
 
-        if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && maxY > max && max > 0) {
-            maxY = max;
+        if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && maxY > max.getY() && max.getY() > 0) {
+            maxY = max.getY();
         } else if (Residence.getInstance().getConfigManager().isSelectionIgnoreY()) {
             maxY = Math.min(CMINumber.abs(CMIWorld.getMinHeight(cuboid.getWorld()) - CMIWorld.getMaxHeight(cuboid.getWorld())), maxY);
         }
 
-        if (maxZ > max && max > 0)
-            maxZ = max;
+        if (maxZ > max.getZ() && max.getZ() > 0)
+            maxZ = max.getZ();
 
         if (maxX <= 1)
             maxX = (groupMaxX - group.getMinX()) / 2 + group.getMinX();

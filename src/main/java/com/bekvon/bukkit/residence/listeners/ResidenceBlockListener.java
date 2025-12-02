@@ -53,6 +53,7 @@ import org.bukkit.util.Vector;
 
 import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.commands.auto;
 import com.bekvon.bukkit.residence.commands.auto.direction;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
@@ -68,6 +69,7 @@ import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Container.CMIBlock;
+import net.Zrips.CMILib.Container.CMIVectorInt3D;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
@@ -509,10 +511,11 @@ public class ResidenceBlockListener implements Listener {
         plugin.getSelectionManager().placeLoc1(player, new Location(loc.getWorld(), loc.getBlockX() - 1, loc.getBlockY() - 1, loc.getBlockZ() - 1), true);
         plugin.getSelectionManager().placeLoc2(player, new Location(loc.getWorld(), loc.getBlockX() + 1, loc.getBlockY() + 1, loc.getBlockZ() + 1), true);
 
-        resize(plugin, player, plugin.getSelectionManager().getSelectionCuboid(player), !plugin.getConfigManager().isNewPlayerFree(),
-                plugin.getConfigManager().getNewPlayerRangeX() * 2,
+        CMIVectorInt3D max = new CMIVectorInt3D(plugin.getConfigManager().getNewPlayerRangeX() * 2,
                 plugin.getConfigManager().getNewPlayerRangeY() * 2,
                 plugin.getConfigManager().getNewPlayerRangeZ() * 2);
+
+        auto.optimizedResize(player, plugin.getSelectionManager().getSelectionCuboid(player), !plugin.getConfigManager().isNewPlayerFree(), max);
 
         boolean created = plugin.getResidenceManager().addResidence(player, player.getName(), plugin.getSelectionManager().getPlayerLoc1(player),
                 plugin.getSelectionManager().getPlayerLoc2(player), plugin.getConfigManager().isNewPlayerFree());
@@ -520,109 +523,6 @@ public class ResidenceBlockListener implements Listener {
             ResCreated.add(player.getUniqueId());
             newPlayers.remove(player.getUniqueId());
         }
-    }
-
-    public static void resize(Residence plugin, Player player, CuboidArea cuboid, boolean checkBalance, int maxX, int maxY, int maxZ) {
-
-        ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
-        PermissionGroup group = rPlayer.getGroup();
-
-        double cost = cuboid.getCost(group);
-
-        double balance = 0;
-        if (plugin.getEconomyManager() != null)
-            balance = plugin.getEconomyManager().getBalance(player);
-
-        direction dir = direction.Top;
-
-        List<direction> locked = new ArrayList<direction>();
-
-        boolean checkCollision = plugin.getConfigManager().isARCCheckCollision();
-        int skipped = 0;
-        int done = 0;
-        while (true) {
-            done++;
-
-            if (skipped >= 6) {
-                break;
-            }
-
-            // fail safe if loop keeps going on
-            if (done > 10000)
-                break;
-
-            if (locked.contains(dir)) {
-                dir = dir.getNext();
-                skipped++;
-                continue;
-            }
-
-            CuboidArea c = new CuboidArea();
-            c.setLowLocation(cuboid.getLowLocation().clone().add(-dir.getLow().getX(), -dir.getLow().getY(), -dir.getLow().getZ()));
-            c.setHighLocation(cuboid.getHighLocation().clone().add(dir.getHigh().getX(), dir.getHigh().getY(), dir.getHigh().getZ()));
-
-            if (c.getLowVector().getY() < 0) {
-                c.getLowVector().setY(0);
-                locked.add(dir);
-                dir = dir.getNext();
-                skipped++;
-                continue;
-            }
-
-            if (c.getHighVector().getY() >= c.getWorld().getMaxHeight()) {
-                c.getHighVector().setY(c.getWorld().getMaxHeight() - 1);
-                locked.add(dir);
-                dir = dir.getNext();
-                skipped++;
-                continue;
-            }
-
-            if (checkCollision && plugin.getResidenceManager().collidesWithResidence(c) != null) {
-                locked.add(dir);
-                dir = dir.getNext();
-                skipped++;
-                continue;
-            }
-
-            if (c.getXSize() >= maxX - group.getMinX()) {
-                locked.add(dir);
-                dir = dir.getNext();
-                skipped++;
-                continue;
-            }
-
-            if (c.getYSize() >= maxY - group.getMinYSize()) {
-                locked.add(dir);
-                dir = dir.getNext();
-                skipped++;
-                continue;
-            }
-
-            if (c.getZSize() >= maxZ - group.getMinZ()) {
-                locked.add(dir);
-                dir = dir.getNext();
-                skipped++;
-                continue;
-            }
-
-            skipped = 0;
-
-            if (checkBalance) {
-                if (plugin.getConfigManager().enableEconomy()) {
-                    cost = c.getCost(group);
-                    if (cost > balance)
-                        break;
-                }
-            }
-
-            cuboid.setLowLocation(c.getLowLocation());
-            cuboid.setHighLocation(c.getHighLocation());
-
-            dir = dir.getNext();
-        }
-
-        plugin.getSelectionManager().placeLoc1(player, cuboid.getLowLocation());
-        plugin.getSelectionManager().placeLoc2(player, cuboid.getHighLocation());
     }
 
     public static boolean canPlaceBlock(Player player, Block block, boolean informPlayer) {
