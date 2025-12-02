@@ -183,7 +183,6 @@ public class ResidencePlayer {
         m = m == -1 ? maxValue : m;
 
         getMaxData().setMaxSubzoneDepth(Residence.getInstance().getPermissionManager().getPermissionInfo(this.getUniqueId(), ResPerm.max_subzonedepth_$1).getMaxValue(m));
-
     }
 
     public int getMaxSubzoneDepth() {
