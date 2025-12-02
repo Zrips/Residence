@@ -179,10 +179,11 @@ public class ResidenceListener1_13 implements Listener {
             // Send matching deny msgs for flag types
             lm.Flag_Deny.sendMessage(player, targetFlag);
 
-            //Check when the entity has no player source
+            // Check when the entity has no player source
         } else {
 
-            // Check potential block as a shooter which should be allowed if its inside same residence            
+            // Check potential block as a shooter which should be allowed if its inside same
+            // residence
             if (Utils.isSourceBlockInsideSameResidence(event.getEntity(), res))
                 return;
 
@@ -259,7 +260,8 @@ public class ResidenceListener1_13 implements Listener {
             // Entity not player source
         } else {
 
-            // Check potential block as a shooter which should be allowed if its inside same residence            
+            // Check potential block as a shooter which should be allowed if its inside same
+            // residence
             if (Utils.isSourceBlockInsideSameResidence(entity, ClaimedResidence.getByLoc(block.getLocation())))
                 return;
 

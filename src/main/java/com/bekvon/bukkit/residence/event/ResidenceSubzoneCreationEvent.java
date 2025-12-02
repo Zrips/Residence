@@ -11,35 +11,35 @@ public class ResidenceSubzoneCreationEvent extends CancellableResidencePlayerEve
 
     @Override
     public HandlerList getHandlers() {
-	return handlers;
+        return handlers;
     }
 
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
     protected String resname;
     CuboidArea area;
 
     public ResidenceSubzoneCreationEvent(Player player, String name, ClaimedResidence resref, CuboidArea resarea) {
-	super("RESIDENCE_SUBZONE_CREATE", resref, player);
-	resname = name;
-	area = resarea;
+        super("RESIDENCE_SUBZONE_CREATE", resref, player);
+        resname = name;
+        area = resarea;
     }
 
     public String getResidenceName() {
-	return resname;
+        return resname;
     }
 
     public void setResidenceName(String name) {
-	resname = name;
+        resname = name;
     }
 
     public CuboidArea getPhysicalArea() {
-	return area;
+        return area;
     }
 
     public void setPhysicalArea(CuboidArea newarea) {
-	area = newarea;
+        area = newarea;
     }
 }

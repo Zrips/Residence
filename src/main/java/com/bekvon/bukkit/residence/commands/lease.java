@@ -172,13 +172,13 @@ public class lease implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Manage residence leases");
         c.get("Info", Arrays.asList("&eUsage: &6/res lease [renew/cost] [residence]",
-            "/res lease cost will show the cost of renewing a residence lease.", "/res lease renew will renew the residence provided you have enough money."));
+                "/res lease cost will show the cost of renewing a residence lease.", "/res lease renew will renew the residence provided you have enough money."));
 
         // Sub commands
         c.setFullPath(c.getPath() + "SubCommands.");
         c.get("set.Description", "Set the lease time");
         c.get("set.Info", Arrays.asList("&eUsage: &6/resadmin lease set [residence] [#days/infinite]",
-            "Sets the lease time to a specified number of days, or infinite."));
+                "Sets the lease time to a specified number of days, or infinite."));
         LocaleManager.addTabCompleteSub(this, "set", "[residence]");
 
         c.get("renew.Description", "Renew the lease time");

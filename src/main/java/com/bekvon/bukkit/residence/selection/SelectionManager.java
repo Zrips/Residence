@@ -542,7 +542,9 @@ public class SelectionManager {
         }
         CMIScheduler.runTask(Residence.getInstance(), () -> {
 
-            // Only firing selection event if its selection and not one time showing. Check can be removed on later builds and plugins can check if this is short visualization
+            // Only firing selection event if its selection and not one time showing. Check
+            // can be removed on later builds and plugins can check if this is short
+            // visualization
             if (!v.isOnce()) {
                 ResidenceSelectionVisualizationEvent ev = new ResidenceSelectionVisualizationEvent(player, v.getAreas(), v.getErrorAreas(), v.isOnce());
                 Bukkit.getPluginManager().callEvent(ev);
@@ -612,7 +614,7 @@ public class SelectionManager {
     }
 
     public List<Location> GetLocationsWallsByData(Location loc, Double TX, Double TY, Double TZ, Location lowLoc, SelectionSides Sides,
-        double Range) {
+            double Range) {
         List<Location> locList = new ArrayList<Location>();
 
         // North wall
@@ -643,7 +645,7 @@ public class SelectionManager {
     }
 
     public List<Location> GetLocationsCornersByData(Location loc, Double TX, Double TY, Double TZ, Location lowLoc, SelectionSides Sides,
-        double Range) {
+            double Range) {
         List<Location> locList = new ArrayList<Location>();
 
         // North bottom line

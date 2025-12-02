@@ -249,15 +249,16 @@ public class SignUtil {
                 sign.setLine(0, TopLine);
 
                 String infoLine = rented ? lm.Sign_RentedPriceLine.getMessage(plugin.getRentManager().getCostOfRent(res), plugin
-                    .getRentManager().getRentDays(res), plugin.getRentManager().getRentableRepeatable(res)) : lm.Sign_ForRentPriceLine.getMessage(plugin.getRentManager().getCostOfRent(res), plugin
-                        .getRentManager().getRentDays(res), plugin.getRentManager().getRentableRepeatable(res));
+                        .getRentManager().getRentDays(res), plugin.getRentManager().getRentableRepeatable(res))
+                        : lm.Sign_ForRentPriceLine.getMessage(plugin.getRentManager().getCostOfRent(res), plugin
+                                .getRentManager().getRentDays(res), plugin.getRentManager().getRentableRepeatable(res));
 
                 sign.setLine(1, infoLine);
                 String shortName = fixResName(landName);
                 sign.setLine(2, rented ? lm.Sign_RentedResName.getMessage(shortName)
-                    : lm.Sign_RentedResName.getMessage(shortName));
+                        : lm.Sign_RentedResName.getMessage(shortName));
                 sign.setLine(3, rented ? lm.Sign_RentedBottomLine.getMessage(plugin.getRentManager().getRentingPlayer(landName))
-                    : lm.Sign_ForRentBottomLine.getMessage());
+                        : lm.Sign_ForRentBottomLine.getMessage());
                 sign.update();
             }
 
@@ -357,7 +358,7 @@ public class SignUtil {
         this.saveSigns();
 
         sender.sendMessage(ChatColor.GOLD + "" + i + ChatColor.YELLOW + " signs have being converted to new format! It took " + ChatColor.GOLD + (System
-            .currentTimeMillis() - time) + ChatColor.YELLOW + " ms!");
+                .currentTimeMillis() - time) + ChatColor.YELLOW + " ms!");
     }
 
     public String fixResName(String name) {

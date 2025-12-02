@@ -68,9 +68,9 @@ public class WorldGuard7Util implements WorldGuardInterface {
 
         lm.Select_WorldGuardOverlap.sendMessage(player, Region.getId());
         Location lowLoc = new Location(plugin.getSelectionManager().getPlayerLoc1(player).getWorld(), Region.getMinimumPoint().getBlockX(),
-            Region.getMinimumPoint().getBlockY(), Region.getMinimumPoint().getBlockZ());
+                Region.getMinimumPoint().getBlockY(), Region.getMinimumPoint().getBlockZ());
         Location highLoc = new Location(plugin.getSelectionManager().getPlayerLoc1(player).getWorld(), Region.getMaximumPoint().getBlockX(),
-            Region.getMaximumPoint().getBlockY(), Region.getMaximumPoint().getBlockZ());
+                Region.getMaximumPoint().getBlockY(), Region.getMaximumPoint().getBlockZ());
         Visualizer v = new Visualizer(player);
         v.setAreas(plugin.getSelectionManager().getSelectionCuboid(player));
         v.setErrorAreas(new CuboidArea(lowLoc, highLoc));

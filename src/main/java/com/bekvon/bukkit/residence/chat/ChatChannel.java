@@ -48,7 +48,7 @@ public class ChatChannel {
         CMIScheduler.runTask(Residence.getInstance(), () -> {
             Server serv = Residence.getInstance().getServ();
             ResidenceChatEvent cevent = new ResidenceChatEvent(Residence.getInstance().getResidenceManager().getByName(channelName), serv.getPlayer(sourcePlayer), this.ChatPrefix, message,
-                this.ChannelColor);
+                    this.ChannelColor);
             Residence.getInstance().getServ().getPluginManager().callEvent(cevent);
             if (cevent.isCancelled())
                 return;
@@ -64,7 +64,7 @@ public class ChatChannel {
                     if (!cevent.getResidence().isOwner(v) && !cevent.getResidence().getPermissions().playerHas(v, Flags.chat, FlagCombo.OnlyTrue))
                         return;
                     lm.Chat_ChatListeningMessage.sendMessage(v, cevent.getChatprefix(), Residence.getInstance().getConfigManager().getChatColor(), sourcePlayer, cevent.getColor(), cevent
-                        .getChatMessage(), channelName);
+                            .getChatMessage(), channelName);
                 });
             }
 

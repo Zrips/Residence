@@ -204,7 +204,7 @@ public class select implements cmd {
         // Main command
         c.get("Description", "Selection Commands");
         c.get("Info", Arrays.asList("This command selects areas for usage with residence.",
-            "/res select [x] [y] [z] - selects a radius of blocks, with you in the middle."));
+                "/res select [x] [y] [z] - selects a radius of blocks, with you in the middle."));
         LocaleManager.addTabCompleteSub(this, "[x]", "[y]", "[z]");
 
         // Sub commands

@@ -48,8 +48,8 @@ public class playerTempData {
         }
 
         setCanTeleportInsideCurrent(
-            (currentRes.getPermissions().playerHas(player, Flags.tp, FlagCombo.TrueOrNone) || ResPerm.admin_tp.hasPermission(player, 10000L)) &&
-                (currentRes.getPermissions().playerHas(player, Flags.move, FlagCombo.TrueOrNone) || ResPerm.admin_move.hasPermission(player, 10000L)));
+                (currentRes.getPermissions().playerHas(player, Flags.tp, FlagCombo.TrueOrNone) || ResPerm.admin_tp.hasPermission(player, 10000L)) &&
+                        (currentRes.getPermissions().playerHas(player, Flags.move, FlagCombo.TrueOrNone) || ResPerm.admin_move.hasPermission(player, 10000L)));
 
         if (isCanTeleportInsideCurrent()) {
             setLastInsideLoc(player.getLocation());
@@ -103,7 +103,7 @@ public class playerTempData {
         if (lastInsideLoc != null) {
             ClaimedResidence res = Residence.getInstance().getResidenceManager().getByLoc(lastInsideLoc);
             if (res != null && Flags.tp.isGlobalyEnabled() && (res.getPermissions().playerHas(player, Flags.tp, FlagCombo.TrueOrNone) || ResAdmin.isResAdmin(player)
-                || res.isOwner(player) || ResPerm.admin_move.hasPermission(player, 10000L))) {
+                    || res.isOwner(player) || ResPerm.admin_move.hasPermission(player, 10000L))) {
                 loc = lastInsideLoc;
             }
         }

@@ -37,8 +37,10 @@ public class PlayerGroup {
     }
 
     public @Nullable PermissionGroup getGroup(boolean force) {
-        String world = resPlayer.getPlayer() != null ? resPlayer.getPlayer().getWorld().getName() : resPlayer.getLastKnownWorld() != null ? resPlayer.getLastKnownWorld() : Residence.getInstance()
-            .getConfigManager().getDefaultWorld();
+        String world = resPlayer.getPlayer() != null ? resPlayer.getPlayer().getWorld().getName()
+                : resPlayer.getLastKnownWorld() != null ? resPlayer.getLastKnownWorld()
+                        : Residence.getInstance()
+                                .getConfigManager().getDefaultWorld();
         return getGroup(world, force);
     }
 

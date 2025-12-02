@@ -10,7 +10,6 @@ public interface MarketBuyInterface {
 
     public Map<String, Integer> getBuyableResidences();
 
-
     public void buyPlot(String areaname, Player player, boolean resadmin);
 
     public void removeFromSale(String areaname);
@@ -21,6 +20,6 @@ public interface MarketBuyInterface {
 
     @Deprecated
     public boolean putForSale(String areaname, int amount);
-    
-    public boolean putForSale(ClaimedResidence res, int amount); 
+
+    public boolean putForSale(ClaimedResidence res, int amount);
 }

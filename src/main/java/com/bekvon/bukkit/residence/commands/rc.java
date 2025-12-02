@@ -151,7 +151,7 @@ public class rc implements cmd {
 
                 if (prefix.length() > plugin.getConfigManager().getChatPrefixLength()) {
                     lm.Chat_InvalidPrefixLength.sendMessage(sender, plugin.getConfigManager()
-                        .getChatPrefixLength());
+                            .getChatPrefixLength());
                     return true;
                 }
 

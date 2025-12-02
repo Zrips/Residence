@@ -14,11 +14,11 @@ public class ResidenceOwnerChangeEvent extends ResidenceEvent implements Cancell
 
     @Override
     public HandlerList getHandlers() {
-	return handlers;
+        return handlers;
     }
 
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
     protected String newowner;
@@ -27,37 +27,37 @@ public class ResidenceOwnerChangeEvent extends ResidenceEvent implements Cancell
 
     @Deprecated
     public ResidenceOwnerChangeEvent(ClaimedResidence resref, String newOwner) {
-	super("RESIDENCE_OWNER_CHANGE", resref);
-	this.newowner = newOwner;
+        super("RESIDENCE_OWNER_CHANGE", resref);
+        this.newowner = newOwner;
     }
 
     public ResidenceOwnerChangeEvent(ClaimedResidence resref, String newOwner, UUID uuid) {
-	super("RESIDENCE_OWNER_CHANGE", resref);
-	this.newowner = newOwner;
-	this.uuid = uuid;
+        super("RESIDENCE_OWNER_CHANGE", resref);
+        this.newowner = newOwner;
+        this.uuid = uuid;
     }
 
     public ResidenceOwnerChangeEvent(ClaimedResidence resref, Player player) {
-	super("RESIDENCE_OWNER_CHANGE", resref);
-	this.newowner = player.getName();
-	this.uuid = player.getUniqueId();
+        super("RESIDENCE_OWNER_CHANGE", resref);
+        this.newowner = player.getName();
+        this.uuid = player.getUniqueId();
     }
 
     public String getNewOwner() {
-	return newowner;
+        return newowner;
     }
 
     public UUID getNewOwnerUuid() {
-	return uuid;
+        return uuid;
     }
 
     @Override
     public boolean isCancelled() {
-	return cancelled;
+        return cancelled;
     }
 
     @Override
     public void setCancelled(boolean bln) {
-	cancelled = bln;
+        cancelled = bln;
     }
 }

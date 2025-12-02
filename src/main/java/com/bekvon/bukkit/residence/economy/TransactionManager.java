@@ -77,7 +77,7 @@ public class TransactionManager implements MarketBuyInterface {
     public boolean giveEconomyMoney(UUID uuid, double amount) {
         if (uuid == null)
             return false;
-        
+
         if (amount == 0)
             return true;
         EconomyInterface econ = plugin.getEconomyManager();
@@ -218,7 +218,7 @@ public class TransactionManager implements MarketBuyInterface {
             CuboidArea[] areas = res.getAreaArray();
             for (CuboidArea thisarea : areas) {
                 if (!res.isSubzone() && !res.isSmallerThanMax(player, thisarea, resadmin) || res.isSubzone() && !res.isSmallerThanMaxSubzone(player, thisarea,
-                    resadmin)) {
+                        resadmin)) {
                     lm.Residence_BuyTooBig.sendMessage(player);
                     return;
                 }

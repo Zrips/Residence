@@ -60,7 +60,7 @@ public class list implements cmd {
         }
 
         if (target != null && !sender.getName().equalsIgnoreCase(target) &&
-            !ResPerm.command_$1_others.hasPermission(sender, this.getClass().getSimpleName())) {
+                !ResPerm.command_$1_others.hasPermission(sender, this.getClass().getSimpleName())) {
             lm.General_NoCmdPermission.sendMessage(sender);
             return true;
         }
@@ -82,9 +82,9 @@ public class list implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "List Residences");
         c.get("Info", Arrays.asList("&eUsage: &6/res list <player> <page> <worldName>",
-            "Lists all the residences a player owns (except hidden ones).",
-            "If listing your own residences, shows hidden ones as well.",
-            "To list everyones residences, use /res listall."));
+                "Lists all the residences a player owns (except hidden ones).",
+                "If listing your own residences, shows hidden ones as well.",
+                "To list everyones residences, use /res listall."));
         LocaleManager.addTabCompleteMain(this, "[playername]", "[worldname]");
     }
 }

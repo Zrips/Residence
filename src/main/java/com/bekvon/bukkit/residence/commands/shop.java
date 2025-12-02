@@ -119,7 +119,8 @@ public class shop implements cmd {
                 String timeString = ft.format(dNow);
 
                 String message = lm.Shop_VotesList.getMessage(pi.getStart() + position + 1, one.getName(), (plugin.getConfigManager().isOnlyLike()
-                    ? "" : one.getVote()), timeString);
+                        ? ""
+                        : one.getVote()), timeString);
                 player.sendMessage(message);
             }
 
@@ -438,7 +439,7 @@ public class shop implements cmd {
 
         c.get("createboard.Description", "Create res shop board");
         c.get("createboard.Info", Arrays.asList("&eUsage: &6/res shop createboard [place]",
-            "Creates res shop board from selected area. Place - position from which to start filling board"));
+                "Creates res shop board from selected area. Place - position from which to start filling board"));
         LocaleManager.addTabCompleteSub(this, "createboard", "1");
 
         c.get("deleteboard.Description", "Deletes res shop board");

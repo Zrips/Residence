@@ -42,7 +42,8 @@ public class ResidenceRaid {
     }
 
     public boolean onSameTeam(Player player1, Player player2) {
-        return attackers.containsKey(player1.getUniqueId()) && attackers.containsKey(player2.getUniqueId()) || defenders.containsKey(player1.getUniqueId()) && defenders.containsKey(player2.getUniqueId());
+        return attackers.containsKey(player1.getUniqueId()) && attackers.containsKey(player2.getUniqueId())
+                || defenders.containsKey(player1.getUniqueId()) && defenders.containsKey(player2.getUniqueId());
     }
 
     public Long getEndsAt() {
@@ -368,7 +369,7 @@ public class ResidenceRaid {
 
     public boolean isUnderRaid() {
         return getEndsAt() > System.currentTimeMillis()
-            && getStartsAt() < System.currentTimeMillis();
+                && getStartsAt() < System.currentTimeMillis();
     }
 
     public boolean isRaidInitialized() {
@@ -381,7 +382,7 @@ public class ResidenceRaid {
 
     public boolean isInPreRaid() {
         return getEndsAt() > System.currentTimeMillis()
-            && getStartsAt() > System.currentTimeMillis();
+                && getStartsAt() > System.currentTimeMillis();
     }
 
     public boolean canRaid() {

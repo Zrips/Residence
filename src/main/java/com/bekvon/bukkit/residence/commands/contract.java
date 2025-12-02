@@ -100,7 +100,7 @@ public class contract implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Contracts residence in direction you looking");
         c.get("Info", Arrays.asList("&eUsage: &6/res contract (residence) [amount]", "Contracts residence in direction you looking.",
-            "Residence name is optional"));
+                "Residence name is optional"));
         LocaleManager.addTabCompleteMain(this, "[residence]%%1", "1");
     }
 

@@ -83,8 +83,8 @@ public class command implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Manages allowed or blocked commands in residence");
         c.get("Info", Arrays.asList("&eUsage: &6/res command <residence> <allow/block/list> <command>",
-            "Shows list, adds or removes allowed or disabled commands in residence",
-            "Use _ to include command with multiple variables"));
+                "Shows list, adds or removes allowed or disabled commands in residence",
+                "Use _ to include command with multiple variables"));
         LocaleManager.addTabCompleteMain(this, "[residence]%%allow%%block%%list", "allow%%block%%list");
     }
 }

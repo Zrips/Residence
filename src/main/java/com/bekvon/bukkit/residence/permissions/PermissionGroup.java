@@ -641,13 +641,13 @@ public class PermissionGroup {
 
     public static @Nullable PermissionGroup getGroup(@NotNull UUID uuid, @Nullable String world) {
         ResidencePlayer player = ResidencePlayer.get(uuid);
-        
-        if (player == null) 
+
+        if (player == null)
             return null;
-        
+
         if (world == null)
             return player.getGroup();
-        
+
         return player.getGroup(world);
     }
 }

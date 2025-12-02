@@ -55,10 +55,10 @@ public class PlayerManager implements ResidencePlayerInterface {
             byte[] hash = md.digest(playerName.getBytes(StandardCharsets.UTF_8));
 
             long msb = 0xFFFFFFFF00000000L
-                | ((hash[0] & 0xFFL) << 24)
-                | ((hash[1] & 0xFFL) << 16)
-                | ((hash[2] & 0xFFL) << 8)
-                | (hash[3] & 0xFFL);
+                    | ((hash[0] & 0xFFL) << 24)
+                    | ((hash[1] & 0xFFL) << 16)
+                    | ((hash[2] & 0xFFL) << 8)
+                    | (hash[3] & 0xFFL);
             long lsb = 0;
             for (int i = 4; i < 12; i++) {
                 lsb = (lsb << 8) | (hash[i] & 0xFFL);

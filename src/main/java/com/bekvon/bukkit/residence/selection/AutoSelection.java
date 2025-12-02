@@ -133,6 +133,6 @@ public class AutoSelection {
     }
 
     public void remove(UUID uuid) {
-         list.remove(uuid);
+        list.remove(uuid);
     }
 }

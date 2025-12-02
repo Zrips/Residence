@@ -291,7 +291,7 @@ public class RentManager implements MarketRentInterface {
     }
 
     public void setForRent(Player player, ClaimedResidence res, int amount, int days, boolean AllowRenewing, boolean StayInMarket, boolean AllowAutoPay,
-        boolean resadmin) {
+            boolean resadmin) {
         if (amount < 0)
             return;
 
@@ -437,9 +437,9 @@ public class RentManager implements MarketRentInterface {
                 lm.Residence_RentSuccess.sendMessage(player, res.getName(), land.days);
 
                 if (plugin.getSchematicManager() != null &&
-                    plugin.getConfigManager().RestoreAfterRentEnds &&
-                    !plugin.getConfigManager().SchematicsSaveOnFlagChange &&
-                    res.getPermissions().has("backup", true)) {
+                        plugin.getConfigManager().RestoreAfterRentEnds &&
+                        !plugin.getConfigManager().SchematicsSaveOnFlagChange &&
+                        res.getPermissions().has("backup", true)) {
                     plugin.getSchematicManager().save(res);
                 }
 
@@ -492,7 +492,7 @@ public class RentManager implements MarketRentInterface {
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
         if (!resadmin && group.getMaxRentDays() != -1 &&
-            msToDays((rentedLand.endTime - System.currentTimeMillis()) + daysToMs(land.days)) >= group.getMaxRentDays()) {
+                msToDays((rentedLand.endTime - System.currentTimeMillis()) + daysToMs(land.days)) >= group.getMaxRentDays()) {
             lm.Rent_MaxRentDays.sendMessage(player, group.getMaxRentDays());
             return;
         }
@@ -878,7 +878,8 @@ public class RentManager implements MarketRentInterface {
                 plugin.getSignUtil().checkSign(res);
                 // set true if its already exists
                 res.getPermissions().setFlag("backup", FlagState.TRUE);
-                // To avoid lag spikes on multiple residence restores at once, will limit to one residence at time
+                // To avoid lag spikes on multiple residence restores at once, will limit to one
+                // residence at time
                 break;
             }
             plugin.getSignUtil().checkSign(res);
@@ -1037,7 +1038,7 @@ public class RentManager implements MarketRentInterface {
             }
 
             String msg = lm.Rent_RentList.getMessage(pi.getPositionForOutput(position), res.getName(), res.getRentable().cost, res.getRentable().days, res.getRentable().AllowRenewing,
-                res.getOwner(), rentedBy);
+                    res.getOwner(), rentedBy);
 
             RawMessage rm = new RawMessage();
             rm.addText(msg).addHover("&2" + hover);

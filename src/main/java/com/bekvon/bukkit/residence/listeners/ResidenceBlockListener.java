@@ -324,7 +324,7 @@ public class ResidenceBlockListener implements Listener {
             return;
 
         if (!CMIMaterial.get(event.getNewState().getType()).equals(CMIMaterial.WATER) && event.getBlock().getState().getType() != Material.SNOW && event.getBlock().getState()
-            .getType() != Material.SNOW_BLOCK)
+                .getType() != Material.SNOW_BLOCK)
             return;
 
         FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
@@ -344,7 +344,10 @@ public class ResidenceBlockListener implements Listener {
             return;
         Entity ent = event.getEntity();
 
-        if (!ent.hasMetadata(SourceResidenceName) && /* Equals to air when generic falling block is spawned, not when falling block originates from spawnegg */ event.getTo() == Material.AIR) {
+        if (!ent.hasMetadata(SourceResidenceName) && /*
+                                                      * Equals to air when generic falling block is spawned, not when falling block
+                                                      * originates from spawnegg
+                                                      */ event.getTo() == Material.AIR) {
 
             ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
             String resName = res == null ? "NULL" : res.getName();
@@ -442,10 +445,10 @@ public class ResidenceBlockListener implements Listener {
     }
 
     private static final List<Vector> chestVectors = new ArrayList<Vector>(Arrays.asList(
-        new Vector(0, 0, -1),
-        new Vector(0, 0, 1),
-        new Vector(1, 0, 0),
-        new Vector(-1, 0, 0)));
+            new Vector(0, 0, -1),
+            new Vector(0, 0, 1),
+            new Vector(1, 0, 0),
+            new Vector(-1, 0, 0)));
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onChestPlaceNearResidence(BlockPlaceEvent event) {
@@ -507,12 +510,12 @@ public class ResidenceBlockListener implements Listener {
         plugin.getSelectionManager().placeLoc2(player, new Location(loc.getWorld(), loc.getBlockX() + 1, loc.getBlockY() + 1, loc.getBlockZ() + 1), true);
 
         resize(plugin, player, plugin.getSelectionManager().getSelectionCuboid(player), !plugin.getConfigManager().isNewPlayerFree(),
-            plugin.getConfigManager().getNewPlayerRangeX() * 2,
-            plugin.getConfigManager().getNewPlayerRangeY() * 2,
-            plugin.getConfigManager().getNewPlayerRangeZ() * 2);
+                plugin.getConfigManager().getNewPlayerRangeX() * 2,
+                plugin.getConfigManager().getNewPlayerRangeY() * 2,
+                plugin.getConfigManager().getNewPlayerRangeZ() * 2);
 
         boolean created = plugin.getResidenceManager().addResidence(player, player.getName(), plugin.getSelectionManager().getPlayerLoc1(player),
-            plugin.getSelectionManager().getPlayerLoc2(player), plugin.getConfigManager().isNewPlayerFree());
+                plugin.getSelectionManager().getPlayerLoc2(player), plugin.getConfigManager().isNewPlayerFree());
         if (created) {
             ResCreated.add(player.getUniqueId());
             newPlayers.remove(player.getUniqueId());
@@ -674,7 +677,7 @@ public class ResidenceBlockListener implements Listener {
                 perms = FlagPermissions.getPerms(sec.getLocation(), player);
                 hasplace = perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true));
                 if (!hasplace
-                    && !ResPerm.bypass_build.hasPermission(player, 10000L)) {
+                        && !ResPerm.bypass_build.hasPermission(player, 10000L)) {
                     if (informPlayer)
                         lm.Flag_Deny.sendMessage(player, Flags.place);
                     return false;
@@ -791,7 +794,8 @@ public class ResidenceBlockListener implements Listener {
 
         ClaimedResidence pistonRes = plugin.getResidenceManager().getByLoc(event.getBlock().getLocation());
 
-        if (pistonRes != null && pistonRes.containsLoc(new Location(origins.getWorld(), lowestX, lowestY, lowestZ)) && pistonRes.containsLoc(new Location(origins.getWorld(), bigestX, bigestY, bigestZ))) {
+        if (pistonRes != null && pistonRes.containsLoc(new Location(origins.getWorld(), lowestX, lowestY, lowestZ))
+                && pistonRes.containsLoc(new Location(origins.getWorld(), bigestX, bigestY, bigestZ))) {
             return;
         }
 
@@ -929,13 +933,14 @@ public class ResidenceBlockListener implements Listener {
             return;
 
         // target location
-        Location location = Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? block.getRelative(((Dispenser) block.getBlockData()).getFacing()).getLocation() : block.getRelative((((org.bukkit.material.Dispenser)((org.bukkit.block.Dispenser) block).getData()).getFacing())).getLocation();
+        Location location = Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? block.getRelative(((Dispenser) block.getBlockData()).getFacing()).getLocation()
+                : block.getRelative((((org.bukkit.material.Dispenser) ((org.bukkit.block.Dispenser) block).getData()).getFacing())).getLocation();
 
         ClaimedResidence targetres = plugin.getResidenceManager().getByLoc(location);
 
         CMIMaterial cmat = CMIMaterial.get(event.getItem());
         if (targetres == null && location.getBlockY() >= plugin.getConfigManager().getPlaceLevel() && plugin.getConfigManager().getNoPlaceWorlds().contains(location
-            .getWorld().getName())) {
+                .getWorld().getName())) {
             if (plugin.getConfigManager().isNoLavaPlace() && cmat == CMIMaterial.LAVA_BUCKET) {
                 event.setCancelled(true);
                 return;
@@ -1029,7 +1034,8 @@ public class ResidenceBlockListener implements Listener {
             return;
 
         Player player = null;
-        // Crude attempt to get player object. Older versions will create exception of missing method
+        // Crude attempt to get player object. Older versions will create exception of
+        // missing method
         try {
             if (event.getEntity() instanceof Player)
                 player = (Player) event.getEntity();
@@ -1165,9 +1171,9 @@ public class ResidenceBlockListener implements Listener {
             return;
 
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK ||
-            !CMIMaterial.get(clickedBlock.getType()).equals(CMIMaterial.TNT) ||
-            event.getItem() == null ||
-            !CMIMaterial.get(event.getItem()).equals(CMIMaterial.FLINT_AND_STEEL))
+                !CMIMaterial.get(clickedBlock.getType()).equals(CMIMaterial.TNT) ||
+                event.getItem() == null ||
+                !CMIMaterial.get(event.getItem()).equals(CMIMaterial.FLINT_AND_STEEL))
             return;
 
         event.setCancelled(true);

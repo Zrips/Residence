@@ -11,27 +11,27 @@ public class ResidenceTPEvent extends CancellableResidencePlayerEvent {
 
     @Override
     public HandlerList getHandlers() {
-	return handlers;
+        return handlers;
     }
 
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
     Player reqPlayer;
     Location loc;
 
     public ResidenceTPEvent(ClaimedResidence resref, Location teleloc, Player player, Player reqplayer) {
-	super("RESIDENCE_TP", resref, player);
-	reqPlayer = reqplayer;
-	loc = teleloc;
+        super("RESIDENCE_TP", resref, player);
+        reqPlayer = reqplayer;
+        loc = teleloc;
     }
 
     public Player getRequestingPlayer() {
-	return reqPlayer;
+        return reqPlayer;
     }
 
     public Location getTeleportLocation() {
-	return loc;
+        return loc;
     }
 }

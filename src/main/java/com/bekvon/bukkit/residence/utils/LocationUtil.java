@@ -210,7 +210,7 @@ public class LocationUtil {
             CMIScheduler.runTask(Residence.getInstance(), () -> {
                 ClaimedResidence tres = Residence.getInstance().getResidenceManager().getByLoc(loc);
                 if (tres != null && player != null && (!tres.getPermissions().playerHas(player, Flags.tp, FlagCombo.TrueOrNone) ||
-                    !tres.getPermissions().playerHas(player, Flags.move, FlagCombo.TrueOrNone)) && !admin) {
+                        !tres.getPermissions().playerHas(player, Flags.move, FlagCombo.TrueOrNone)) && !admin) {
                     permissionCheck.setPermissionPass(false);
                 }
             }).join();
@@ -336,7 +336,7 @@ public class LocationUtil {
             Vector high = res.getMainArea().getHighVector();
 
             Location t = new Location(res.getMainArea().getWorld(), (low.getBlockX() + high.getBlockX()) / 2,
-                (low.getBlockY() + high.getBlockY()) / 2, (low.getBlockZ() + high.getBlockZ()) / 2);
+                    (low.getBlockY() + high.getBlockY()) / 2, (low.getBlockZ() + high.getBlockZ()) / 2);
 
             t = getMiddleFreeLoc(res, t, player, toSpawnOnFail);
 
@@ -433,8 +433,8 @@ public class LocationUtil {
                     try {
 
                         CompletableFuture<Void> t = CMIScheduler.runAtLocation(Residence.getInstance(), new Location(world, chunkX * 16, 0, chunkZ * 16), () -> cmiChunkSnapshot.setSnapshot(world
-                            .getChunkAt(chunkX, chunkZ)
-                            .getChunkSnapshot(true, biomeData, false)));
+                                .getChunkAt(chunkX, chunkZ)
+                                .getChunkSnapshot(true, biomeData, false)));
 
                         t = t.exceptionally(ex -> {
                             lm.consoleMessage("Could not get chunk snapshot for " + world + " " + (chunkX * 16) + ":" + (chunkZ * 16));
@@ -464,8 +464,9 @@ public class LocationUtil {
                 return cmiChunkSnapshot;
 
             try {
-                CompletableFuture<Void> t = CMIScheduler.runAtLocation(Residence.getInstance(), new Location(world, chunkX * 16, 0, chunkZ * 16), () -> cmiChunkSnapshot.setSnapshot(chunk.getChunkSnapshot(
-                    true, biomeData, false)));
+                CompletableFuture<Void> t = CMIScheduler.runAtLocation(Residence.getInstance(), new Location(world, chunkX * 16, 0, chunkZ * 16),
+                        () -> cmiChunkSnapshot.setSnapshot(chunk.getChunkSnapshot(
+                                true, biomeData, false)));
 
                 t = t.exceptionally(ex -> {
                     lm.consoleMessage("Unable to get chunk snapshot for " + world + " " + (chunkX * 16) + ":" + (chunkZ * 16));

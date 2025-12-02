@@ -6,19 +6,19 @@ public class CMIPlaceholderCache {
     private String result = null;
 
     public Long getValidUntil() {
-	return time;
+        return time;
     }
 
     public void setValidUntil(Long time) {
-	this.time = time;
+        this.time = time;
     }
 
     public String getResult() {
-	return result;
+        return result;
     }
 
     public void setResult(String result) {
-	this.result = result;
+        this.result = result;
     }
 
 }

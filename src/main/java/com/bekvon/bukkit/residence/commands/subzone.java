@@ -55,7 +55,7 @@ public class subzone implements cmd {
                 return true;
 
             res.addSubzone(player, plugin.getSelectionManager().getPlayerLoc1(player), plugin.getSelectionManager().getPlayerLoc2(player),
-                zname, resadmin);
+                    zname, resadmin);
         } else {
             lm.Select_Points.sendMessage(sender);
         }
@@ -67,7 +67,7 @@ public class subzone implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Create subzones in residences.");
         c.get("Info", Arrays.asList("&eUsage: &6/res subzone <residence> [subzone name]",
-            "If residence name is left off, will attempt to use residence your standing in."));
+                "If residence name is left off, will attempt to use residence your standing in."));
         LocaleManager.addTabCompleteMain(this, "[residence]");
     }
 

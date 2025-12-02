@@ -17,32 +17,32 @@ public class pdel implements cmd {
     @Override
     @CommandAnnotation(simple = true, priority = 500)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
-	if (!(sender instanceof Player))
-	    return false;
+        if (!(sender instanceof Player))
+            return false;
 
-	Player player = (Player) sender;
+        Player player = (Player) sender;
 
-	String baseCmd = "res";
-	if (resadmin)
-	    baseCmd = "resadmin";
-	if (args.length == 1) {
-	    Bukkit.dispatchCommand(player, baseCmd + " pset " + args[0] + " removeall");
-	    return true;
-	}
-	if (args.length == 2) {
-	    Bukkit.dispatchCommand(player, baseCmd + " pset " + args[0] + " " + args[1] + " removeall");
-	    return true;
-	}
-	return false;
+        String baseCmd = "res";
+        if (resadmin)
+            baseCmd = "resadmin";
+        if (args.length == 1) {
+            Bukkit.dispatchCommand(player, baseCmd + " pset " + args[0] + " removeall");
+            return true;
+        }
+        if (args.length == 2) {
+            Bukkit.dispatchCommand(player, baseCmd + " pset " + args[0] + " " + args[1] + " removeall");
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void getLocale() {
-	ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
-	// Main command
-	c.get("Description", "Remove player from residence.");
-	c.get("Info", Arrays.asList("&eUsage: &6/res pdel <residence> [player]", "Removes essential flags from player"));
-	LocaleManager.addTabCompleteMain(this, "[residence]%%[playername]", "[playername]");
+        ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
+        // Main command
+        c.get("Description", "Remove player from residence.");
+        c.get("Info", Arrays.asList("&eUsage: &6/res pdel <residence> [player]", "Removes essential flags from player"));
+        LocaleManager.addTabCompleteMain(this, "[residence]%%[playername]", "[playername]");
     }
 
 }

@@ -565,9 +565,9 @@ public enum lm {
     General_World("&eWorld: &6%1"),
     General_Subzones("&eSubzones"),
     General_NewPlayerInfo(
-        "&eIf you want to create protected area for your house, please use wooden axe to select opposite sides of your home and execute command &2/res create YourResidenceName",
-        "The below lines represent various messages residence sends to the players.",
-        "Note that some messages have variables such as %1 that are inserted at runtime.");
+            "&eIf you want to create protected area for your house, please use wooden axe to select opposite sides of your home and execute command &2/res create YourResidenceName",
+            "The below lines represent various messages residence sends to the players.",
+            "Note that some messages have variables such as %1 that are inserted at runtime.");
 
     private Object text;
     private String[] comments;
@@ -624,24 +624,24 @@ public enum lm {
                     }
 
                     switch (Residence.getInstance().getConfigManager().getGeneralMessageType()) {
-                        case ActionBar:
-                            CMIActionBar.send(player, msg);
-                            break;
-                        case ChatBox:
-                            player.sendMessage(msg);
-                            break;
-                        case TitleBar:
-                            String title = msg;
-                            String subtitle = "";
-                            if (title.contains("\\n")) {
-                                String[] parts = title.split("\\\\n", 2);
-                                title = parts[0];
-                                subtitle = parts.length > 1 ? parts[1] : "";
-                            }
-                            CMITitleMessage.send(player, title, subtitle);
-                            break;
-                        default:
-                            break;
+                    case ActionBar:
+                        CMIActionBar.send(player, msg);
+                        break;
+                    case ChatBox:
+                        player.sendMessage(msg);
+                        break;
+                    case TitleBar:
+                        String title = msg;
+                        String subtitle = "";
+                        if (title.contains("\\n")) {
+                            String[] parts = title.split("\\\\n", 2);
+                            title = parts[0];
+                            subtitle = parts.length > 1 ? parts[1] : "";
+                        }
+                        CMITitleMessage.send(player, title, subtitle);
+                        break;
+                    default:
+                        break;
                     }
                     return;
                 }

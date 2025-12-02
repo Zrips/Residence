@@ -329,7 +329,7 @@ public class PermissionManager {
 
             for (int i = 0; i < this.getWars().length; i++) {
                 w[i] = Residence.getInstance().getLM().getMessage(lm.Permissions_variableColor) + "[" + this.getWars()[i] + "]" + (!cmd ? Residence.getInstance().getLM().getMessage(
-                    lm.Permissions_permissionColor) : Residence.getInstance().getLM().getMessage(lm.Permissions_cmdPermissionColor));
+                        lm.Permissions_permissionColor) : Residence.getInstance().getLM().getMessage(lm.Permissions_cmdPermissionColor));
             }
 
             return getPermission(w);

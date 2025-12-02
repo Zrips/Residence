@@ -47,19 +47,19 @@ public class remove implements cmd {
             player = (Player) sender;
 
         if (player != null &&
-            res.isSubzone() &&
-            !resadmin &&
-            plugin.getConfigManager().isPreventSubZoneRemoval() &&
-            !res.getParent().isOwner(sender) &&
-            !res.getPermissions().playerHas(player, Flags.admin, FlagCombo.OnlyTrue) &&
-            ResPerm.delete_subzone.hasPermission(sender, lm.Subzone_CantDeleteNotOwnerOfParent)) {
+                res.isSubzone() &&
+                !resadmin &&
+                plugin.getConfigManager().isPreventSubZoneRemoval() &&
+                !res.getParent().isOwner(sender) &&
+                !res.getPermissions().playerHas(player, Flags.admin, FlagCombo.OnlyTrue) &&
+                ResPerm.delete_subzone.hasPermission(sender, lm.Subzone_CantDeleteNotOwnerOfParent)) {
             return true;
         }
 
         if (!res.isSubzone() &&
-            !resadmin &&
-            !res.isOwner(sender) &&
-            !ResPerm.admin.hasPermission(sender, lm.Residence_CantDeleteResidence)) {
+                !resadmin &&
+                !res.isOwner(sender) &&
+                !ResPerm.admin.hasPermission(sender, lm.Residence_CantDeleteResidence)) {
             return true;
         }
 

@@ -114,7 +114,7 @@ public class ResidenceListener1_19 implements Listener {
         // source & dest not in Same Res
         if (sourceRes != null && destRes != null && !sourceRes.equals(destRes)) {
             if ((sourceRes.getPermissions().has(Flags.container, true)) &&
-                (destRes.getPermissions().has(Flags.container, true))) {
+                    (destRes.getPermissions().has(Flags.container, true))) {
                 return;
             }
             event.setCancelled(true);

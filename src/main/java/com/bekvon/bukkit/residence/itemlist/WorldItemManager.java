@@ -76,7 +76,8 @@ public class WorldItemManager {
             try {
                 WorldItemList list = WorldItemList.readList(flags.getConfigurationSection("ItemList." + key));
                 lists.add(list);
-                //System.out.println("Debug: read list " + key + " world: " + list.getWorld() + " group: " + list.getGroup() + " itemcount:" + list.getListSize());
+                // System.out.println("Debug: read list " + key + " world: " + list.getWorld() +
+                // " group: " + list.getGroup() + " itemcount:" + list.getListSize());
             } catch (Exception ex) {
                 System.out.println("Failed to load item list:" + key);
             }

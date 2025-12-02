@@ -87,7 +87,8 @@ public class Utils {
     }
 
     public static boolean isSourceBlockInsideSameResidence(@NotNull Entity potentialProjecticle, @Nullable ClaimedResidence targetResidence) {
-        // Check potential block as a shooter which should be allowed if its inside same residence
+        // Check potential block as a shooter which should be allowed if its inside same
+        // residence
         if (!(potentialProjecticle instanceof Projectile))
             return false;
 
@@ -245,14 +246,14 @@ public class Utils {
 
     public static boolean isAnimal(Entity ent) {
         return (ent instanceof Animals ||
-            ent instanceof WaterMob ||
-            ent instanceof NPC ||
-            ent instanceof Bat ||
-            ent instanceof Snowman ||
-            ent instanceof IronGolem ||
-            // crude approach to include Allay and be multi version supported
-            ent.getClass().getSimpleName().equals("CraftAllay") ||
-            ent.getClass().getSimpleName().equals("CraftCopperGolem"));
+                ent instanceof WaterMob ||
+                ent instanceof NPC ||
+                ent instanceof Bat ||
+                ent instanceof Snowman ||
+                ent instanceof IronGolem ||
+                // crude approach to include Allay and be multi version supported
+                ent.getClass().getSimpleName().equals("CraftAllay") ||
+                ent.getClass().getSimpleName().equals("CraftCopperGolem"));
     }
 
     public static boolean isArmorStandEntity(EntityType ent) {

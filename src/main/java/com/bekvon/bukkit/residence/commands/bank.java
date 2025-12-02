@@ -110,8 +110,8 @@ public class bank implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Manage money in a Residence");
         c.get("Info", Arrays.asList("&eUsage: &6/res bank [deposit/withdraw/balance] <residence> <amount>",
-            "You must be standing in a Residence or provide residence name",
-            "You must have the +bank flag."));
+                "You must be standing in a Residence or provide residence name",
+                "You must have the +bank flag."));
         LocaleManager.addTabCompleteMain(this, "deposit%%withdraw%%balance", "[residence]");
     }
 }

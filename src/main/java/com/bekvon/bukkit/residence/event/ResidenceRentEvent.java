@@ -10,26 +10,26 @@ public class ResidenceRentEvent extends CancellableResidencePlayerEvent {
 
     @Override
     public HandlerList getHandlers() {
-	return handlers;
+        return handlers;
     }
 
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
     RentEventType eventtype;
 
     public enum RentEventType {
-	RENT, UNRENT, RENTABLE, UNRENTABLE, RENT_EXPIRE
+        RENT, UNRENT, RENTABLE, UNRENTABLE, RENT_EXPIRE
     }
 
     public ResidenceRentEvent(ClaimedResidence resref, Player player, RentEventType type) {
-	super("RESIDENCE_RENT_EVENT", resref, player);
-	eventtype = type;
+        super("RESIDENCE_RENT_EVENT", resref, player);
+        eventtype = type;
     }
 
     public RentEventType getCause() {
-	return eventtype;
+        return eventtype;
     }
 
 }

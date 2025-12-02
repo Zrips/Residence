@@ -12,59 +12,59 @@ public class SelectionSides {
     }
 
     public SelectionSides(boolean NorthSide, boolean WestSide, boolean EastSide, boolean SouthSide, boolean TopSide, boolean BottomSide) {
-	this.NorthSide = NorthSide;
-	this.WestSide = WestSide;
-	this.EastSide = EastSide;
-	this.SouthSide = SouthSide;
-	this.TopSide = TopSide;
-	this.BottomSide = BottomSide;
+        this.NorthSide = NorthSide;
+        this.WestSide = WestSide;
+        this.EastSide = EastSide;
+        this.SouthSide = SouthSide;
+        this.TopSide = TopSide;
+        this.BottomSide = BottomSide;
     }
 
     public void setNorthSide(boolean state) {
-	this.NorthSide = state;
+        this.NorthSide = state;
     }
 
     public boolean ShowNorthSide() {
-	return this.NorthSide;
+        return this.NorthSide;
     }
 
     public void setWestSide(boolean state) {
-	this.WestSide = state;
+        this.WestSide = state;
     }
 
     public boolean ShowWestSide() {
-	return this.WestSide;
+        return this.WestSide;
     }
 
     public void setEastSide(boolean state) {
-	this.EastSide = state;
+        this.EastSide = state;
     }
 
     public boolean ShowEastSide() {
-	return this.EastSide;
+        return this.EastSide;
     }
 
     public void setSouthSide(boolean state) {
-	this.SouthSide = state;
+        this.SouthSide = state;
     }
 
     public boolean ShowSouthSide() {
-	return this.SouthSide;
+        return this.SouthSide;
     }
 
     public void setTopSide(boolean state) {
-	this.TopSide = state;
+        this.TopSide = state;
     }
 
     public boolean ShowTopSide() {
-	return this.TopSide;
+        return this.TopSide;
     }
 
     public void setBottomSide(boolean state) {
-	this.BottomSide = state;
+        this.BottomSide = state;
     }
 
     public boolean ShowBottomSide() {
-	return this.BottomSide;
+        return this.BottomSide;
     }
 }

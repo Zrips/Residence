@@ -149,7 +149,8 @@ public class ResidenceListener1_20 implements Listener {
 
             }
             // Not player source
-            // Check potential block as a shooter which should be allowed if its inside same residence
+            // Check potential block as a shooter which should be allowed if its inside same
+            // residence
             if (Utils.isSourceBlockInsideSameResidence(entity, ClaimedResidence.getByLoc(block.getLocation())))
                 return;
 
@@ -165,7 +166,7 @@ public class ResidenceListener1_20 implements Listener {
         // Only check SuspiciousBlocks
         CMIMaterial blockM = CMIMaterial.get(block.getType());
         if (blockM != CMIMaterial.SUSPICIOUS_SAND &&
-            blockM != CMIMaterial.SUSPICIOUS_GRAVEL)
+                blockM != CMIMaterial.SUSPICIOUS_GRAVEL)
             return;
 
         // Only check player

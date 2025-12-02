@@ -11,22 +11,22 @@ public class ResidenceFlagChangeEvent extends CancellableResidencePlayerFlagEven
 
     @Override
     public HandlerList getHandlers() {
-	return handlers;
+        return handlers;
     }
 
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
     FlagState newstate;
 
     public ResidenceFlagChangeEvent(ClaimedResidence resref, Player player, String flag, FlagType type, FlagState newState, String target) {
-	super("RESIDENCE_FLAG_CHANGE", resref, player, flag, type, target);
-	newstate = newState;
+        super("RESIDENCE_FLAG_CHANGE", resref, player, flag, type, target);
+        newstate = newState;
     }
 
     public FlagState getNewState() {
-	return newstate;
+        return newstate;
     }
 
 }

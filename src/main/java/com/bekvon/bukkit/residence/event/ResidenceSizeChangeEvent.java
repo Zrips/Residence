@@ -11,11 +11,11 @@ public class ResidenceSizeChangeEvent extends CancellableResidencePlayerEvent {
 
     @Override
     public HandlerList getHandlers() {
-	return handlers;
+        return handlers;
     }
 
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
     protected String resname;
@@ -24,27 +24,27 @@ public class ResidenceSizeChangeEvent extends CancellableResidencePlayerEvent {
     ClaimedResidence res;
 
     public ResidenceSizeChangeEvent(Player player, ClaimedResidence res, CuboidArea oldarea, CuboidArea newarea) {
-	super("RESIDENCE_SIZE_CHANGE", res, player);
-	resname = res.getName();
-	this.res = res;
-	this.oldarea = oldarea;
-	this.newarea = newarea;
+        super("RESIDENCE_SIZE_CHANGE", res, player);
+        resname = res.getName();
+        this.res = res;
+        this.oldarea = oldarea;
+        this.newarea = newarea;
     }
 
     public String getResidenceName() {
-	return resname;
+        return resname;
     }
 
     @Override
     public ClaimedResidence getResidence() {
-	return res;
+        return res;
     }
 
     public CuboidArea getOldArea() {
-	return oldarea;
+        return oldarea;
     }
 
     public CuboidArea getNewArea() {
-	return newarea;
+        return newarea;
     }
 }

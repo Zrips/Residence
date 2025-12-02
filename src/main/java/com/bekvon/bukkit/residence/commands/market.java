@@ -446,7 +446,7 @@ public class market implements cmd {
 
         c.get("sell.Description", "Sell a residence");
         c.get("sell.Info", Arrays.asList("&eUsage: &6/res market sell [residence] [amount]", "Puts a residence for sale for [amount] of money.",
-            "Another player can buy the residence with /res market buy"));
+                "Another player can buy the residence with /res market buy"));
         LocaleManager.addTabCompleteSub(this, "sell", "[residence]");
 
         c.get("sign.Description", "Set market sign");
@@ -463,15 +463,15 @@ public class market implements cmd {
 
         c.get("rent.Description", "ent a residence");
         c.get("rent.Info", Arrays.asList("&eUsage: &6/res market rent [residence] <AutoPay>",
-            "Rents a residence.  Autorenew can be either true or false.  If true, the residence will be automatically re-rented upon expire if the residence owner has allowed it."));
+                "Rents a residence.  Autorenew can be either true or false.  If true, the residence will be automatically re-rented upon expire if the residence owner has allowed it."));
         LocaleManager.addTabCompleteSub(this, "rent", "[cresidence]", "true%%false");
 
         c.get("rentable.Description", "Make a residence rentable.");
         c.get("rentable.Info", Arrays.asList("&eUsage: &6/res market rentable [residence] [cost] [days] <AllowRenewing> <StayInMarket> <AllowAutoPay>",
-            "Makes a residence rentable for [cost] money for every [days] number of days.",
-            "If <AllowRenewing> is true, the residence will be able to be rented again before rent expires.",
-            "If <StayInMarket> is true, the residence will stay in market after last renter will be removed.",
-            "If <AllowAutoPay> is true, money for rent will be automaticaly taken from players balance if he chosen that option when renting"));
+                "Makes a residence rentable for [cost] money for every [days] number of days.",
+                "If <AllowRenewing> is true, the residence will be able to be rented again before rent expires.",
+                "If <StayInMarket> is true, the residence will stay in market after last renter will be removed.",
+                "If <AllowAutoPay> is true, money for rent will be automaticaly taken from players balance if he chosen that option when renting"));
         LocaleManager.addTabCompleteSub(this, "rentable", "[residence]", "1000", "7", "true", "true", "true");
 
         c.get("autopay.Description", "Sets residence AutoPay to given value");
@@ -488,8 +488,8 @@ public class market implements cmd {
 
         c.get("unrent.Description", "Remove a residence from rent or rentable.");
         c.get("unrent.Info", Arrays.asList("&eUsage: &6/res market unrent [residence]",
-            "If you are the renter, this command releases the rent on the house for you.",
-            "If you are the owner, this command makes the residence not for rent anymore."));
+                "If you are the renter, this command releases the rent on the house for you.",
+                "If you are the owner, this command makes the residence not for rent anymore."));
         LocaleManager.addTabCompleteSub(this, "release", "[residence]");
         LocaleManager.addTabCompleteSub(this, "unrent", "[residence]");
     }

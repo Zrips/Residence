@@ -51,7 +51,8 @@ public class ResidenceListener1_16_5_Paper implements Listener {
 
         } else {
             // Entity not player source
-            // Check potential block as a shooter which should be allowed if its inside same residence
+            // Check potential block as a shooter which should be allowed if its inside same
+            // residence
             if (Utils.isSourceBlockInsideSameResidence(event.getEntity(), ClaimedResidence.getByLoc(block.getLocation())))
                 return;
 

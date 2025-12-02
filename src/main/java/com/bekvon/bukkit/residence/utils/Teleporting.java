@@ -72,13 +72,13 @@ public class Teleporting {
         try {
             CMIScheduler.runTask(Residence.getInstance(), () -> {
                 PaperLib.teleportAsync(entity, loc, cause)
-                    .whenComplete((result, ex) -> {
-                        if (ex != null) {
-                            future.completeExceptionally(ex);
-                        } else {
-                            future.complete(result);
-                        }
-                    });
+                        .whenComplete((result, ex) -> {
+                            if (ex != null) {
+                                future.completeExceptionally(ex);
+                            } else {
+                                future.complete(result);
+                            }
+                        });
             });
         } catch (Throwable e) {
             future.completeExceptionally(e);

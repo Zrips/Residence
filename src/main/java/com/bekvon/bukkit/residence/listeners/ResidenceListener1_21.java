@@ -119,7 +119,8 @@ public class ResidenceListener1_21 implements Listener {
         if (perms.has(Flags.build, FlagCombo.TrueOrNone))
             return;
 
-        // Removing weaving effect on death as there is no other way to properly handle this effect inside residence
+        // Removing weaving effect on death as there is no other way to properly handle
+        // this effect inside residence
         ent.removePotionEffect(PotionEffectType.WEAVING);
     }
 
@@ -131,11 +132,11 @@ public class ResidenceListener1_21 implements Listener {
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
             return;
-        
+
         Entity entity = event.getRightClicked();
         if (CMIEntityType.get(entity) != CMIEntityType.COPPER_GOLEM)
             return;
-        
+
         Player player = event.getPlayer();
 
         if (ResAdmin.isResAdmin(player))
@@ -147,7 +148,7 @@ public class ResidenceListener1_21 implements Listener {
         // Avoid overwriting Leash Flag, Lead Shears
         // Only held Axe or Honeycomb
         if ((mainHand == null || !(mainHand.equals(CMIMaterial.HONEYCOMB) || mainHand.toString().contains("_AXE"))) &&
-            (offHand == null || !(offHand.equals(CMIMaterial.HONEYCOMB) || offHand.toString().contains("_AXE")))) {
+                (offHand == null || !(offHand.equals(CMIMaterial.HONEYCOMB) || offHand.toString().contains("_AXE")))) {
             return;
         }
 

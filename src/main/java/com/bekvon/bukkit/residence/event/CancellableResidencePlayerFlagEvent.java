@@ -9,17 +9,17 @@ public class CancellableResidencePlayerFlagEvent extends ResidencePlayerFlagEven
     protected boolean cancelled;
 
     public CancellableResidencePlayerFlagEvent(String eventName, ClaimedResidence resref, Player player, String flag, FlagType type, String target) {
-	super(eventName, resref, player, flag, type, target);
+        super(eventName, resref, player, flag, type, target);
     }
 
     @Override
     public boolean isCancelled() {
-	return cancelled;
+        return cancelled;
     }
 
     @Override
     public void setCancelled(boolean bln) {
-	cancelled = bln;
+        cancelled = bln;
     }
 
 }

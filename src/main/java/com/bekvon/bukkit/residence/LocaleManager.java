@@ -118,10 +118,10 @@ public class LocaleManager {
             c.setRecordContents(true);
 
         c.header(Arrays.asList("NOTE If you want to modify this file, it is HIGHLY recommended that you make a copy",
-            "of this file and modify that instead. This file will be updated automatically by Residence",
-            "when a newer version is detected, and your changes will be overwritten.  Once you ",
-            "have a copy of this file, change the Language: option under the Residence config.yml",
-            "to whatever you named your copy."));
+                "of this file and modify that instead. This file will be updated automatically by Residence",
+                "when a newer version is detected, and your changes will be overwritten.  Once you ",
+                "have a copy of this file, change the Language: option under the Residence config.yml",
+                "to whatever you named your copy."));
 
         for (lm lm : lm.values()) {
             if (lm.getText() instanceof String)
@@ -159,7 +159,7 @@ public class LocaleManager {
                     cm.getLocale();
                 }
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
+                    | NoSuchMethodException | SecurityException e) {
                 continue;
             }
         }
@@ -177,15 +177,15 @@ public class LocaleManager {
 
         c.get("CommandHelp.SubCommands.res.SubCommands.resreload.Description", "Reload residence.");
         c.get("CommandHelp.SubCommands.res.SubCommands.resreload.Info",
-            Arrays.asList("&eUsage: &6/resreload"));
+                Arrays.asList("&eUsage: &6/resreload"));
 
         c.get("CommandHelp.SubCommands.res.SubCommands.resload.Description", "Load residence save file.");
         c.get("CommandHelp.SubCommands.res.SubCommands.resload.Info",
-            Arrays.asList("&eUsage: &6/resload", "UNSAFE command, does not save residences first.", "Loads the residence save file after you have made changes."));
+                Arrays.asList("&eUsage: &6/resload", "UNSAFE command, does not save residences first.", "Loads the residence save file after you have made changes."));
 
         c.get("CommandHelp.SubCommands.res.SubCommands.removeworld.Description", "Remove all residences from world");
         c.get("CommandHelp.SubCommands.res.SubCommands.removeworld.Info",
-            Arrays.asList("&eUsage: &6/res removeworld [worldname]", "Can only be used from console"));
+                Arrays.asList("&eUsage: &6/res removeworld [worldname]", "Can only be used from console"));
 
         // Write back config
         c.save();

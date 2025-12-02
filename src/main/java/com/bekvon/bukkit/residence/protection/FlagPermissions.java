@@ -436,7 +436,8 @@ public class FlagPermissions {
     }
 
     @Deprecated
-    protected Map<String, Boolean> getPlayerFlags(String player, boolean allowCreate)//this function works with uuid in string format as well, instead of player name
+    protected Map<String, Boolean> getPlayerFlags(String player, boolean allowCreate)// this function works with uuid in string format as well, instead of player
+                                                                                     // name
     {
 
         Map<String, Boolean> flags = null;
@@ -497,7 +498,8 @@ public class FlagPermissions {
     }
 
     @Deprecated
-    public void removeAllPlayerFlags(String player) {//this function works with uuid in string format as well, instead of player name
+    public void removeAllPlayerFlags(String player) {// this function works with uuid in string format as well, instead of player
+                                                     // name
         removeAllPlayerFlags(ResidencePlayer.getUUID(player));
     }
 
@@ -809,7 +811,7 @@ public class FlagPermissions {
 
         MinimizeFlags min = Residence.getInstance().getResidenceManager().addFlagsTempCache(world, cuboidFlags);
         if (min == null) {
-            // Cloning map to fix issue for yml anchors being created	
+            // Cloning map to fix issue for yml anchors being created
             root.put("AreaFlags", new HashMap<String, Boolean>(cuboidFlags));
         } else {
             root.put("AreaFlags", min.getId());
@@ -1551,13 +1553,13 @@ public class FlagPermissions {
                 String perms = listGroupFlags(next);
                 if (!perms.equals("none")) {
                     sbuild
-                        .append(next)
-                        .append(CMIChatColor.WHITE)
-                        .append("[")
-                        .append(CMIChatColor.DARK_AQUA)
-                        .append(perms)
-                        .append(CMIChatColor.WHITE)
-                        .append("] ");
+                            .append(next)
+                            .append(CMIChatColor.WHITE)
+                            .append("[")
+                            .append(CMIChatColor.DARK_AQUA)
+                            .append(perms)
+                            .append(CMIChatColor.WHITE)
+                            .append("] ");
                 }
             }
         }

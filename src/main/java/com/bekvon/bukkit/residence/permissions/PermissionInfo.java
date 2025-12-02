@@ -15,88 +15,88 @@ public class PermissionInfo {
     private Set<String> values = new HashSet<String>();
 
     public PermissionInfo(String permission, Long delay) {
-	this.permission = permission;
-	if (delay != null)
-	    this.delay = delay;
+        this.permission = permission;
+        if (delay != null)
+            this.delay = delay;
     }
 
     public boolean isTimeToRecalculate() {
 
-	return lastChecked == null || delay + lastChecked < System.currentTimeMillis();
+        return lastChecked == null || delay + lastChecked < System.currentTimeMillis();
     }
 
     public String getPermission() {
-	return permission;
+        return permission;
     }
 
     public void setPermission(String permission) {
-	this.permission = permission;
+        this.permission = permission;
     }
 
     public Long getDelay() {
-	return delay;
+        return delay;
     }
 
     public void setDelay(long delay) {
-	this.delay = delay;
+        this.delay = delay;
     }
 
     public Long getLastChecked() {
-	if (lastChecked == null)
-	    lastChecked = System.currentTimeMillis();
-	return lastChecked;
+        if (lastChecked == null)
+            lastChecked = System.currentTimeMillis();
+        return lastChecked;
     }
 
     public void setLastChecked(long lastChecked) {
-	this.lastChecked = lastChecked;
+        this.lastChecked = lastChecked;
     }
 
     public Double getMaxValue() {
-	return maxValue;
+        return maxValue;
     }
 
     public Double getMaxValue(double defaultV) {
-	return maxValue == null ? defaultV : maxValue > defaultV ? maxValue : defaultV;
+        return maxValue == null ? defaultV : maxValue > defaultV ? maxValue : defaultV;
     }
 
     public int getMaxValue(int defaultV) {
-	return maxValue == null ? defaultV : maxValue > defaultV ? maxValue.intValue() : defaultV;
+        return maxValue == null ? defaultV : maxValue > defaultV ? maxValue.intValue() : defaultV;
     }
 
     public void setMaxValue(Double maxValue) {
-	this.maxValue = maxValue;
+        this.maxValue = maxValue;
     }
 
     public Double getMinValue() {
-	return minValue;
+        return minValue;
     }
 
     public Double getMinValue(double defaultV) {
-	return minValue == null ? defaultV : minValue < defaultV ? minValue : defaultV;
+        return minValue == null ? defaultV : minValue < defaultV ? minValue : defaultV;
     }
 
     public int getMinValue(int defaultV) {
-	return minValue == null ? defaultV : minValue < defaultV ? minValue.intValue() : defaultV;
+        return minValue == null ? defaultV : minValue < defaultV ? minValue.intValue() : defaultV;
     }
 
     public void setMinValue(Double minValue) {
-	this.minValue = minValue;
+        this.minValue = minValue;
     }
 
     public boolean isEnabled() {
-	return enabled;
+        return enabled;
     }
 
     public void setEnabled(boolean enabled) {
-	this.enabled = enabled;
+        this.enabled = enabled;
     }
 
     public Set<String> getValues() {
-	return values;
+        return values;
     }
 
     public void addValue(String value) {
-	this.values.add(value);
+        this.values.add(value);
     }
 
 }

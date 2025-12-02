@@ -6,7 +6,7 @@ public class RandomLoc {
     double y = 0D;
     double z = 0D;
 
-    public RandomLoc(double x,  double z) {
+    public RandomLoc(double x, double z) {
         this.x = x;
         this.z = z;
     }

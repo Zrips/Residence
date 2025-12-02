@@ -44,7 +44,7 @@ public class check implements cmd {
             lm.Flag_CheckFalse.sendMessage(sender, flag, pname, args[0]);
         } else {
             lm.Flag_CheckTrue.sendMessage(sender, flag, pname, args[0], (res.getPermissions().playerHas(player, res.getPermissions().getWorldName(), flag, false) ? lm.General_True.getMessage()
-                : lm.General_False.getMessage()));
+                    : lm.General_False.getMessage()));
         }
         return true;
     }

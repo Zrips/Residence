@@ -11,24 +11,24 @@ public class ResidenceAreaAddEvent extends CancellableResidencePlayerEvent {
 
     @Override
     public HandlerList getHandlers() {
-	return handlers;
+        return handlers;
     }
 
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
     protected String resname;
     CuboidArea area;
 
     public ResidenceAreaAddEvent(Player player, String newname, ClaimedResidence resref, CuboidArea resarea) {
-	super("RESIDENCE_AREA_ADD", resref, player);
-	resname = newname;
-	area = resarea;
+        super("RESIDENCE_AREA_ADD", resref, player);
+        resname = newname;
+        area = resarea;
     }
 
     public String getResidenceName() {
-	return resname;
+        return resname;
     }
 
 //    public void setResidenceName(String name) {
@@ -36,7 +36,7 @@ public class ResidenceAreaAddEvent extends CancellableResidencePlayerEvent {
 //    }
 
     public CuboidArea getPhysicalArea() {
-	return area;
+        return area;
     }
 
 //    public void setPhysicalArea(CuboidArea newarea) {

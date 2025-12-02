@@ -12,11 +12,11 @@ public class ResidenceChatEvent extends CancellableResidencePlayerEvent {
 
     @Override
     public HandlerList getHandlers() {
-	return handlers;
+        return handlers;
     }
 
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
     protected String message;
@@ -24,33 +24,33 @@ public class ResidenceChatEvent extends CancellableResidencePlayerEvent {
     private String prefix = "";
 
     public ResidenceChatEvent(ClaimedResidence resref, Player player, String prefix, String message, CMIChatColor color) {
-	super("RESIDENCE_CHAT_EVENT", resref, player);
-	this.message = message;
-	this.prefix = prefix;
-	this.color = color;
+        super("RESIDENCE_CHAT_EVENT", resref, player);
+        this.message = message;
+        this.prefix = prefix;
+        this.color = color;
     }
 
     public String getChatMessage() {
-	return message;
+        return message;
     }
 
     public String getChatprefix() {
-	return CMIChatColor.translate( prefix);
+        return CMIChatColor.translate(prefix);
     }
 
     public void setChatprefix(String prefix) {
-	this.prefix = prefix;
+        this.prefix = prefix;
     }
 
     public void setChatMessage(String newmessage) {
-	message = newmessage;
+        message = newmessage;
     }
 
     public CMIChatColor getColor() {
-	return color;
+        return color;
     }
 
     public void setColor(CMIChatColor c) {
-	color = c;
+        color = c;
     }
 }

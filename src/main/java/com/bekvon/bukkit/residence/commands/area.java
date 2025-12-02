@@ -147,7 +147,7 @@ public class area implements cmd {
 
         c.get("replace.Description", "Replace physical areas in a residence");
         c.get("replace.Info", Arrays.asList("&eUsage: &6/res area replace [residence] [areaID]",
-            "You must first select two points first.", "Replacing a area will charge the difference in size if the new area is bigger."));
+                "You must first select two points first.", "Replacing a area will charge the difference in size if the new area is bigger."));
         LocaleManager.addTabCompleteSub(this, "replace", "[residence]");
 
     }

@@ -50,8 +50,8 @@ public class give implements cmd {
             }
 
             rm.addText(lm.Residence_GiveConfirm.getMessage(args[0], res.getOwner(), args[1]))
-                .addHover(LC.info_Click.getLocale())
-                .addCommand((resadmin ? "resadmin" : "res") + " give " + args[0] + " " + args[1] + (includeSubzones ? " -s" : "") + " -confirmed");
+                    .addHover(LC.info_Click.getLocale())
+                    .addCommand((resadmin ? "resadmin" : "res") + " give " + args[0] + " " + args[1] + (includeSubzones ? " -s" : "") + " -confirmed");
             rm.show(sender);
 
             return true;

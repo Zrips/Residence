@@ -6,33 +6,33 @@ import org.bukkit.entity.Player;
 
 public class ResidencePlayerEvent extends ResidenceEvent implements ResidencePlayerEventInterface {
 
-	Player p;
+    Player p;
 
-	public ResidencePlayerEvent(String eventName, ClaimedResidence resref, Player player) {
-		this(false, eventName, resref, player);
-	}
+    public ResidencePlayerEvent(String eventName, ClaimedResidence resref, Player player) {
+        this(false, eventName, resref, player);
+    }
 
-	public ResidencePlayerEvent(boolean async, String eventName, ClaimedResidence resref, Player player) {
-		super(async, eventName, resref);
-		res = resref;
-		p = player;
-	}
+    public ResidencePlayerEvent(boolean async, String eventName, ClaimedResidence resref, Player player) {
+        super(async, eventName, resref);
+        res = resref;
+        p = player;
+    }
 
-	@Override
-	public boolean isPlayer() {
-		return p != null;
-	}
+    @Override
+    public boolean isPlayer() {
+        return p != null;
+    }
 
-	@Override
-	public boolean isAdmin() {
-		if (isPlayer()) {
-			return Residence.getInstance().getPermissionManager().isResidenceAdmin(p);
-		}
-		return true;
-	}
+    @Override
+    public boolean isAdmin() {
+        if (isPlayer()) {
+            return Residence.getInstance().getPermissionManager().isResidenceAdmin(p);
+        }
+        return true;
+    }
 
-	@Override
-	public Player getPlayer() {
-		return p;
-	}
+    @Override
+    public Player getPlayer() {
+        return p;
+    }
 }

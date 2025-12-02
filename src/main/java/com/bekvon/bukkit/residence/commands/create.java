@@ -35,7 +35,7 @@ public class create implements cmd {
         if (plugin.getSelectionManager().hasPlacedBoth(player)) {
 
             if (sender instanceof Player && !plugin.getPermissionManager().isResidenceAdmin(sender) && plugin.isDisabledWorldCommand((plugin.getSelectionManager().getSelection(player))
-                .getWorld())) {
+                    .getWorld())) {
                 lm.General_DisabledWorld.sendMessage(sender);
                 return null;
             }

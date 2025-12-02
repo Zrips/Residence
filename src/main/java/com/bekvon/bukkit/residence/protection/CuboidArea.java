@@ -110,7 +110,7 @@ public class CuboidArea {
             return false;
         }
         if (area.containsLoc(lowPoints, getWorldName()) || area.containsLoc(highPoints, getWorldName()) || this.containsLoc(area.highPoints, getWorldName()) || this.containsLoc(area.lowPoints,
-            getWorldName())) {
+                getWorldName())) {
             return true;
         }
         return advCuboidCheckCollision(highPoints, lowPoints, area.highPoints, area.lowPoints);

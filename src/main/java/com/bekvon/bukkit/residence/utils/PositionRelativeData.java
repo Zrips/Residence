@@ -19,7 +19,7 @@ public class PositionRelativeData {
         this.localX = localX;
         this.localY = localY;
         this.localZ = localZ;
-        maxWorldY = CMIWorld.getMaxHeight(world); 
+        maxWorldY = CMIWorld.getMaxHeight(world);
         minWorldY = CMIWorld.getMinHeight(world);
 
         if (world.getEnvironment().equals(Environment.NETHER) && maxWorldY < 200) {

@@ -25,7 +25,7 @@ public class removeworld implements cmd {
 
         if (args.length != 1 && args.length != 2)
             return false;
-        
+
         if (sender instanceof Player || sender instanceof BlockCommandSender) {
             sender.sendMessage(CMIChatColor.RED + "MUST be run from console.");
             return false;

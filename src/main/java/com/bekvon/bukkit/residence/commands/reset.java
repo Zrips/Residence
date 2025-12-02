@@ -77,7 +77,7 @@ public class reset implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Reset residence to default flags.");
         c.get("Info", Arrays.asList("&eUsage: &6/res reset <residence/all>",
-            "Resets the flags on a residence to their default.  You must be the owner or an admin to do this."));
+                "Resets the flags on a residence to their default.  You must be the owner or an admin to do this."));
         LocaleManager.addTabCompleteMain(this, "[residence]%%all");
     }
 }

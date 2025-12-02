@@ -301,7 +301,7 @@ public class InformationPager {
 
             File file = new File(BackupDir, dateFormat.format(date) + ".txt");
             try (
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8));) {
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8));) {
                 writer.append(sb.toString());
                 writer.flush();
             } catch (Exception e) {

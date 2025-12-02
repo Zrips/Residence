@@ -270,7 +270,7 @@ public class setFlagInfo {
                     Bukkit.dispatchCommand(player, cmdPrefix + " pset " + residence.getName() + targetPlayerName + " " + one.getKey() + " " + command);
                     if (Residence.getInstance().getConfigManager().isConsoleLogsShowFlagChanges())
                         lm.consoleMessage(player.getName() + " issued server command: /" + cmdPrefix + " pset " + residence.getName() + targetPlayerName + " " + one
-                            .getKey() + " " + command);
+                                .getKey() + " " + command);
                     updateLooks();
                 }
 

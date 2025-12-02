@@ -9,18 +9,18 @@ public class CancellableResidencePlayerEvent extends ResidencePlayerEvent implem
     protected boolean cancelled;
 
     public CancellableResidencePlayerEvent(String eventName, ClaimedResidence resref, Player player) {
-	super(eventName, resref, player);
-	cancelled = false;
+        super(eventName, resref, player);
+        cancelled = false;
     }
 
     @Override
     public boolean isCancelled() {
-	return cancelled;
+        return cancelled;
     }
 
     @Override
     public void setCancelled(boolean bln) {
-	cancelled = bln;
+        cancelled = bln;
     }
 
 }

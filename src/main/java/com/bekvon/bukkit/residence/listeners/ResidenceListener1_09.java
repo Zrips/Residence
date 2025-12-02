@@ -163,7 +163,8 @@ public class ResidenceListener1_09 implements Listener {
 
         boolean harmfull = false;
 
-        // Temporally fail safe to avoid console spam for getting base potion data until fix roles out
+        // Temporally fail safe to avoid console spam for getting base potion data until
+        // fix roles out
         try {
 
             if (Version.isCurrentEqualOrHigher(Version.v1_20_R4)) {

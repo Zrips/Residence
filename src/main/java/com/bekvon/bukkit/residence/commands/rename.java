@@ -29,7 +29,7 @@ public class rename implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Renames a residence.");
         c.get("Info", Arrays.asList("&eUsage: &6/res rename [OldName] [NewName]", "You must be the owner or an admin to do this.",
-            "The name must not already be taken by another residence."));
+                "The name must not already be taken by another residence."));
         LocaleManager.addTabCompleteMain(this, "[residence]");
     }
 }

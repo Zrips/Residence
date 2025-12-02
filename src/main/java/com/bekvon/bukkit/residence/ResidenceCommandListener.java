@@ -81,7 +81,7 @@ public class ResidenceCommandListener implements CommandExecutor {
         }
 
         if (sender instanceof Player && !plugin.getPermissionManager().isResidenceAdmin(sender) && plugin.isDisabledWorldCommand(((Player) sender)
-            .getWorld())) {
+                .getWorld())) {
             lm.General_DisabledWorld.sendMessage(sender);
             return true;
         }
@@ -324,7 +324,7 @@ public class ResidenceCommandListener implements CommandExecutor {
                 cmdClass = (cmd) nmsClass.getConstructor().newInstance();
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-            | SecurityException e) {
+                | SecurityException e) {
         }
         return cmdClass;
     }

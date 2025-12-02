@@ -153,7 +153,7 @@ public class pset implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Set flags on a specific player for a Residence.");
         c.get("Info", Arrays.asList("&eUsage: &6/res pset <residence> [player] [flag] [true/false/remove]",
-            "&eUsage: &6/res pset <residence> [player] removeall", "To see a list of flags, use /res flags ?"));
+                "&eUsage: &6/res pset <residence> [player] removeall", "To see a list of flags, use /res flags ?"));
         LocaleManager.addTabCompleteMain(this, "[residence]%%[playername]", "[playername]%%[flag]", "[flag]%%true%%false%%remove", "true%%false%%remove");
     }
 }

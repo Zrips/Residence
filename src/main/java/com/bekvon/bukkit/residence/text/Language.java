@@ -52,7 +52,7 @@ public class Language {
     /**
      * Get the message with the correct key
      * 
-     * @param key - the path of the message
+     * @param key       - the path of the message
      * @param variables - the variables separated with %
      * @return the message
      */
@@ -71,7 +71,7 @@ public class Language {
     /**
      * Get the message with the correct key
      * 
-     * @param key - the path of the message
+     * @param key       - the path of the message
      * @param variables - the variables separated with %
      * @return the message
      */

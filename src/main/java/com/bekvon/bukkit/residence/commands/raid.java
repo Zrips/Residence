@@ -221,7 +221,7 @@ public class raid implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Manage raid in residence");
         c.get("Info", Arrays.asList("&eUsage: &6/res raid start [resname] (playerName)", "&6/res raid stop [resname]", "&6/res raid kick [playerName]",
-            "&6/res raid immunity [add/take/set/clear] [resname/currentres] [time]"));
+                "&6/res raid immunity [add/take/set/clear] [resname/currentres] [time]"));
 
         LocaleManager.addTabCompleteSub(this, "start", "[residence]");
         LocaleManager.addTabCompleteSub(this, "stop", "[residence]");

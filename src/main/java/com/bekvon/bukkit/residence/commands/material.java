@@ -24,7 +24,7 @@ public class material implements cmd {
         if (args.length != 1) {
             return false;
         }
-        
+
         try {
             lm.General_MaterialGet.sendMessage(sender, args[0], CMIMaterial.get(args[0]).getName());
         } catch (Exception ex) {

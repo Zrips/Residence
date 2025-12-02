@@ -11,22 +11,22 @@ public class ResidenceAreaDeleteEvent extends CancellableResidencePlayerEvent {
 
     @Override
     public HandlerList getHandlers() {
-	return handlers;
+        return handlers;
     }
 
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
     DeleteCause cause;
 
     public ResidenceAreaDeleteEvent(Player player, ClaimedResidence resref, DeleteCause delcause) {
-	super("RESIDENCE_AREA_DELETE", resref, player);
-	cause = delcause;
+        super("RESIDENCE_AREA_DELETE", resref, player);
+        cause = delcause;
     }
 
     public DeleteCause getCause() {
-	return cause;
+        return cause;
     }
 
 }

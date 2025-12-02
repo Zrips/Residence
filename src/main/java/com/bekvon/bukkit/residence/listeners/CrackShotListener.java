@@ -89,7 +89,8 @@ public class CrackShotListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
 
-        // Note: Location of entity, not player; otherwise player could stand outside of res and still damage
+        // Note: Location of entity, not player; otherwise player could stand outside of
+        // res and still damage
         Location loc = event.getVictim().getLocation();
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
         if (res != null && res.getPermissions().playerHas(player, Flags.container, FlagCombo.OnlyFalse)) {
@@ -121,7 +122,7 @@ public class CrackShotListener implements Listener {
             return;
 
         srcarea = ClaimedResidence.getByLoc(damager.getLocation());
- 
+
         boolean srcpvp = true;
         if (srcarea != null) {
             srcpvp = srcarea.getPermissions().has(Flags.pvp, true);

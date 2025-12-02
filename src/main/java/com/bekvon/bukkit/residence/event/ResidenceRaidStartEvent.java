@@ -17,11 +17,11 @@ public class ResidenceRaidStartEvent extends Event implements Cancellable {
 
     @Override
     public HandlerList getHandlers() {
-	return handlers;
+        return handlers;
     }
 
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
     private ClaimedResidence res;
@@ -29,30 +29,30 @@ public class ResidenceRaidStartEvent extends Event implements Cancellable {
     protected boolean cancelled;
 
     public ResidenceRaidStartEvent(ClaimedResidence res, HashMap<UUID, RaidAttacker> hashMap) {
-	this.res = res;
-	this.attackers = hashMap;
+        this.res = res;
+        this.attackers = hashMap;
     }
 
     @Override
     public boolean isCancelled() {
-	return cancelled;
+        return cancelled;
     }
 
     @Override
     public void setCancelled(boolean bln) {
-	
-	cancelled = bln;
+
+        cancelled = bln;
     }
 
     public ClaimedResidence getRes() {
-	return res;
+        return res;
     }
 
     public HashMap<UUID, RaidAttacker> getAttackers() {
-	return attackers;
+        return attackers;
     }
 
     public HashMap<UUID, RaidDefender> getDefenders() {
-	return res.getRaid().getDefenders();
+        return res.getRaid().getDefenders();
     }
 }

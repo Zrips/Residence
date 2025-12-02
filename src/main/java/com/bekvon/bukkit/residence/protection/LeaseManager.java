@@ -270,7 +270,7 @@ public class LeaseManager {
 
         if (root == null)
             return;
-        
+
         leaseExpireTime.clear();
 
         for (Object val : root.values()) {

@@ -83,9 +83,9 @@ public class lset implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Change blacklist and ignorelist options");
         c.get("Info", Arrays.asList("&eUsage: &6/res lset <residence> [blacklist/ignorelist] [material]",
-            "&eUsage: &6/res lset <residence> Info",
-            "Blacklisting a material prevents it from being placed in the residence.",
-            "Ignorelist causes a specific material to not be protected by Residence."));
+                "&eUsage: &6/res lset <residence> Info",
+                "Blacklisting a material prevents it from being placed in the residence.",
+                "Ignorelist causes a specific material to not be protected by Residence."));
         LocaleManager.addTabCompleteMain(this, "[residence]%%blacklist%%ignorelist", "blacklist%%ignorelist%%[material]", "[material]");
     }
 }

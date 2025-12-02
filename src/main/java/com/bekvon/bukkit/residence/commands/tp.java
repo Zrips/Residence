@@ -59,7 +59,7 @@ public class tp implements cmd {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Teleport to a residence");
         c.get("Info", Arrays.asList("&eUsage: &6/res tp [residence]", "Teleports you to a residence, you must have +tp flag access or be the owner.",
-            "Your permission group must also be allowed to teleport by the server admin."));
+                "Your permission group must also be allowed to teleport by the server admin."));
         LocaleManager.addTabCompleteMain(this, "[residence]");
     }
 }
