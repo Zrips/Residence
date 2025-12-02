@@ -323,13 +323,6 @@ public class ResidencePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerFirstLogin(PlayerLoginEvent event) {
-        Player player = event.getPlayer();
-        if (!player.hasPlayedBefore())
-            ResidenceBlockListener.newPlayers.add(player.getUniqueId());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerLogin(PlayerLoginEvent event) {
         if (!plugin.getConfigManager().isRentInformOnEnding())
             return;

@@ -47,14 +47,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.commands.auto;
-import com.bekvon.bukkit.residence.commands.auto.direction;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
@@ -62,7 +60,6 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
-import com.bekvon.bukkit.residence.protection.CuboidArea;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
@@ -73,15 +70,11 @@ import net.Zrips.CMILib.Container.CMIVectorInt3D;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceBlockListener implements Listener {
 
-    private List<String> MessageInformed = new ArrayList<String>();
-
-    private Set<UUID> ResCreated = new HashSet<UUID>();
-    public static Set<UUID> newPlayers = new HashSet<UUID>();
+    private List<UUID> MessageInformed = new ArrayList<UUID>();
 
     private Residence plugin;
 
@@ -427,7 +420,7 @@ public class ResidenceBlockListener implements Listener {
         if (plugin.getPlayerManager().getResidenceCount(player.getUniqueId()) != 0)
             return;
 
-        if (MessageInformed.contains(player.getName()))
+        if (MessageInformed.contains(player.getUniqueId()))
             return;
 
         if (!ResPerm.newguyresidence.hasPermission(player))
@@ -435,7 +428,7 @@ public class ResidenceBlockListener implements Listener {
 
         lm.General_NewPlayerInfo.sendMessage(player);
 
-        MessageInformed.add(player.getName());
+        MessageInformed.add(player.getUniqueId());
     }
 
     private boolean checkBlock(ClaimedResidence orRes, Location loc, Vector offset, Material type, Player player) {
@@ -494,16 +487,16 @@ public class ResidenceBlockListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
         Block block = event.getBlock();
+
         if (!CMIMaterial.get(block.getType()).containsCriteria(CMIMC.CHEST))
             return;
 
-        if (plugin.getPlayerManager().getResidenceCount(player.getUniqueId()) != 0)
+        ResidencePlayer rp = ResidencePlayer.get(player);
+
+        if (rp.getData().hadResidence())
             return;
 
-        if (ResCreated.contains(player.getUniqueId()))
-            return;
-
-        if (!newPlayers.contains(player.getUniqueId()))
+        if (rp.getResAmount() > 0)
             return;
 
         Location loc = block.getLocation();
@@ -520,8 +513,7 @@ public class ResidenceBlockListener implements Listener {
         boolean created = plugin.getResidenceManager().addResidence(player, player.getName(), plugin.getSelectionManager().getPlayerLoc1(player),
                 plugin.getSelectionManager().getPlayerLoc2(player), plugin.getConfigManager().isNewPlayerFree());
         if (created) {
-            ResCreated.add(player.getUniqueId());
-            newPlayers.remove(player.getUniqueId());
+            rp.getData().setHadResidence(true);
         }
     }
 

@@ -197,10 +197,10 @@ public class PlayerManager implements ResidencePlayerInterface {
         if (resPlayer == null) {
             resPlayer = new ResidencePlayer(player);
             addPlayer(resPlayer);
-            resPlayer.save();
         } else {
             resPlayer.updatePlayer(player);
         }
+        resPlayer.save();
         resPlayer.setLastSeen(System.currentTimeMillis());
         resPlayer.updateLastKnownWorld();
 
