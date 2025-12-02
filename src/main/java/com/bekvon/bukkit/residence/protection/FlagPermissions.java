@@ -1216,10 +1216,10 @@ public class FlagPermissions {
 
                 String perms = printPlayerFlags(nextEnt.getValue());
 
-                if (pName.equalsIgnoreCase(Residence.getInstance().getServerLandName()))
+                if (Residence.getInstance().getServerLandName().equalsIgnoreCase(pName))
                     continue;
 
-                if (!perms.equals("none")) {
+                if (pName != null && !perms.equals("none")) {
                     sbuild.append(pName).append(CMIChatColor.WHITE).append("[").append(perms).append(CMIChatColor.WHITE).append("] ");
                 }
             }
