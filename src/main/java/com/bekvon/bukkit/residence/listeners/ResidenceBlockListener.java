@@ -484,8 +484,10 @@ public class ResidenceBlockListener implements Listener {
             return;
 
         Player player = event.getPlayer();
+        
         if (ResAdmin.isResAdmin(player))
             return;
+        
         Block block = event.getBlock();
 
         if (!CMIMaterial.get(block.getType()).containsCriteria(CMIMC.CHEST))
@@ -493,10 +495,7 @@ public class ResidenceBlockListener implements Listener {
 
         ResidencePlayer rp = ResidencePlayer.get(player);
 
-        if (rp.getData().hadResidence())
-            return;
-
-        if (rp.getResAmount() > 0)
+        if (rp.getResAmount() > 0 || rp.getData().ownedResidence())
             return;
 
         Location loc = block.getLocation();
@@ -513,7 +512,7 @@ public class ResidenceBlockListener implements Listener {
         boolean created = plugin.getResidenceManager().addResidence(player, player.getName(), plugin.getSelectionManager().getPlayerLoc1(player),
                 plugin.getSelectionManager().getPlayerLoc2(player), plugin.getConfigManager().isNewPlayerFree());
         if (created) {
-            rp.getData().setHadResidence(true);
+            rp.getData().ownedResidence(true);
         }
     }
 

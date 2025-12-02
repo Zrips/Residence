@@ -7,7 +7,7 @@ public class ResidencePlayerData {
 
     private long lastSeen = 0L;
     private String lastKnownWorld = null;
-    private boolean hadResidence = false;
+    private boolean ownedResidence = false;
 
     public long getLastSeen() {
         return lastSeen;
@@ -27,12 +27,12 @@ public class ResidencePlayerData {
         return this;
     }
 
-    public boolean hadResidence() {
-        return hadResidence;
+    public boolean ownedResidence() {
+        return ownedResidence;
     }
 
-    public void setHadResidence(boolean hadResidence) {
-        this.hadResidence = hadResidence;
+    public void ownedResidence(boolean ownedResidence) {
+        this.ownedResidence = ownedResidence;
     }
 
     public Map<String, Object> serialize(boolean hasResidences) {
@@ -44,10 +44,10 @@ public class ResidencePlayerData {
         if (getLastKnownWorld() != null)
             map.put("World", getLastKnownWorld());
 
-        if (!hasResidences && hadResidence())
-            map.put("HadResidence", true);
+        if (!hasResidences && ownedResidence())
+            map.put("OwnedResidence", true);
         else
-            map.put("HadResidence", null);
+            map.put("OwnedResidence", null);
 
         return map;
     }
@@ -71,9 +71,9 @@ public class ResidencePlayerData {
             }
         }
 
-        if (map.containsKey("HadResidence")) {
+        if (map.containsKey("OwnedResidence")) {
             try {
-                data.setHadResidence((boolean) map.get("HadResidence"));
+                data.ownedResidence((boolean) map.get("OwnedResidence"));
             } catch (Exception e) {
                 e.printStackTrace();
             }

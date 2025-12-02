@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
+import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 
@@ -32,20 +33,24 @@ public class create implements cmd {
             }
         }
 
-        if (plugin.getSelectionManager().hasPlacedBoth(player)) {
-
-            if (sender instanceof Player && !plugin.getPermissionManager().isResidenceAdmin(sender) && plugin.isDisabledWorldCommand((plugin.getSelectionManager().getSelection(player))
-                    .getWorld())) {
-                lm.General_DisabledWorld.sendMessage(sender);
-                return null;
-            }
-
-            Residence.getInstance().getPlayerManager().getResidencePlayer(player).forceUpdateGroup();
-
-            plugin.getResidenceManager().addResidence(player, args[0], resadmin);
+        if (!plugin.getSelectionManager().hasPlacedBoth(player)) {
+            lm.Select_Points.sendMessage(sender);
             return true;
         }
-        lm.Select_Points.sendMessage(sender);
+
+        if (sender instanceof Player && !plugin.getPermissionManager().isResidenceAdmin(sender) && plugin.isDisabledWorldCommand((plugin.getSelectionManager().getSelection(player))
+                .getWorld())) {
+            lm.General_DisabledWorld.sendMessage(sender);
+            return null;
+        }
+
+        Residence.getInstance().getPlayerManager().getResidencePlayer(player).forceUpdateGroup();
+        
+        ResidencePlayer rp = ResidencePlayer.get(player);
+
+        boolean deductmoney = !plugin.getConfigManager().isNewPlayerCommandFree() || rp.getData().ownedResidence();
+        
+        plugin.getResidenceManager().addResidence(player, args[0], resadmin, deductmoney);
         return true;
     }
 

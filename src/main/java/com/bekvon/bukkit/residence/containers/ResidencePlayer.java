@@ -292,7 +292,7 @@ public class ResidencePlayer {
         if (this.userName != null)
             residence.getPermissions().setOwnerLastKnownName(userName);
         this.residenceList.add(residence);
-        this.getData().setHadResidence(true);
+        this.getData().ownedResidence(true);
     }
 
     public void removeResidence(ClaimedResidence residence) {
@@ -460,7 +460,7 @@ public class ResidencePlayer {
         return Residence.getInstance().getPlayerManager().getResidencePlayer(name);
     }
 
-    public static ResidencePlayer get(Player player) {
+    public static @NotNull ResidencePlayer get(Player player) {
         return Residence.getInstance().getPlayerManager().getResidencePlayer(player);
     }
 

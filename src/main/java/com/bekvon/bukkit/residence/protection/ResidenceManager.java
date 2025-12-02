@@ -219,42 +219,49 @@ public class ResidenceManager implements ResidenceInterface {
     @Override
     @Deprecated
     public boolean addResidence(String name, Location loc1, Location loc2) {
-        return this.addResidence(null, name, null, plugin.getServerLandName(), loc1, loc2, true);
+        return this.addResidence(null, name, null, plugin.getServerLandName(), new CuboidArea(loc1, loc2), true, false);
     }
 
     @Override
     @Deprecated
     public boolean addResidence(String name, String owner, Location loc1, Location loc2) {
-        return this.addResidence(null, owner, null, name, loc1, loc2, true);
+        return this.addResidence(null, owner, null, name, new CuboidArea(loc1, loc2), true, false);
     }
 
     @Override
     public boolean addResidence(Player player, String name, Location loc1, Location loc2, boolean resadmin) {
-        return this.addResidence(player, player.getName(), player.getUniqueId(), name, loc1, loc2, resadmin);
+        return this.addResidence(player, player.getName(), player.getUniqueId(), name, new CuboidArea(loc1, loc2), resadmin, !resadmin);
     }
 
     @Deprecated
     public boolean addResidence(Player player, String owner, String name, Location loc1, Location loc2, boolean resadmin) {
-        return addResidence(player, owner, null, name, loc1, loc2, resadmin);
+        return addResidence(player, owner, null, name, new CuboidArea(loc1, loc2), resadmin, !resadmin);
     }
 
     @Override
     public boolean addResidence(Player player, String resName, boolean resadmin) {
-        return addResidence(player, player.getName(), player.getUniqueId(), resName, plugin.getSelectionManager().getPlayerLoc1(player), plugin
-                .getSelectionManager().getPlayerLoc2(player), resadmin);
+        return addResidence(player, player.getName(), player.getUniqueId(), resName, plugin.getSelectionManager().getSelectionCuboid(player), resadmin, !resadmin);
+    }
+
+    public boolean addResidence(Player player, String resName, boolean resadmin, boolean deductMoney) {
+        return addResidence(player, player.getName(), player.getUniqueId(), resName, plugin.getSelectionManager().getSelectionCuboid(player), resadmin, deductMoney);
     }
 
     public boolean addResidence(Player player, String owner, UUID ownerUUId, String resName, Location loc1, Location loc2, boolean resadmin) {
+        return addResidence(player, owner, ownerUUId, resName, new CuboidArea(loc1, loc2), resadmin, !resadmin);
+    }
+
+    public boolean addResidence(Player player, String owner, UUID ownerUUId, String resName, CuboidArea area, boolean resadmin, boolean deductMoney) {
 
         if (!Utils.verifyResidenceName(player, resName))
             return false;
 
-        if (loc1 == null || loc2 == null || !loc1.getWorld().getName().equals(loc2.getWorld().getName())) {
+        if (area.getLowVector() == null || area.getHighVector() == null) {
             lm.Select_Points.sendMessage(player);
             return false;
         }
 
-        if (plugin.isDisabledWorld(loc1.getWorld()) && plugin.getConfigManager().isDisableResidenceCreation()) {
+        if (plugin.isDisabledWorld(area.getWorld()) && plugin.getConfigManager().isDisableResidenceCreation()) {
             lm.General_CantCreate.sendMessage(player);
             return false;
         }
@@ -284,8 +291,8 @@ public class ResidenceManager implements ResidenceInterface {
             }
         }
 
-        CuboidArea newArea = new CuboidArea(loc1, loc2);
-        ClaimedResidence newRes = new ClaimedResidence(owner, ownerUUId, loc1.getWorld().getName());
+        CuboidArea newArea = area.clone();
+        ClaimedResidence newRes = new ClaimedResidence(owner, ownerUUId, area.getWorld().getName());
         newRes.getPermissions().applyDefaultFlags();
         newRes.setEnterMessage(group.getDefaultEnterMessage());
         newRes.setLeaveMessage(group.getDefaultLeaveMessage());
@@ -306,7 +313,7 @@ public class ResidenceManager implements ResidenceInterface {
             newRes.setTpLoc(player, resadmin);
         }
 
-        if (Residence.getInstance().getConfigManager().isChargeOnCreation() && !newRes.isSubzone() && plugin.getConfigManager().enableEconomy() && !resadmin) {
+        if (Residence.getInstance().getConfigManager().isChargeOnCreation() && !newRes.isSubzone() && plugin.getConfigManager().enableEconomy() && !resadmin && deductMoney) {
             double chargeamount = newArea.getCost(group);
 
             if (chargeamount > 0 && !plugin.getTransactionManager().chargeEconomyMoney(player, chargeamount)) {

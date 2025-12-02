@@ -187,11 +187,11 @@ public class PlayerManager implements ResidencePlayerInterface {
         return rp;
     }
 
-    public ResidencePlayer playerJoin(Player player) {
+    public @NotNull ResidencePlayer playerJoin(Player player) {
         return playerJoin((OfflinePlayer) player);
     }
 
-    public ResidencePlayer playerJoin(OfflinePlayer player) {
+    public @NotNull ResidencePlayer playerJoin(OfflinePlayer player) {
         ResidencePlayer resPlayer = playersByUUID.get(player.getUniqueId());
 
         if (resPlayer == null) {
@@ -392,7 +392,7 @@ public class PlayerManager implements ResidencePlayerInterface {
         return playerJoin(player);
     }
 
-    public ResidencePlayer getResidencePlayer(Player player) {
+    public @NotNull ResidencePlayer getResidencePlayer(Player player) {
         if (player == null)
             return null;
 

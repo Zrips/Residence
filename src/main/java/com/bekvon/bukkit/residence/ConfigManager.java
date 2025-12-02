@@ -193,6 +193,7 @@ public class ConfigManager {
     protected boolean ShowNoobMessage;
     protected boolean NewPlayerUse;
     protected boolean NewPlayerFree;
+    protected boolean NewPlayerCommandFree;
     protected boolean spoutEnable;
     protected boolean AutoMobRemoval;
     protected boolean BounceAnimation;
@@ -1292,6 +1293,9 @@ public class ConfigManager {
         NewPlayerUse = c.get("Global.NewPlayer.Use", false);
         c.addComment("Global.NewPlayer.Free", "Setting this to true, residence will be created for free", "By setting to false, money will be taken from player, if he has them");
         NewPlayerFree = c.get("Global.NewPlayer.Free", true);
+        c.addComment("Global.NewPlayer.CommandFree", "Setting this to true, residence will be created for free when using /res create or /res auto",
+                "Only applies if player never created any residences before, including owning one");
+        NewPlayerCommandFree = c.get("Global.NewPlayer.CommandFree", false);
         c.addComment("Global.NewPlayer.Range", "Range from placed chest to both sides. By setting to 5, residence will be 5+5+1 = 11 blocks wide in total");
         NewPlayerRangeX = c.get("Global.NewPlayer.Range.X", 5);
         NewPlayerRangeY = c.get("Global.NewPlayer.Range.Y", 5);
@@ -2107,6 +2111,10 @@ public class ConfigManager {
     public boolean isNewPlayerFree() {
         return NewPlayerFree;
     }
+    
+	public boolean isNewPlayerCommandFree() {
+		return NewPlayerCommandFree;
+	}
 
     public boolean enableSpout() {
         return spoutEnable;
