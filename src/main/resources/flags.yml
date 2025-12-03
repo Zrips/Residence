@@ -564,6 +564,8 @@ Global:
     trade: true
     use: true
     vehicledestroy: true
+  # When enabled players will not be required to have access to defined flags to use that group
+  GroupedFlagsIgnoreAccess: true
   # These are grouped flags, so when using /res pset nickname redstone true, player will get all flags in list, same when setting to false or removing them.
   GroupedFlags:
     redstone:
@@ -572,7 +574,7 @@ Global:
     - diode
     - lever
     - pressure
-    craft:
+    crafting:
     - brew
     - enchant
     - table

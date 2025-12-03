@@ -43,11 +43,13 @@ public class FlagPermissions {
     protected static ArrayList<String> validFlags = new ArrayList<>();
     protected static ArrayList<String> validPlayerFlags = new ArrayList<>();
     protected static ArrayList<String> validAreaFlags = new ArrayList<>();
-    protected static HashMap<String, Set<String>> validFlagGroups = new HashMap<>();
+    protected static HashMap<String, HashMap<String, FlagState>> validFlagGroups = new HashMap<>();
 
     private List<String> CMDWhiteList = new ArrayList<>();
     private List<String> CMDBlackList = new ArrayList<>();
     private boolean inherit = false;
+
+    private static boolean ignoreGroupedFlagsAccess = false;
 
     final static Map<Material, Flags> matUseFlagList = new EnumMap<>(Material.class);
 
@@ -73,6 +75,18 @@ public class FlagPermissions {
 
         public String getName() {
             return name().toLowerCase();
+        }
+
+        public static FlagState fromString(String flagstate) {
+            if (flagstate.equalsIgnoreCase("true") || flagstate.equalsIgnoreCase("t")) {
+                return FlagState.TRUE;
+            } else if (flagstate.equalsIgnoreCase("false") || flagstate.equalsIgnoreCase("f")) {
+                return FlagState.FALSE;
+            } else if (flagstate.equalsIgnoreCase("remove") || flagstate.equalsIgnoreCase("r") || flagstate.equalsIgnoreCase("neither")) {
+                return FlagState.NEITHER;
+            } else {
+                return FlagState.INVALID;
+            }
         }
 
     }
@@ -165,18 +179,34 @@ public class FlagPermissions {
     }
 
     public static void addFlagToFlagGroup(String group, String flag) {
+        
+		group = group.toLowerCase();
+		
+        FlagState state = FlagState.TRUE;
+
+        if (flag.contains("-")) {
+            FlagState temp = FlagState.fromString(flag.split("-")[1]);
+            if (!temp.equals(FlagState.INVALID))
+                state = temp;
+            flag = flag.split("-")[0];
+        }
+
         Flags f = Flags.getFlag(flag);
         if (f != null && !f.isGlobalyEnabled()) {
             return;
         }
+        
         if (!FlagPermissions.validFlags.contains(group) && !FlagPermissions.validAreaFlags.contains(group) && !FlagPermissions.validPlayerFlags.contains(group)) {
-            validFlagGroups.computeIfAbsent(group, k -> new HashSet<String>()).add(flag);
+            validFlagGroups.computeIfAbsent(group, k -> new HashMap<String, FlagState>()).put(flag, state);
         }
     }
 
     public static void removeFlagFromFlagGroup(String group, String flag) {
+        
+        group = group.toLowerCase();
+        
         if (validFlagGroups.containsKey(group)) {
-            Set<String> flags = validFlagGroups.get(group);
+            HashMap<String, FlagState> flags = validFlagGroups.get(group);
             flags.remove(flag);
             if (flags.isEmpty()) {
                 validFlagGroups.remove(group);
@@ -515,6 +545,7 @@ public class FlagPermissions {
 
     public boolean setGroupFlag(String group, String flag, FlagState state) {
         group = group.toLowerCase();
+                
         if (!groupFlags.containsKey(group)) {
             groupFlags.put(group, Collections.synchronizedMap(new HashMap<String, Boolean>()));
         }
@@ -543,16 +574,12 @@ public class FlagPermissions {
         return true;
     }
 
+    /**
+     * @deprecated Use {@link FlagState#fromString(String)} directly.
+     */
+    @Deprecated
     public static FlagState stringToFlagState(String flagstate) {
-        if (flagstate.equalsIgnoreCase("true") || flagstate.equalsIgnoreCase("t")) {
-            return FlagState.TRUE;
-        } else if (flagstate.equalsIgnoreCase("false") || flagstate.equalsIgnoreCase("f")) {
-            return FlagState.FALSE;
-        } else if (flagstate.equalsIgnoreCase("remove") || flagstate.equalsIgnoreCase("r") || flagstate.equalsIgnoreCase("neither")) {
-            return FlagState.NEITHER;
-        } else {
-            return FlagState.INVALID;
-        }
+        return FlagState.fromString(flagstate);
     }
 
     public boolean playerHas(ResidencePlayer resPlayer, Flags flag, boolean def) {
@@ -1707,5 +1734,13 @@ public class FlagPermissions {
 
     public static FlagPermissions getPerms(World world) {
         return Residence.getInstance().getWorldFlags().getPerms(world);
+    }
+
+    public static boolean isIgnoreGroupedFlagsAccess() {
+        return ignoreGroupedFlagsAccess;
+    }
+
+    public static void setIgnoreGroupedFlagsAccess(boolean flagsAccess) {
+        ignoreGroupedFlagsAccess = flagsAccess;
     }
 }

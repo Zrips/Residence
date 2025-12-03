@@ -356,14 +356,17 @@ public class ResidencePermissions extends FlagPermissions {
     }
 
     private boolean checkCanSetFlag(CommandSender sender, String flag, FlagState state, boolean globalflag, boolean resadmin) {
+        return checkCanSetFlag(sender, flag, state, globalflag, resadmin, true);
+    }
+
+    private boolean checkCanSetFlag(CommandSender sender, String flag, FlagState state, boolean globalflag, boolean resadmin, boolean checkFlagAccess) {
         Flags f = Flags.getFlag(flag);
         if (f != null)
             flag = f.toString();
         if (!checkValidFlag(flag, globalflag)) {
             if (f != null)
                 lm.Invalid_FlagType_Fail.sendMessage(sender, f.getFlagMode() == FlagMode.Residence ? Residence.getInstance().getLM().getMessage(lm.Invalid_FlagType_Residence)
-                        : Residence
-                                .getInstance().getLM().getMessage(lm.Invalid_FlagType_Player));
+                        : Residence.getInstance().getLM().getMessage(lm.Invalid_FlagType_Player));
             else
                 lm.Invalid_Flag.sendMessage(sender);
             return false;
@@ -377,7 +380,7 @@ public class ResidencePermissions extends FlagPermissions {
                 lm.General_NoPermission.sendMessage(sender);
                 return false;
             }
-            if (!hasFlagAccess(this.getOwnerUUID(), flag) && !ResPerm.flag_$1.hasPermission(sender, 10000L, flag.toLowerCase())) {
+            if (checkFlagAccess && !hasFlagAccess(this.getOwnerUUID(), flag) && !ResPerm.flag_$1.hasPermission(sender, 10000L, flag.toLowerCase())) {
                 lm.Flag_SetFailed.sendMessage(sender, flag);
                 return false;
             }
@@ -398,10 +401,24 @@ public class ResidencePermissions extends FlagPermissions {
 
     @Deprecated
     public boolean setPlayerFlag(CommandSender sender, String targetPlayer, String flag, String flagstate, boolean resadmin, boolean show) {
-        return this.setPlayerFlag(sender, ResidencePlayer.getUUID(targetPlayer), flag, flagstate, resadmin, show);
+        return this.setPlayerFlag(sender, ResidencePlayer.getUUID(targetPlayer), flag, flagstate, resadmin, show, true);
     }
 
+    @Deprecated
     public boolean setPlayerFlag(CommandSender sender, UUID targetPlayerUUID, String flag, String flagstate, boolean resadmin, boolean show) {
+        return this.setPlayerFlag(sender, targetPlayerUUID, flag, flagstate, resadmin, show, !resadmin);
+    }
+
+    public boolean setPlayerFlag(CommandSender sender, UUID targetPlayerUUID, String flag, FlagState flagstate, boolean resadmin, boolean show) {
+        return this.setPlayerFlag(sender, targetPlayerUUID, flag, flagstate, resadmin, show, !resadmin);
+    }
+
+    @Deprecated
+    public boolean setPlayerFlag(CommandSender sender, UUID targetPlayerUUID, String flag, String flagstate, boolean resadmin, boolean show, boolean checkFlagAccess) {
+        return this.setPlayerFlag(sender, targetPlayerUUID, flag, FlagState.fromString(flagstate), resadmin, show, checkFlagAccess);
+    }
+
+    public boolean setPlayerFlag(CommandSender sender, UUID targetPlayerUUID, String flag, FlagState state, boolean resadmin, boolean show, boolean checkFlagAccess) {
 
         if (targetPlayerUUID == null) {
             sender.sendMessage("No player by this name");
@@ -418,12 +435,10 @@ public class ResidencePermissions extends FlagPermissions {
         Flags f = Flags.getFlag(flag);
         if (f != null)
             flag = f.toString();
-        if (validFlagGroups.containsKey(flag)) {
-            return this.setFlagGroupOnPlayer(sender, targetPlayerUUID, flag, flagstate, resadmin);
-        }
+        if (validFlagGroups.containsKey(flag))
+            return this.setFlagGroupOnPlayer(sender, targetPlayerUUID, flag, resadmin);
 
-        FlagState state = FlagPermissions.stringToFlagState(flagstate);
-        if (checkCanSetFlag(sender, flag, state, false, resadmin)) {
+        if (checkCanSetFlag(sender, flag, state, false, resadmin, checkFlagAccess)) {
 
             if (!isEventCallsSuspended()) {
                 ResidenceFlagChangeEvent fc = new ResidenceFlagChangeEvent(residence, sender instanceof Player ? (Player) sender : null, flag, ResidenceFlagChangeEvent.FlagType.PLAYER, state,
@@ -441,7 +456,7 @@ public class ResidencePermissions extends FlagPermissions {
                         break;
                     case FALSE:
                     case TRUE:
-                        lm.Flag_PSet.sendMessage(sender, flag, residence.getName(), flagstate, ResidencePlayer.getName(targetPlayerUUID));
+                        lm.Flag_PSet.sendMessage(sender, flag, residence.getName(), state.getName(), ResidencePlayer.getName(targetPlayerUUID));
                         break;
                     default:
                         break;
@@ -470,9 +485,7 @@ public class ResidencePermissions extends FlagPermissions {
     }
 
     public boolean setGroupFlag(Player player, String group, String flag, String flagstate, boolean resadmin) {
-        Flags f = Flags.getFlag(flag);
-        FlagState state = FlagPermissions.stringToFlagState(flagstate);
-        return setGroupFlag(player, group, f, state, resadmin);
+        return setGroupFlag(player, group, Flags.getFlag(flag), FlagState.fromString(flagstate), resadmin);
     }
 
     public boolean setGroupFlag(Player player, String group, Flags f, FlagState flagstate, boolean resadmin) {
@@ -498,13 +511,13 @@ public class ResidencePermissions extends FlagPermissions {
 
         group = group.toLowerCase();
         if (validFlagGroups.containsKey(flag)) {
-            return this.setFlagGroupOnGroup(player, flag, group, flagstate.toString(), resadmin);
+            return this.setFlagGroupOnGroup(player, flag, group, resadmin);
         }
 
         if (checkCanSetFlag(player, flag, flagstate, false, resadmin)) {
             if (Residence.getInstance().getPermissionManager().hasGroup(group)) {
                 if (!isEventCallsSuspended()) {
-                    ResidenceFlagChangeEvent fc = new ResidenceFlagChangeEvent(residence, player, flag, ResidenceFlagChangeEvent.FlagType.GROUP, flagstate, group);
+                    ResidenceFlagChangeEvent fc = new ResidenceFlagChangeEvent(residence, player, flag, FlagType.GROUP, flagstate, group);
                     Residence.getInstance().getServ().getPluginManager().callEvent(fc);
                     if (fc.isCancelled())
                         return false;
@@ -900,11 +913,11 @@ public class ResidencePermissions extends FlagPermissions {
 
     public boolean setFlagGroup(CommandSender sender, String flaggroup, FlagState state, boolean resadmin) {
         if (FlagPermissions.validFlagGroups.containsKey(flaggroup)) {
-            Set<String> flags = FlagPermissions.validFlagGroups.get(flaggroup);
+            HashMap<String, FlagState> flags = FlagPermissions.validFlagGroups.get(flaggroup);
             boolean changed = false;
 
-            for (String flag : flags) {
-                if (this.setFlag(sender, flag, state, resadmin)) {
+            for (Entry<String, FlagState> flag : flags.entrySet()) {
+                if (this.setFlag(sender, flag.getKey(), state, resadmin)) {
                     changed = true;
                 }
             }
@@ -913,50 +926,76 @@ public class ResidencePermissions extends FlagPermissions {
         return false;
     }
 
+    @Deprecated
     public boolean setFlagGroupOnGroup(Player player, String flaggroup, String group, String state, boolean resadmin) {
-        if (FlagPermissions.validFlagGroups.containsKey(flaggroup)) {
-            Set<String> flags = FlagPermissions.validFlagGroups.get(flaggroup);
-            boolean changed = false;
-            for (String flag : flags) {
-                if (this.setGroupFlag(player, group, flag, state, resadmin)) {
-                    changed = true;
-                }
-            }
-            return changed;
-        }
-        return false;
+        return setFlagGroupOnGroup(player, flaggroup, group, resadmin);
     }
 
-    public boolean setFlagGroupOnPlayer(CommandSender sender, String target, String flaggroup, String state, boolean resadmin) {
-        return setFlagGroupOnPlayer(sender, ResidencePlayer.getUUID(target), flaggroup, state, resadmin);
-    }
-
-    public boolean setFlagGroupOnPlayer(CommandSender sender, UUID uuid, String flaggroup, String state, boolean resadmin) {
+    public boolean setFlagGroupOnGroup(Player player, String flaggroup, String group, boolean resadmin) {
         if (!FlagPermissions.validFlagGroups.containsKey(flaggroup))
             return false;
 
-        Set<String> flags = FlagPermissions.validFlagGroups.get(flaggroup);
+        HashMap<String, FlagState> flags = FlagPermissions.validFlagGroups.get(flaggroup);
+        boolean changed = false;
+        for (Entry<String, FlagState> flag : flags.entrySet()) {
+            if (this.setGroupFlag(player, group, Flags.getFlag(flag.getKey()), flag.getValue(), resadmin)) {
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    public boolean setFlagGroupOnPlayer(CommandSender sender, String target, String flaggroup, String state, boolean resadmin) {
+        return setFlagGroupOnPlayer(sender, ResidencePlayer.getUUID(target), flaggroup, resadmin);
+    }
+
+    public boolean setFlagGroupOnPlayer(CommandSender sender, UUID uuid, String flaggroup, String state, boolean resadmin) {
+        return setFlagGroupOnPlayer(sender, uuid, flaggroup, resadmin);
+    }
+
+    public boolean setFlagGroupOnPlayer(CommandSender sender, UUID uuid, String flaggroup, boolean resadmin) {
+        if (!FlagPermissions.validFlagGroups.containsKey(flaggroup))
+            return false;
+
+        HashMap<String, FlagState> flags = FlagPermissions.validFlagGroups.get(flaggroup);
         boolean changed = false;
         boolean changedAll = true;
         StringBuilder flagString = new StringBuilder();
 
-        for (String flag : flags) {
-            if (this.setPlayerFlag(sender, uuid, flag, state, resadmin, false)) {
+        for (Entry<String, FlagState> flag : flags.entrySet()) {
+            if (this.setPlayerFlag(sender, uuid, flag.getKey(), flag.getValue(), resadmin, false, !FlagPermissions.isIgnoreGroupedFlagsAccess())) {
                 changed = true;
                 if (!flagString.toString().isEmpty())
                     flagString.append(LC.info_ListSpliter.getLocale());
-                flagString.append(flag);
+                switch (flag.getValue()) {
+                case FALSE:
+                    flagString.append("{gcd}");
+                    break;
+                case INVALID:
+                    break;
+                case NEITHER:
+                    flagString.append("{gcn}");
+                    break;
+                case TRUE:
+                    flagString.append("{gcu}");
+                    break;
+                default:
+                    break;
+                } 
+                flagString.append(flag.getKey());
             } else
                 changedAll = false;
         }
+
         if (changedAll) {
             ResidencePlayer rplayer = ResidencePlayer.get(uuid);
             if (rplayer != null) {
                 rplayer.addTrustedResidence(this.residence);
             }
         }
+
         if (!flagString.toString().isEmpty())
-            lm.Flag_Set.sendMessage(sender, flagString, ResidencePlayer.getName(uuid), state);
+            lm.Flag_GSet.sendMessage(sender, flagString, ResidencePlayer.getName(uuid));
         return changed;
     }
 

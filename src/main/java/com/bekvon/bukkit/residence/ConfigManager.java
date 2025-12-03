@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -31,11 +30,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
-import com.bekvon.bukkit.residence.containers.GenMessageType;
 import com.bekvon.bukkit.residence.containers.EconomyType;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.GenMessageType;
 import com.bekvon.bukkit.residence.containers.RandomTeleport;
-import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
@@ -49,7 +47,6 @@ import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Locale.YmlMaker;
 import net.Zrips.CMILib.Logs.CMIDebug;
-import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Version.Version;
 
 public class ConfigManager {
@@ -529,6 +526,7 @@ public class ConfigManager {
                 "When enabled allowed and blocked commands inside residence will be inherited from global list and combined with residence command limits");
 
         cfg.addComment("Global.FlagPermission", "This gives permission to change certain flags to all groups, unless specifically denied to the group.");
+        cfg.addComment("Global.GroupedFlagsIgnoreAccess", "When enabled players will not be required to have access to defined flags to use that group");
         cfg.addComment("Global.FlagGui", "This sets GUI items to represent each flag, if not given, then gray wool will be used");
         cfg.addComment("Global.ResidenceDefault", "These are default flags applied to all residences from any user group.");
         cfg.addComment("Global.CreatorDefault", "These are default flags applied to the residence creator of any group.");
@@ -562,6 +560,16 @@ public class ConfigManager {
         File f = new File(plugin.getDataFolder(), "flags.yml");
         YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
+        if (!conf.isConfigurationSection("Global.GroupedFlagsIgnoreAccess")) {
+            conf.set("Global.GroupedFlagsIgnoreAccess", true);
+            try {
+                conf.save(f);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        FlagPermissions.setIgnoreGroupedFlagsAccess(conf.getBoolean("Global.GroupedFlagsIgnoreAccess"));
+        
         if (!conf.isConfigurationSection("Global.GroupedFlags")) {
             conf.createSection("Global.GroupedFlags");
             conf.set("Global.GroupedFlags.redstone", Arrays.asList(
@@ -596,9 +604,11 @@ public class ConfigManager {
             }
         }
 
+
         for (Flags one : Flags.values()) {
             one.resetGroups();
         }
+
 
         for (String oneGroup : conf.getConfigurationSection("Global.GroupedFlags").getKeys(false)) {
             for (String oneFlag : conf.getStringList("Global.GroupedFlags." + oneGroup)) {
@@ -2111,10 +2121,10 @@ public class ConfigManager {
     public boolean isNewPlayerFree() {
         return NewPlayerFree;
     }
-    
-	public boolean isNewPlayerCommandFree() {
-		return NewPlayerCommandFree;
-	}
+
+    public boolean isNewPlayerCommandFree() {
+        return NewPlayerCommandFree;
+    }
 
     public boolean enableSpout() {
         return spoutEnable;

@@ -51,6 +51,7 @@ import com.bekvon.bukkit.residence.itemlist.ResidenceItemList;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
+import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.raid.ResidenceRaid;
 import com.bekvon.bukkit.residence.shopStuff.ShopVote;
 import com.bekvon.bukkit.residence.signsStuff.Signs;
@@ -2147,12 +2148,12 @@ public class ClaimedResidence {
     }
 
     public boolean isTrusted(ResidencePlayer player) {
-        Set<String> flags = FlagPermissions.validFlagGroups.get(padd.groupedFlag);
+        HashMap<String, FlagState> flags = FlagPermissions.validFlagGroups.get(padd.groupedFlag);
         if (flags == null || flags.isEmpty() || player == null)
             return false;
         boolean trusted = true;
-        for (String flag : flags) {
-            Flags f = Flags.getFlag(flag);
+        for (Entry<String, FlagState> flag : flags.entrySet()) {
+            Flags f = Flags.getFlag(flag.getKey());
             if (f == null) {
                 trusted = false;
                 break;

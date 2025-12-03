@@ -52,7 +52,7 @@ public class pset implements cmd {
             }
 
             if (state.equals(FlagState.INVALID)) {
-                state = FlagPermissions.stringToFlagState(one);
+                state = FlagState.fromString(one);
                 if (!state.equals(FlagState.INVALID))
                     continue;
             }
@@ -115,12 +115,12 @@ public class pset implements cmd {
 
         switch (action) {
         case pset:
-            if (!state.equals(FlagState.INVALID) && (flag != null || flagGroup != null)) {
+            if (!state.equals(FlagState.INVALID) && flag != null || flagGroup != null) {
                 if (!residence.isOwner(sender) && !resadmin && !residence.getPermissions().playerHas(sender, Flags.admin, false)) {
                     lm.General_NoPermission.sendMessage(sender);
                     return true;
                 }
-                residence.getPermissions().setPlayerFlag(sender, rplayer.getUniqueId(), flag != null ? flag : flagGroup, state.getName(), resadmin, true);
+                residence.getPermissions().setPlayerFlag(sender, rplayer.getUniqueId(), flag != null ? flag : flagGroup, state, resadmin, true);
                 return true;
             }
 

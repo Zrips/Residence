@@ -182,6 +182,7 @@ public enum lm {
     Flag_lackPrefix(""),
     Flag_others("&eand &2%1 &eothers"),
     Flag_Set("&eFlag (&6%1&e) set for &6%2 &eto &6%3 &estate"),
+    Flag_GSet("&eFlags (&6%1&e) set for &6%2"),
     Flag_Removed("&eFlag (&6%1&e) removed for &6%2"),
     Flag_PSet("&eFlag (&6%1&e) set for &6%2 &eto &6%3 &estate for &6%4"),
     Flag_PRemoved("&eFlag (&6%1&e) removed from &6%2 &eresidence for &6%3"),
