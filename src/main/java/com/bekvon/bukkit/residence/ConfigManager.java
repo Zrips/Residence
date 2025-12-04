@@ -266,46 +266,6 @@ public class ConfigManager {
     protected CMIParticle OverlapFrame;
     protected CMIParticle OverlapSides;
 
-    // DynMap
-    public boolean DynMapHideByDefault;
-    public boolean DynMapUse;
-
-    public boolean DynMapShowFlags;
-    public boolean DynMapExcludeDefaultFlags;
-    public boolean DynMapHideHidden;
-    public boolean DynMapLayer3dRegions;
-    public int DynMapLayerSubZoneDepth;
-    public String DynMapBorderColor;
-    public double DynMapBorderOpacity;
-    public int DynMapBorderWeight;
-    public String DynMapFillColor;
-    public double DynMapFillOpacity;
-    public String DynMapFillForRent;
-    public String DynMapFillRented;
-    public String DynMapFillForSale;
-    public List<String> DynMapVisibleRegions;
-    public List<String> DynMapHiddenRegions;
-    // DynMap
-
-    // Pl3xMap
-    public boolean Pl3xMapHideByDefault;
-    public boolean Pl3xMapUse;
-
-    public boolean Pl3xMapShowFlags;
-    public boolean Pl3xMapExcludeDefaultFlags;
-    public boolean Pl3xMapHideHidden;
-    public int Pl3xMapLayerSubZoneDepth;
-    public int Pl3xBorderColor = 0;
-    public int Pl3xFillColor = 0;
-    public int Pl3xMapBorderWeight;
-    public int Pl3xMapFillForRent = 0;
-    public int Pl3xMapFillRented = 0;
-    public int Pl3xMapFillForSale = 0;
-    public List<String> Pl3xMapVisibleRegions;
-    public List<String> Pl3xMapHiddenRegions;
-    // Pl3xMap
-    public List<String> HiddenPlayerResidences = new ArrayList<String>();
-
     // Raid
     public static boolean RaidEnabled = false;
     public static boolean RaidAttackerBlockBreak = false;
@@ -569,7 +529,7 @@ public class ConfigManager {
             }
         }
         FlagPermissions.setIgnoreGroupedFlagsAccess(conf.getBoolean("Global.GroupedFlagsIgnoreAccess"));
-        
+
         if (!conf.isConfigurationSection("Global.GroupedFlags")) {
             conf.createSection("Global.GroupedFlags");
             conf.set("Global.GroupedFlags.redstone", Arrays.asList(
@@ -604,11 +564,9 @@ public class ConfigManager {
             }
         }
 
-
         for (Flags one : Flags.values()) {
             one.resetGroups();
         }
-
 
         for (String oneGroup : conf.getConfigurationSection("Global.GroupedFlags").getKeys(false)) {
             for (String oneFlag : conf.getStringList("Global.GroupedFlags." + oneGroup)) {
@@ -1460,86 +1418,7 @@ public class ConfigManager {
             ActionBarOnSelection = false;
         }
 
-        c.addComment("DynMap.Use", "Enables or disable DynMap Support");
-        DynMapUse = c.get("DynMap.Use", true);
-        c.addComment("DynMap.HideByDefault", "When set to true we will hide residence areas by default on dynmap window",
-                "Residences can still be enabled throw provided DynMap option on left top side");
-        DynMapHideByDefault = c.get("DynMap.HideByDefault", false);
-        c.addComment("DynMap.ShowFlags", "Shows or hides residence flags");
-        DynMapShowFlags = c.get("DynMap.ShowFlags", true);
-        c.addComment("DynMap.ExcludeDefaultFlags", "When enabled default flags will not be included in residence overview");
-        DynMapExcludeDefaultFlags = c.get("DynMap.ExcludeDefaultFlags", true);
-        c.addComment("DynMap.HideHidden", "If set true, residence with hidden flag set to true will be hidden from dynmap");
-        DynMapHideHidden = c.get("DynMap.HideHidden", true);
-
-        c.addComment("DynMap.Layer.3dRegions", "Enables 3D zones");
-        DynMapLayer3dRegions = c.get("DynMap.Layer.3dRegions", true);
-        c.addComment("DynMap.Layer.SubZoneDepth", "How deep to go into subzones to show");
-        DynMapLayerSubZoneDepth = c.get("DynMap.Layer.SubZoneDepth", 2);
-
-        c.addComment("DynMap.Border.Color", "Color of border. Pick color from this page http://www.w3schools.com/colors/colors_picker.asp");
-        DynMapBorderColor = c.get("DynMap.Border.Color", "#FF0000");
-        c.addComment("DynMap.Border.Opacity", "Transparency. 0.3 means that only 30% of color will be visible");
-        DynMapBorderOpacity = c.get("DynMap.Border.Opacity", 0.3);
-        c.addComment("DynMap.Border.Weight", "Border thickness");
-        DynMapBorderWeight = c.get("DynMap.Border.Weight", 3);
-        DynMapFillOpacity = c.get("DynMap.Fill.Opacity", 0.3);
-        DynMapFillColor = c.get("DynMap.Fill.Color", "#FFFF00");
-        DynMapFillForRent = c.get("DynMap.Fill.ForRent", "#33cc33");
-        DynMapFillRented = c.get("DynMap.Fill.Rented", "#99ff33");
-        DynMapFillForSale = c.get("DynMap.Fill.ForSale", "#0066ff");
-
-        c.addComment("DynMap.VisibleRegions", "Shows only regions on this list");
-        DynMapVisibleRegions = c.get("DynMap.VisibleRegions", new ArrayList<String>());
-        c.addComment("DynMap.HiddenRegions", "Hides region on map even if its not hidden in game");
-        DynMapHiddenRegions = c.get("DynMap.HiddenRegions", new ArrayList<String>());
-
-        c.addComment("Pl3xMap.Use", "Enables or disable Pl3xMap Support");
-        Pl3xMapUse = c.get("Pl3xMap.Use", true);
-        c.addComment("Pl3xMap.HideByDefault", "When set to true we will hide residence areas by default on Pl3xMap window",
-                "Residences can still be enabled throw provided Pl3xMap option on left top side");
-        Pl3xMapHideByDefault = c.get("Pl3xMap.HideByDefault", false);
-        c.addComment("Pl3xMap.ShowFlags", "Shows or hides residence flags");
-        Pl3xMapShowFlags = c.get("Pl3xMap.ShowFlags", true);
-        c.addComment("Pl3xMap.ExcludeDefaultFlags", "When enabled default flags will not be included in residence overview");
-        Pl3xMapExcludeDefaultFlags = c.get("Pl3xMap.ExcludeDefaultFlags", true);
-        c.addComment("Pl3xMap.HideHidden", "If set true, residence with hidden flag set to true will be hidden from Pl3xMap");
-        Pl3xMapHideHidden = c.get("Pl3xMap.HideHidden", true);
-
-//	c.addComment("Pl3xMap.Layer.3dRegions", "Enables 3D zones");
-//	Pl3xMapLayer3dRegions = c.get("Pl3xMap.Layer.3dRegions", true);
-        c.addComment("Pl3xMap.Layer.SubZoneDepth", "How deep to go into subzones to show");
-        Pl3xMapLayerSubZoneDepth = c.get("Pl3xMap.Layer.SubZoneDepth", 2);
-
-        c.addComment("Pl3xMap.Border.Color", "Color of border. Pick color from this page http://www.w3schools.com/colors/colors_picker.asp");
-
-        Color Pl3xFill = processColor(c.get("Pl3xMap.Border.Color", "#FF0000"));
-
-        c.addComment("Pl3xMap.Border.Opacity", "Transparency. 0.3 means that only 30% of color will be visible");
-        Double Pl3xMapBorderOpacity = c.get("Pl3xMap.Border.Opacity", 0.3);
-
-        Pl3xFillColor = argb(CMINumber.clamp((int) (Pl3xMapBorderOpacity * 255), 0, 255), Pl3xFill);
-
-        c.addComment("Pl3xMap.Border.Weight", "Border thickness");
-        Pl3xMapBorderWeight = c.get("Pl3xMap.Border.Weight", 3);
-        Double Pl3xMapFillOpacity = c.get("Pl3xMap.Fill.Opacity", 0.3);
-
-        Color Pl3xMapFillColor = processColor(c.get("Pl3xMap.Fill.Color", "#FF0000"));
-
-        Pl3xBorderColor = argb(CMINumber.clamp((int) (Pl3xMapFillOpacity * 255), 0, 255), Pl3xMapFillColor);
-
-        Pl3xMapFillForRent = argb(CMINumber.clamp((int) (Pl3xMapFillOpacity * 255), 0, 255), processColor(c.get("Pl3xMap.Fill.ForRent", "#33cc33")));
-        Pl3xMapFillRented = argb(CMINumber.clamp((int) (Pl3xMapFillOpacity * 255), 0, 255), processColor(c.get("Pl3xMap.Fill.Rented", "#99ff33")));
-        Pl3xMapFillForSale = argb(CMINumber.clamp((int) (Pl3xMapFillOpacity * 255), 0, 255), processColor(c.get("Pl3xMap.Fill.ForSale", "#0066ff")));
-
-        c.addComment("Pl3xMap.VisibleRegions", "Shows only regions on this list");
-        Pl3xMapVisibleRegions = c.get("Pl3xMap.VisibleRegions", new ArrayList<String>());
-        c.addComment("Pl3xMap.HiddenRegions", "Hides region on map even if its not hidden in game");
-        Pl3xMapHiddenRegions = c.get("Pl3xMap.HiddenRegions", new ArrayList<String>());
-
-        c.addComment("HiddenPlayerResidences", "List of player names whose residences should be hidden in Dynmap or Pl3xMap independent of their settings");
-        HiddenPlayerResidences = c.get("HiddenPlayerResidences", new ArrayList<String>());
-        CMIList.toLowerCase(HiddenPlayerResidences);
+        plugin.getWebMapManager().loadConfig(c);
 
         c.addComment("Raid", "In development");
 

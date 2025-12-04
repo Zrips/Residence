@@ -1,6 +1,4 @@
-package com.bekvon.bukkit.residence.pl3xmap;
-
-import com.bekvon.bukkit.residence.Residence;
+package com.bekvon.bukkit.residence.webmap;
 
 import net.pl3x.map.core.markers.layer.WorldLayer;
 import net.pl3x.map.core.world.World;
@@ -13,7 +11,6 @@ public class Pl3xMapLayer extends WorldLayer {
         super(ID, world, () -> ID);
 
         setShowControls(true);
-        setDefaultHidden(Residence.getInstance().getConfigManager().Pl3xMapHideByDefault);
         setPriority(4);
         setZIndex(63);
     }

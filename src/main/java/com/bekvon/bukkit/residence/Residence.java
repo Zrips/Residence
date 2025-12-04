@@ -28,7 +28,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.dynmap.DynmapAPI;
 
 import com.bekvon.bukkit.residence.Placeholders.Placeholder;
 import com.bekvon.bukkit.residence.Placeholders.PlaceholderAPIHook;
@@ -46,8 +45,6 @@ import com.bekvon.bukkit.residence.containers.MinimizeFlags;
 import com.bekvon.bukkit.residence.containers.MinimizeMessages;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.dynmap.DynMapListeners;
-import com.bekvon.bukkit.residence.dynmap.DynMapManager;
 import com.bekvon.bukkit.residence.economy.BlackHoleEconomy;
 import com.bekvon.bukkit.residence.economy.CMIEconomy;
 import com.bekvon.bukkit.residence.economy.EconomyInterface;
@@ -79,8 +76,6 @@ import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_9_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener;
 import com.bekvon.bukkit.residence.permissions.PermissionManager;
 import com.bekvon.bukkit.residence.persistance.YMLSaveHelper;
-import com.bekvon.bukkit.residence.pl3xmap.Pl3xMapListeners;
-import com.bekvon.bukkit.residence.pl3xmap.Pl3xMapManager;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.LeaseManager;
@@ -110,6 +105,7 @@ import com.bekvon.bukkit.residence.utils.SafeLocationCache;
 import com.bekvon.bukkit.residence.utils.Sorting;
 import com.bekvon.bukkit.residence.utils.TabComplete;
 import com.bekvon.bukkit.residence.vaultinterface.ResidenceVaultAdapter;
+import com.bekvon.bukkit.residence.webmap.WebMapManager;
 import com.earth2me.essentials.Essentials;
 import com.residence.mcstats.Metrics;
 import com.residence.zip.ZipLibrary;
@@ -120,7 +116,6 @@ import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
-import net.pl3x.map.core.Pl3xMap;
 
 /**
  * 
@@ -162,8 +157,9 @@ public class Residence extends JavaPlugin {
     private ShopSignUtil ShopSignUtilManager;
 //    private TownManager townManager;
     private RandomTp RandomTpManager;
-    private DynMapManager DynManager;
-    private Pl3xMapManager Pl3xManager;
+
+    private WebMapManager webMapManager;
+
     private Sorting SortingManager;
     private AutoSelection AutoSelectionManager;
     private WESchematicManager SchematicManager;
@@ -345,9 +341,6 @@ public class Residence extends JavaPlugin {
         if (getConfigManager().enabledRentSystem() && rentBukkitId != null) {
             rentBukkitId.cancel();
         }
-
-        if (getDynManager() != null && getDynManager().getMarkerSet() != null)
-            getDynManager().getMarkerSet().deleteMarkerSet();
 
         if (initsuccess) {
             try {
@@ -631,31 +624,7 @@ public class Residence extends JavaPlugin {
             if (getServer().getPluginManager().getPlugin("CrackShot") != null)
                 getServer().getPluginManager().registerEvents(new CrackShotListener(this), this);
 
-            try {
-                // DynMap
-                Plugin dynmap = Bukkit.getPluginManager().getPlugin("dynmap");
-                if (dynmap != null && getConfigManager().DynMapUse) {
-                    DynManager = new DynMapManager(this);
-                    getServer().getPluginManager().registerEvents(new DynMapListeners(this), this);
-                    getDynManager().api = (DynmapAPI) dynmap;
-                    getDynManager().activate();
-                }
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-
-            try {
-                // Pl3xMap
-                Plugin pl3xmap = Bukkit.getPluginManager().getPlugin("Pl3xMap");
-                if (pl3xmap != null && getConfigManager().Pl3xMapUse) {
-                    Pl3xManager = new Pl3xMapManager(this);
-                    getServer().getPluginManager().registerEvents(new Pl3xMapListeners(this), this);
-                    getPl3xManager().api = Pl3xMap.api();
-                    getPl3xManager().activate();
-                }
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
+            this.getWebMapManager().activate();
 
             int autosaveInt = getConfigManager().getAutoSaveInterval();
             if (autosaveInt < 1) {
@@ -831,12 +800,10 @@ public class Residence extends JavaPlugin {
         return pmanager;
     }
 
-    public DynMapManager getDynManager() {
-        return DynManager;
-    }
-
-    public Pl3xMapManager getPl3xManager() {
-        return Pl3xManager;
+    public WebMapManager getWebMapManager() {
+        if (webMapManager == null)
+            webMapManager = new WebMapManager();
+        return webMapManager;
     }
 
     public WESchematicManager getSchematicManager() {

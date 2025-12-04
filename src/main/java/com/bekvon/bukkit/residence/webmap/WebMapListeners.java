@@ -1,4 +1,4 @@
-package com.bekvon.bukkit.residence.pl3xmap;
+package com.bekvon.bukkit.residence.webmap;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,60 +15,57 @@ import com.bekvon.bukkit.residence.event.ResidenceRentEvent;
 import com.bekvon.bukkit.residence.event.ResidenceSizeChangeEvent;
 import com.bekvon.bukkit.residence.event.ResidenceSubzoneCreationEvent;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
-
-public class Pl3xMapListeners implements Listener {
+public class WebMapListeners implements Listener {
 
     private Residence plugin;
 
-    public Pl3xMapListeners(Residence plugin) {
+    public WebMapListeners(Residence plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceAreaAdd(ResidenceAreaAddEvent event) {
-        plugin.getPl3xManager().fireUpdateAdd(event.getResidence(), event.getResidence().getSubzoneDeep());
+        plugin.getWebMapManager().fireUpdateAdd(event.getResidence());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceAreaDelete(ResidenceAreaDeleteEvent event) {
-        plugin.getPl3xManager().fireUpdateRemove(event.getResidence(), event.getResidence().getSubzoneDeep());
+        plugin.getWebMapManager().fireUpdateRemove(event.getResidence());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceSubZoneCreate(ResidenceSubzoneCreationEvent event) {
-        plugin.getPl3xManager().fireUpdateAdd(event.getResidence(), event.getResidence().getSubzoneDeep());
+        plugin.getWebMapManager().fireUpdateAdd(event.getResidence());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceFlagChange(ResidenceFlagChangeEvent event) {
-        plugin.getPl3xManager().fireUpdateAdd(event.getResidence(), event.getResidence().getSubzoneDeep());
+        plugin.getWebMapManager().fireUpdateAdd(event.getResidence());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceDelete(ResidenceDeleteEvent event) {
-        plugin.getPl3xManager().fireUpdateRemove(event.getResidence(), event.getResidence().getSubzoneDeep());
+        plugin.getWebMapManager().fireUpdateRemove(event.getResidence());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceOwnerChange(ResidenceOwnerChangeEvent event) {
-        plugin.getPl3xManager().fireUpdateAdd(event.getResidence(), event.getResidence().getSubzoneDeep());
+        plugin.getWebMapManager().fireUpdateAdd(event.getResidence());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceRename(ResidenceRenameEvent event) {
-        plugin.getPl3xManager().handleResidenceRemove(event.getOldResidenceName(), event.getResidence(), event.getResidence().getSubzoneDeep());
-        plugin.getPl3xManager().fireUpdateAdd(event.getResidence(), event.getResidence().getSubzoneDeep());
+        plugin.getWebMapManager().handleResidenceRemove(event.getOldResidenceName(), event.getResidence());
+        plugin.getWebMapManager().fireUpdateAdd(event.getResidence());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceRent(ResidenceRentEvent event) {
-        plugin.getPl3xManager().handleResidenceRemove(event.getResidence().getName(), event.getResidence(), event.getResidence().getSubzoneDeep());
-        plugin.getPl3xManager().fireUpdateAdd(event.getResidence(), event.getResidence().getSubzoneDeep());
+        plugin.getWebMapManager().fireUpdateAdd(event.getResidence());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceSizeChange(ResidenceSizeChangeEvent event) {
-        plugin.getPl3xManager().fireUpdateAdd(event.getResidence(), event.getResidence().getSubzoneDeep());
+        plugin.getWebMapManager().fireUpdateAdd(event.getResidence());
     }
 }
