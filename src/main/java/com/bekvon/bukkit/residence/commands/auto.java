@@ -27,6 +27,7 @@ import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.CMIVectorInt3D;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class auto implements cmd {
@@ -39,6 +40,7 @@ public class auto implements cmd {
     @CommandAnnotation(simple = true, priority = 150, regVar = { 0, 1, 2 }, consoleVar = { 666 })
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
 
+CMIDebug.d("0");
         Player player = (Player) sender;
 
         String resName = null;
@@ -75,7 +77,7 @@ public class auto implements cmd {
             minY = plugin.getSelectionManager().getSelection(player).getMinYAllowed();
             maxY = plugin.getSelectionManager().getSelection(player).getMaxYAllowed();
         }
-
+CMIDebug.d("1");
         loc.setY(minY);
         plugin.getSelectionManager().placeLoc1(player, loc.clone(), false);
         loc.setY(maxY);
@@ -90,10 +92,12 @@ public class auto implements cmd {
         else
             result = optimizedResize(player, cuboid, true, length);
 
+CMIDebug.d("2", result); 
         if (!result.equals(failReason.none)) {
             return true;
         }
 
+CMIDebug.d("2");
         plugin.getSelectionManager().afterSelectionUpdate(player, true);
 
         ClaimedResidence collision = Residence.getInstance().getResidenceManager().collidesWithResidence(plugin.getSelectionManager().getSelectionCuboid(player));
@@ -119,6 +123,7 @@ public class auto implements cmd {
             }
         }
 
+CMIDebug.d("3");
         if (plugin.getResidenceManager().getByName(resName) != null) {
             for (int i = 1; i < 50; i++) {
                 String tempName = resName + plugin.getConfigManager().ARCIncrementFormat().replace("[number]", String.valueOf(i));
@@ -132,6 +137,7 @@ public class auto implements cmd {
         if (resName == null)
             resName = sender.getName() + plugin.getConfigManager().ARCIncrementFormat().replace("[number]", String.valueOf((new Random().nextInt(99950) + 50)));
 
+CMIDebug.d("4");
         Selection selection = plugin.getSelectionManager().getSelection(player);
 
         String maxSide = "";
@@ -180,6 +186,7 @@ public class auto implements cmd {
             }
         }
 
+CMIDebug.d("5");
         if (maxRatio > plugin.getConfigManager().getARCRatioValue()) {
             if (plugin.getConfigManager().isARCRatioInform()) {
                 lm.Area_WeirdShape.sendMessage(player, maxSide, (int) (maxRatio * 100) / 100D, minSide);
@@ -368,7 +375,7 @@ public class auto implements cmd {
     }
 
     public static failReason optimizedResize(Player player, CuboidArea cuboid, boolean checkBalance, int max) {
-		return optimizedResize(player, cuboid, checkBalance, new CMIVectorInt3D(max, max, max));
+        return optimizedResize(player, cuboid, checkBalance, new CMIVectorInt3D(max, max, max));
     }
 
     public static failReason optimizedResize(Player player, CuboidArea cuboid, boolean checkBalance, CMIVectorInt3D max) {
@@ -385,6 +392,9 @@ public class auto implements cmd {
         boolean checkCollision = plugin.getConfigManager().isARCCheckCollision();
 
         if (checkCollision && plugin.getResidenceManager().collidesWithResidence(cuboid) != null) {
+
+            lm.Area_Collision.sendMessage(player, plugin.getResidenceManager().collidesWithResidence(cuboid).getName());
+            
             return failReason.collision;
         }
 
