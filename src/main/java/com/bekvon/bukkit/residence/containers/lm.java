@@ -504,7 +504,7 @@ public enum lm {
 
     General_TeleportDeny("&cYou don't have teleport access."),
     General_TeleportSuccess("&eTeleported!"),
-    General_TeleportConfirmLava("&cThis teleport is not safe, you will fall into &6lava&c. Use &6/res tpconfirm &cto perform teleportation anyways."),
+    General_TeleportConfirmBlock("&cThis teleport is not safe, you will fall into &6%1&c. Use &6/res tpconfirm &cto perform teleportation anyways."),
     General_TeleportConfirmVoid("&cThis teleport is not safe, you will fall into &6void&c. Use &6/res tpconfirm &cto perform teleportation anyways."),
     General_TeleportConfirm("&cThis teleport is not safe, you will fall for &6%1 &cblocks. Use &6/res tpconfirm &cto perform teleportation anyways."),
     General_TeleportStarted("&eTeleportation to &6%1 &estarted, don't move for next &6%2 &esec."),

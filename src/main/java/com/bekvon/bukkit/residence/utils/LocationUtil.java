@@ -27,6 +27,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.PaperMethods.CMIChunkSnapShot;
@@ -404,16 +405,34 @@ public class LocationUtil {
 
             CMIMaterial material = getBlockType(chunk.getSnapshot(), tempLoc.getWorld(), chunkX, tempLoc.getBlockY(), chunkZ);
 
-            if (isEmptyBlock(material)) {
-                fallDistance++;
-            } else {
-                if (material.isLava() || material.equals(CMIMaterial.MAGMA_BLOCK) || material.equals(CMIMaterial.FIRE)) {
-                    validity.setValidity(LocationValidity.Lava);
-                }
+            // In later updates can be changed to check if material contains CMIMC.DAMAGECAUSING
+            if (material.isLava()
+                    || material.equals(CMIMaterial.MAGMA_BLOCK)
+                    || material.equals(CMIMaterial.FIRE)
+                    || material.equals(CMIMaterial.SOUL_FIRE)
+                    || material.equals(CMIMaterial.SWEET_BERRY_BUSH)
+                    || material.equals(CMIMaterial.POINTED_DRIPSTONE)
+                    || material.equals(CMIMaterial.CAMPFIRE)
+                    || material.equals(CMIMaterial.SOUL_CAMPFIRE)
+                    || material.equals(CMIMaterial.LAVA_CAULDRON)) {
+                validity.setValidity(LocationValidity.DamageBlock);
+                validity.setDamagingMaterial(material);
                 break;
+            } else {
+
+                if (isEmptyBlock(material)) {
+                    fallDistance++;
+                } else {
+                    break;
+                }
             }
         }
         validity.setFallDistance(fallDistance);
+
+        if (validity.getValidity().equals(LocationValidity.Valid) && fallDistance > 3) {
+            validity.setValidity(LocationValidity.Fall);
+        }
+
         return validity;
     }
 

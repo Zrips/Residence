@@ -1251,8 +1251,8 @@ public class ClaimedResidence {
             return;
         }
 
-        if (result.getValidity().equals(LocationValidity.Lava))
-            lm.General_TeleportConfirmLava.sendMessage(reqPlayer, result.getFallDistance());
+        if (result.getValidity().equals(LocationValidity.DamageBlock))
+            lm.General_TeleportConfirmBlock.sendMessage(reqPlayer, result.getDamagingMaterial().getTranslatedName());
         else if (result.getValidity().equals(LocationValidity.Void))
             lm.General_TeleportConfirmVoid.sendMessage(reqPlayer, result.getFallDistance());
         else

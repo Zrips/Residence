@@ -21,9 +21,6 @@ import de.bluecolored.bluemap.api.markers.ExtrudeMarker;
 import de.bluecolored.bluemap.api.markers.MarkerSet;
 import de.bluecolored.bluemap.api.math.Color;
 import de.bluecolored.bluemap.api.math.Shape;
-import net.pl3x.map.core.markers.layer.Layer;
-import net.pl3x.map.core.markers.layer.SimpleLayer;
-import net.pl3x.map.core.registry.Registry;
 
 public class BlueWebMap extends WebMap {
 
@@ -87,6 +84,7 @@ public class BlueWebMap extends WebMap {
                     .fillColor(color)
                     .lineColor(new Color(getSettings().getBorderColor().getARGB()))
                     .lineWidth(getSettings().getBorderWeight())
+                    .depthTestEnabled(false)
                     .build();
 
             markerSet.getMarkers().put(id, shape);
@@ -94,33 +92,6 @@ public class BlueWebMap extends WebMap {
             for (BlueMapMap map : bmw.getMaps()) {
                 map.getMarkerSets().put(label, markerSet);
             }
-
-//            Point p1 = Point.of(l0.getX(), l0.getZ());
-//            Point p2 = Point.of(l1.getX() + 1, l1.getZ() + 1);
-//
-//            Rectangle marker = Marker.rectangle(id, p1, p2);
-//
-//            Options options = new Options();
-//
-//            Tooltip tooltip = new Tooltip();
-//
-//            tooltip.setContent(desc);
-//
-//            options.setTooltip(tooltip);
-//
-//            Fill fill = new Fill();
-//            fill.setColor(fillColor(res));
-//            fill.setType(Type.NONZERO);
-//            options.setFill(fill);
-//
-//            Stroke stroke = new Stroke();
-//            stroke.setColor(plugin.getConfigManager().Pl3xBorderColor);
-//            stroke.setWeight(plugin.getConfigManager().Pl3xMapBorderWeight);
-//            options.setStroke(stroke);
-//
-//            marker.setOptions(options);
-//
-//            provider.addMarker(marker);
 
             if (depth <= getSettings().getLayerSubZoneDepth()) {
                 List<ClaimedResidence> subids = res.getSubzones();
