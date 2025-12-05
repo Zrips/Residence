@@ -492,7 +492,9 @@ public class ConfigManager {
         cfg.addComment("Global.CreatorDefault", "These are default flags applied to the residence creator of any group.");
         cfg.addComment("Global.RentedDefault", "These are default flags applied to the residence renter of any group.");
         cfg.addComment("Global.GroupedFlags",
-                "These are grouped flags, so when using /res pset nickname redstone true, player will get all flags in list, same when setting to false or removing them.");
+                "These are grouped flags, so when using /res pset nickname redstone true, player will get all flags in list, same when setting to false or removing them.",
+                "By default flag will be set to true, optionally it can be defined as false or remove",
+                "Examples 'use-remove' or 'tp-false'");
         cfg.addComment("Global.GroupedFlags.trusted", "This group of flags will be used for padd sub command");
         cfg.addComment("Global.TotalFlagDisabling", "Completely disables defined flag which will no longer be accesable even with resadmin command",
                 "Can save some of the server processing resources if you don't want to utilize specific checks for specific flags");

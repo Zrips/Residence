@@ -13,7 +13,6 @@ import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerSet;
 
-import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -41,7 +40,11 @@ public class DynWebMap extends WebMap {
     }
 
     private double getAlpha(CMIChatColor color) {
-        return color.getAlpha() / 255.0;
+        try {
+            return color.getAlpha() / 255.0;
+        } catch (Exception e) {
+        }
+        return 0.25;
     }
 
     @Override

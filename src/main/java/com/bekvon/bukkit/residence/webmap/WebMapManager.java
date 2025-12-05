@@ -26,7 +26,7 @@ public class WebMapManager {
 
         settings = webmap != null ? webmap.getSettings() : new MapSettings();
 
-        c.addComment("WebMap.Use", "Enables or disable WebMap Support");
+        c.addComment("WebMap.Use", "Enables or disable DynMap, Pl3exMap or BlueMap support");
         use = c.get("WebMap.Use", true);
         c.addComment("WebMap.HideByDefault", "When set to true we will hide residence areas by default on WebMap window",
                 "Residences can still be enabled throw provided WebMap option on left top side");
@@ -51,7 +51,6 @@ public class WebMapManager {
         settings.setBorderWeight(c.get("WebMap.Border.Weight", 3));
 
         settings.setFillColor(CMIChatColor.getColor(c.get("WebMap.Fill.Color", "{#FF000040}")));
-
         settings.setFillForRent(CMIChatColor.getColor(c.get("WebMap.Fill.ForRent", "{#33cc3340}")));
         settings.setFillRented(CMIChatColor.getColor(c.get("WebMap.Fill.Rented", "{#99ff3340}")));
         settings.setFillForSale(CMIChatColor.getColor(c.get("WebMap.Fill.ForSale", "{#0066ff40}")));
@@ -62,7 +61,7 @@ public class WebMapManager {
         c.addComment("WebMap.HiddenRegions", "Hides region on map even if its not hidden in game");
         settings.setHiddenRegions(c.get("WebMap.HiddenRegions", new ArrayList<String>()));
 
-        c.addComment("WebMap.HiddenPlayerResidences", "List of player names whose residences should be hidden in Dynmap or WebMap independent of their settings");
+        c.addComment("WebMap.HiddenPlayerResidences", "List of player names whose residences should be hidden in DynMap, Pl3exMap or BlueMap independent of their settings");
         settings.setHiddenPlayerResidences(c.get("WebMap.HiddenPlayerResidences", new ArrayList<String>()));
     }
 
