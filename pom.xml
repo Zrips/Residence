@@ -221,11 +221,6 @@
 		    <version>2.7.4</version>
 		    <scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>CMI-API</groupId>
-			<artifactId>CMI-API</artifactId>
-			<version>9.7.14.3</version>
-		</dependency>
 	</dependencies>
     
 	<repositories>
