@@ -94,11 +94,9 @@ public class ResidenceListener1_17 implements Listener {
         if (!CMIMaterial.get(iih).equals(CMIMaterial.WATER_BUCKET))
             return;
 
-        FlagPermissions perms = Residence.getInstance().getPermsByLocForPlayer(ent.getLocation(), player);
-
-        if (!perms.playerHas(player, Flags.animalkilling, FlagCombo.TrueOrNone)) {
-            event.setCancelled(true);
+        if (FlagPermissions.has(ent.getLocation(), player, Flags.animalkilling, FlagCombo.OnlyFalse)) {
             lm.Flag_Deny.sendMessage(player, Flags.animalkilling);
+            event.setCancelled(true);
         }
     }
 
@@ -128,7 +126,7 @@ public class ResidenceListener1_17 implements Listener {
             return;
 
         FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-        if (perms.playerHas(player, Flags.copper, perms.playerHas(player, Flags.destroy, true)))
+        if (perms.playerHas(player, Flags.copper, perms.playerHas(player, Flags.build, true)))
             return;
 
         lm.Flag_Deny.sendMessage(player, Flags.copper);
@@ -171,35 +169,47 @@ public class ResidenceListener1_17 implements Listener {
         // Disabling listener if flag disabled globally
         if (!Flags.build.isGlobalyEnabled())
             return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
-            return;
-
         Block block = event.getBlock();
-
         if (block == null)
             return;
-
-        ClaimedResidence originRes = plugin.getResidenceManager().getByLoc(block.getLocation());
-
-        List<BlockState> blocks = new ArrayList<BlockState>(event.getBlocks());
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
 
         Player player = event.getPlayer();
 
-        if (ResPerm.bypass_build.hasPermission(player, 10000L))
-            return;
+        if (player != null) {
+            if (ResPerm.bypass_build.hasPermission(player, 10000L))
+                return;
+            // cancel event if player has no build permission at click-position
+            // non-saplings don't consume bone_meal on event cancel
+            if (FlagPermissions.has(block.getLocation(), player, Flags.build, FlagCombo.OnlyFalse)) {
+                lm.Flag_Deny.sendMessage(player, Flags.build);
+                event.setCancelled(true);
+                return;
+            }
+        }
+        // player has build permission at click position, or event is not triggered by player
+        // check build permission for the location of fertilize-spread blocks
+        ClaimedResidence originRes = ClaimedResidence.getByLoc(block.getLocation());
+
+        List<BlockState> blocks = new ArrayList<BlockState>(event.getBlocks());
 
         for (BlockState oneBlock : blocks) {
-            ClaimedResidence res = plugin.getResidenceManager().getByLoc(oneBlock.getLocation());
+            ClaimedResidence res = ClaimedResidence.getByLoc(oneBlock.getLocation());
+            // event-spread-block not in residence, skip check
             if (res == null)
                 continue;
+
             if (player != null) {
-                FlagPermissions perms = Residence.getInstance().getPermsByLocForPlayer(oneBlock.getLocation(), player);
-                if (!perms.playerHas(player, Flags.build, FlagCombo.TrueOrNone)) {
+                if (res.getPermissions().playerHas(player, Flags.build, FlagCombo.OnlyFalse)) {
                     event.getBlocks().remove(oneBlock);
                 }
+                // event-origin-block & event-spread-block not in Same residence
             } else if (originRes == null || !originRes.equals(res)) {
-                event.getBlocks().remove(oneBlock);
+                if (res.getPermissions().has(Flags.build, FlagCombo.OnlyFalse)) {
+                    event.getBlocks().remove(oneBlock);
+                }
             }
         }
 
