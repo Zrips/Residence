@@ -66,7 +66,7 @@ public class ResidenceListener1_15 implements Listener {
             }
 
             FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-            if (perms.playerHas(player, Flags.honey, perms.playerHas(player, Flags.destroy, true)))
+            if (perms.playerHas(player, Flags.honey, perms.playerHas(player, Flags.build, true)))
                 return;
 
             lm.Flag_Deny.sendMessage(player, Flags.honey);
@@ -80,7 +80,7 @@ public class ResidenceListener1_15 implements Listener {
             }
 
             FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-            if (perms.playerHas(player, Flags.honeycomb, perms.playerHas(player, Flags.destroy, true)))
+            if (perms.playerHas(player, Flags.honeycomb, perms.playerHas(player, Flags.build, true)))
                 return;
 
             lm.Flag_Deny.sendMessage(player, Flags.honeycomb);

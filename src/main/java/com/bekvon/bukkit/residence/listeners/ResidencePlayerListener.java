@@ -972,6 +972,7 @@ public class ResidencePlayerListener implements Listener {
         switch (mat.name()) {
         case "ITEM_FRAME":
         case "BEACON":
+        case "BELL":
         case "FLOWER_POT":
         case "COMMAND":
         case "ANVIL":
@@ -1453,7 +1454,7 @@ public class ResidencePlayerListener implements Listener {
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-            CMIMaterial blockM = CMIMaterial.get(block.getType());
+            CMIMaterial blockM = CMIMaterial.get(mat);
 
             if (heldItem.isDye() || heldItem.equals(CMIMaterial.GLOW_INK_SAC)) {
 
@@ -1685,15 +1686,15 @@ public class ResidencePlayerListener implements Listener {
 
         CMIEntityType type = CMIEntityType.get(ent);
 
+        if (!(ent instanceof Vehicle))
+            return;
+
         // Non-rideable Vehicles
         if (type == CMIEntityType.CHEST_MINECART ||
                 type == CMIEntityType.COMMAND_BLOCK_MINECART ||
                 type == CMIEntityType.FURNACE_MINECART ||
                 type == CMIEntityType.HOPPER_MINECART ||
                 type == CMIEntityType.TNT_MINECART)
-            return;
-
-        if (!(ent instanceof Vehicle))
             return;
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
