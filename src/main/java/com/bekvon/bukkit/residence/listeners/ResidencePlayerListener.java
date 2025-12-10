@@ -101,6 +101,7 @@ import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -1927,6 +1928,7 @@ public class ResidencePlayerListener implements Listener {
                 }
         }
 
+        CMIMaterial cmat = CMIMaterial.get(event.getBucket());
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
         if (res != null) {
             if (plugin.getConfigManager().preventRentModify() && plugin.getConfigManager().enabledRentSystem()) {
@@ -1937,10 +1939,9 @@ public class ResidencePlayerListener implements Listener {
                 }
             }
 
-            Material mat = event.getBucket();
             if ((res.getPermissions().playerHas(player, Flags.build, FlagCombo.OnlyFalse))
                     && plugin.getConfigManager().getNoPlaceWorlds().contains(loc.getWorld().getName())) {
-                if (mat == Material.LAVA_BUCKET || mat == Material.WATER_BUCKET) {
+                if (cmat == CMIMaterial.LAVA_BUCKET || cmat == CMIMaterial.WATER_BUCKET || cmat.containsCriteria(CMIMC.BUCKETANIMAL)) {
                     lm.Flag_Deny.sendMessage(player, Flags.build);
                     event.setCancelled(true);
                     return;
@@ -1955,11 +1956,10 @@ public class ResidencePlayerListener implements Listener {
             return;
         }
 
-        Material mat = event.getBucket();
         int level = plugin.getConfigManager().getPlaceLevel();
         if (res == null && plugin.getConfigManager().isNoLavaPlace() && loc.getBlockY() >= level - 1 && plugin.getConfigManager()
                 .getNoPlaceWorlds().contains(loc.getWorld().getName())) {
-            if (mat == Material.LAVA_BUCKET) {
+            if (cmat == CMIMaterial.LAVA_BUCKET) {
                 lm.General_CantPlaceLava.sendMessage(player, level);
                 event.setCancelled(true);
                 return;
@@ -1967,9 +1967,11 @@ public class ResidencePlayerListener implements Listener {
         }
 
         if (res == null && plugin.getConfigManager().isNoWaterPlace() && loc.getBlockY() >= level - 1 && plugin.getConfigManager()
-                .getNoPlaceWorlds().contains(loc.getWorld().getName()) && mat == Material.WATER_BUCKET) {
-            lm.General_CantPlaceWater.sendMessage(player, level);
-            event.setCancelled(true);
+                .getNoPlaceWorlds().contains(loc.getWorld().getName())) {
+            if (cmat == CMIMaterial.WATER_BUCKET || cmat.containsCriteria(CMIMC.BUCKETANIMAL)) {
+                lm.General_CantPlaceWater.sendMessage(player, level);
+                event.setCancelled(true);
+            }
         }
     }
 
