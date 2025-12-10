@@ -198,11 +198,12 @@ public class ResidenceListener1_17 implements Listener {
         for (BlockState oneBlock : blocks) {
             ClaimedResidence spreadRes = ClaimedResidence.getByLoc(oneBlock.getLocation());
             // spread-block not in Res, skip check
-            // origin-block & spread-block have same Res owner, skip check
-            if (spreadRes == null || (originRes != null && originRes.isOwner(spreadRes.getOwner())))
+            // origin & spread-block in Same Res, or have Same Res owner, skip check
+            if (spreadRes == null ||
+                    (originRes != null && (originRes.equals(spreadRes) || originRes.isOwner(spreadRes.getOwner()))))
                 continue;
 
-            // origin-block & spread-block not Same Res owner, not in Same Res
+            // origin & spread-block not Same Res owner, not in Same Res
 
             if (player != null) {
                 if (spreadRes.getPermissions().playerHas(player, Flags.build, FlagCombo.OnlyFalse))
