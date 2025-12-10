@@ -190,26 +190,27 @@ public class ResidenceListener1_17 implements Listener {
             }
         }
         // player has build permission at click position, or event is not triggered by player
-        // check build permission for the location of fertilize-spread blocks
+        // check build permission for spread blocks
         ClaimedResidence originRes = ClaimedResidence.getByLoc(block.getLocation());
 
         List<BlockState> blocks = new ArrayList<BlockState>(event.getBlocks());
 
         for (BlockState oneBlock : blocks) {
-            ClaimedResidence res = ClaimedResidence.getByLoc(oneBlock.getLocation());
-            // event-spread-block not in residence, skip check
-            if (res == null)
+            ClaimedResidence spreadRes = ClaimedResidence.getByLoc(oneBlock.getLocation());
+            // spread-block not in Res, skip check
+            // origin-block & spread-block have same Res owner, skip check
+            if (spreadRes == null || (originRes != null && originRes.isOwner(spreadRes.getOwner())))
                 continue;
 
+            // origin-block & spread-block not Same Res owner, not in Same Res
+
             if (player != null) {
-                if (res.getPermissions().playerHas(player, Flags.build, FlagCombo.OnlyFalse)) {
+                if (spreadRes.getPermissions().playerHas(player, Flags.build, FlagCombo.OnlyFalse))
                     event.getBlocks().remove(oneBlock);
-                }
-                // event-origin-block & event-spread-block not in Same residence
-            } else if (originRes == null || !originRes.equals(res)) {
-                if (res.getPermissions().has(Flags.build, FlagCombo.OnlyFalse)) {
-                    event.getBlocks().remove(oneBlock);
-                }
+
+            } else if (spreadRes.getPermissions().has(Flags.build, FlagCombo.OnlyFalse)) {
+                event.getBlocks().remove(oneBlock);
+
             }
         }
 

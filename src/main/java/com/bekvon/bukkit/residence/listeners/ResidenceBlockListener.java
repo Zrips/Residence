@@ -820,17 +820,17 @@ public class ResidenceBlockListener implements Listener {
         if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
-        if (CMIMaterial.get(block) != CMIMaterial.DISPENSER)
+        if (CMIMaterial.get(block.getType()) != CMIMaterial.DISPENSER)
             return;
 
         // target location
-        Location location = Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? block.getRelative(((Dispenser) block.getBlockData()).getFacing()).getLocation()
+        Location targetLoc = Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? block.getRelative(((Dispenser) block.getBlockData()).getFacing()).getLocation()
                 : block.getRelative((((org.bukkit.material.Dispenser) ((org.bukkit.block.Dispenser) block).getData()).getFacing())).getLocation();
 
-        ClaimedResidence targetres = plugin.getResidenceManager().getByLoc(location);
+        ClaimedResidence targetRes = ClaimedResidence.getByLoc(targetLoc);
 
         CMIMaterial cmat = CMIMaterial.get(event.getItem());
-        if (targetres == null && location.getBlockY() >= plugin.getConfigManager().getPlaceLevel() && plugin.getConfigManager().getNoPlaceWorlds().contains(location
+        if (targetRes == null && targetLoc.getBlockY() >= plugin.getConfigManager().getPlaceLevel() && plugin.getConfigManager().getNoPlaceWorlds().contains(targetLoc
                 .getWorld().getName())) {
             if (plugin.getConfigManager().isNoLavaPlace() && cmat == CMIMaterial.LAVA_BUCKET) {
                 event.setCancelled(true);
@@ -844,21 +844,18 @@ public class ResidenceBlockListener implements Listener {
             }
         }
 
-        // target not Res
-        if (targetres == null) {
+        if (targetRes == null)
             return;
-        }
 
-        ClaimedResidence sourceres = plugin.getResidenceManager().getByLoc(block.getLocation());
-        // source & target in same Res
-        if (sourceres != null && targetres != null && sourceres.getName().equals(targetres.getName())) {
+        ClaimedResidence sourceRes = ClaimedResidence.getByLoc(block.getLocation());
+
+        // source & target in Same Res, or have Same Res owner
+        if (sourceRes !=null && (sourceRes.equals(targetRes) || sourceRes.isOwner(targetRes.getOwner())))
             return;
-        }
 
         // check targetRes Flag_build
-        if (FlagPermissions.getPerms(location).has(Flags.build, true)) {
+        if (targetRes.getPermissions().has(Flags.build, true))
             return;
-        }
 
         event.setCancelled(true);
     }
