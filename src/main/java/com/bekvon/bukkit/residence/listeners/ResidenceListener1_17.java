@@ -203,7 +203,7 @@ public class ResidenceListener1_17 implements Listener {
                     (originRes != null && (originRes.equals(spreadRes) || originRes.isOwner(spreadRes.getOwner()))))
                 continue;
 
-            // origin & spread-block not Same Res owner, not in Same Res
+            // origin & spread-block not in Same Res, not Same Res owner
 
             if (player != null) {
                 if (spreadRes.getPermissions().playerHas(player, Flags.build, FlagCombo.OnlyFalse))
