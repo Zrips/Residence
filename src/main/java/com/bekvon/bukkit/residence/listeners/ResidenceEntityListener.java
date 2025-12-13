@@ -12,6 +12,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -104,16 +105,24 @@ public class ResidenceEntityListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onEndermanChangeBlock(EntityChangeBlockEvent event) {
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
+    public void onEntityChangeBlockEvent(EntityChangeBlockEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.destroy.isGlobalyEnabled())
             return;
 
-        if (event.getEntityType() != EntityType.ENDERMAN)
+        Block block = event.getBlock();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
-        FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
-        if (!perms.has(Flags.destroy, true)) {
-            event.setCancelled(true);
+
+        if (event.getEntityType() == EntityType.ENDERMAN) {
+            if (FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
+                event.setCancelled(true);
+
+            // Lily_Pad
+        } else if (event.getEntity() instanceof Boat) {
+            if (FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
+                event.setCancelled(true);
         }
     }
 
