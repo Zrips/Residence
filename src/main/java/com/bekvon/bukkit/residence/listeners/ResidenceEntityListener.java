@@ -14,6 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -115,14 +116,42 @@ public class ResidenceEntityListener implements Listener {
         if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
-        if (event.getEntityType() == EntityType.ENDERMAN) {
+        Entity entity = event.getEntity();
+
+        if (entity instanceof Enderman) {
             if (FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
                 event.setCancelled(true);
 
-            // Lily_Pad
-        } else if (event.getEntity() instanceof Boat) {
-            if (FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
-                event.setCancelled(true);
+        } else if (entity instanceof Boat) {
+            if (!CMIMaterial.get(block.getType()).equals(CMIMaterial.LILY_PAD))
+                return;
+
+            Player riderPlayer = null;
+
+            if (Version.isCurrentEqualOrLower(Version.v1_11_R1)) {
+                Entity rider = entity.getPassenger();
+                riderPlayer = rider instanceof Player ? (Player) rider : null;
+
+            } else {
+                List<Entity> passengers = entity.getPassengers();
+                if (!passengers.isEmpty()) {
+                    // first passenger
+                    Entity rider = passengers.get(0);
+                    riderPlayer = rider instanceof Player ? (Player) rider : null;
+                }
+            }
+
+            if (riderPlayer != null) {
+                if (ResAdmin.isResAdmin(riderPlayer))
+                    return;
+
+                if (FlagPermissions.has(block.getLocation(), riderPlayer, Flags.destroy, FlagCombo.OnlyFalse))
+                    event.setCancelled(true);
+
+            } else {
+                if (FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
+                    event.setCancelled(true);
+            }
         }
     }
 
