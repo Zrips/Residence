@@ -381,7 +381,8 @@ public class ResidenceBlockListener implements Listener {
         if ((event.getEntityType() != EntityType.FALLING_BLOCK))
             return;
 
-        if (event.getTo().hasGravity())
+        Material typeTo = event.getTo();
+        if (typeTo.hasGravity() || CMIMaterial.get(typeTo).equals(CMIMaterial.SCAFFOLDING))
             return;
 
         Block block = event.getBlock();
