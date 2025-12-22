@@ -33,6 +33,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Logs.CMIDebug;
+import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_17 implements Listener {
 
@@ -60,6 +61,10 @@ public class ResidenceListener1_17 implements Listener {
             return;
 
         event.setCancelled(true);
+
+        // https://github.com/PaperMC/Paper/pull/6751
+        if (Version.isPaperBranch() && Version.isCurrentEqualOrHigher(Version.v1_18_R2))
+            return;
 
         if (event.getBlock().getType() != Material.POWDER_SNOW)
             return;
@@ -137,7 +142,9 @@ public class ResidenceListener1_17 implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPowderSnowPhysics(BlockPhysicsEvent event) {
-
+        // https://github.com/PaperMC/Paper/pull/6751
+        if (Version.isPaperBranch() && Version.isCurrentEqualOrHigher(Version.v1_18_R2))
+            return;
         // Disabling listener if flag disabled globally
         if (!Flags.place.isGlobalyEnabled())
             return;
