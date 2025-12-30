@@ -1044,29 +1044,37 @@ public class ResidenceBlockListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onInteract(PlayerInteractEvent event) {
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
+    public void onInteractTNT(PlayerInteractEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.ignite.isGlobalyEnabled())
             return;
 
-        Block clickedBlock = event.getClickedBlock();
-        if (clickedBlock == null)
+        Block block = event.getClickedBlock();
+        if (block == null)
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
+
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
+
+        if (!CMIMaterial.get(block.getType()).equals(CMIMaterial.TNT))
+            return;
+
+        if (event.getItem() == null || !CMIMaterial.get(event.getItem()).equals(CMIMaterial.FLINT_AND_STEEL))
             return;
 
         Player player = event.getPlayer();
-        FlagPermissions perms = FlagPermissions.getPerms(clickedBlock.getLocation(), player);
 
-        if (perms.playerHas(player, Flags.ignite, true) || ResAdmin.isResAdmin(player))
+        if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player))
             return;
 
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK ||
-                !CMIMaterial.get(clickedBlock.getType()).equals(CMIMaterial.TNT) ||
-                event.getItem() == null ||
-                !CMIMaterial.get(event.getItem()).equals(CMIMaterial.FLINT_AND_STEEL))
+        if(FlagPermissions.has(block.getLocation(), player, Flags.ignite, true))
             return;
 
-        event.setCancelled(true);
         lm.Flag_Deny.sendMessage(player, Flags.ignite);
+        event.setCancelled(true);
 
     }
 }
