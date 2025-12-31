@@ -543,6 +543,7 @@ Global:
     leash: true
     mobkilling: true
     move: true
+    riding: true
     shear: true
     trade: true
     use: true
@@ -560,6 +561,7 @@ Global:
     leash: true
     mobkilling: true
     move: true
+    riding: true
     shear: true
     trade: true
     use: true
@@ -591,6 +593,7 @@ Global:
     - leash
     - mobkilling
     - move
+    - riding
     - shear
     - trade
     - tp
