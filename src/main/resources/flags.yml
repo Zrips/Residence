@@ -523,6 +523,7 @@ Global:
     hook: false
     ignite: false
     leash: false
+    riding: false
     pistonprotection: true
     pvp: false
     shear: false
@@ -545,6 +546,7 @@ Global:
     move: true
     riding: true
     shear: true
+    tp: true
     trade: true
     use: true
     vehicledestroy: true
@@ -563,6 +565,7 @@ Global:
     move: true
     riding: true
     shear: true
+    tp: true
     trade: true
     use: true
     vehicledestroy: true
@@ -595,8 +598,8 @@ Global:
     - move
     - riding
     - shear
-    - trade
     - tp
+    - trade
     - use
     - vehicledestroy
     fire:

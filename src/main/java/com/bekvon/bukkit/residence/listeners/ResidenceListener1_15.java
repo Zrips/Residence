@@ -8,15 +8,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
-import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
 import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Items.CMIMaterial;
@@ -32,35 +29,31 @@ public class ResidenceListener1_15 implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractBeeHive(PlayerInteractEvent event) {
         // Disabling listener if flag disabled globally
-        if (!Flags.destroy.isGlobalyEnabled())
-            return;
-
-        Player player = event.getPlayer();
-        if (player == null)
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(player.getWorld()))
-            return;
-
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+        if (!Flags.build.isGlobalyEnabled())
             return;
 
         Block block = event.getClickedBlock();
         if (block == null)
             return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
+
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
 
         Material mat = block.getType();
 
-        if (!mat.equals(Material.BEE_NEST) && !mat.equals(Material.BEEHIVE))
+        if (mat != Material.BEE_NEST && mat != Material.BEEHIVE)
             return;
 
+        Player player = event.getPlayer();
         if (ResAdmin.isResAdmin(player))
             return;
 
-        ItemStack iih = event.getItem();
-        CMIMaterial heldItem = CMIMaterial.get(iih);
+        CMIMaterial heldItem = CMIMaterial.get(event.getItem());
 
-        if (heldItem.equals(CMIMaterial.GLASS_BOTTLE)) {
+        if (heldItem == CMIMaterial.GLASS_BOTTLE) {
             if (CMILib.getInstance().getReflectionManager().getHoneyLevel(block) < CMILib.getInstance().getReflectionManager().getMaxHoneyLevel(block)) {
                 return;
             }
@@ -71,10 +64,8 @@ public class ResidenceListener1_15 implements Listener {
 
             lm.Flag_Deny.sendMessage(player, Flags.honey);
             event.setCancelled(true);
-            return;
-        }
 
-        if (heldItem.equals(CMIMaterial.SHEARS)) {
+        } else if (heldItem == CMIMaterial.SHEARS) {
             if (CMILib.getInstance().getReflectionManager().getHoneyLevel(block) < CMILib.getInstance().getReflectionManager().getMaxHoneyLevel(block)) {
                 return;
             }

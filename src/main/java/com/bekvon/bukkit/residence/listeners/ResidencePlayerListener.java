@@ -1647,7 +1647,8 @@ public class ResidencePlayerListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
 
-        if (FlagPermissions.has(entity.getLocation(), player, Flags.dye, true))
+        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
+        if (perms.playerHas(player, Flags.dye, perms.playerHas(player, Flags.animalkilling, true)))
             return;
 
         lm.Flag_Deny.sendMessage(player, Flags.dye);

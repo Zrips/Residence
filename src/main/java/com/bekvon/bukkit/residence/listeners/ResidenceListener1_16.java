@@ -49,25 +49,23 @@ public class ResidenceListener1_16 implements Listener {
         if (!Flags.destroy.isGlobalyEnabled())
             return;
 
-        Player player = event.getPlayer();
-        if (event.getPlayer() == null)
+        Block block = event.getClickedBlock();
+        if (block == null)
             return;
         // disabling event on world
-        if (plugin.isDisabledWorldListener(player.getWorld()))
+        if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
-        Block block = event.getClickedBlock();
-        if (block == null)
+        Player player = event.getPlayer();
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Material mat = block.getType();
 
-        if (mat.equals(Material.RESPAWN_ANCHOR)) {
-            if (ResAdmin.isResAdmin(player))
-                return;
+        if (mat == Material.RESPAWN_ANCHOR) {
 
             FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
             if (perms.playerHas(player, Flags.anchor, perms.playerHas(player, Flags.destroy, true)))
@@ -75,12 +73,8 @@ public class ResidenceListener1_16 implements Listener {
 
             lm.Flag_Deny.sendMessage(player, Flags.anchor);
             event.setCancelled(true);
-            return;
-        }
 
-        if (mat.equals(Material.REDSTONE_WIRE)) {
-            if (ResAdmin.isResAdmin(player))
-                return;
+        } else if (mat == Material.REDSTONE_WIRE) {
 
             FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
             if (perms.playerHas(player, Flags.build, true))
@@ -88,6 +82,7 @@ public class ResidenceListener1_16 implements Listener {
 
             lm.Flag_Deny.sendMessage(player, Flags.build);
             event.setCancelled(true);
+
         }
     }
 }

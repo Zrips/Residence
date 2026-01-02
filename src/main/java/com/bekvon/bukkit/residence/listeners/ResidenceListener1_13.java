@@ -1,7 +1,5 @@
 package com.bekvon.bukkit.residence.listeners;
 
-import java.util.Objects;
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
@@ -15,12 +13,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFadeEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.projectiles.BlockProjectileSource;
-import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -33,7 +28,6 @@ import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Logs.CMIDebug;
-import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_13 implements Listener {
 
@@ -48,60 +42,17 @@ public class ResidenceListener1_13 implements Listener {
         // Disabling listener if flag disabled globally
         if (!Flags.dryup.isGlobalyEnabled())
             return;
+
+        Block block = event.getBlock();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
-            return;
-        CMIMaterial mat = CMIMaterial.get(event.getBlock());
-        if (!mat.equals(CMIMaterial.FARMLAND))
+        if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
-        FlagPermissions perms = FlagPermissions.getPerms(event.getNewState().getLocation());
-        if (perms.has(Flags.dryup, FlagCombo.OnlyFalse)) {
-            Block b = event.getBlock();
-            try {
-                BlockData data = b.getBlockData();
-                Farmland farm = (Farmland) data;
-                if (farm.getMoisture() < 2) {
-                    farm.setMoisture(7);
-                    b.setBlockData(farm);
-                }
-            } catch (NoClassDefFoundError e) {
-            }
+        if (block.getType() != Material.FARMLAND)
+            return;
+
+        if (FlagPermissions.has(block.getLocation(), Flags.dryup, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
-            return;
-        }
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onLandDryPhysics(BlockPhysicsEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.dryup.isGlobalyEnabled())
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
-            return;
-        try {
-
-            if (!event.getChangedType().toString().equalsIgnoreCase("FARMLAND"))
-                return;
-
-            FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
-            if (perms.has(Flags.dryup, FlagCombo.OnlyFalse)) {
-                Block b = event.getBlock();
-                try {
-                    BlockData data = b.getBlockData();
-                    Farmland farm = (Farmland) data;
-                    if (farm.getMoisture() < 2) {
-                        farm.setMoisture(7);
-                        b.setBlockData(farm);
-                    }
-                } catch (NoClassDefFoundError e) {
-                }
-                event.setCancelled(true);
-                return;
-            }
-        } catch (Exception | Error e) {
-
         }
     }
 
@@ -110,9 +61,10 @@ public class ResidenceListener1_13 implements Listener {
         // Disabling listener if flag disabled globally
         if (!Flags.destroy.isGlobalyEnabled())
             return;
-        if (!event.getAction().equals(Action.PHYSICAL) || !event.getClickedBlock().getType().equals(Material.TURTLE_EGG))
+        Block block = event.getClickedBlock();
+        if (block == null || event.getAction() != Action.PHYSICAL || block.getType() != Material.TURTLE_EGG)
             return;
-        if (!ResidenceBlockListener.canBreakBlock(event.getPlayer(), event.getClickedBlock(), true))
+        if (!ResidenceBlockListener.canBreakBlock(event.getPlayer(), block.getLocation(), true))
             event.setCancelled(true);
     }
 
@@ -122,15 +74,18 @@ public class ResidenceListener1_13 implements Listener {
         if (!Flags.use.isGlobalyEnabled())
             return;
         // Avoid Projectile getWorld NPE
-        if (event.getHitBlock() == null)
+        Block hitBlock = event.getHitBlock();
+        if (hitBlock == null)
             return;
 
-        if (plugin.isDisabledWorldListener(event.getHitBlock().getWorld()))
+        if (plugin.isDisabledWorldListener(hitBlock.getWorld()))
             return;
 
-        Block block = event.getHitBlock().getLocation().clone().add(event.getHitBlockFace().getDirection()).getBlock();
+        if (event.getHitBlockFace() == null)
+            return;
 
-        @NotNull
+        Block block = hitBlock.getLocation().clone().add(event.getHitBlockFace().getDirection()).getBlock();
+
         CMIMaterial cmat = CMIMaterial.get(block.getType());
 
         if (!cmat.isButton() && !cmat.isPlate())
@@ -181,7 +136,6 @@ public class ResidenceListener1_13 implements Listener {
         if (!(entity instanceof Projectile) && !(entity instanceof Item))
             return;
 
-        @NotNull
         CMIMaterial cmat = CMIMaterial.get(block.getType());
 
         // Only check Button and Plate
