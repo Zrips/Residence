@@ -1,84 +1,13 @@
 package com.bekvon.bukkit.residence.listeners;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.WeatherType;
-import org.bukkit.World;
-import org.bukkit.World.Environment;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
-import org.bukkit.entity.Boat;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Hanging;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerShearEntityEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.bukkit.event.player.PlayerToggleFlightEvent;
-import org.bukkit.event.vehicle.VehicleMoveEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.util.BoundingBox;
-import org.bukkit.util.Vector;
-
 import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.chat.ChatChannel;
 import com.bekvon.bukkit.residence.chat.ChatManager;
-import com.bekvon.bukkit.residence.containers.Flags;
-import com.bekvon.bukkit.residence.containers.ResAdmin;
-import com.bekvon.bukkit.residence.containers.ResidencePlayer;
-import com.bekvon.bukkit.residence.containers.StuckInfo;
-import com.bekvon.bukkit.residence.containers.Visualizer;
-import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.containers.playerPersistentData;
-import com.bekvon.bukkit.residence.containers.playerTempData;
+import com.bekvon.bukkit.residence.containers.*;
 import com.bekvon.bukkit.residence.economy.rent.RentableLand;
 import com.bekvon.bukkit.residence.economy.rent.RentedLand;
-import com.bekvon.bukkit.residence.event.ResidenceChangedEvent;
-import com.bekvon.bukkit.residence.event.ResidenceDeleteEvent;
-import com.bekvon.bukkit.residence.event.ResidenceEvent;
-import com.bekvon.bukkit.residence.event.ResidenceFlagChangeEvent;
-import com.bekvon.bukkit.residence.event.ResidenceOwnerChangeEvent;
-import com.bekvon.bukkit.residence.event.ResidenceRenameEvent;
+import com.bekvon.bukkit.residence.event.*;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -91,9 +20,8 @@ import com.bekvon.bukkit.residence.signsStuff.Signs;
 import com.bekvon.bukkit.residence.utils.GetTime;
 import com.bekvon.bukkit.residence.utils.Teleporting;
 import com.bekvon.bukkit.residence.utils.Utils;
-
-import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
+import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.CMIWorld;
@@ -103,61 +31,170 @@ import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
-import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
+import net.Zrips.CMILib.Version.Version;
+import org.bukkit.*;
+import org.bukkit.World.Environment;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.Vector;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ResidencePlayerListener implements Listener {
 
     private Residence plugin;
 
+    private final Map<UUID, Double> lastYVelocity = new ConcurrentHashMap<>();
+    private final BukkitTask moveCheckTask;
+
     private Runnable locationChangeCheck = () -> {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            Vector locfrom = playerTempData.get(player).getLastLocation(player.getLocation().toVector());
-            Vector locto = player.getLocation().toVector();
-            playerTempData.get(player).setLastLocation(locto);
-            if (locfrom.getBlockX() == locto.getBlockX() && locfrom.getBlockY() == locto.getBlockY() && locfrom.getBlockZ() == locto.getBlockZ())
-                continue;
-            Long time = playerTempData.get(player).getLastCheck();
-            if (time + 1000L > System.currentTimeMillis())
-                continue;
-            playerTempData.get(player).setLastCheck(System.currentTimeMillis());
-            handleNewLocation(player, player.getLocation(), true);
+            if (player.hasMetadata("NPC")) continue;
+
+            if (plugin.isDisabledWorldListener(player.getWorld())) continue;
+
+            checkPlayerMovement(player);
+            checkJumpBoost(player);
+            checkVehicleMovement(player);
         }
     };
+
+    public void shutdown() {
+        if (moveCheckTask != null && !moveCheckTask.isCancelled()) {
+            moveCheckTask.cancel();
+        }
+
+        playerTempData.clear();
+        lastYVelocity.clear();
+    }
+
+    private void checkPlayerMovement(Player player) {
+        if (player.isDead() || !player.isOnline()) return;
+
+        Vector locfrom = playerTempData.get(player).getLastLocation(player.getLocation().toVector());
+        Vector locto = player.getLocation().toVector();
+        playerTempData.get(player).setLastLocation(locto);
+
+        if (locfrom.getBlockX() == locto.getBlockX()
+                && locfrom.getBlockY() == locto.getBlockY()
+                && locfrom.getBlockZ() == locto.getBlockZ()) {
+            return;
+        }
+
+        Location loc = player.getLocation();
+        boolean handled = handleNewLocation(player, loc, true);
+
+        if (!handled) {
+            Location lastValid = playerTempData.get(player).getLastValidLocation(player);
+            if (lastValid != null) {
+                player.teleport(lastValid);
+            }
+        }
+
+        if (!Teleporting.getTeleportDelayMap().isEmpty()
+                && plugin.getConfigManager().getTeleportDelay() > 0
+                && Teleporting.isUnderTeleportDelay(player.getUniqueId())) {
+
+            Teleporting.cancelTeleportDelay(player.getUniqueId());
+            lm.General_TeleportCanceled.sendMessage(player);
+            if (plugin.getConfigManager().isTeleportTitleMessage()) {
+                CMITitleMessage.send(player, "", "");
+            }
+        }
+    }
+
+    private void checkJumpBoost(Player player) {
+        if (!Flags.jump3.isGlobalyEnabled() && !Flags.jump2.isGlobalyEnabled()) return;
+        if (player.isFlying()) return;
+
+        UUID uuid = player.getUniqueId();
+        double currentYVel = player.getVelocity().getY();
+        Double lastYVel = lastYVelocity.get(uuid);
+        lastYVelocity.put(uuid, currentYVel);
+
+        if (lastYVel == null) return;
+
+        boolean isJumping = lastYVel <= 0.1 && currentYVel > 0.4 && currentYVel < 0.5;
+
+        if (!isJumping) return;
+
+        FlagPermissions perms = FlagPermissions.getPerms(player.getLocation());
+
+        if (Flags.jump2.isGlobalyEnabled() && perms.has(Flags.jump2, FlagCombo.OnlyTrue)) {
+            player.setVelocity(player.getVelocity().multiply(1.3));
+        } else if (Flags.jump3.isGlobalyEnabled() && perms.has(Flags.jump3, FlagCombo.OnlyTrue)) {
+            player.setVelocity(player.getVelocity().multiply(1.6));
+        }
+    }
+
+    private void checkVehicleMovement(Player player) {
+        Entity vehicle = player.getVehicle();
+        if (vehicle == null) return;
+
+        Location loc = vehicle.getLocation();
+
+        long last = playerTempData.get(player).getLastUpdate();
+        if (System.currentTimeMillis() - last < plugin.getConfigManager().getMinMoveUpdateInterval()) {
+            return;
+        }
+        playerTempData.get(player).setLastUpdate(System.currentTimeMillis());
+
+        boolean handled = handleNewLocation(player, loc, true);
+        if (!handled) {
+            Location lastValid = playerTempData.get(player).getLastValidLocation(player);
+            if (lastValid != null) {
+                Teleporting.teleport(vehicle, lastValid);
+            }
+        }
+
+        if (!Teleporting.getTeleportDelayMap().isEmpty()
+                && plugin.getConfigManager().getTeleportDelay() > 0
+                && Teleporting.isUnderTeleportDelay(player.getUniqueId())) {
+
+            Teleporting.cancelTeleportDelay(player.getUniqueId());
+            lm.General_TeleportCanceled.sendMessage(player);
+            if (plugin.getConfigManager().isTeleportTitleMessage()) {
+                CMITitleMessage.send(player, "", "");
+            }
+        }
+    }
 
     public ResidencePlayerListener(Residence plugin) {
         this.plugin = plugin;
 
         playerTempData.clear();
-        CMIScheduler.scheduleSyncRepeatingTask(plugin, locationChangeCheck, 20L, 15 * 20L);
+
+        long checkIntervalTicks = 5L;
+
+        moveCheckTask = Bukkit.getScheduler().runTaskTimer(
+                plugin,
+                locationChangeCheck,
+                checkIntervalTicks,
+                checkIntervalTicks
+        );
     }
 
     public void reload() {
         playerTempData.clear();
-    }
-
-    @EventHandler
-    public void onJump(PlayerMoveEvent event) {
-
-        if (!Flags.jump3.isGlobalyEnabled() && !Flags.jump2.isGlobalyEnabled())
-            return;
-
-        Player player = event.getPlayer();
-        if (player.isFlying())
-            return;
-
-        if (event.getTo().getY() - event.getFrom().getY() != 0.41999998688697815D)
-            return;
-
-        if (player.hasMetadata("NPC"))
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(player.getLocation());
-        if (Flags.jump2.isGlobalyEnabled() && perms.has(Flags.jump2, FlagCombo.OnlyTrue))
-            player.setVelocity(player.getVelocity().add(player.getVelocity().multiply(0.3)));
-        else if (Flags.jump3.isGlobalyEnabled() && perms.has(Flags.jump3, FlagCombo.OnlyTrue))
-            player.setVelocity(player.getVelocity().add(player.getVelocity().multiply(0.6)));
-
+        lastYVelocity.clear();
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -453,16 +490,15 @@ public class ResidencePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
-
         Player player = event.getPlayer();
 
         plugin.getPermissionManager().removeFromCache(player);
-
         checkSpecialFlags(player, null, plugin.getResidenceManager().getByLoc(player.getLocation()));
-
         plugin.getPlayerManager().getResidencePlayer(player).onQuit();
         plugin.getTeleportMap().remove(player.getUniqueId());
         playerTempData.clearCache(player.getUniqueId());
+
+        lastYVelocity.remove(player.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -913,8 +949,10 @@ public class ResidencePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-//        lastUpdate.put(player.getUniqueId(), 0L);
         playerTempData.get(player).setLastUpdate(0L);
+
+        playerTempData.get(player).setLastLocation(player.getLocation().toVector());
+
         if (plugin.getPermissionManager().isResidenceAdmin(player)) {
             ResAdmin.turnResAdminOn(player);
         }
@@ -2306,104 +2344,6 @@ public class ResidencePlayerListener implements Listener {
 
             if (Flags.rain.isGlobalyEnabled() && newRes.getPermissions().has(Flags.rain, FlagCombo.OnlyTrue))
                 player.setPlayerWeather(WeatherType.DOWNFALL);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerMove(PlayerMoveEvent event) {
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-        Player player = event.getPlayer();
-        if (player == null)
-            return;
-
-        if (player.hasMetadata("NPC"))
-            return;
-
-        Location locfrom = event.getFrom();
-        Location locto = event.getTo();
-        if (locfrom.getBlockX() == locto.getBlockX() && locfrom.getBlockY() == locto.getBlockY() && locfrom.getBlockZ() == locto.getBlockZ())
-            return;
-
-//		long last = playerTempData.get(player).getLastUpdate();
-//		if (System.currentTimeMillis() - last < plugin.getConfigManager().getMinMoveUpdateInterval())
-//			return;
-//
-//		playerTempData.get(player).setLastUpdate(System.currentTimeMillis());
-
-        boolean handled = handleNewLocation(player, locto, true);
-
-        if (!handled)
-            event.setCancelled(true);
-
-        if (Teleporting.getTeleportDelayMap().isEmpty())
-            return;
-
-        if (plugin.getConfigManager().getTeleportDelay() <= 0 || !Teleporting.isUnderTeleportDelay(player.getUniqueId()))
-            return;
-
-        Teleporting.cancelTeleportDelay(player.getUniqueId());
-
-        lm.General_TeleportCanceled.sendMessage(player);
-        if (plugin.getConfigManager().isTeleportTitleMessage())
-            CMITitleMessage.send(player, "", "");
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerMoveInVehicle(VehicleMoveEvent event) {
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getVehicle().getWorld()))
-            return;
-
-        if (event.getVehicle().getPassenger() == null)
-            return;
-
-        List<Entity> ent = new ArrayList<Entity>();
-
-        if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
-            ent.addAll(event.getVehicle().getPassengers());
-        else
-            ent.add(event.getVehicle().getPassenger());
-
-        for (Entity one : ent) {
-
-            if (!(one instanceof Player))
-                continue;
-
-            Player player = (Player) one;
-            if (player == null)
-                continue;
-
-            if (player.hasMetadata("NPC"))
-                continue;
-
-            Location locfrom = event.getFrom();
-            Location locto = event.getTo();
-            if (locfrom.getBlockX() == locto.getBlockX() && locfrom.getBlockY() == locto.getBlockY() && locfrom.getBlockZ() == locto.getBlockZ())
-                continue;
-
-            long last = playerTempData.get(player).getLastUpdate();
-            if (System.currentTimeMillis() - last < plugin.getConfigManager().getMinMoveUpdateInterval())
-                continue;
-
-            playerTempData.get(player).setLastUpdate(System.currentTimeMillis());
-
-            boolean handled = handleNewLocation(player, locto, true);
-            if (!handled) {
-                Teleporting.teleport(event.getVehicle(), event.getFrom());
-            }
-
-            if (Teleporting.getTeleportDelayMap().isEmpty())
-                continue;
-
-            if (plugin.getConfigManager().getTeleportDelay() <= 0 || !Teleporting.isUnderTeleportDelay(player.getUniqueId()))
-                continue;
-
-            Teleporting.cancelTeleportDelay(player.getUniqueId());
-            lm.General_TeleportCanceled.sendMessage(player);
-            if (plugin.getConfigManager().isTeleportTitleMessage())
-                CMITitleMessage.send(player, "", "");
         }
     }
 
