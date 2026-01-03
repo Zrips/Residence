@@ -381,6 +381,9 @@ public class ResidenceEntityListener implements Listener {
         if (!(event.getEntity() instanceof Vehicle))
             return;
 
+        if (Utils.isAnimal(event.getEntity()))
+            return;
+
         Vehicle vehicle = (Vehicle) event.getEntity();
 
         if (!vehicleDamageable(damager, vehicle))
