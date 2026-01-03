@@ -249,15 +249,10 @@
             <id>bluecolored</id>
             <url>https://repo.bluecolored.de/releases</url>
         </repository>
-		<!-- LWCX -->
+		<!-- BigDoors & LWCX -->
 		<repository>
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
-		</repository>
-		<!-- BigDoors -->
-		<repository>
-			<id>BigDoors</id>
-			<url>https://repo.codemc.io/repository/maven-public/</url>
 		</repository>
 		<!-- Kingdoms -->
 		<repository>
