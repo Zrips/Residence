@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -52,6 +53,42 @@ public class ResidenceListener1_13 implements Listener {
             return;
 
         if (FlagPermissions.has(block.getLocation(), Flags.dryup, FlagCombo.OnlyFalse)) {
+            try {
+                BlockData data = block.getBlockData();
+                Farmland farm = (Farmland) data;
+                if (farm.getMoisture() < 2) {
+                    farm.setMoisture(7);
+                    block.setBlockData(farm);
+                }
+            } catch (NoClassDefFoundError e) {
+            }
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onLandDryPhysics(BlockPhysicsEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.dryup.isGlobalyEnabled())
+            return;
+
+        Block block = event.getBlock();
+        if (block.getType() != Material.FARMLAND)
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
+
+        if (FlagPermissions.has(block.getLocation(), Flags.dryup, FlagCombo.OnlyFalse)) {
+            try {
+                BlockData data = block.getBlockData();
+                Farmland farm = (Farmland) data;
+                if (farm.getMoisture() < 2) {
+                    farm.setMoisture(7);
+                    block.setBlockData(farm);
+                }
+            } catch (NoClassDefFoundError e) {
+            }
             event.setCancelled(true);
         }
     }
