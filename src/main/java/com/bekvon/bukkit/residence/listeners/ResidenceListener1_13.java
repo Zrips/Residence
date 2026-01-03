@@ -29,6 +29,7 @@ import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Logs.CMIDebug;
+import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class ResidenceListener1_13 implements Listener {
 
@@ -44,26 +45,8 @@ public class ResidenceListener1_13 implements Listener {
         if (!Flags.dryup.isGlobalyEnabled())
             return;
 
-        Block block = event.getBlock();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld()))
-            return;
-
-        if (block.getType() != Material.FARMLAND)
-            return;
-
-        if (FlagPermissions.has(block.getLocation(), Flags.dryup, FlagCombo.OnlyFalse)) {
-            try {
-                BlockData data = block.getBlockData();
-                Farmland farm = (Farmland) data;
-                if (farm.getMoisture() < 2) {
-                    farm.setMoisture(7);
-                    block.setBlockData(farm);
-                }
-            } catch (NoClassDefFoundError e) {
-            }
+        if (shouldCancelFarmLandChange(event.getBlock()))
             event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -72,25 +55,34 @@ public class ResidenceListener1_13 implements Listener {
         if (!Flags.dryup.isGlobalyEnabled())
             return;
 
-        Block block = event.getBlock();
-        if (block.getType() != Material.FARMLAND)
-            return;
+        if (shouldCancelFarmLandChange(event.getBlock()))
+            event.setCancelled(true);
+    }
+
+    private boolean shouldCancelFarmLandChange(Block block) {
+
         // disabling event on world
         if (plugin.isDisabledWorldListener(block.getWorld()))
-            return;
+            return false;
 
-        if (FlagPermissions.has(block.getLocation(), Flags.dryup, FlagCombo.OnlyFalse)) {
-            try {
-                BlockData data = block.getBlockData();
-                Farmland farm = (Farmland) data;
-                if (farm.getMoisture() < 2) {
-                    farm.setMoisture(7);
-                    block.setBlockData(farm);
-                }
-            } catch (NoClassDefFoundError e) {
+        if (block.getType() != Material.FARMLAND)
+            return false;
+
+        if (!FlagPermissions.has(block.getLocation(), Flags.dryup, FlagCombo.OnlyFalse))
+            return false;
+
+        try {
+            BlockData data = block.getBlockData();
+            Farmland farm = (Farmland) data;
+            if (farm.getMoisture() < 2) {
+                farm.setMoisture(7);
+                block.setBlockData(farm);
             }
-            event.setCancelled(true);
+        } catch (
+
+        NoClassDefFoundError e) {
         }
+        return true;
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
