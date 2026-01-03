@@ -150,7 +150,7 @@ public class ResidenceListener1_21 implements Listener {
             hand = CMIMaterial.get(player.getInventory().getItemInOffHand());
         }
         // Avoid overwriting Leash Flag, Lead Shears
-        if (hand != CMIMaterial.HONEYCOMB || !hand.toString().contains("_AXE"))
+        if (hand != CMIMaterial.HONEYCOMB && !hand.toString().contains("_AXE"))
             return;
 
         FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);

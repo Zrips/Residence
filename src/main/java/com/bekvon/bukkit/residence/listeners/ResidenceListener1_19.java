@@ -24,6 +24,8 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
+import net.Zrips.CMILib.Version.Version;
+
 public class ResidenceListener1_19 implements Listener {
 
     private Residence plugin;
@@ -143,11 +145,7 @@ public class ResidenceListener1_19 implements Listener {
         if (!Flags.container.isGlobalyEnabled())
             return;
 
-        if (!(event.getPlayer() instanceof Player))
-            return;
-
         Player player = (Player) event.getPlayer();
-
         // disabling event on world
         if (plugin.isDisabledWorldListener(player.getWorld()))
             return;
@@ -169,6 +167,12 @@ public class ResidenceListener1_19 implements Listener {
 
     // Cover All 1.19+ Vehicles with an Inventory interface
     public static boolean canHaveContainer1_19(Entity entity) {
+        if (entity == null) {
+            return false;
+        }
+        if(Version.isCurrentEqualOrHigher(Version.v1_21_R7)) {
+            return (entity instanceof AbstractHorse || entity instanceof ChestBoat || entity instanceof org.bukkit.entity.AbstractNautilus);
+        }
         return (entity instanceof AbstractHorse || entity instanceof ChestBoat);
     }
 }
