@@ -12,7 +12,9 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -104,16 +106,52 @@ public class ResidenceEntityListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onEndermanChangeBlock(EntityChangeBlockEvent event) {
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
+    public void onEntityChangeBlockEvent(EntityChangeBlockEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.destroy.isGlobalyEnabled())
             return;
 
-        if (event.getEntityType() != EntityType.ENDERMAN)
+        Block block = event.getBlock();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
-        FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
-        if (!perms.has(Flags.destroy, true)) {
-            event.setCancelled(true);
+
+        Entity entity = event.getEntity();
+
+        if (entity instanceof Enderman) {
+            if (FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
+                event.setCancelled(true);
+
+        } else if (entity instanceof Boat) {
+            if (!CMIMaterial.get(block.getType()).equals(CMIMaterial.LILY_PAD))
+                return;
+
+            Player riderPlayer = null;
+
+            if (Version.isCurrentEqualOrLower(Version.v1_11_R1)) {
+                Entity rider = entity.getPassenger();
+                riderPlayer = rider instanceof Player ? (Player) rider : null;
+
+            } else {
+                List<Entity> passengers = entity.getPassengers();
+                if (!passengers.isEmpty()) {
+                    // first passenger
+                    Entity rider = passengers.get(0);
+                    riderPlayer = rider instanceof Player ? (Player) rider : null;
+                }
+            }
+
+            if (riderPlayer != null) {
+                if (ResAdmin.isResAdmin(riderPlayer))
+                    return;
+
+                if (FlagPermissions.has(block.getLocation(), riderPlayer, Flags.destroy, FlagCombo.OnlyFalse))
+                    event.setCancelled(true);
+
+            } else {
+                if (FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
+                    event.setCancelled(true);
+            }
         }
     }
 
@@ -234,16 +272,11 @@ public class ResidenceEntityListener implements Listener {
         if (ResAdmin.isResAdmin(cause))
             return;
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
-
-        if (res == null)
+        if (FlagPermissions.has(entity.getLocation(), cause, Flags.animalkilling, true))
             return;
 
-        if (res.getPermissions().playerHas(cause, Flags.animalkilling, FlagCombo.OnlyFalse)) {
-            lm.Residence_FlagDeny.sendMessage(cause, Flags.animalkilling, res.getName());
-            event.setCancelled(true);
-        }
-
+        lm.Flag_Deny.sendMessage(cause, Flags.animalkilling);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -453,15 +486,11 @@ public class ResidenceEntityListener implements Listener {
         if (ResAdmin.isResAdmin(cause))
             return;
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
-
-        if (res == null)
+        if (FlagPermissions.has(entity.getLocation(), cause, Flags.mobkilling, true))
             return;
 
-        if (res.getPermissions().playerHas(cause, Flags.mobkilling, FlagCombo.OnlyFalse)) {
-            lm.Residence_FlagDeny.sendMessage(cause, Flags.mobkilling, res.getName());
-            event.setCancelled(true);
-        }
+        lm.Flag_Deny.sendMessage(cause, Flags.mobkilling);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
