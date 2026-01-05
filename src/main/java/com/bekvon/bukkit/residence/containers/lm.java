@@ -199,9 +199,9 @@ public enum lm {
     Flag_ChangedForOne("&eChanged &6%1 &eflags for &6%2 &eresidences"),
     Flag_ChangedFor("&eChanged &6%1 &eflags from &6%2 &eresidences checked"),
     Flag_reset("&eReset flags for &6%1 &eresidence"),
-    Flag_reset_OwnerFlags("&eReset ownerFlags for &6%1 &eresidence"),
+    Flag_resetOwnerFlags("&eReset ownerFlags for &6%1 &eresidence"),
     Flag_resetAll("&eReset flags for &6%1 &eresidences"),
-    Flag_resetAll_OwnerFlags("&eReset ownerFlags for &6%1 &eresidences"),
+    Flag_resetAllOwnerFlags("&eReset ownerFlags for &6%1 &eresidences"),
 
     Bank_NoAccess("&cYou don't have bank access."),
     Bank_Name(" &eBank: &6%1"),

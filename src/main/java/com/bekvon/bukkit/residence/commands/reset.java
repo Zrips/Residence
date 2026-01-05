@@ -58,7 +58,7 @@ public class reset implements cmd {
                         return true;
                     }
                     oneRes.getPermissions().resetGlobalCreatorDefaultFlags();
-                    lm.Flag_reset_OwnerFlags.sendMessage(sender, oneRes.getName());
+                    lm.Flag_resetOwnerFlags.sendMessage(sender, oneRes.getName());
                     return true;
                 }
             }
@@ -111,7 +111,7 @@ public class reset implements cmd {
         if (!isOwnerFlag) {
             lm.Flag_resetAll.sendMessage(sender, count);
         } else {
-            lm.Flag_resetAll_OwnerFlags.sendMessage(sender, count);
+            lm.Flag_resetAllOwnerFlags.sendMessage(sender, count);
         }
         return true;
     }
