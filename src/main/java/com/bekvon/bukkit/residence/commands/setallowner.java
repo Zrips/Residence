@@ -51,36 +51,44 @@ public class setallowner implements cmd {
             return true;
         }
 
-        int count = 0;
-        int skipped = 0;
+        int[] counts = {0, 0}; // counts[0] = transferred, counts[1] = skipped
 
         for (ClaimedResidence area : playerResidences) {
-            if (area.getRaid().isRaidInitialized() && !resadmin) {
-                skipped++;
-                continue;
-            }
-
-            area.getPermissions().setOwner(newOwner, !keepFlags);
-
-            if (plugin.getRentManager().isForRent(area))
-                plugin.getRentManager().removeRentable(area);
-            if (plugin.getTransactionManager().isForSale(area))
-                plugin.getTransactionManager().removeFromSale(area);
-
-            if (!keepFlags)
-                area.getPermissions().applyDefaultFlags();
-
-            plugin.getSignUtil().updateSignResName(area);
-            count++;
+            processResidenceAndSubzones(area, oldOwner, newOwner, keepFlags, resadmin, plugin, counts);
         }
 
-        lm.Residence_OwnerChangeAll.sendMessage(sender, count, oldOwner, newOwner);
+        lm.Residence_OwnerChangeAll.sendMessage(sender, counts[0], oldOwner, newOwner);
 
-        if (skipped > 0) {
-            lm.Residence_OwnerChangeAllSkipped.sendMessage(sender, skipped);
+        if (counts[1] > 0) {
+            lm.Residence_OwnerChangeAllSkipped.sendMessage(sender, counts[1]);
         }
 
         return true;
+    }
+
+    private void processResidenceAndSubzones(ClaimedResidence area, String oldOwner, String newOwner, boolean keepFlags, boolean resadmin, Residence plugin, int[] counts) {
+        if (area.getOwner().equalsIgnoreCase(oldOwner)) {
+            if (area.getRaid().isRaidInitialized() && !resadmin) {
+                counts[1]++;
+            } else {
+                area.getPermissions().setOwner(newOwner, !keepFlags);
+
+                if (plugin.getRentManager().isForRent(area))
+                    plugin.getRentManager().removeRentable(area);
+                if (plugin.getTransactionManager().isForSale(area))
+                    plugin.getTransactionManager().removeFromSale(area);
+
+                if (!keepFlags)
+                    area.getPermissions().applyDefaultFlags();
+
+                plugin.getSignUtil().updateSignResName(area);
+                counts[0]++;
+            }
+        }
+
+        for (ClaimedResidence subzone : area.getSubzones()) {
+            processResidenceAndSubzones(subzone, oldOwner, newOwner, keepFlags, resadmin, plugin, counts);
+        }
     }
 
     @Override
