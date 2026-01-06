@@ -21,13 +21,13 @@ import com.bekvon.bukkit.residence.utils.GetTime;
 import com.bekvon.bukkit.residence.utils.Teleporting;
 import com.bekvon.bukkit.residence.utils.Utils;
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
-import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
+import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
@@ -1010,6 +1010,7 @@ public class ResidencePlayerListener implements Listener {
         switch (mat.name()) {
         case "ITEM_FRAME":
         case "BEACON":
+        case "BELL":
         case "FLOWER_POT":
         case "COMMAND":
         case "ANVIL":
@@ -1121,176 +1122,112 @@ public class ResidencePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerEnderCrystalInteract(PlayerInteractEvent event) {
-        if (event.getPlayer() == null)
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+    public void onPlayerBuild(PlayerInteractEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.build.isGlobalyEnabled())
             return;
 
         Block block = event.getClickedBlock();
-
         if (block == null)
             return;
-
-        if (block.getType() != Material.BEDROCK && block.getType() != Material.OBSIDIAN)
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
         Player player = event.getPlayer();
+        if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player))
+            return;
 
-        ItemStack iih = null;
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-        try {
-            if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
-                iih = event.getItem();
-            else
-                iih = CMIItemStack.getItemInMainHand(player);
-        } catch (Throwable e) {
-            iih = CMIItemStack.getItemInMainHand(player);
+            ItemStack item = null;
+            try {
+                if (Version.isCurrentEqualOrHigher(Version.v1_9_R1)) {
+                    item = event.getItem();
+                } else {
+                    item = CMIItemStack.getItemInMainHand(player);
+                }
+            } catch (Throwable e) {
+                item = CMIItemStack.getItemInMainHand(player);
+            }
+            if (item == null)
+                return;
+            // Check place End_Crystal
+            if (CMIMaterial.END_CRYSTAL.equals(item.getType()) &&
+                    (block.getType() == Material.BEDROCK || block.getType() == Material.OBSIDIAN)) {
+
+                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+                if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
+                    return;
+
+                lm.Flag_Deny.sendMessage(player, Flags.build);
+                event.setCancelled(true);
+                return;
+            }
+            // Check interact Monster_Spawner
+            if (block.getType() == Material.SPAWNER && CMIMaterial.isSpawnEgg(item.getType())) {
+
+                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+                if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
+                    return;
+
+                lm.Flag_Deny.sendMessage(player, Flags.build);
+                event.setCancelled(true);
+                return;
+            }
+
+        } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            // Check extinguish Fire by hand
+            Block relativeBlock = block.getRelative(event.getBlockFace());
+            if (relativeBlock == null || relativeBlock.getType() != Material.FIRE)
+                return;
+
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
+                return;
+
+            lm.Flag_Deny.sendMessage(player, Flags.build);
+            event.setCancelled(true);
         }
-
-        if (iih == null)
-            return;
-
-        if (!iih.getType().toString().equals("END_CRYSTAL"))
-            return;
-
-        if (player.hasMetadata("NPC"))
-            return;
-        if (ResAdmin.isResAdmin(player))
-            return;
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-
-        boolean hasplace = perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true));
-        if (hasplace)
-            return;
-
-        event.setCancelled(true);
-        lm.Flag_Deny.sendMessage(player, Flags.build);
-        return;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerSpawnerInteract(PlayerInteractEvent event) {
-        if (event.getPlayer() == null)
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
-            return;
+    public void onPlayerStepOn(PlayerInteractEvent event) {
 
         Block block = event.getClickedBlock();
-
         if (block == null)
             return;
-
-        if (block.getType() != Material.SPAWNER)
-            return;
-
-        Player player = event.getPlayer();
-
-        ItemStack iih = null;
-
-        try {
-            if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
-                iih = event.getItem();
-            else
-                iih = CMIItemStack.getItemInMainHand(player);
-        } catch (Throwable e) {
-            iih = CMIItemStack.getItemInMainHand(player);
-        }
-
-        if (iih == null)
-            return;
-
-        if (!iih.getType().toString().endsWith("_EGG"))
-            return;
-
-        if (player.hasMetadata("NPC"))
-            return;
-        if (ResAdmin.isResAdmin(player))
-            return;
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-
-        boolean hasplace = perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true));
-        if (hasplace)
-            return;
-
-        event.setCancelled(true);
-        lm.Flag_Deny.sendMessage(player, Flags.build);
-        return;
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerFireInteract(PlayerInteractEvent event) {
-        if (event.getPlayer() == null)
-            return;
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK)
+        if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
-        Block block = event.getClickedBlock();
-
-        if (block == null)
-            return;
-
-        Block relativeBlock = block.getRelative(event.getBlockFace());
-
-        if (relativeBlock == null)
-            return;
-
-        if (relativeBlock.getType() != Material.FIRE)
-            return;
-
-        Player player = event.getPlayer();
-        if (player.hasMetadata("NPC"))
-            return;
-        if (ResAdmin.isResAdmin(player))
-            return;
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-
-        boolean hasplace = perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true));
-        if (hasplace)
-            return;
-
-        event.setCancelled(true);
-        lm.Flag_Deny.sendMessage(player, Flags.build);
-        return;
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlatePress(PlayerInteractEvent event) {
-        if (event.getPlayer() == null)
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
         if (event.getAction() != Action.PHYSICAL)
             return;
-        Block block = event.getClickedBlock();
-        if (block == null)
-            return;
+
         Player player = event.getPlayer();
         if (player.hasMetadata("NPC"))
             return;
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
 
         CMIMaterial mat = CMIMaterial.get(block.getType());
-        if (!ResAdmin.isResAdmin(player)) {
-            boolean hasuse = perms.playerHas(player, Flags.use, true);
-            boolean haspressure = perms.playerHas(player, Flags.pressure, hasuse);
-            if ((!hasuse && !haspressure || !haspressure) && mat.isPlate()
-                    && !ResPerm.bypass_use.hasPermission(player, 10000L)) {
-                event.setCancelled(true);
-            }
-        }
-        if (!perms.playerHas(player, Flags.trample, perms.playerHas(player, Flags.build, true)) && (mat == CMIMaterial.FARMLAND || mat == CMIMaterial.SOUL_SAND)) {
+        if (mat.isPlate()) {
+
+            if (ResAdmin.isResAdmin(player))
+                return;
+
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, Flags.pressure, (perms.playerHas(player, Flags.use, true))))
+                return;
+
             event.setCancelled(true);
+
+        } else if (mat == CMIMaterial.FARMLAND) {
+
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, Flags.trample, (perms.playerHas(player, Flags.build, true))))
+                return;
+
+            event.setCancelled(true);
+
         }
     }
 
@@ -1391,51 +1328,6 @@ public class ResidencePlayerListener implements Listener {
         return block != null && block.getType().name().contains("RAIL") && item != null && item.getType().name().contains("MINECART");
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerharvest(PlayerInteractEvent event) {
-
-        if (Version.isCurrentEqualOrLower(Version.v1_16_R1))
-            return;
-
-        if (event.getPlayer() == null)
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
-            return;
-        try {
-            if (event.getHand() != EquipmentSlot.HAND && event.getHand() != EquipmentSlot.OFF_HAND)
-                return;
-        } catch (Exception e) {
-        }
-        Player player = event.getPlayer();
-        if (ResAdmin.isResAdmin(player))
-            return;
-
-        Block block = event.getClickedBlock();
-        if (block == null)
-            return;
-
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-
-        if (res != null && res.isOwner(player))
-            return;
-
-        CMIMaterial mat = CMIMaterial.get(block.getType());
-
-        if (!mat.equals(CMIMaterial.SWEET_BERRY_BUSH) && !mat.equals(CMIMaterial.CAVE_VINES) && !mat.equals(CMIMaterial.CAVE_VINES_PLANT))
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-
-        if (!perms.playerHas(player, Flags.harvest, true)) {
-            lm.Flag_Deny.sendMessage(player, Flags.harvest);
-            event.setCancelled(true);
-        }
-    }
-
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (Version.isCurrentEqualOrHigher(Version.v1_17_R1) || !Flags.place.isGlobalyEnabled())
@@ -1491,15 +1383,13 @@ public class ResidencePlayerListener implements Listener {
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-            CMIMaterial blockM = CMIMaterial.get(block.getType());
+            CMIMaterial blockM = CMIMaterial.get(mat);
 
             if (heldItem.isDye() || heldItem.equals(CMIMaterial.GLOW_INK_SAC)) {
 
                 if (heldItem.equals(CMIMaterial.BONE_MEAL) &&
                         (blockM == CMIMaterial.GRASS_BLOCK ||
-                                blockM == CMIMaterial.GRASS ||
                                 blockM == CMIMaterial.SHORT_GRASS ||
-                                blockM == CMIMaterial.TALL_GRASS ||
                                 blockM == CMIMaterial.TALL_SEAGRASS ||
                                 blockM == CMIMaterial.MOSS_BLOCK ||
                                 blockM == CMIMaterial.BIG_DRIPLEAF_STEM ||
@@ -1632,24 +1522,29 @@ public class ResidencePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerTradeEntity(PlayerInteractEntityEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.trade.isGlobalyEnabled())
+            return;
 
+        Entity entity = event.getRightClicked();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-        Player player = event.getPlayer();
-        if (ResAdmin.isResAdmin(player))
+        if (plugin.isDisabledWorldListener(entity.getWorld()))
             return;
 
-        Entity ent = event.getRightClicked();
+        CMIEntityType type = CMIEntityType.get(entity);
         /* Trade */
-        if (ent.getType() != EntityType.VILLAGER)
-            return;
+        if (type == CMIEntityType.VILLAGER || type == CMIEntityType.WANDERING_TRADER) {
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
+            Player player = event.getPlayer();
+            if (ResAdmin.isResAdmin(player))
+                return;
 
-        if (res != null && res.getPermissions().playerHas(player, Flags.trade, FlagCombo.OnlyFalse)) {
-            lm.Residence_FlagDeny.sendMessage(player, Flags.trade, res.getName());
+            if (FlagPermissions.has(entity.getLocation(), player, Flags.trade, true))
+                return;
+
+            lm.Flag_Deny.sendMessage(player, Flags.trade);
             event.setCancelled(true);
+
         }
     }
 
@@ -1658,52 +1553,68 @@ public class ResidencePlayerListener implements Listener {
         if (Version.isCurrentEqualOrHigher(Version.v1_19_R1)) {
             return ResidenceListener1_19.canHaveContainer1_19(entity);
         }
-
-        CMIEntityType type = CMIEntityType.get(entity);
-
-        if (type == null)
-            return false;
-
-        switch (type) {
-        case DONKEY:
-        case HORSE:
-        case LLAMA:
-        case MULE:
-        case SKELETON_HORSE:
-        case TRADER_LLAMA:
-        case ZOMBIE_HORSE:
-            return true;
-        default:
-            return false;
-        }
+        return entity instanceof AbstractHorse;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerInteractVehicleInv(PlayerInteractEntityEvent event) {
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
+    public void onPlayerInteractEntityInv(PlayerInteractEntityEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.container.isGlobalyEnabled())
             return;
+
         Player player = event.getPlayer();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(player.getWorld()))
+            return;
+
         if (ResAdmin.isResAdmin(player))
             return;
 
-        Entity ent = event.getRightClicked();
+        Entity entity = event.getRightClicked();
+        CMIEntityType type = CMIEntityType.get(entity);
 
-        if (!canHaveContainer(ent))
-            return;
+        if ((player.isSneaking() && canHaveContainer(entity))
+                ||
+                (type == (CMIEntityType.CHEST_MINECART) ||
+                        type == (CMIEntityType.FURNACE_MINECART) ||
+                        type == (CMIEntityType.HOPPER_MINECART) ||
+                        type == (CMIEntityType.ALLAY))) {
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
-        if (res == null)
-            return;
+            if (FlagPermissions.has(entity.getLocation(), player, Flags.container, true))
+                return;
 
-        boolean hasContainerBypass = ResPerm.bypass_container.hasPermission(player, 10000L);
-
-        if (!hasContainerBypass && !res.isOwner(player) && res.getPermissions().playerHas(player, Flags.container, FlagCombo.OnlyFalse) && player.isSneaking()) {
-            lm.Residence_FlagDeny.sendMessage(player, Flags.container, res.getName());
+            lm.Flag_Deny.sendMessage(player, Flags.container);
             event.setCancelled(true);
+
+        } else if (CMIEntity.isItemFrame(entity) && (entity instanceof Hanging)) {
+
+            ItemStack item = CMIItemStack.getItemInMainHand(player);
+            try {
+                if (event.getHand() == EquipmentSlot.OFF_HAND)
+                    item = CMIItemStack.getItemInOffHand(player);
+            } catch (Throwable e) {
+            }
+            if (item == null)
+                return;
+
+            String world = player.getWorld().getName();
+
+            ResidencePlayer resPlayer = plugin.getPlayerManager().getResidencePlayer(player);
+            PermissionGroup group = resPlayer.getGroup();
+
+            if (!plugin.getItemManager().isAllowed(item.getType(), group, world)) {
+                lm.General_ItemBlacklisted.sendMessage(player);
+                event.setCancelled(true);
+                return;
+            }
+
+            FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
+            if (perms.playerHas(player, Flags.container, perms.playerHas(player, Flags.use, true)))
+                return;
+
+            lm.Flag_Deny.sendMessage(player, Flags.container);
+            event.setCancelled(true);
+
         }
     }
 
@@ -1712,16 +1623,16 @@ public class ResidencePlayerListener implements Listener {
         // Disabling listener if flag disabled globally
         if (!Flags.riding.isGlobalyEnabled())
             return;
+
+        Entity entity = event.getRightClicked();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-        Player player = event.getPlayer();
-        if (ResAdmin.isResAdmin(player))
+        if (plugin.isDisabledWorldListener(entity.getWorld()))
             return;
 
-        Entity ent = event.getRightClicked();
+        if (!(entity instanceof Vehicle))
+            return;
 
-        CMIEntityType type = CMIEntityType.get(ent);
+        CMIEntityType type = CMIEntityType.get(entity);
 
         // Non-rideable Vehicles
         if (type == CMIEntityType.CHEST_MINECART ||
@@ -1731,54 +1642,16 @@ public class ResidencePlayerListener implements Listener {
                 type == CMIEntityType.TNT_MINECART)
             return;
 
-        if (!(ent instanceof Vehicle))
-            return;
-
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
-        if (res == null)
-            return;
-
-        if (!res.isOwner(player) && !res.getPermissions().playerHas(player, Flags.riding, FlagCombo.TrueOrNone)) {
-            lm.Residence_FlagDeny.sendMessage(player, Flags.riding, res.getName());
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerInteractWithMinecartStorage(PlayerInteractEntityEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.container.isGlobalyEnabled())
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
         Player player = event.getPlayer();
         if (ResAdmin.isResAdmin(player))
             return;
 
-        Entity ent = event.getRightClicked();
-
-        CMIEntityType type = CMIEntityType.get(ent);
-
-        if (type == null)
+        if (FlagPermissions.has(entity.getLocation(), player, Flags.riding, true))
             return;
 
-        if (!type.equals(CMIEntityType.CHEST_MINECART) &&
-                !type.equals(CMIEntityType.FURNACE_MINECART) &&
-                !type.equals(CMIEntityType.HOPPER_MINECART) &&
-                !type.equals(CMIEntityType.ALLAY))
-            return;
+        lm.Flag_Deny.sendMessage(player, Flags.riding);
+        event.setCancelled(true);
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
-        if (res == null)
-            return;
-
-        boolean hasContainerBypass = ResPerm.bypass_container.hasPermission(player, 10000L);
-
-        if (!hasContainerBypass && !res.isOwner(player) && res.getPermissions().playerHas(player, Flags.container, FlagCombo.OnlyFalse)) {
-            lm.Residence_FlagDeny.sendMessage(player, Flags.container, res.getName());
-            event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1786,32 +1659,37 @@ public class ResidencePlayerListener implements Listener {
         // Disabling listener if flag disabled globally
         if (!Flags.dye.isGlobalyEnabled())
             return;
+
+        Entity entity = event.getRightClicked();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
+        if (plugin.isDisabledWorldListener(entity.getWorld()))
             return;
+        /* Dye */
+        if (entity.getType() != EntityType.SHEEP)
+            return;
+
         Player player = event.getPlayer();
+
+        ItemStack item = CMIItemStack.getItemInMainHand(player);
+        try {
+            if (event.getHand() == EquipmentSlot.OFF_HAND)
+                item = CMIItemStack.getItemInOffHand(player);
+        } catch (Throwable e) {
+        }
+
+        if (item == null || !CMIMaterial.isDye(item.getType()))
+            return;
+
         if (ResAdmin.isResAdmin(player))
             return;
 
-        Entity ent = event.getRightClicked();
-        /* Dye */
-        if (ent.getType() != EntityType.SHEEP)
+        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
+        if (perms.playerHas(player, Flags.dye, perms.playerHas(player, Flags.animalkilling, true)))
             return;
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
-        if (res == null)
-            return;
-        if (!res.isOwner(player) && res.getPermissions().playerHas(player, Flags.dye, FlagCombo.OnlyFalse)) {
-            ItemStack iih = CMIItemStack.getItemInMainHand(player);
-            ItemStack iiho = CMILib.getInstance().getReflectionManager().getItemInOffHand(player);
-            if (iih == null && iiho == null)
-                return;
-            if (iih != null && !CMIMaterial.isDye(iih.getType()) && iiho != null && !CMIMaterial.isDye(iiho.getType()))
-                return;
+        lm.Flag_Deny.sendMessage(player, Flags.dye);
+        event.setCancelled(true);
 
-            lm.Residence_FlagDeny.sendMessage(player, Flags.dye, res.getName());
-            event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1819,32 +1697,20 @@ public class ResidencePlayerListener implements Listener {
         // Disabling listener if flag disabled globally
         if (!Flags.shear.isGlobalyEnabled())
             return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-        if (event.isCancelled())
-            return;
 
         Player player = event.getPlayer();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(player.getWorld()))
+            return;
+
         if (ResAdmin.isResAdmin(player))
             return;
 
-        Entity ent = event.getEntity();
-
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
-        if (res == null)
+        if (FlagPermissions.has(event.getEntity().getLocation(), player, Flags.shear, true))
             return;
 
-        if (!res.isOwner(player) && res.getPermissions().playerHas(player, Flags.shear, FlagCombo.OnlyFalse)) {
-            ItemStack iih = CMIItemStack.getItemInMainHand(player);
-            ItemStack iiho = CMILib.getInstance().getReflectionManager().getItemInOffHand(player);
-            if (iih == null && iiho == null)
-                return;
-            if (iih != null && !CMIMaterial.SHEARS.equals(iih.getType()) && iiho != null && !CMIMaterial.SHEARS.equals(iiho.getType()))
-                return;
-            lm.Residence_FlagDeny.sendMessage(player, Flags.shear, res.getName());
-            event.setCancelled(true);
-        }
+        lm.Flag_Deny.sendMessage(player, Flags.shear);
+        event.setCancelled(true);
 
     }
 
@@ -1859,9 +1725,6 @@ public class ResidencePlayerListener implements Listener {
         if (plugin.isDisabledWorldListener(player.getWorld()))
             return;
 
-        if (ResAdmin.isResAdmin(player))
-            return;
-
         ItemStack item = CMIItemStack.getItemInMainHand(player);
 
         try {
@@ -1871,6 +1734,9 @@ public class ResidencePlayerListener implements Listener {
         }
 
         if (!CMIMaterial.get(item).equals(CMIMaterial.NAME_TAG))
+            return;
+
+        if (ResAdmin.isResAdmin(player))
             return;
 
         Entity entity = event.getRightClicked();
@@ -1892,51 +1758,6 @@ public class ResidencePlayerListener implements Listener {
         }
         lm.Flag_Deny.sendMessage(player, Flags.nametag);
         event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerItemFrameInteract(PlayerInteractEntityEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.container.isGlobalyEnabled())
-            return;
-
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-        Player player = event.getPlayer();
-        if (ResAdmin.isResAdmin(player))
-            return;
-
-        Entity ent = event.getRightClicked();
-
-        if (!CMIEntity.isItemFrame(ent)) {
-            return;
-        }
-
-        /* Container - ItemFrame protection */
-        if (!(ent instanceof Hanging))
-            return;
-
-        Material heldItem = CMIItemStack.getItemInMainHand(player).getType();
-
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(ent.getLocation(), player);
-        String world = player.getWorld().getName();
-
-        ResidencePlayer resPlayer = plugin.getPlayerManager().getResidencePlayer(player);
-        PermissionGroup group = resPlayer.getGroup();
-
-        if (!plugin.getItemManager().isAllowed(heldItem, group, world)) {
-            lm.General_ItemBlacklisted.sendMessage(player);
-            event.setCancelled(true);
-            return;
-        }
-
-        boolean hasContainerBypass = ResPerm.bypass_container.hasPermission(player, 10000L);
-//
-        if (!hasContainerBypass && !perms.playerHas(player, Flags.container, perms.playerHas(player, Flags.use, true))) {
-            event.setCancelled(true);
-            lm.Flag_Deny.sendMessage(player, Flags.container);
-        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1964,6 +1785,7 @@ public class ResidencePlayerListener implements Listener {
                 }
         }
 
+        CMIMaterial cmat = CMIMaterial.get(event.getBucket());
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
         if (res != null) {
             if (plugin.getConfigManager().preventRentModify() && plugin.getConfigManager().enabledRentSystem()) {
@@ -1974,10 +1796,9 @@ public class ResidencePlayerListener implements Listener {
                 }
             }
 
-            Material mat = event.getBucket();
             if ((res.getPermissions().playerHas(player, Flags.build, FlagCombo.OnlyFalse))
                     && plugin.getConfigManager().getNoPlaceWorlds().contains(loc.getWorld().getName())) {
-                if (mat == Material.LAVA_BUCKET || mat == Material.WATER_BUCKET) {
+                if (cmat == CMIMaterial.LAVA_BUCKET || cmat == CMIMaterial.WATER_BUCKET || cmat.containsCriteria(CMIMC.BUCKETANIMAL)) {
                     lm.Flag_Deny.sendMessage(player, Flags.build);
                     event.setCancelled(true);
                     return;
@@ -1985,18 +1806,17 @@ public class ResidencePlayerListener implements Listener {
             }
         }
 
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(loc, player);
+        FlagPermissions perms = FlagPermissions.getPerms(loc, player);
         if (!perms.playerHas(player, Flags.build, true)) {
             lm.Flag_Deny.sendMessage(player, Flags.build);
             event.setCancelled(true);
             return;
         }
 
-        Material mat = event.getBucket();
         int level = plugin.getConfigManager().getPlaceLevel();
         if (res == null && plugin.getConfigManager().isNoLavaPlace() && loc.getBlockY() >= level - 1 && plugin.getConfigManager()
                 .getNoPlaceWorlds().contains(loc.getWorld().getName())) {
-            if (mat == Material.LAVA_BUCKET) {
+            if (cmat == CMIMaterial.LAVA_BUCKET) {
                 lm.General_CantPlaceLava.sendMessage(player, level);
                 event.setCancelled(true);
                 return;
@@ -2004,9 +1824,11 @@ public class ResidencePlayerListener implements Listener {
         }
 
         if (res == null && plugin.getConfigManager().isNoWaterPlace() && loc.getBlockY() >= level - 1 && plugin.getConfigManager()
-                .getNoPlaceWorlds().contains(loc.getWorld().getName()) && mat == Material.WATER_BUCKET) {
-            lm.General_CantPlaceWater.sendMessage(player, level);
-            event.setCancelled(true);
+                .getNoPlaceWorlds().contains(loc.getWorld().getName())) {
+            if (cmat == CMIMaterial.WATER_BUCKET || cmat.containsCriteria(CMIMC.BUCKETANIMAL)) {
+                lm.General_CantPlaceWater.sendMessage(player, level);
+                event.setCancelled(true);
+            }
         }
     }
 
@@ -2019,14 +1841,16 @@ public class ResidencePlayerListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(event.getBlockClicked().getLocation());
+        Location loc = event.getBlockClicked().getLocation();
+
+        ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
         if (res != null && plugin.getConfigManager().preventRentModify() && plugin.getConfigManager().enabledRentSystem() && plugin.getRentManager().isRented(res.getName())) {
             lm.Rent_ModifyDeny.sendMessage(player);
             event.setCancelled(true);
             return;
         }
 
-        FlagPermissions perms = plugin.getPermsByLocForPlayer(event.getBlockClicked().getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(loc, player);
         boolean hasdestroy = perms.playerHas(player, Flags.destroy, perms.playerHas(player, Flags.build, true));
         if (!hasdestroy) {
             lm.Flag_Deny.sendMessage(player, Flags.destroy);

@@ -94,49 +94,45 @@ public class ResidenceListener1_19 implements Listener {
 
         Inventory source = event.getSource();
         Inventory dest = event.getDestination();
-        if (source == null || dest == null) {
+        if (source == null || dest == null)
             return;
-        }
 
         ClaimedResidence sourceRes = ClaimedResidence.getByLoc(source.getLocation());
         ClaimedResidence destRes = ClaimedResidence.getByLoc(dest.getLocation());
 
-        // ignore source & dest not in Res
-        if (sourceRes == null && destRes == null) {
+        // source & dest not in Res
+        if (sourceRes == null && destRes == null)
             return;
-        }
 
-        // ignore source & dest in Same Res
-        if (sourceRes != null && destRes != null && sourceRes.equals(destRes)) {
-            return;
-        }
+        // source & dest in Res
+        if (sourceRes != null && destRes != null) {
 
-        // source & dest not in Same Res
-        if (sourceRes != null && destRes != null && !sourceRes.equals(destRes)) {
-            if ((sourceRes.getPermissions().has(Flags.container, true)) &&
-                    (destRes.getPermissions().has(Flags.container, true))) {
+            // in Same Res, or have Same Res owner
+            if (sourceRes.equals(destRes) || sourceRes.isOwner(destRes.getOwner()))
                 return;
-            }
-            event.setCancelled(true);
-            return;
+
+            // not in Same Res & not Same Res owner
+            // hopper can be source or dest
+            if (sourceRes.getPermissions().has(Flags.container, true) &&
+                    destRes.getPermissions().has(Flags.container, true))
+                return;
+
+            // source in Res, destRes definitely not in Res
+        } else if (sourceRes != null) {
+
+            if (sourceRes.getPermissions().has(Flags.container, true))
+                return;
+
+            // dest definitely in Res, source definitely not in Res
+        } else {
+
+            if (destRes.getPermissions().has(Flags.container, true))
+                return;
+
         }
 
-        // source in Res, dest not in Res
-        if (sourceRes != null && destRes == null) {
-            if (sourceRes.getPermissions().has(Flags.container, true)) {
-                return;
-            }
-            event.setCancelled(true);
-            return;
-        }
+        event.setCancelled(true);
 
-        // dest in Res, source not in Res
-        if (sourceRes == null && destRes != null) {
-            if (destRes.getPermissions().has(Flags.container, true)) {
-                return;
-            }
-            event.setCancelled(true);
-        }
     }
 
     // if Flag_riding is true

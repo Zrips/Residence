@@ -18,6 +18,7 @@ import org.bukkit.event.entity.AreaEffectCloudApplyEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.entity.LingeringPotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.potion.PotionEffect;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -31,6 +32,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Teleporting;
 
 import net.Zrips.CMILib.Logs.CMIDebug;
+import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -256,6 +258,33 @@ public class ResidenceListener1_09 implements Listener {
                 return;
 
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerEatChorusFruit(PlayerItemConsumeEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.chorustp.isGlobalyEnabled())
+            return;
+
+        Player player = event.getPlayer();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(player.getWorld()))
+            return;
+
+        CMIMaterial cmat = CMIMaterial.get(event.getItem());
+
+        if (cmat.equals(CMIMaterial.CHORUS_FRUIT)) {
+
+            if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player))
+                return;
+
+            if (FlagPermissions.has(player.getLocation(), player, Flags.chorustp, true))
+                return;
+
+            lm.Flag_Deny.sendMessage(player, Flags.chorustp);
+            event.setCancelled(true);
+
         }
     }
 }

@@ -346,6 +346,7 @@ public class FlagPermissions {
             addMaterialToUseFlag(CMIMaterial.COMPOSTER.getMaterial(), Flags.container);
             addMaterialToUseFlag(CMIMaterial.STONECUTTER.getMaterial(), Flags.container);
 
+            addMaterialToUseFlag(CMIMaterial.BELL.getMaterial(), Flags.use);
             addMaterialToUseFlag(CMIMaterial.CAMPFIRE.getMaterial(), Flags.use);
         }
 

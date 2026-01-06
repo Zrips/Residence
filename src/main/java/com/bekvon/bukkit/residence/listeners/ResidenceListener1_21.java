@@ -16,6 +16,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.potion.PotionEffectType;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -129,11 +130,12 @@ public class ResidenceListener1_21 implements Listener {
         // Disabling listener if flag disabled globally
         if (!Flags.copper.isGlobalyEnabled())
             return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
 
         Entity entity = event.getRightClicked();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(entity.getWorld()))
+            return;
+
         if (CMIEntityType.get(entity) != CMIEntityType.COPPER_GOLEM)
             return;
 
@@ -142,15 +144,14 @@ public class ResidenceListener1_21 implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
 
-        CMIMaterial mainHand = CMIMaterial.get(player.getInventory().getItemInMainHand());
-        CMIMaterial offHand = CMIMaterial.get(player.getInventory().getItemInOffHand());
+        CMIMaterial hand = CMIMaterial.get(player.getInventory().getItemInMainHand());
 
-        // Avoid overwriting Leash Flag, Lead Shears
-        // Only held Axe or Honeycomb
-        if ((mainHand == null || !(mainHand.equals(CMIMaterial.HONEYCOMB) || mainHand.toString().contains("_AXE"))) &&
-                (offHand == null || !(offHand.equals(CMIMaterial.HONEYCOMB) || offHand.toString().contains("_AXE")))) {
-            return;
+        if (event.getHand() == EquipmentSlot.OFF_HAND) {
+            hand = CMIMaterial.get(player.getInventory().getItemInOffHand());
         }
+        // Avoid overwriting Leash Flag, Lead Shears
+        if (hand != CMIMaterial.HONEYCOMB || !hand.toString().contains("_AXE"))
+            return;
 
         FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
         if (perms.playerHas(player, Flags.copper, perms.playerHas(player, Flags.animalkilling, true)))

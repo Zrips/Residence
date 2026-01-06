@@ -33,6 +33,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
+import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
 
@@ -251,9 +252,7 @@ public class Utils {
                 ent instanceof Bat ||
                 ent instanceof Snowman ||
                 ent instanceof IronGolem ||
-                // crude approach to include Allay and be multi version supported
-                ent.getClass().getSimpleName().equals("CraftAllay") ||
-                ent.getClass().getSimpleName().equals("CraftCopperGolem"));
+                (ent != null && (CMIEntityType.get(ent) == CMIEntityType.ALLAY || CMIEntityType.get(ent) == CMIEntityType.COPPER_GOLEM)));
     }
 
     public static boolean isArmorStandEntity(EntityType ent) {

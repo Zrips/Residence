@@ -33,6 +33,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Logs.CMIDebug;
+import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_17 implements Listener {
 
@@ -60,6 +61,10 @@ public class ResidenceListener1_17 implements Listener {
             return;
 
         event.setCancelled(true);
+
+        // https://github.com/PaperMC/Paper/pull/6751
+        if (Version.isPaperBranch() && Version.isCurrentEqualOrHigher(Version.v1_18_R2))
+            return;
 
         if (event.getBlock().getType() != Material.POWDER_SNOW)
             return;
@@ -94,11 +99,9 @@ public class ResidenceListener1_17 implements Listener {
         if (!CMIMaterial.get(iih).equals(CMIMaterial.WATER_BUCKET))
             return;
 
-        FlagPermissions perms = Residence.getInstance().getPermsByLocForPlayer(ent.getLocation(), player);
-
-        if (!perms.playerHas(player, Flags.animalkilling, FlagCombo.TrueOrNone)) {
-            event.setCancelled(true);
+        if (FlagPermissions.has(ent.getLocation(), player, Flags.animalkilling, FlagCombo.OnlyFalse)) {
             lm.Flag_Deny.sendMessage(player, Flags.animalkilling);
+            event.setCancelled(true);
         }
     }
 
@@ -128,7 +131,7 @@ public class ResidenceListener1_17 implements Listener {
             return;
 
         FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-        if (perms.playerHas(player, Flags.copper, perms.playerHas(player, Flags.destroy, true)))
+        if (perms.playerHas(player, Flags.copper, perms.playerHas(player, Flags.build, true)))
             return;
 
         lm.Flag_Deny.sendMessage(player, Flags.copper);
@@ -139,7 +142,9 @@ public class ResidenceListener1_17 implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPowderSnowPhysics(BlockPhysicsEvent event) {
-
+        // https://github.com/PaperMC/Paper/pull/6751
+        if (Version.isPaperBranch() && Version.isCurrentEqualOrHigher(Version.v1_18_R2))
+            return;
         // Disabling listener if flag disabled globally
         if (!Flags.place.isGlobalyEnabled())
             return;
@@ -171,35 +176,49 @@ public class ResidenceListener1_17 implements Listener {
         // Disabling listener if flag disabled globally
         if (!Flags.build.isGlobalyEnabled())
             return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
-            return;
-
         Block block = event.getBlock();
-
         if (block == null)
             return;
-
-        ClaimedResidence originRes = plugin.getResidenceManager().getByLoc(block.getLocation());
-
-        List<BlockState> blocks = new ArrayList<BlockState>(event.getBlocks());
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
 
         Player player = event.getPlayer();
 
-        if (ResPerm.bypass_build.hasPermission(player, 10000L))
-            return;
+        if (player != null) {
+            if (ResPerm.bypass_build.hasPermission(player, 10000L))
+                return;
+            // cancel event if player has no build permission at click-position
+            // non-saplings don't consume bone_meal on event cancel
+            if (FlagPermissions.has(block.getLocation(), player, Flags.build, FlagCombo.OnlyFalse)) {
+                lm.Flag_Deny.sendMessage(player, Flags.build);
+                event.setCancelled(true);
+                return;
+            }
+        }
+        // player has build permission at click position, or event is not triggered by player
+        // check build permission for spread blocks
+        ClaimedResidence originRes = ClaimedResidence.getByLoc(block.getLocation());
+
+        List<BlockState> blocks = new ArrayList<BlockState>(event.getBlocks());
 
         for (BlockState oneBlock : blocks) {
-            ClaimedResidence res = plugin.getResidenceManager().getByLoc(oneBlock.getLocation());
-            if (res == null)
+            ClaimedResidence spreadRes = ClaimedResidence.getByLoc(oneBlock.getLocation());
+            // spread-block not in Res, skip check
+            // origin & spread-block in Same Res, or have Same Res owner, skip check
+            if (spreadRes == null ||
+                    (originRes != null && (originRes.equals(spreadRes) || originRes.isOwner(spreadRes.getOwner()))))
                 continue;
+
+            // origin & spread-block not in Same Res, not Same Res owner
+
             if (player != null) {
-                FlagPermissions perms = Residence.getInstance().getPermsByLocForPlayer(oneBlock.getLocation(), player);
-                if (!perms.playerHas(player, Flags.build, FlagCombo.TrueOrNone)) {
+                if (spreadRes.getPermissions().playerHas(player, Flags.build, FlagCombo.OnlyFalse))
                     event.getBlocks().remove(oneBlock);
-                }
-            } else if (originRes == null || !originRes.equals(res)) {
+
+            } else if (spreadRes.getPermissions().has(Flags.build, FlagCombo.OnlyFalse)) {
                 event.getBlocks().remove(oneBlock);
+
             }
         }
 
