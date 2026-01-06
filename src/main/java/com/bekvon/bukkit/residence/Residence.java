@@ -326,6 +326,10 @@ public class Residence extends JavaPlugin {
         if (despawnMobsBukkitId != null)
             despawnMobsBukkitId.cancel();
 
+        if (plistener != null) {
+            plistener.shutdown();
+        }
+
         this.getPermissionManager().stopCacheClearScheduler();
 
         this.getSelectionManager().onDisable();
