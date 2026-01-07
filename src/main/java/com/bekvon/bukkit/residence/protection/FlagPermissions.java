@@ -314,6 +314,8 @@ public class FlagPermissions {
         addMaterialToUseFlag(Material.NOTE_BLOCK, Flags.note);
         addMaterialToUseFlag(Material.DRAGON_EGG, Flags.egg);
         addMaterialToUseFlag(CMIMaterial.COMMAND_BLOCK.getMaterial(), Flags.commandblock);
+        addMaterialToUseFlag(CMIMaterial.CHAIN_COMMAND_BLOCK.getMaterial(), Flags.commandblock);
+        addMaterialToUseFlag(CMIMaterial.REPEATING_COMMAND_BLOCK.getMaterial(), Flags.commandblock);
 
         addMaterialToUseFlag(CMIMaterial.ANVIL.getMaterial(), Flags.anvil);
         addMaterialToUseFlag(CMIMaterial.CHIPPED_ANVIL.getMaterial(), Flags.anvil);
