@@ -993,10 +993,6 @@ public class ResidencePlayerListener implements Listener {
         return false;
     }
 
-    private static boolean placingMinecart(CMIMaterial itemType, CMIMaterial blockType) {
-        return itemType.containsCriteria(CMIMC.MINECART) && blockType.containsCriteria(CMIMC.RAIL);
-    }
-
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerBuildWithSpecificItems(PlayerInteractEvent event) {
         // Disabling listener if flag disabled globally
@@ -1019,11 +1015,14 @@ public class ResidencePlayerListener implements Listener {
             CMIMaterial heldItem = CMIMaterial.get(event.getItem());
             CMIMaterial bType = CMIMaterial.get(block.getType());
 
-            // place End_Crystal, interact Monster_Spawner
-            // place Minecart, Shears change Pumpkin
-            if ((heldItem == CMIMaterial.END_CRYSTAL && (bType == CMIMaterial.BEDROCK || bType == CMIMaterial.OBSIDIAN)) ||
-                    ((bType == CMIMaterial.SPAWNER || bType == CMIMaterial.TRIAL_SPAWNER) && heldItem.isSpawnEgg()) ||
-                    (placingMinecart(heldItem, bType)) ||
+            // place End_Crystal, or Minecart
+            // interact Monster_Spawner, Shears change Pumpkin
+            if ((heldItem == CMIMaterial.END_CRYSTAL && (bType == CMIMaterial.BEDROCK || bType == CMIMaterial.OBSIDIAN))
+                    ||
+                    (heldItem.containsCriteria(CMIMC.MINECART) && bType.containsCriteria(CMIMC.RAIL))
+                    ||
+                    ((bType == CMIMaterial.SPAWNER || bType == CMIMaterial.TRIAL_SPAWNER) && heldItem.isSpawnEgg())
+                    ||
                     (Version.isCurrentEqualOrHigher(Version.v1_13_R1) && heldItem == CMIMaterial.SHEARS && bType == CMIMaterial.PUMPKIN)) {
 
                 FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
@@ -1033,7 +1032,7 @@ public class ResidencePlayerListener implements Listener {
                 lm.Flag_Deny.sendMessage(player, Flags.build);
                 event.setCancelled(true);
 
-            } else if (heldItem.isDye()) {
+            } else if (heldItem.containsCriteria(CMIMC.DYE)) {
                 // Bone_Meal Interact block, cocoa_beans/jungle_wood checks maybe for lower versions
                 if ((heldItem == CMIMaterial.BONE_MEAL && (bType == CMIMaterial.GRASS_BLOCK ||
                         bType == CMIMaterial.SHORT_GRASS ||
@@ -1055,7 +1054,7 @@ public class ResidencePlayerListener implements Listener {
                     return;
                 }
                 // Dye Interact Sign
-                if (Version.isCurrentEqualOrHigher(Version.v1_14_R1) && bType.isSign()) {
+                if (Version.isCurrentEqualOrHigher(Version.v1_14_R1) && bType.containsCriteria(CMIMC.SIGN)) {
 
                     if (FlagPermissions.has(block.getLocation(), player, Flags.build, true))
                         return;
@@ -1064,8 +1063,8 @@ public class ResidencePlayerListener implements Listener {
                     event.setCancelled(true);
                     return;
                 }
-
-            } else if (heldItem == CMIMaterial.ARMOR_STAND || heldItem.isBoat()) {
+                // place Armor_Stand, or Boat
+            } else if (heldItem == CMIMaterial.ARMOR_STAND || heldItem.containsCriteria(CMIMC.BOAT)) {
 
                 Location blockFaceLoc = block.getRelative(event.getBlockFace()).getLocation();
                 if (FlagPermissions.has(blockFaceLoc, player, Flags.build, true))
@@ -1250,55 +1249,48 @@ public class ResidencePlayerListener implements Listener {
         CMIMaterial cmat = CMIMaterial.get(mat);
 
         switch (cmat) {
-            case ITEM_FRAME:
-            case GLOW_ITEM_FRAME:
+            case ANVIL:
             case BEACON:
             case BELL:
-            case FLOWER_POT:
-            case COMMAND_BLOCK:
-            case CHAIN_COMMAND_BLOCK:
-            case REPEATING_COMMAND_BLOCK:
-            case ANVIL:
-            case LEVER:
-            case LECTERN:
-            case CHIPPED_ANVIL:
-            case DAMAGED_ANVIL:
-            case CRAFTING_TABLE:
-            case CRAFTER:
             case BREWING_STAND:
-            case ENCHANTING_TABLE:
-            case DAYLIGHT_DETECTOR:
+            case CAMPFIRE:
+            case CHAIN_COMMAND_BLOCK:
+            case CHIPPED_ANVIL:
+            case COMMAND_BLOCK:
             case COMPARATOR:
-            case REPEATER:
+            case CRAFTER:
+            case CRAFTING_TABLE:
+            case DAMAGED_ANVIL:
+            case DAYLIGHT_DETECTOR:
+            case ENCHANTING_TABLE:
+            case FLOWER_POT:
+            case GLOW_ITEM_FRAME:
+            case ITEM_FRAME:
+            case LECTERN:
             case LEGACY_DIODE_BLOCK_OFF:
             case LEGACY_DIODE_BLOCK_ON:
             case LEGACY_REDSTONE_COMPARATOR_OFF:
             case LEGACY_REDSTONE_COMPARATOR_ON:
+            case LEVER:
+            case REPEATER:
+            case REPEATING_COMMAND_BLOCK:
+            case SOUL_CAMPFIRE:
                 return true;
             default:
                 break;
         }
 
-        if (cmat.isBed())
+        if (cmat.containsCriteria(CMIMC.BED)
+                || cmat.containsCriteria(CMIMC.BUTTON)
+                || cmat.containsCriteria(CMIMC.CAKE)
+                || cmat.containsCriteria(CMIMC.CANDLE)
+                || cmat.containsCriteria(CMIMC.CANDLECAKE)
+                || cmat.containsCriteria(CMIMC.DOOR)
+                || cmat.containsCriteria(CMIMC.FENCEGATE)
+                || cmat.containsCriteria(CMIMC.TRAPDOOR)
+                || cmat.containsCriteria(CMIMC.POTTED))
             return true;
-        if (cmat.isButton())
-            return true;
-        if (cmat.isDoor())
-            return true;
-        if (cmat.isGate())
-            return true;
-        if (cmat.isTrapDoor())
-            return true;
-        if (cmat.isPotted())
-            return true;
-        if (cmat.isCake())
-            return true;
-        if (cmat.isCandle())
-            return true;
-        if (cmat.isCandleCake())
-            return true;
-        if (cmat.equals(CMIMaterial.CAMPFIRE) || cmat.equals(CMIMaterial.SOUL_CAMPFIRE))
-            return true;
+
         if (mat.name().equals("DAYLIGHT_DETECTOR_INVERTED"))
             return true;
 
@@ -1327,7 +1319,7 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         CMIMaterial heldItem = CMIMaterial.get(event.getItem());
-
+        // Check held Material Blacklist
         if (!heldItem.isNone() && heldItem.isValidItem()
                 && !plugin.getItemManager().isAllowed(heldItem.getMaterial(), plugin.getPlayerManager().getResidencePlayer(player).getGroup(), player.getWorld()
                         .getName())) {
@@ -1338,86 +1330,88 @@ public class ResidencePlayerListener implements Listener {
 
         Material mat = block.getType();
 
+        if (!isContainer(mat, block) && !isCanUseEntity(mat, block))
+            return;
+
         FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+        boolean hasUse = perms.playerHas(player, Flags.use, true);
 
-        if (isContainer(mat, block) || isCanUseEntity(mat, block)) {
-
-            boolean hasuse = perms.playerHas(player, Flags.use, true);
-
-            ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-
-            if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isDefender(player) && !ConfigManager.RaidDefenderContainerUsage) {
-                Flags result = FlagPermissions.getMaterialUseFlagList().get(mat);
-                if (result != null && result.equals(Flags.container)) {
-                    event.setCancelled(true);
-                    lm.Raid_cantDo.sendMessage(player);
-                    return;
-                }
-            }
-
-            if (res == null || !res.isOwner(player)) {
-
-                Flags result = FlagPermissions.getMaterialUseFlagList().get(mat);
-                if (result != null) {
-
-                    main: if (!perms.playerHas(player, result, hasuse)) {
-
-                        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-
-                            if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
-                                break main;
-                            }
-
-                            switch (result) {
-                            case container:
-                                if (ResPerm.bypass_container.hasPermission(player, 10000L))
-                                    break main;
-                                break;
-                            case door:
-                                if (ResPerm.bypass_door.hasPermission(player, 10000L))
-                                    break main;
-                                break;
-                            case button:
-                                if (ResPerm.bypass_button.hasPermission(player, 10000L))
-                                    break main;
-                                break;
-                            }
-                            event.setCancelled(true);
-                            lm.Flag_Deny.sendMessage(player, result);
-                            return;
-                        }
-
-                        if (isCanUseEntity_BothClick(mat, block)) {
-
-                            if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
-                                break main;
-                            }
-                            event.setCancelled(true);
-                            lm.Flag_Deny.sendMessage(player, result);
-                        }
-                        return;
-                    }
-                }
-            }
-
-            if (plugin.getConfigManager().getCustomContainers().contains(mat)) {
-                if (!perms.playerHas(player, Flags.container, hasuse)
-                        || !ResPerm.bypass_container.hasPermission(player, 10000L)) {
-                    event.setCancelled(true);
-                    lm.Flag_Deny.sendMessage(player, Flags.container);
-                    return;
-                }
-            }
-
-            if (plugin.getConfigManager().getCustomBothClick().contains(mat) && !hasuse) {
+        ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
+        // Restrict defender container use in raid
+        if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isDefender(player) && !ConfigManager.RaidDefenderContainerUsage) {
+            Flags result = FlagPermissions.getMaterialUseFlagList().get(mat);
+            if (result != null && result.equals(Flags.container)) {
                 event.setCancelled(true);
-                lm.Flag_Deny.sendMessage(player, Flags.use);
+                lm.Raid_cantDo.sendMessage(player);
                 return;
             }
-            if (plugin.getConfigManager().getCustomRightClick().contains(mat) && event.getAction() == Action.RIGHT_CLICK_BLOCK && !hasuse) {
-                event.setCancelled(true);
-                lm.Flag_Deny.sendMessage(player, Flags.use);
+        }
+
+        if (res == null || !res.isOwner(player)) {
+
+            Flags result = FlagPermissions.getMaterialUseFlagList().get(mat);
+            // Residence assigns Flags internally for Material
+            if (result != null) {
+                // Start AbstractFlags Check
+                main: if (!perms.playerHas(player, result, hasUse)) {
+
+                    if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+
+                        if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
+                            break main;
+                        }
+
+                        switch (result) {
+                        case container:
+                            if (ResPerm.bypass_container.hasPermission(player, 10000L))
+                                break main;
+                            break;
+                        case door:
+                            if (ResPerm.bypass_door.hasPermission(player, 10000L))
+                                break main;
+                            break;
+                        case button:
+                            if (ResPerm.bypass_button.hasPermission(player, 10000L))
+                                break main;
+                            break;
+                        }
+                        event.setCancelled(true);
+                        lm.Flag_Deny.sendMessage(player, result);
+                        return;
+                    }
+
+                    if (isCanUseEntity_BothClick(mat, block)) {
+
+                        if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
+                            break main;
+                        }
+                        event.setCancelled(true);
+                        lm.Flag_Deny.sendMessage(player, result);
+                    }
+                    return;
+                }
+                // End AbstractFlags Check
             }
+        }
+        // Restrict custom both-click container use
+        if (plugin.getConfigManager().getCustomContainers().contains(mat)) {
+            if (!perms.playerHas(player, Flags.container, hasUse)
+                    || !ResPerm.bypass_container.hasPermission(player, 10000L)) {
+                event.setCancelled(true);
+                lm.Flag_Deny.sendMessage(player, Flags.container);
+                return;
+            }
+        }
+        // Restrict custom both-click block
+        if (plugin.getConfigManager().getCustomBothClick().contains(mat) && !hasUse) {
+            event.setCancelled(true);
+            lm.Flag_Deny.sendMessage(player, Flags.use);
+            return;
+        }
+        // Restrict custom right-click block
+        if (plugin.getConfigManager().getCustomRightClick().contains(mat) && event.getAction() == Action.RIGHT_CLICK_BLOCK && !hasUse) {
+            event.setCancelled(true);
+            lm.Flag_Deny.sendMessage(player, Flags.use);
         }
 
     }
