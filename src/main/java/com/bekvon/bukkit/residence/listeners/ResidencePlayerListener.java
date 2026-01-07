@@ -1016,11 +1016,7 @@ public class ResidencePlayerListener implements Listener {
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-            ItemStack item = Version.isCurrentEqualOrHigher(Version.v1_9_R1)
-                    ? event.getItem()
-                    : CMIItemStack.getItemInMainHand(player);
-
-            CMIMaterial heldItem = CMIMaterial.get(item);
+            CMIMaterial heldItem = CMIMaterial.get(event.getItem());
             CMIMaterial bType = CMIMaterial.get(block.getType());
 
             // place End_Crystal, interact Monster_Spawner
@@ -1038,7 +1034,7 @@ public class ResidencePlayerListener implements Listener {
                 event.setCancelled(true);
 
             } else if (heldItem.isDye()) {
-                // Bone_Meal Interact block
+                // Bone_Meal Interact block, cocoa_beans/jungle_wood checks maybe for lower versions
                 if ((heldItem == CMIMaterial.BONE_MEAL && (bType == CMIMaterial.GRASS_BLOCK ||
                         bType == CMIMaterial.SHORT_GRASS ||
                         bType == CMIMaterial.TALL_SEAGRASS ||
@@ -1048,7 +1044,7 @@ public class ResidencePlayerListener implements Listener {
                         bType == CMIMaterial.SMALL_DRIPLEAF ||
                         bType == CMIMaterial.COCOA ||
                         bType.isSapling())) ||
-                        (heldItem == CMIMaterial.COCOA_BEANS && bType == CMIMaterial.JUNGLE_WOOD)) {
+                        (heldItem == CMIMaterial.COCOA_BEANS && (bType == CMIMaterial.JUNGLE_LOG || bType == CMIMaterial.JUNGLE_WOOD))) {
 
                     Location blockFaceLoc = block.getRelative(event.getBlockFace()).getLocation();
                     if (FlagPermissions.has(blockFaceLoc, player, Flags.build, true))
@@ -1081,7 +1077,7 @@ public class ResidencePlayerListener implements Listener {
             }
 
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            // Check extinguish Fire by hand
+            // Check extinguish Fire by hand, this checks maybe for lower versions
             if (Material.FIRE != block.getRelative(event.getBlockFace()).getType())
                 return;
 
@@ -1148,11 +1144,7 @@ public class ResidencePlayerListener implements Listener {
 
         Player player = event.getPlayer();
 
-        ItemStack item = Version.isCurrentEqualOrHigher(Version.v1_9_R1)
-                ? event.getItem()
-                : CMIItemStack.getItemInMainHand(player);
-
-        CMIMaterial heldItem = CMIMaterial.get(item);
+        CMIMaterial heldItem = CMIMaterial.get(event.getItem());
 
         if (heldItem != plugin.getConfigManager().getSelectionTool()) {
             return;
@@ -1206,11 +1198,7 @@ public class ResidencePlayerListener implements Listener {
 
         Player player = event.getPlayer();
 
-        ItemStack item = Version.isCurrentEqualOrHigher(Version.v1_9_R1)
-                ? event.getItem()
-                : CMIItemStack.getItemInMainHand(player);
-
-        CMIMaterial heldItem = CMIMaterial.get(item);
+        CMIMaterial heldItem = CMIMaterial.get(event.getItem());
 
         if (heldItem != plugin.getConfigManager().getInfoTool())
             return;
@@ -1338,11 +1326,7 @@ public class ResidencePlayerListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
 
-        ItemStack item = Version.isCurrentEqualOrHigher(Version.v1_9_R1)
-                ? event.getItem()
-                : CMIItemStack.getItemInMainHand(player);
-
-        CMIMaterial heldItem = CMIMaterial.get(item);
+        CMIMaterial heldItem = CMIMaterial.get(event.getItem());
 
         if (!heldItem.isNone() && heldItem.isValidItem()
                 && !plugin.getItemManager().isAllowed(heldItem.getMaterial(), plugin.getPlayerManager().getResidencePlayer(player).getGroup(), player.getWorld()
@@ -1493,10 +1477,10 @@ public class ResidencePlayerListener implements Listener {
 
         if ((player.isSneaking() && canHaveContainer(entity))
                 ||
-                (type == (CMIEntityType.CHEST_MINECART) ||
-                        type == (CMIEntityType.FURNACE_MINECART) ||
-                        type == (CMIEntityType.HOPPER_MINECART) ||
-                        type == (CMIEntityType.ALLAY))) {
+                (type == CMIEntityType.CHEST_MINECART ||
+                        type == CMIEntityType.FURNACE_MINECART ||
+                        type == CMIEntityType.HOPPER_MINECART ||
+                        type == CMIEntityType.ALLAY)) {
 
             if (FlagPermissions.has(entity.getLocation(), player, Flags.container, true))
                 return;
@@ -1531,6 +1515,14 @@ public class ResidencePlayerListener implements Listener {
                 return;
 
             lm.Flag_Deny.sendMessage(player, Flags.container);
+            event.setCancelled(true);
+
+        } else if (type == CMIEntityType.COMMAND_BLOCK_MINECART) {
+
+            if (FlagPermissions.has(entity.getLocation(), player, Flags.commandblock, true))
+                return;
+
+            lm.Flag_Deny.sendMessage(player, Flags.commandblock);
             event.setCancelled(true);
 
         }
