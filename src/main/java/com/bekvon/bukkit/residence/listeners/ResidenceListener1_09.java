@@ -102,20 +102,23 @@ public class ResidenceListener1_09 implements Listener {
 
         player.setGliding(false);
 
-        Location loc = ResidencePlayerListener.getSafeLocation(player.getLocation());
-        if (loc == null) {
-            // get defined land location in case no safe landing spot are found
-            loc = plugin.getConfigManager().getFlyLandLocation();
+        CMIScheduler.runAtLocation(plugin, player.getLocation(), () -> {
+
+            Location loc = ResidencePlayerListener.getSafeLocation(player.getLocation());
             if (loc == null) {
-                // get main world spawn location in case valid location is not found
-                loc = Bukkit.getWorlds().get(0).getSpawnLocation();
+                // get defined land location in case no safe landing spot are found
+                loc = plugin.getConfigManager().getFlyLandLocation();
+                if (loc == null) {
+                    // get main world spawn location in case valid location is not found
+                    loc = Bukkit.getWorlds().get(0).getSpawnLocation();
+                }
             }
-        }
-        if (loc != null) {
-            lm.Flag_Deny.sendMessage(player, Flags.elytra);
-            player.closeInventory();
-            Teleporting.teleport(player, loc);
-        }
+            if (loc != null) {
+                lm.Flag_Deny.sendMessage(player, Flags.elytra);
+                player.closeInventory();
+                Teleporting.teleport(player, loc);
+            }
+        });
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

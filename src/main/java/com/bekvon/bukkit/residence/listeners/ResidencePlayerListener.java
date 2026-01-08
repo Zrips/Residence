@@ -93,7 +93,6 @@ import com.bekvon.bukkit.residence.utils.GetTime;
 import com.bekvon.bukkit.residence.utils.Teleporting;
 import com.bekvon.bukkit.residence.utils.Utils;
 
-import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
@@ -101,8 +100,8 @@ import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
-import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Items.CMIMC;
+import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -1976,9 +1975,11 @@ public class ResidencePlayerListener implements Listener {
             player.setAllowFlight(false);
 
             if (land) {
-                Location loc = getFlyTeleportLocation(player, oldRes);
-                player.closeInventory();
-                Teleporting.teleport(player, loc);
+                CMIScheduler.runAtLocation(plugin, player.getLocation(), () -> {
+                    Location loc = getFlyTeleportLocation(player, oldRes);
+                    player.closeInventory();
+                    Teleporting.teleport(player, loc);
+                });
             }
             player.setFlying(false);
             player.setAllowFlight(false);
