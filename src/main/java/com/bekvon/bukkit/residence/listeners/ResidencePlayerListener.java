@@ -1017,13 +1017,16 @@ public class ResidencePlayerListener implements Listener {
 
             // place End_Crystal, or Minecart
             // interact Monster_Spawner, Shears change Pumpkin
+            // check Hoe Interact Rooted_Dirt, Fix upstream dupe bug(https://github.com/PaperMC/Paper/issues/13536)
             if ((heldItem == CMIMaterial.END_CRYSTAL && (bType == CMIMaterial.BEDROCK || bType == CMIMaterial.OBSIDIAN))
                     ||
                     (heldItem.containsCriteria(CMIMC.MINECART) && bType.containsCriteria(CMIMC.RAIL))
                     ||
                     ((bType == CMIMaterial.SPAWNER || bType == CMIMaterial.TRIAL_SPAWNER) && heldItem.isSpawnEgg())
                     ||
-                    (Version.isCurrentEqualOrHigher(Version.v1_13_R1) && heldItem == CMIMaterial.SHEARS && bType == CMIMaterial.PUMPKIN)) {
+                    (Version.isCurrentEqualOrHigher(Version.v1_13_R1) && heldItem == CMIMaterial.SHEARS && bType == CMIMaterial.PUMPKIN)
+                    ||
+                    (bType == CMIMaterial.ROOTED_DIRT && heldItem.name().contains("_HOE"))) {
 
                 FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
                 if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
