@@ -16,6 +16,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.potion.PotionEffectType;
 
@@ -140,17 +141,31 @@ public class ResidenceListener1_21 implements Listener {
             return;
 
         Player player = event.getPlayer();
-
         if (ResAdmin.isResAdmin(player))
             return;
 
+        if (entity instanceof LivingEntity) {
+
+            EntityEquipment gloemInv = ((LivingEntity) entity).getEquipment();
+            // Right-click to remove items from holding copper_golem
+            if (gloemInv != null && (!gloemInv.getItemInMainHand().isEmpty() || !gloemInv.getItemInOffHand().isEmpty())) {
+
+                if (FlagPermissions.has(entity.getLocation(), player, Flags.container, true))
+                    return;
+
+                lm.Flag_Deny.sendMessage(player, Flags.container);
+                event.setCancelled(true);
+                return;
+            }
+        }
+        // Copper_golem has no item in hand
         CMIMaterial hand = CMIMaterial.get(player.getInventory().getItemInMainHand());
 
         if (event.getHand() == EquipmentSlot.OFF_HAND) {
             hand = CMIMaterial.get(player.getInventory().getItemInOffHand());
         }
         // Avoid overwriting Leash Flag, Lead Shears
-        if (hand != CMIMaterial.HONEYCOMB || !hand.toString().contains("_AXE"))
+        if (hand != CMIMaterial.HONEYCOMB && !hand.toString().contains("_AXE"))
             return;
 
         FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
