@@ -21,20 +21,56 @@ public class reset implements cmd {
     @Override
     @CommandAnnotation(simple = true, priority = 4400)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
-        if (args.length != 1 && args.length != 0)
-            return false;
 
+        if (args.length > 2) {
+            return false;
+        }
+        if (args.length == 2 && !args[1].equalsIgnoreCase("-ownerflag")) {
+            return false;
+        }
         String residenceName = null;
-        if (args.length == 1)
+        boolean isAllResidence = false;
+        boolean isOwnerFlag = false;
+
+        if (args.length >= 1) {
+
             residenceName = args[0];
+            isAllResidence = residenceName.equalsIgnoreCase("all");
+
+            if (args.length == 2) {
+                // - /res reset all -ownerflag
+                if (isAllResidence) {
+                    if (!resadmin) {
+                        lm.General_AdminOnly.sendMessage(sender);
+                        return true;
+                    }
+                    isOwnerFlag = true;
+
+                    // - /res reset [ResName] -ownerflag
+                } else {
+                    ClaimedResidence oneRes = ClaimedResidence.getByName(residenceName);
+                    if (oneRes == null) {
+                        lm.Invalid_Residence.sendMessage(sender);
+                        return true;
+                    }
+                    if (!resadmin && !oneRes.isOwner(sender)) {
+                        lm.Residence_NotOwner.sendMessage(sender);
+                        return true;
+                    }
+                    oneRes.getPermissions().resetGlobalCreatorDefaultFlags();
+                    lm.Flag_resetOwnerFlags.sendMessage(sender, oneRes.getName());
+                    return true;
+                }
+            }
+        }
 
         ClaimedResidence res = null;
-        if (residenceName != null && !residenceName.equalsIgnoreCase("all"))
-            res = plugin.getResidenceManager().getByName(residenceName);
+        if (residenceName != null && !isAllResidence)
+            res = ClaimedResidence.getByName(residenceName);
         if (args.length == 0 && sender instanceof Player)
-            res = plugin.getResidenceManager().getByLoc(((Player) sender).getLocation());
+            res = ClaimedResidence.getByLoc(((Player) sender).getLocation());
 
-        if (residenceName != null && !residenceName.equalsIgnoreCase("all") && res == null || args.length == 0 && res == null) {
+        if (residenceName != null && !isAllResidence && res == null || args.length == 0 && res == null) {
             lm.Invalid_Residence.sendMessage(sender);
             return true;
         }
@@ -63,12 +99,20 @@ public class reset implements cmd {
         int count = 0;
         for (World oneW : Bukkit.getWorlds()) {
             for (ClaimedResidence one : plugin.getResidenceManager().getFromAllResidences(true, false, oneW)) {
-                one.getPermissions().applyDefaultFlags();
+                if (!isOwnerFlag) {
+                    one.getPermissions().applyDefaultFlags();
+                } else {
+                    one.getPermissions().resetGlobalCreatorDefaultFlags();
+                }
                 count++;
             }
         }
-        lm.Flag_resetAll.sendMessage(sender, count);
 
+        if (!isOwnerFlag) {
+            lm.Flag_resetAll.sendMessage(sender, count);
+        } else {
+            lm.Flag_resetAllOwnerFlags.sendMessage(sender, count);
+        }
         return true;
     }
 
@@ -76,8 +120,9 @@ public class reset implements cmd {
     public void getLocale() {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Reset residence to default flags.");
-        c.get("Info", Arrays.asList("&eUsage: &6/res reset <residence/all>",
-                "Resets the flags on a residence to their default.  You must be the owner or an admin to do this."));
-        LocaleManager.addTabCompleteMain(this, "[residence]%%all");
+        c.get("Info", Arrays.asList("&eUsage: &6/res reset <residence/all> (-ownerflag)",
+                "Resets the flags on a residence to their default.  You must be the owner or an admin to do this.",
+                "-ownerflag: Reset only owner's flags."));
+        LocaleManager.addTabCompleteMain(this, "[residence]%%all", "-ownerflag");
     }
 }
