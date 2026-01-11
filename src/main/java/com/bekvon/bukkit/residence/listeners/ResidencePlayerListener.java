@@ -1015,16 +1015,13 @@ public class ResidencePlayerListener implements Listener {
             CMIMaterial heldItem = CMIMaterial.get(event.getItem());
             CMIMaterial bType = CMIMaterial.get(block.getType());
 
-            // place End_Crystal, or Minecart
-            // interact Monster_Spawner, Shears change Pumpkin
+            // Dye Interact Sign, change Monster_Spawner or Pumpkin
             // check Hoe Interact Rooted_Dirt, Fix upstream dupe bug(https://github.com/PaperMC/Paper/issues/13536)
-            if ((heldItem == CMIMaterial.END_CRYSTAL && (bType == CMIMaterial.BEDROCK || bType == CMIMaterial.OBSIDIAN))
+            if ((bType.containsCriteria(CMIMC.SIGN) && heldItem.containsCriteria(CMIMC.DYE))
                     ||
-                    (heldItem.containsCriteria(CMIMC.MINECART) && bType.containsCriteria(CMIMC.RAIL))
+                    ((bType == CMIMaterial.SPAWNER || bType == CMIMaterial.TRIAL_SPAWNER) && heldItem.containsCriteria(CMIMC.SPAWNEGG))
                     ||
-                    ((bType == CMIMaterial.SPAWNER || bType == CMIMaterial.TRIAL_SPAWNER) && heldItem.isSpawnEgg())
-                    ||
-                    (Version.isCurrentEqualOrHigher(Version.v1_13_R1) && heldItem == CMIMaterial.SHEARS && bType == CMIMaterial.PUMPKIN)
+                    (bType == CMIMaterial.PUMPKIN && heldItem == CMIMaterial.SHEARS)
                     ||
                     (bType == CMIMaterial.ROOTED_DIRT && heldItem.name().contains("_HOE"))) {
 
@@ -1034,48 +1031,57 @@ public class ResidencePlayerListener implements Listener {
 
                 lm.Flag_Deny.sendMessage(player, Flags.build);
                 event.setCancelled(true);
+                return;
+            }
 
-            } else if (heldItem.containsCriteria(CMIMC.DYE)) {
-                // Bone_Meal Interact block, cocoa_beans/jungle_wood checks maybe for lower versions
-                if ((heldItem == CMIMaterial.BONE_MEAL && (bType == CMIMaterial.GRASS_BLOCK ||
-                        bType == CMIMaterial.SHORT_GRASS ||
-                        bType == CMIMaterial.TALL_SEAGRASS ||
-                        bType == CMIMaterial.MOSS_BLOCK ||
-                        bType == CMIMaterial.BIG_DRIPLEAF_STEM ||
-                        bType == CMIMaterial.BIG_DRIPLEAF ||
-                        bType == CMIMaterial.SMALL_DRIPLEAF ||
-                        bType == CMIMaterial.COCOA ||
-                        bType.isSapling())) ||
-                        (heldItem == CMIMaterial.COCOA_BEANS && (bType == CMIMaterial.JUNGLE_LOG || bType == CMIMaterial.JUNGLE_WOOD))) {
+            // place Armor_Stand or End_Crystal
+            // Bone_Meal Interact block, Cocoa_BeansS checks maybe for lower versions
+            if (heldItem == CMIMaterial.ARMOR_STAND
+                    ||
+                    (heldItem == CMIMaterial.END_CRYSTAL && (bType == CMIMaterial.BEDROCK || bType == CMIMaterial.OBSIDIAN))
+                    ||
+                    (heldItem == CMIMaterial.COCOA_BEANS && (bType == CMIMaterial.JUNGLE_LOG || bType == CMIMaterial.JUNGLE_WOOD))
+                    ||
+                    (heldItem == CMIMaterial.BONE_MEAL && (bType == CMIMaterial.GRASS_BLOCK ||
+                            bType == CMIMaterial.SHORT_GRASS ||
+                            bType == CMIMaterial.TALL_SEAGRASS ||
+                            bType == CMIMaterial.MOSS_BLOCK ||
+                            bType == CMIMaterial.BIG_DRIPLEAF_STEM ||
+                            bType == CMIMaterial.BIG_DRIPLEAF ||
+                            bType == CMIMaterial.SMALL_DRIPLEAF ||
+                            bType == CMIMaterial.COCOA ||
+                            bType.containsCriteria(CMIMC.SAPLING)))) {
 
-                    Location blockFaceLoc = block.getRelative(event.getBlockFace()).getLocation();
-                    if (FlagPermissions.has(blockFaceLoc, player, Flags.build, true))
-                        return;
-
-                    lm.Flag_Deny.sendMessage(player, Flags.build);
-                    event.setCancelled(true);
-                    return;
-                }
-                // Dye Interact Sign
-                if (Version.isCurrentEqualOrHigher(Version.v1_14_R1) && bType.containsCriteria(CMIMC.SIGN)) {
-
-                    if (FlagPermissions.has(block.getLocation(), player, Flags.build, true))
-                        return;
-
-                    lm.Flag_Deny.sendMessage(player, Flags.build);
-                    event.setCancelled(true);
-                    return;
-                }
-                // place Armor_Stand, or Boat
-            } else if (heldItem == CMIMaterial.ARMOR_STAND || heldItem.containsCriteria(CMIMC.BOAT)) {
-
-                Location blockFaceLoc = block.getRelative(event.getBlockFace()).getLocation();
-                if (FlagPermissions.has(blockFaceLoc, player, Flags.build, true))
+                FlagPermissions perms = FlagPermissions.getPerms(block.getRelative(event.getBlockFace()).getLocation(), player);
+                if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
                     return;
 
                 lm.Flag_Deny.sendMessage(player, Flags.build);
                 event.setCancelled(true);
+                return;
+            }
 
+            // place Boat or Minecart
+            if (Flags.vehicleplacing.isGlobalyEnabled()) {
+
+                if (heldItem.containsCriteria(CMIMC.BOAT)) {
+                    FlagPermissions perms = FlagPermissions.getPerms(block.getRelative(event.getBlockFace()).getLocation(), player);
+                    if (perms.playerHas(player, Flags.vehicleplacing, perms.playerHas(player, Flags.build, true)))
+                        return;
+
+                    lm.Flag_Deny.sendMessage(player, Flags.vehicleplacing);
+                    event.setCancelled(true);
+                    return;
+                }
+                if (heldItem.containsCriteria(CMIMC.MINECART) && bType.containsCriteria(CMIMC.RAIL)) {
+                    FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+                    if (perms.playerHas(player, Flags.vehicleplacing, perms.playerHas(player, Flags.build, true)))
+                        return;
+
+                    lm.Flag_Deny.sendMessage(player, Flags.vehicleplacing);
+                    event.setCancelled(true);
+                    return;
+                }
             }
 
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {

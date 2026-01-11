@@ -123,6 +123,7 @@ public enum Flags {
     trample(CMIMaterial.DIRT, FlagMode.Residence, "Allows or denys crop trampling in residence", true),
     use(CMIMaterial.STONE_PRESSURE_PLATE, FlagMode.Both, "Allows or denys use of doors, lever, buttons, etc...", true),
     vehicledestroy(CMIMaterial.MINECART, FlagMode.Both, "Allows or denys vehicle destroy", true),
+    vehicleplacing(CMIMaterial.MINECART, FlagMode.Both, "Allows or denys vehicle placing", true),
     witherspawn(CMIMaterial.WITHER_SKELETON_SKULL, FlagMode.Residence, "Allows or denys wither spawning", true),
     phantomspawn(CMIMaterial.BROWN_WOOL, FlagMode.Residence, "Allows or denys phantom spawning", true),
     witherdamage(CMIMaterial.WITHER_SKELETON_SKULL, FlagMode.Residence, "Allows or denys wither damage", true),

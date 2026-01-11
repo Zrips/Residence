@@ -366,6 +366,9 @@ Global:
     # Applies to: Both
     # Allows or denys vehicle destroy
     vehicledestroy: false
+    # Applies to: Both
+    # Allows or denys vehicle placing
+    vehicleplacing: false
     # Applies to: Residence
     # Allows or denys water flow, overrides flow
     waterflow: true
