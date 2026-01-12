@@ -6,11 +6,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.lm;
+
+import net.Zrips.CMILib.Colors.CMIChatColor;
 
 public class PermissionListManager {
 
@@ -81,7 +82,7 @@ public class PermissionListManager {
             lm.Invalid_List.sendMessage(player);
             return;
         }
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "------Permission Template------");
+        player.sendMessage(CMIChatColor.LIGHT_PURPLE + "------Permission Template------");
         lm.General_Name.sendMessage(player, listname);
         list.printFlags(player);
     }
