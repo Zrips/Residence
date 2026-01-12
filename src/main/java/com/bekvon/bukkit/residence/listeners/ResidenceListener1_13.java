@@ -1,7 +1,6 @@
 package com.bekvon.bukkit.residence.listeners;
 
 import org.bukkit.Material;
-import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Farmland;
@@ -38,25 +37,6 @@ public class ResidenceListener1_13 implements Listener {
 
     public ResidenceListener1_13(Residence plugin) {
         this.plugin = plugin;
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onCoralDryFade(BlockFadeEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.coraldryup.isGlobalyEnabled())
-            return;
-
-        Block block = event.getBlock();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld()))
-            return;
-
-        if (!Tag.CORALS.isTagged(block.getType()) && !Tag.CORAL_BLOCKS.isTagged(block.getType()))
-            return;
-
-        if (FlagPermissions.has(block.getLocation(), Flags.coraldryup, FlagCombo.OnlyFalse)) {
-            event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

@@ -1,6 +1,7 @@
 package com.bekvon.bukkit.residence.listeners;
 
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -9,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -182,5 +184,24 @@ public class ResidenceListener1_14 implements Listener {
         lm.Flag_Deny.sendMessage(player, Flags.harvest);
         event.setCancelled(true);
 
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onCoralDryFade(BlockFadeEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.coraldryup.isGlobalyEnabled())
+            return;
+
+        Block block = event.getBlock();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
+
+        if (!Tag.CORALS.isTagged(block.getType()) && !Tag.CORAL_BLOCKS.isTagged(block.getType()))
+            return;
+
+        if (FlagPermissions.has(block.getLocation(), Flags.coraldryup, FlagCombo.OnlyFalse)) {
+            event.setCancelled(true);
+        }
     }
 }
