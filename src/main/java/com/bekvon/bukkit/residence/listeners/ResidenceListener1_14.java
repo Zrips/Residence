@@ -197,7 +197,9 @@ public class ResidenceListener1_14 implements Listener {
         if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
-        if (!Tag.CORALS.isTagged(block.getType()) && !Tag.CORAL_BLOCKS.isTagged(block.getType()))
+        Material mat = block.getType();
+
+        if (!Tag.CORALS.isTagged(mat) && !Tag.CORAL_BLOCKS.isTagged(mat) && !Tag.WALL_CORALS.isTagged(mat))
             return;
 
         if (FlagPermissions.has(block.getLocation(), Flags.coraldryup, FlagCombo.OnlyFalse)) {
