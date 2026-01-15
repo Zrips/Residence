@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
@@ -55,6 +56,8 @@ public class ResidenceListener1_21_8_Paper implements Listener {
 
     private static boolean flagCheck(Location loc, Player pushedBy, Flags flag) {
         if (pushedBy != null) {
+            if (ResAdmin.isResAdmin(pushedBy))
+                return false;
             if (FlagPermissions.has(loc, pushedBy, flag, FlagCombo.OnlyFalse))
                 return true;
         } else {
