@@ -882,6 +882,17 @@ public class ResidencePermissions extends FlagPermissions {
         return newperms;
     }
 
+    public void resetGlobalCreatorDefaultFlags() {
+        this.clearPlayersFlags(this.getOwnerUUID());
+        FlagPermissions gCD = Residence.getInstance().getConfigManager().getGlobalCreatorDefaultFlags();
+        for (Entry<String, Boolean> entry : gCD.cuboidFlags.entrySet()) {
+            this.setPlayerFlag(
+                    this.getOwnerUUID(),
+                    entry.getKey(),
+                    entry.getValue() ? FlagState.TRUE : FlagState.FALSE);
+        }
+    }
+
     public void applyGlobalDefaults() {
         this.clearFlags();
         FlagPermissions gRD = Residence.getInstance().getConfigManager().getGlobalResidenceDefaultFlags();
