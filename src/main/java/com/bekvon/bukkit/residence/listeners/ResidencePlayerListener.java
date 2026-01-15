@@ -963,94 +963,6 @@ public class ResidencePlayerListener implements Listener {
 
     }
 
-    private boolean isContainer(Material mat, Block block) {
-        return FlagPermissions.getMaterialUseFlagList().containsKey(mat) && FlagPermissions.getMaterialUseFlagList().get(mat).equals(Flags.container)
-                || plugin.getConfigManager().getCustomContainers().contains(block.getType());
-    }
-
-    private boolean isCanUseEntity_RClickOnly(Material mat, Block block) {
-
-        switch (mat.name()) {
-        case "ITEM_FRAME":
-        case "BEACON":
-        case "BELL":
-        case "FLOWER_POT":
-        case "COMMAND":
-        case "ANVIL":
-        case "LECTERN":
-        case "CHIPPED_ANVIL":
-        case "DAMAGED_ANVIL":
-        case "CAKE_BLOCK":
-        case "DIODE":
-        case "DIODE_BLOCK_OFF":
-        case "DIODE_BLOCK_ON":
-        case "COMPARATOR":
-        case "REPEATER":
-        case "REDSTONE_COMPARATOR":
-        case "REDSTONE_COMPARATOR_OFF":
-        case "REDSTONE_COMPARATOR_ON":
-        case "BED_BLOCK":
-        case "WORKBENCH":
-        case "CRAFTING_TABLE":
-        case "CRAFTER":
-        case "BREWING_STAND":
-        case "ENCHANTMENT_TABLE":
-        case "ENCHANTING_TABLE":
-        case "DAYLIGHT_DETECTOR":
-        case "DAYLIGHT_DETECTOR_INVERTED":
-            return true;
-        default:
-            break;
-        }
-
-        CMIMaterial cmat = CMIMaterial.get(mat);
-        if (cmat != null) {
-
-            if (cmat.isPotted())
-                return true;
-
-            if (cmat.isCake())
-                return true;
-
-            if (cmat.isCandle())
-                return true;
-
-            if (cmat.isCandleCake())
-                return true;
-
-            if (cmat.equals(CMIMaterial.CAMPFIRE) || cmat.equals(CMIMaterial.SOUL_CAMPFIRE))
-                return true;
-        }
-
-        return plugin.getConfigManager().getCustomRightClick().contains(block.getType());
-    }
-
-    public static boolean isCanUseEntity_BothClick(Material mat, Block block) {
-        CMIMaterial m = CMIMaterial.get(mat);
-        if (m.isDoor())
-            return true;
-        if (m.isButton())
-            return true;
-        if (m.isGate())
-            return true;
-        if (m.isTrapDoor())
-            return true;
-
-        if (m.isBed())
-            return true;
-
-        switch (m) {
-        case LEVER:
-        case PISTON:
-        case STICKY_PISTON:
-        case NOTE_BLOCK:
-        case DRAGON_EGG:
-            return true;
-        default:
-            return Residence.getInstance().getConfigManager().getCustomBothClick().contains(block.getType());
-        }
-    }
-
     public static boolean isEmptyBlock(Block block) {
         CMIMaterial cb = CMIMaterial.get(block.getType());
 
@@ -1080,12 +992,8 @@ public class ResidencePlayerListener implements Listener {
         return false;
     }
 
-    private boolean isCanUseEntity(Material mat, Block block) {
-        return isCanUseEntity_BothClick(mat, block) || isCanUseEntity_RClickOnly(mat, block);
-    }
-
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerBuild(PlayerInteractEvent event) {
+    public void onPlayerBuildWithSpecificItems(PlayerInteractEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.build.isGlobalyEnabled())
             return;
@@ -1103,46 +1011,81 @@ public class ResidencePlayerListener implements Listener {
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-            ItemStack item = null;
-            try {
-                if (Version.isCurrentEqualOrHigher(Version.v1_9_R1)) {
-                    item = event.getItem();
-                } else {
-                    item = CMIItemStack.getItemInMainHand(player);
+            CMIMaterial heldItem = CMIMaterial.get(event.getItem());
+            CMIMaterial bType = CMIMaterial.get(block.getType());
+
+            // Dye Interact Sign, change Monster_Spawner or Pumpkin
+            // check Hoe Interact Rooted_Dirt, Fix upstream dupe bug(https://github.com/PaperMC/Paper/issues/13536)
+            if ((bType.containsCriteria(CMIMC.SIGN) && heldItem.containsCriteria(CMIMC.DYE))
+                    ||
+                    ((bType == CMIMaterial.SPAWNER || bType == CMIMaterial.TRIAL_SPAWNER) && heldItem.containsCriteria(CMIMC.SPAWNEGG))
+                    ||
+                    (bType == CMIMaterial.PUMPKIN && heldItem == CMIMaterial.SHEARS)
+                    ||
+                    (bType == CMIMaterial.ROOTED_DIRT && heldItem.name().contains("_HOE"))) {
+
+                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+                if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
+                    return;
+
+                lm.Flag_Deny.sendMessage(player, Flags.build);
+                event.setCancelled(true);
+                return;
+            }
+
+            // place Armor_Stand or End_Crystal
+            // Bone_Meal Interact block, Cocoa_BeansS checks maybe for lower versions
+            if (heldItem == CMIMaterial.ARMOR_STAND
+                    ||
+                    (heldItem == CMIMaterial.END_CRYSTAL && (bType == CMIMaterial.BEDROCK || bType == CMIMaterial.OBSIDIAN))
+                    ||
+                    (heldItem == CMIMaterial.COCOA_BEANS && (bType == CMIMaterial.JUNGLE_LOG || bType == CMIMaterial.JUNGLE_WOOD))
+                    ||
+                    (heldItem == CMIMaterial.BONE_MEAL && (bType == CMIMaterial.GRASS_BLOCK ||
+                            bType == CMIMaterial.SHORT_GRASS ||
+                            bType == CMIMaterial.TALL_SEAGRASS ||
+                            bType == CMIMaterial.MOSS_BLOCK ||
+                            bType == CMIMaterial.BIG_DRIPLEAF_STEM ||
+                            bType == CMIMaterial.BIG_DRIPLEAF ||
+                            bType == CMIMaterial.SMALL_DRIPLEAF ||
+                            bType == CMIMaterial.COCOA ||
+                            bType.containsCriteria(CMIMC.SAPLING)))) {
+
+                FlagPermissions perms = FlagPermissions.getPerms(block.getRelative(event.getBlockFace()).getLocation(), player);
+                if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
+                    return;
+
+                lm.Flag_Deny.sendMessage(player, Flags.build);
+                event.setCancelled(true);
+                return;
+            }
+
+            // place Boat or Minecart
+            if (Flags.vehicleplacing.isGlobalyEnabled()) {
+
+                if (heldItem.containsCriteria(CMIMC.BOAT)) {
+                    FlagPermissions perms = FlagPermissions.getPerms(block.getRelative(event.getBlockFace()).getLocation(), player);
+                    if (perms.playerHas(player, Flags.vehicleplacing, perms.playerHas(player, Flags.build, true)))
+                        return;
+
+                    lm.Flag_Deny.sendMessage(player, Flags.vehicleplacing);
+                    event.setCancelled(true);
+                    return;
                 }
-            } catch (Throwable e) {
-                item = CMIItemStack.getItemInMainHand(player);
-            }
-            if (item == null)
-                return;
-            // Check place End_Crystal
-            if (CMIMaterial.END_CRYSTAL.equals(item.getType()) &&
-                    (block.getType() == Material.BEDROCK || block.getType() == Material.OBSIDIAN)) {
+                if (heldItem.containsCriteria(CMIMC.MINECART) && bType.containsCriteria(CMIMC.RAIL)) {
+                    FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+                    if (perms.playerHas(player, Flags.vehicleplacing, perms.playerHas(player, Flags.build, true)))
+                        return;
 
-                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-                if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
+                    lm.Flag_Deny.sendMessage(player, Flags.vehicleplacing);
+                    event.setCancelled(true);
                     return;
-
-                lm.Flag_Deny.sendMessage(player, Flags.build);
-                event.setCancelled(true);
-                return;
-            }
-            // Check interact Monster_Spawner
-            if (block.getType() == Material.SPAWNER && CMIMaterial.isSpawnEgg(item.getType())) {
-
-                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-                if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
-                    return;
-
-                lm.Flag_Deny.sendMessage(player, Flags.build);
-                event.setCancelled(true);
-                return;
+                }
             }
 
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            // Check extinguish Fire by hand
-            Block relativeBlock = block.getRelative(event.getBlockFace());
-            if (relativeBlock == null || relativeBlock.getType() != Material.FIRE)
+            // Check extinguish Fire by hand, this checks maybe for lower versions
+            if (Material.FIRE != block.getRelative(event.getBlockFace()).getType())
                 return;
 
             FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
@@ -1197,17 +1140,18 @@ public class ResidencePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onSelection(PlayerInteractEvent event) {
 
-        if (event.getPlayer() == null)
+        Block block = event.getClickedBlock();
+        if (block == null)
             return;
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
+        if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
         if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
         Player player = event.getPlayer();
-        @SuppressWarnings("deprecation")
-        CMIMaterial heldItem = CMIMaterial.get(player.getItemInHand());
+
+        CMIMaterial heldItem = CMIMaterial.get(event.getItem());
 
         if (heldItem != plugin.getConfigManager().getSelectionTool()) {
             return;
@@ -1226,8 +1170,6 @@ public class ResidencePlayerListener implements Listener {
         boolean resadmin = ResAdmin.isResAdmin(player);
         if (ResPerm.select.hasPermission(player) || ResPerm.create.hasPermission(player) && !ResPerm.select.hasSetPermission(player) || group
                 .canCreateResidences() && !ResPerm.create.hasSetPermission(player) && !ResPerm.select.hasSetPermission(player) || resadmin) {
-
-            Block block = event.getClickedBlock();
 
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 Location loc = block.getLocation();
@@ -1251,23 +1193,19 @@ public class ResidencePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onInfoCheck(PlayerInteractEvent event) {
-        if (event.getPlayer() == null)
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-        if (event.getAction() != Action.LEFT_CLICK_BLOCK)
-            return;
+
         Block block = event.getClickedBlock();
         if (block == null)
             return;
-        Player player = event.getPlayer();
-
-        ItemStack item = event.getItem();
-        if (item == null)
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK)
             return;
 
-        CMIMaterial heldItem = CMIMaterial.get(item);
+        Player player = event.getPlayer();
+
+        CMIMaterial heldItem = CMIMaterial.get(event.getItem());
 
         if (heldItem != plugin.getConfigManager().getInfoTool())
             return;
@@ -1287,10 +1225,6 @@ public class ResidencePlayerListener implements Listener {
 
     }
 
-    private static boolean placingMinecart(Block block, ItemStack item) {
-        return block != null && block.getType().name().contains("RAIL") && item != null && item.getType().name().contains("MINECART");
-    }
-
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (Version.isCurrentEqualOrHigher(Version.v1_17_R1) || !Flags.place.isGlobalyEnabled())
@@ -1302,38 +1236,98 @@ public class ResidencePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    private boolean isContainer(Material mat, Block block) {
+        return FlagPermissions.getMaterialUseFlagList().containsKey(mat) && FlagPermissions.getMaterialUseFlagList().get(mat).equals(Flags.container)
+                || plugin.getConfigManager().getCustomContainers().contains(block.getType());
+    }
+
+    public static boolean isCanUseEntity_BothClick(Material mat, Block block) {
+        CMIMaterial cmat = CMIMaterial.get(mat);
+
+        switch (cmat) {
+            case NOTE_BLOCK:
+            case DRAGON_EGG:
+                return true;
+            default:
+                return Residence.getInstance().getConfigManager().getCustomBothClick().contains(block.getType());
+        }
+    }
+
+    private boolean isCanUseEntity_RClickOnly(Material mat, Block block) {
+        CMIMaterial cmat = CMIMaterial.get(mat);
+
+        switch (cmat) {
+            case ANVIL:
+            case BEACON:
+            case BELL:
+            case BREWING_STAND:
+            case CAMPFIRE:
+            case CHAIN_COMMAND_BLOCK:
+            case CHIPPED_ANVIL:
+            case COMMAND_BLOCK:
+            case COMPARATOR:
+            case CRAFTER:
+            case CRAFTING_TABLE:
+            case DAMAGED_ANVIL:
+            case DAYLIGHT_DETECTOR:
+            case ENCHANTING_TABLE:
+            case FLOWER_POT:
+            case GLOW_ITEM_FRAME:
+            case ITEM_FRAME:
+            case LECTERN:
+            case LEGACY_DIODE_BLOCK_OFF:
+            case LEGACY_DIODE_BLOCK_ON:
+            case LEGACY_REDSTONE_COMPARATOR_OFF:
+            case LEGACY_REDSTONE_COMPARATOR_ON:
+            case LEVER:
+            case REPEATER:
+            case REPEATING_COMMAND_BLOCK:
+            case SOUL_CAMPFIRE:
+                return true;
+            default:
+                break;
+        }
+
+        if (cmat.containsCriteria(CMIMC.BED)
+                || cmat.containsCriteria(CMIMC.BUTTON)
+                || cmat.containsCriteria(CMIMC.CAKE)
+                || cmat.containsCriteria(CMIMC.CANDLE)
+                || cmat.containsCriteria(CMIMC.CANDLECAKE)
+                || cmat.containsCriteria(CMIMC.DOOR)
+                || cmat.containsCriteria(CMIMC.FENCEGATE)
+                || cmat.containsCriteria(CMIMC.TRAPDOOR)
+                || cmat.containsCriteria(CMIMC.POTTED))
+            return true;
+
+        if (mat.name().equals("DAYLIGHT_DETECTOR_INVERTED"))
+            return true;
+
+        return plugin.getConfigManager().getCustomRightClick().contains(block.getType());
+    }
+
+    private boolean isCanUseEntity(Material mat, Block block) {
+        return isCanUseEntity_BothClick(mat, block) || isCanUseEntity_RClickOnly(mat, block);
+    }
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
-
-        if (event.getPlayer() == null)
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-        Player player = event.getPlayer();
 
         Block block = event.getClickedBlock();
         if (block == null)
             return;
-
-        ItemStack iih = event.getItem();
-        CMIMaterial heldItem = CMIMaterial.get(iih);
-
-        Material mat = block.getType();
-
-        if (!(event.getAction() == Action.PHYSICAL || (isContainer(mat, block) || isCanUseEntity_RClickOnly(mat, block)) && event.getAction() == Action.RIGHT_CLICK_BLOCK
-                || isCanUseEntity_BothClick(mat, block)) && !heldItem.equals(plugin.getConfigManager().getSelectionTool()) && !heldItem.equals(plugin.getConfigManager().getInfoTool())
-                && (!heldItem.isDye() && !heldItem.equals(CMIMaterial.GLOW_INK_SAC)) && !heldItem.equals(CMIMaterial.ARMOR_STAND) && !heldItem.isBoat() && !placingMinecart(block, iih)) {
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
-        }
 
         if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
-        boolean resadmin = ResAdmin.isResAdmin(player);
-        if (resadmin)
+        Player player = event.getPlayer();
+        if (ResAdmin.isResAdmin(player))
             return;
 
+        CMIMaterial heldItem = CMIMaterial.get(event.getItem());
+        // Check held Material Blacklist
         if (!heldItem.isNone() && heldItem.isValidItem()
                 && !plugin.getItemManager().isAllowed(heldItem.getMaterial(), plugin.getPlayerManager().getResidencePlayer(player).getGroup(), player.getWorld()
                         .getName())) {
@@ -1342,143 +1336,90 @@ public class ResidencePlayerListener implements Listener {
             return;
         }
 
+        Material mat = block.getType();
+
+        if (!isContainer(mat, block) && !isCanUseEntity(mat, block))
+            return;
+
         FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+        boolean hasUse = perms.playerHas(player, Flags.use, true);
 
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-
-            CMIMaterial blockM = CMIMaterial.get(mat);
-
-            if (heldItem.isDye() || heldItem.equals(CMIMaterial.GLOW_INK_SAC)) {
-
-                if (heldItem.equals(CMIMaterial.BONE_MEAL) &&
-                        (blockM == CMIMaterial.GRASS_BLOCK ||
-                                blockM == CMIMaterial.SHORT_GRASS ||
-                                blockM == CMIMaterial.TALL_SEAGRASS ||
-                                blockM == CMIMaterial.MOSS_BLOCK ||
-                                blockM == CMIMaterial.BIG_DRIPLEAF_STEM ||
-                                blockM == CMIMaterial.BIG_DRIPLEAF ||
-                                blockM == CMIMaterial.SMALL_DRIPLEAF ||
-                                blockM.isSapling())
-                        ||
-                        heldItem == CMIMaterial.COCOA_BEANS && blockM == CMIMaterial.JUNGLE_WOOD) {
-                    FlagPermissions tperms = FlagPermissions.getPerms(block.getRelative(event.getBlockFace()).getLocation(), player);
-                    if (!tperms.playerHas(player, Flags.build, true)) {
-                        lm.Flag_Deny.sendMessage(player, Flags.build);
-                        event.setCancelled(true);
-                        return;
-                    }
-                }
-            }
-            if (heldItem.equals(CMIMaterial.ARMOR_STAND) || heldItem.isBoat()) {
-                FlagPermissions tperms = FlagPermissions.getPerms(block.getRelative(event.getBlockFace()).getLocation(), player);
-                if (!tperms.playerHas(player, Flags.build, true)) {
-                    lm.Flag_Deny.sendMessage(player, Flags.build);
-                    event.setCancelled(true);
-                    return;
-                }
-            }
-            if (placingMinecart(block, iih) && !perms.playerHas(player, Flags.build, true)) {
-                lm.Flag_Deny.sendMessage(player, Flags.build);
+        ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
+        // Restrict defender container use in raid
+        if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isDefender(player) && !ConfigManager.RaidDefenderContainerUsage) {
+            Flags result = FlagPermissions.getMaterialUseFlagList().get(mat);
+            if (result != null && result.equals(Flags.container)) {
                 event.setCancelled(true);
+                lm.Raid_cantDo.sendMessage(player);
                 return;
-
             }
-
-            if (blockM.isSign() && !perms.playerHas(player, Flags.use, true)) {
-                lm.Flag_Deny.sendMessage(player, Flags.use);
-                event.setCancelled(true);
-                return;
-
-            }
-
         }
 
-        if (isContainer(mat, block) || isCanUseEntity(mat, block)) {
+        if (res == null || !res.isOwner(player)) {
 
-            boolean hasuse = perms.playerHas(player, Flags.use, true);
+            Flags result = FlagPermissions.getMaterialUseFlagList().get(mat);
+            // Residence assigns Flags internally for Material
+            if (result != null) {
+                // Start AbstractFlags Check
+                main: if (!perms.playerHas(player, result, hasUse)) {
 
-            ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
+                    if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-            if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isDefender(player) && !ConfigManager.RaidDefenderContainerUsage) {
-                Flags result = FlagPermissions.getMaterialUseFlagList().get(mat);
-                if (result != null && result.equals(Flags.container)) {
-                    event.setCancelled(true);
-                    lm.Raid_cantDo.sendMessage(player);
-                    return;
-                }
-            }
-
-            if (res == null || !res.isOwner(player)) {
-
-                Flags result = FlagPermissions.getMaterialUseFlagList().get(mat);
-                if (result != null) {
-
-                    main: if (!perms.playerHas(player, result, hasuse)) {
-
-                        if (hasuse || result.equals(Flags.container)) {
-
-                            if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
-                                break main;
-                            }
-                            if (!ResPerm.bypass_container.hasPermission(player, 10000L)) {
-                                event.setCancelled(true);
-                                lm.Flag_Deny.sendMessage(player, result);
-                            }
-                            return;
+                        if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
+                            break main;
                         }
 
-                        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-
-                            if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
+                        switch (result) {
+                        case container:
+                            if (ResPerm.bypass_container.hasPermission(player, 10000L))
                                 break main;
-                            }
-
-                            switch (result) {
-                            case door:
-                                if (ResPerm.bypass_door.hasPermission(player, 10000L))
-                                    break main;
-                                break;
-                            case button:
-                                if (ResPerm.bypass_button.hasPermission(player, 10000L))
-                                    break main;
-                                break;
-                            }
-                            event.setCancelled(true);
-                            lm.Flag_Deny.sendMessage(player, result);
-                            return;
-                        }
-
-                        if (isCanUseEntity_BothClick(mat, block)) {
-
-                            if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
+                            break;
+                        case door:
+                            if (ResPerm.bypass_door.hasPermission(player, 10000L))
                                 break main;
-                            }
-                            event.setCancelled(true);
-                            lm.Flag_Deny.sendMessage(player, result);
+                            break;
+                        case button:
+                            if (ResPerm.bypass_button.hasPermission(player, 10000L))
+                                break main;
+                            break;
                         }
+                        event.setCancelled(true);
+                        lm.Flag_Deny.sendMessage(player, result);
                         return;
                     }
-                }
-            }
 
-            if (plugin.getConfigManager().getCustomContainers().contains(mat)) {
-                if (!perms.playerHas(player, Flags.container, hasuse)
-                        || !ResPerm.bypass_container.hasPermission(player, 10000L)) {
-                    event.setCancelled(true);
-                    lm.Flag_Deny.sendMessage(player, Flags.container);
+                    if (isCanUseEntity_BothClick(mat, block)) {
+
+                        if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
+                            break main;
+                        }
+                        event.setCancelled(true);
+                        lm.Flag_Deny.sendMessage(player, result);
+                    }
                     return;
                 }
+                // End AbstractFlags Check
             }
-
-            if (plugin.getConfigManager().getCustomBothClick().contains(mat) && !hasuse) {
+        }
+        // Restrict custom both-click container use
+        if (plugin.getConfigManager().getCustomContainers().contains(mat)) {
+            if (!perms.playerHas(player, Flags.container, hasUse)
+                    || !ResPerm.bypass_container.hasPermission(player, 10000L)) {
                 event.setCancelled(true);
-                lm.Flag_Deny.sendMessage(player, Flags.use);
+                lm.Flag_Deny.sendMessage(player, Flags.container);
                 return;
             }
-            if (plugin.getConfigManager().getCustomRightClick().contains(mat) && event.getAction() == Action.RIGHT_CLICK_BLOCK && !hasuse) {
-                event.setCancelled(true);
-                lm.Flag_Deny.sendMessage(player, Flags.use);
-            }
+        }
+        // Restrict custom both-click block
+        if (plugin.getConfigManager().getCustomBothClick().contains(mat) && !hasUse) {
+            event.setCancelled(true);
+            lm.Flag_Deny.sendMessage(player, Flags.use);
+            return;
+        }
+        // Restrict custom right-click block
+        if (plugin.getConfigManager().getCustomRightClick().contains(mat) && event.getAction() == Action.RIGHT_CLICK_BLOCK && !hasUse) {
+            event.setCancelled(true);
+            lm.Flag_Deny.sendMessage(player, Flags.use);
         }
 
     }
@@ -1538,10 +1479,10 @@ public class ResidencePlayerListener implements Listener {
 
         if ((player.isSneaking() && canHaveContainer(entity))
                 ||
-                (type == (CMIEntityType.CHEST_MINECART) ||
-                        type == (CMIEntityType.FURNACE_MINECART) ||
-                        type == (CMIEntityType.HOPPER_MINECART) ||
-                        type == (CMIEntityType.ALLAY))) {
+                (type == CMIEntityType.CHEST_MINECART ||
+                        type == CMIEntityType.FURNACE_MINECART ||
+                        type == CMIEntityType.HOPPER_MINECART ||
+                        type == CMIEntityType.ALLAY)) {
 
             if (FlagPermissions.has(entity.getLocation(), player, Flags.container, true))
                 return;
@@ -1576,6 +1517,14 @@ public class ResidencePlayerListener implements Listener {
                 return;
 
             lm.Flag_Deny.sendMessage(player, Flags.container);
+            event.setCancelled(true);
+
+        } else if (type == CMIEntityType.COMMAND_BLOCK_MINECART) {
+
+            if (FlagPermissions.has(entity.getLocation(), player, Flags.commandblock, true))
+                return;
+
+            lm.Flag_Deny.sendMessage(player, Flags.commandblock);
             event.setCancelled(true);
 
         }

@@ -94,6 +94,9 @@ Global:
     # Allows to modify copper blocks
     copper: true
     # Applies to: Residence
+    # Allow or deny all corals from drying up
+    coraldryup: true
+    # Applies to: Residence
     # Gives table, enchant, brew flags
     craft: true
     # Applies to: Residence
@@ -366,6 +369,9 @@ Global:
     # Applies to: Both
     # Allows or denys vehicle destroy
     vehicledestroy: false
+    # Applies to: Both
+    # Allows or denys vehicle placing
+    vehicleplacing: false
     # Applies to: Residence
     # Allows or denys water flow, overrides flow
     waterflow: true
@@ -398,6 +404,7 @@ Global:
     bed: WHITE_BED
     boarding: ACACIA_BOAT
     brew: BREWING_STAND
+    brush: BRUSH
     build: BRICKS
     burn: TORCH
     button: OAK_BUTTON
@@ -410,6 +417,8 @@ Global:
     commandblock: COMMAND_BLOCK
     container: CHEST_MINECART
     coords: COMPASS
+    copper: COPPER_BLOCK
+    coraldryup: FIRE_CORAL
     craft: STONE
     creeper: CREEPER_SPAWN_EGG
     damage: GOLDEN_SWORD
@@ -422,6 +431,7 @@ Global:
     dryup: BLUE_STAINED_GLASS_PANE
     dye: ORANGE_DYE
     egg: EGG
+    elytra: ELYTRA
     enchant: ENCHANTING_TABLE
     enderpearl: ENDER_PEARL
     explode: TNT_MINECART
@@ -436,8 +446,10 @@ Global:
     fly: ORANGE_CARPET
     friendlyfire: SUNFLOWER
     glow: SEA_LANTERN
+    goathorn: GOAT_HORN
     golemopenchest: COPPER_GOLEM_STATUE
     grow: WHEAT_SEEDS
+    harvest: SWEET_BERRIES
     healing: POTION
     hidden: GLASS_PANE
     honey: BEEHIVE
@@ -497,17 +509,13 @@ Global:
     trample: DIRT
     use: STONE_PRESSURE_PLATE
     vehicledestroy: MINECART
+    vehicleplacing: MINECART
     waterflow: WATER_BUCKET
     witherdamage: WITHER_SKELETON_SKULL
     witherdestruction: WITHER_SKELETON_SKULL
     witherspawn: WITHER_SKELETON_SKULL
     wspeed1: POTION
     wspeed2: POTION
-    brush: BRUSH
-    copper: IRON_BLOCK
-    elytra: ELYTRA
-    goathorn: GOAT_HORN
-    harvest: SWEET_BERRIES
     safezone: APPLE
     skulk: SCULK_CATALYST
   # These are default flags applied to all residences from any user group.
