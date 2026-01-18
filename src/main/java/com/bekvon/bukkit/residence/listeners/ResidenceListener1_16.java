@@ -16,6 +16,8 @@ import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 
+import net.Zrips.CMILib.Version.Version;
+
 public class ResidenceListener1_16 implements Listener {
 
     private Residence plugin;
@@ -26,6 +28,9 @@ public class ResidenceListener1_16 implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLightningStrikeEvent(LightningStrikeEvent event) {
+
+        if (Version.isPaperBranch() && Version.isCurrentEqualOrHigher(Version.v1_21_R1))
+            return;
         // Disabling listener if flag disabled globally
         if (!Flags.animalkilling.isGlobalyEnabled())
             return;

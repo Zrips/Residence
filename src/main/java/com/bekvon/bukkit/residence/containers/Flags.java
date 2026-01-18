@@ -68,7 +68,7 @@ public enum Flags {
     harvest(CMIMaterial.SWEET_BERRIES, FlagMode.Both, "Allows harvesting", true),
     hotfloor(CMIMaterial.MAGMA_BLOCK, FlagMode.Residence, "Prevent damage from magma blocks", true),
     hidden(CMIMaterial.GLASS_PANE, FlagMode.Residence, "Hides residence from list or listall commands", false),
-    hook(CMIMaterial.FISHING_ROD, FlagMode.Both, "Allows or denys fishing rod hooking entities", false),
+    hook(CMIMaterial.FISHING_ROD, FlagMode.Both, "Allows or denys fishing rod hooking entities", true),
     healing(CMIMaterial.POTION, FlagMode.Residence, "Setting to true makes the residence heal its occupants", true),
     iceform(CMIMaterial.ICE, FlagMode.Residence, "Prevents from ice forming", true),
     icemelt(CMIMaterial.ICE, FlagMode.Residence, "Prevents ice from melting", true),
