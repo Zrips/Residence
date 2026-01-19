@@ -91,7 +91,6 @@ public class ResidenceListener1_16_5_Paper implements Listener {
                 return;
             if (FlagPermissions.has(entity.getLocation(), player, Flags.animalkilling, true))
                 return;
-            lm.Flag_Deny.sendMessage(player, Flags.animalkilling);
         } else {
             if (FlagPermissions.has(entity.getLocation(), Flags.animalkilling, true))
                 return;
