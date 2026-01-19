@@ -28,9 +28,12 @@ public class ResidenceListener1_16 implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLightningStrikeEvent(LightningStrikeEvent event) {
-
-        if (Version.isPaperBranch() && Version.isCurrentEqualOrHigher(Version.v1_21_R1))
-            return;
+        // ResidenceListener1_16_5_Paper, EntityZapEvent
+        if (Version.isPaperBranch()) {
+            if (Version.isCurrentEqualOrHigher(Version.v1_17_R1) ||
+                    (Version.isCurrentEqualOrHigher(Version.v1_16_R3) && Version.isCurrentSubEqualOrHigher(5)))
+                return;
+        }
         // Disabling listener if flag disabled globally
         if (!Flags.animalkilling.isGlobalyEnabled())
             return;
@@ -41,11 +44,22 @@ public class ResidenceListener1_16 implements Listener {
         if (plugin.isDisabledWorldListener(event.getWorld()))
             return;
 
-        FlagPermissions perms = FlagPermissions.getPerms(event.getLightning().getLocation());
-        if (perms.has(Flags.animalkilling, true))
-            return;
+        Player player = Version.isCurrentEqualOrHigher(Version.v1_20_R2)
+                ? event.getLightning().getCausingPlayer()
+                : null;
+
+        if (player != null) {
+            if (ResAdmin.isResAdmin(player))
+                return;
+            if (FlagPermissions.has(event.getLightning().getLocation(), player, Flags.animalkilling, true))
+                return;
+        } else {
+            if (FlagPermissions.has(event.getLightning().getLocation(), Flags.animalkilling, true))
+                return;
+        }
 
         event.setCancelled(true);
+
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

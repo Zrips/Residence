@@ -70,7 +70,6 @@ import com.bekvon.bukkit.residence.listeners.ResidenceListener1_17;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_19;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_20;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21;
-import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_8_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_8_Spigot;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_9_Paper;
@@ -580,7 +579,7 @@ public class Residence extends JavaPlugin {
                 if (Version.isCurrentEqualOrHigher(Version.v1_16_R1))
                     pm.registerEvents(new ResidenceListener1_16(this), this);
 
-                if (Version.isCurrentEqualOrHigher(Version.v1_16_R3) && Version.isCurrentSubEqualOrHigher(5) || Version.isCurrentEqualOrHigher(Version.v1_17_R1)) {
+                if ((Version.isCurrentEqualOrHigher(Version.v1_16_R3) && Version.isCurrentSubEqualOrHigher(5)) || Version.isCurrentEqualOrHigher(Version.v1_17_R1)) {
                     if (Version.isPaperBranch())
                         pm.registerEvents(new ResidenceListener1_16_5_Paper(this), this);
                 }
@@ -591,12 +590,8 @@ public class Residence extends JavaPlugin {
                     pm.registerEvents(new ResidenceListener1_19(this), this);
                 if (Version.isCurrentEqualOrHigher(Version.v1_20_R1))
                     pm.registerEvents(new ResidenceListener1_20(this), this);
-
-                if (Version.isCurrentEqualOrHigher(Version.v1_21_R1)) {
+                if (Version.isCurrentEqualOrHigher(Version.v1_21_R1))
                     pm.registerEvents(new ResidenceListener1_21(this), this);
-                    if (Version.isPaperBranch())
-                        pm.registerEvents(new ResidenceListener1_21_Paper(this), this);
-                }
 
                 if ((Version.isCurrentEqualOrHigher(Version.v1_21_R5) && Version.isCurrentSubEqualOrHigher(8)) || Version.isCurrentEqualOrHigher(Version.v1_21_R6)) {
                     if (Version.isPaperBranch())
