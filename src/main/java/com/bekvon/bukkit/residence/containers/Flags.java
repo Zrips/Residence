@@ -8,6 +8,7 @@ import net.Zrips.CMILib.Items.CMIMaterial;
 public enum Flags {
     anvil(CMIMaterial.ANVIL, FlagMode.Both, "Allows or denys interaction with anvil", true),
     admin(CMIMaterial.BEDROCK, FlagMode.Player, "Gives a player permission to change flags on a residence", true),
+    animalfeeding(CMIMaterial.CARROT, FlagMode.Both, "Allows or denys animal feeding", true),
     animalkilling(CMIMaterial.CHICKEN, FlagMode.Both, "Allows or denys animal killing", true),
     animals(CMIMaterial.PIG_SPAWN_EGG, FlagMode.Residence, "Allows or denys animal spawns", true),
     anchor(CMIMaterial.RESPAWN_ANCHOR, FlagMode.Both, "Allows or denys respawn anchor usage", true),

@@ -22,6 +22,9 @@ Global:
     # Allows or denys respawn anchor usage
     anchor: true
     # Applies to: Both
+    # Allows or denys animal feeding
+    animalfeeding: true
+    # Applies to: Both
     # Allows or denys animal killing
     animalkilling: true
     # Applies to: Residence
@@ -394,6 +397,7 @@ Global:
   FlagGui:
     admin: BEDROCK
     anchor: RESPAWN_ANCHOR
+    animalfeeding: CARROT
     animalkilling: CHICKEN
     animals: PIG_SPAWN_EGG
     anvil: ANVIL
