@@ -957,7 +957,6 @@ public class ConfigManager {
                 else
                     lm.consoleMessage("Incorrect Lwc material name for " + oneName);
             }
-            CMIDebug.c(LwcMatList);
         }
 
         c.addComment("Global.AntiGreef.RangeGaps",

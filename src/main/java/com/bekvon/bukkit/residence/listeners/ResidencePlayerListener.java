@@ -1972,10 +1972,6 @@ public class ResidencePlayerListener implements Listener {
 
     private void checkSpecialFlags(Player player, ClaimedResidence newRes, ClaimedResidence oldRes) {
 
-//        ClaimedResidence res = ClaimedResidence.getByLoc(player.getLocation());
-
-        CMIDebug.c("residence change", newRes == null, oldRes == null);
-
         if (newRes == null && oldRes != null) {
             if (Flags.night.isGlobalyEnabled() && oldRes.getPermissions().has(Flags.night, FlagCombo.OnlyTrue)
                     || Flags.day.isGlobalyEnabled() && oldRes.getPermissions().has(Flags.day, FlagCombo.OnlyTrue))
