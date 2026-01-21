@@ -179,9 +179,9 @@ public class FlagPermissions {
     }
 
     public static void addFlagToFlagGroup(String group, String flag) {
-        
-		group = group.toLowerCase();
-		
+
+        group = group.toLowerCase();
+
         FlagState state = FlagState.TRUE;
 
         if (flag.contains("-")) {
@@ -195,16 +195,16 @@ public class FlagPermissions {
         if (f != null && !f.isGlobalyEnabled()) {
             return;
         }
-        
+
         if (!FlagPermissions.validFlags.contains(group) && !FlagPermissions.validAreaFlags.contains(group) && !FlagPermissions.validPlayerFlags.contains(group)) {
             validFlagGroups.computeIfAbsent(group, k -> new HashMap<String, FlagState>()).put(flag, state);
         }
     }
 
     public static void removeFlagFromFlagGroup(String group, String flag) {
-        
+
         group = group.toLowerCase();
-        
+
         if (validFlagGroups.containsKey(group)) {
             HashMap<String, FlagState> flags = validFlagGroups.get(group);
             flags.remove(flag);
@@ -545,7 +545,7 @@ public class FlagPermissions {
 
     public boolean setGroupFlag(String group, String flag, FlagState state) {
         group = group.toLowerCase();
-                
+
         if (!groupFlags.containsKey(group)) {
             groupFlags.put(group, Collections.synchronizedMap(new HashMap<String, Boolean>()));
         }
@@ -1197,7 +1197,7 @@ public class FlagPermissions {
 
                 String pName = ResidencePlayer.getName(pUUID);
 
-                if (!perms.equals("none")) {
+                if (pName != null && !perms.equals("none")) {
                     sbuild.append(pName).append(CMIChatColor.WHITE).append("[").append(perms).append(CMIChatColor.WHITE).append("] ");
                 }
             }
@@ -1408,7 +1408,10 @@ public class FlagPermissions {
     private boolean addPlayerFlagToRM(RawMessage rm, String playerName, Map<String, Boolean> permMap, boolean random) {
         String perms = printPlayerFlags(permMap);
 
-        if (playerName.equalsIgnoreCase(Residence.getInstance().getServerLandName()))
+        if (playerName == null)
+            return random;
+
+        if (Residence.getInstance().getServerLandName().equalsIgnoreCase(playerName))
             return random;
 
         if (perms.equals("none"))
@@ -1517,6 +1520,9 @@ public class FlagPermissions {
         String perms = printPlayerFlags(permMap);
 
         String next = ResidencePlayer.getName(uuid);
+
+        if (next == null)
+            return;
 
         if (next.equalsIgnoreCase(Residence.getInstance().getServerLandName()))
             return;
