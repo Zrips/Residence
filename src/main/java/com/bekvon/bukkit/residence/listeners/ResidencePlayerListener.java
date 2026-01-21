@@ -103,6 +103,7 @@ import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -1964,12 +1965,16 @@ public class ResidencePlayerListener implements Listener {
         if (player == null)
             return;
 
-        checkSpecialFlags(player, newRes, oldRes);
+        CMIScheduler.runAtLocation(plugin, player.getLocation(), () -> {
+            checkSpecialFlags(player, newRes, oldRes);
+        });
     }
 
     private void checkSpecialFlags(Player player, ClaimedResidence newRes, ClaimedResidence oldRes) {
 
-        ClaimedResidence res = ClaimedResidence.getByLoc(player.getLocation());
+//        ClaimedResidence res = ClaimedResidence.getByLoc(player.getLocation());
+
+        CMIDebug.c("residence change", newRes == null, oldRes == null);
 
         if (newRes == null && oldRes != null) {
             if (Flags.night.isGlobalyEnabled() && oldRes.getPermissions().has(Flags.night, FlagCombo.OnlyTrue)
@@ -2031,14 +2036,18 @@ public class ResidencePlayerListener implements Listener {
             if (Flags.wspeed1.isGlobalyEnabled()) {
                 if (newRes.getPermissions().has(Flags.wspeed1, FlagCombo.OnlyTrue))
                     player.setWalkSpeed(plugin.getConfigManager().getWalkSpeed1().floatValue());
-                else if (oldRes.getPermissions().has(Flags.wspeed1, FlagCombo.OnlyTrue) && !newRes.getPermissions().has(Flags.wspeed1, FlagCombo.OnlyTrue))
+                else if (oldRes.getPermissions().has(Flags.wspeed1, FlagCombo.OnlyTrue)
+                        && !newRes.getPermissions().has(Flags.wspeed1, FlagCombo.OnlyTrue)
+                        && !newRes.getPermissions().has(Flags.wspeed2, FlagCombo.OnlyTrue))
                     player.setWalkSpeed(0.2F);
             }
 
             if (Flags.wspeed2.isGlobalyEnabled()) {
                 if (newRes.getPermissions().has(Flags.wspeed2, FlagCombo.OnlyTrue)) {
                     player.setWalkSpeed(plugin.getConfigManager().getWalkSpeed2().floatValue());
-                } else if (oldRes.getPermissions().has(Flags.wspeed2, FlagCombo.OnlyTrue) && !newRes.getPermissions().has(Flags.wspeed2, FlagCombo.OnlyTrue))
+                } else if (oldRes.getPermissions().has(Flags.wspeed2, FlagCombo.OnlyTrue)
+                        && !newRes.getPermissions().has(Flags.wspeed1, FlagCombo.OnlyTrue)
+                        && !newRes.getPermissions().has(Flags.wspeed2, FlagCombo.OnlyTrue))
                     player.setWalkSpeed(0.2F);
             }
 
