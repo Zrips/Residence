@@ -27,7 +27,7 @@ public class SlimefunManager {
         task = CMIScheduler.scheduleSyncRepeatingTask(Residence.getInstance(), () -> {
             ++times;
             if (times >= TRIES) {
-                lm.consoleMessage("&cFailed to initialize SlimeFun support");
+                lm.consoleMessage("&cFailed to initialize Slimefun support");
                 task.cancel();
             }
 
@@ -40,13 +40,13 @@ public class SlimefunManager {
                     if (method != null) {
                         Function<Plugin, ProtectionModule> m = plugin -> new SlimeFunResidenceModule(plugin);
                         method.invoke(manager, Bukkit.getServer(), "Residence", m);
-                        lm.consoleMessage("Enabled compatability with SlimeFun plugin");
+                        lm.consoleMessage("Enabled compatability with Slimefun plugin");
                         task.cancel();
                     }
                 } catch (Throwable e) {
                     // Going with latest dev build supported approach
                     manager.registerModule(Bukkit.getServer().getPluginManager(), "Residence", plugin -> new SlimeFunResidenceModule(plugin));
-                    lm.consoleMessage("Enabled compatability with SlimeFun plugin");
+                    lm.consoleMessage("Enabled compatability with Slimefun plugin");
                     task.cancel();
                 }
             }
