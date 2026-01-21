@@ -59,6 +59,7 @@ import com.bekvon.bukkit.residence.utils.Utils;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.PageInfo;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -710,24 +711,6 @@ public class ResidenceManager implements ResidenceInterface {
         }
 
         cleanResidenceRecords(res, true);
-
-        if (!res.isServerLand()) {
-            if (parent == null && plugin.getConfigManager().enableEconomy() && plugin.getConfigManager().useResMoneyBack()) {
-                double chargeamount = res.getWorth();
-                if (!res.isOwner(player)) {
-                    plugin.getTransactionManager().giveEconomyMoney(res.getOwnerUUID(), chargeamount);
-                } else {
-                    if (player != null)
-                        plugin.getTransactionManager().giveEconomyMoney(player, chargeamount);
-                    else if (rPlayer != null)
-                        plugin.getTransactionManager().giveEconomyMoney(rPlayer.getUniqueId(), chargeamount);
-                }
-            }
-
-            if (res.getBank().getStoredMoneyD() > 0 && plugin.getConfigManager().isResBankBack()) {
-                plugin.getTransactionManager().giveEconomyMoney(res.getOwnerUUID(), res.getBank().getStoredMoneyD());
-            }
-        }
 
         for (ClaimedResidence sub : res.getSubzones()) {
             removeResidence(rPlayer, sub, resadmin, false);
@@ -1652,6 +1635,8 @@ public class ResidenceManager implements ResidenceInterface {
 
     private void cleanResidenceRecords(ClaimedResidence res, boolean removeSigns) {
         String name = res.getName();
+
+        CMIDebug.d("removal?!");
 
         plugin.getLeaseManager().removeExpireTime(res);
         for (ClaimedResidence oneSub : res.getSubzones()) {
