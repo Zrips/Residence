@@ -88,6 +88,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.protection.ResidenceManager.ChunkRef;
+import com.bekvon.bukkit.residence.selection.VisualizerConfig;
 import com.bekvon.bukkit.residence.signsStuff.Signs;
 import com.bekvon.bukkit.residence.utils.GetTime;
 import com.bekvon.bukkit.residence.utils.Teleporting;
@@ -2247,7 +2248,7 @@ public class ResidencePlayerListener implements Listener {
     }
 
     private void bounceAnimation(Player player, ClaimedResidence res) {
-        if (!plugin.getConfigManager().BounceAnimation())
+        if (!VisualizerConfig.isBounceAnimation())
             return;
 
         Visualizer v = new Visualizer(player);
@@ -2432,7 +2433,7 @@ public class ResidencePlayerListener implements Listener {
             }
         }
 
-        if (to != null && plugin.getConfigManager().isEnterAnimation() && to.isTopArea() && (from == null || from.getTopParent() != to)) {
+        if (to != null && VisualizerConfig.isEnterAnimation() && to.isTopArea() && (from == null || from.getTopParent() != to)) {
             to.showBounds(player, true);
         }
 

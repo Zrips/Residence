@@ -59,7 +59,6 @@ import com.bekvon.bukkit.residence.utils.Utils;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.PageInfo;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -1635,8 +1634,6 @@ public class ResidenceManager implements ResidenceInterface {
 
     private void cleanResidenceRecords(ClaimedResidence res, boolean removeSigns) {
         String name = res.getName();
-
-        CMIDebug.d("removal?!");
 
         plugin.getLeaseManager().removeExpireTime(res);
         for (ClaimedResidence oneSub : res.getSubzones()) {
