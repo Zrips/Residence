@@ -9,9 +9,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -32,10 +30,9 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
 
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
+import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Effects.CMIEffect;
-import net.Zrips.CMILib.Effects.CMIEffectManager.CMIParticle;
-import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
 
@@ -522,9 +519,9 @@ public class SelectionManager {
 
             if (plugin.getConfigManager().enableEconomy())
                 lm.General_LandCost.sendMessage(player, cuboidArea.getCost(group));
-            lm.showMessage(player, ChatColor.YELLOW + "X" + lm.General_Size.getMessage(cuboidArea.getXSize()));
-            lm.showMessage(player, ChatColor.YELLOW + "Y" + lm.General_Size.getMessage(cuboidArea.getYSize()));
-            lm.showMessage(player, ChatColor.YELLOW + "Z" + lm.General_Size.getMessage(cuboidArea.getZSize()));
+            lm.showMessage(player, CMIChatColor.YELLOW + "X" + lm.General_Size.getMessage(cuboidArea.getXSize()));
+            lm.showMessage(player, CMIChatColor.YELLOW + "Y" + lm.General_Size.getMessage(cuboidArea.getYSize()));
+            lm.showMessage(player, CMIChatColor.YELLOW + "Z" + lm.General_Size.getMessage(cuboidArea.getZSize()));
             lm.General_Separator.sendMessage(player);
             Visualizer v = new Visualizer(player);
             v.setAreas(this.getSelectionCuboid(player));
@@ -814,8 +811,8 @@ public class SelectionManager {
                 v.setCurrentSkip(1);
 
             try {
-                showParticles(locList, player, timesMore, error, true, v.getCurrentSkip());
-                showParticles(errorLocList, player, errorTimesMore, error, false, v.getCurrentSkip());
+                showParticles(locList, player, timesMore, error, true, v);
+                showParticles(errorLocList, player, errorTimesMore, error, false, v);
             } catch (Exception e) {
                 return;
             }
@@ -852,17 +849,20 @@ public class SelectionManager {
 
     }
 
-    private void showParticles(List<Location> locList, Player player, int timesMore, boolean error, boolean sides, int currentSkipBy) {
+    private void showParticles(List<Location> locList, Player player, int timesMore, boolean error, boolean sides, Visualizer v) {
         int s = 0;
 
         for (int i = 0; i < locList.size(); i += timesMore) {
-            s++;
 
-            if (s > VisualizerConfig.getSkipBy())
-                s = 1;
+            if (!v.isOnce()) {
+                s++;
 
-            if (s != currentSkipBy)
-                continue;
+                if (s > VisualizerConfig.getSkipBy())
+                    s = 1;
+
+                if (s != v.getCurrentSkip())
+                    continue;
+            }
 
             Location l = locList.get(i);
 
