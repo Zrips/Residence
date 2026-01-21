@@ -22,6 +22,9 @@ Global:
     # Allows or denys respawn anchor usage
     anchor: true
     # Applies to: Both
+    # Allows or denys animal feeding
+    animalfeeding: true
+    # Applies to: Both
     # Allows or denys animal killing
     animalkilling: true
     # Applies to: Residence
@@ -86,7 +89,7 @@ Global:
     commandblock: false
     # Applies to: Both
     # Allows or denys use of furnaces, chests, dispensers, etc...
-    container: false
+    container: true
     # Applies to: Residence
     # Hides residence coordinates
     coords: true
@@ -101,7 +104,7 @@ Global:
     craft: true
     # Applies to: Residence
     # Allow or deny creeper explosions
-    creeper: false
+    creeper: true
     # Applies to: Residence
     # Allows or denys all entity damage within the residence
     damage: false
@@ -158,7 +161,7 @@ Global:
     fireball: true
     # Applies to: Residence
     # Allows or denys fire spread
-    firespread: false
+    firespread: true
     # Applies to: Residence
     # Allows or denys liquid flow
     flow: true
@@ -188,7 +191,7 @@ Global:
     grow: true
     # Applies to: Both
     # Allows harvesting
-    harvest: false
+    harvest: true
     # Applies to: Residence
     # Setting to true makes the residence heal its occupants
     healing: true
@@ -317,7 +320,7 @@ Global:
     sanimals: true
     # Applies to: Both
     # Allows or denys sheep shear
-    shear: false
+    shear: true
     # Applies to: Residence
     # Allows or denys shooting projectile in area
     shoot: true
@@ -326,7 +329,7 @@ Global:
     shop: true
     # Applies to: Residence
     # Prevents skulk catalyst spreading
-    skulk: false
+    skulk: true
     # Applies to: Residence
     # Allows or denys spawner or spawn egg monster spawns
     smonsters: true
@@ -365,13 +368,13 @@ Global:
     trample: true
     # Applies to: Both
     # Allows or denys use of doors, lever, buttons, etc...
-    use: false
+    use: true
     # Applies to: Both
     # Allows or denys vehicle destroy
-    vehicledestroy: false
+    vehicledestroy: true
     # Applies to: Both
     # Allows or denys vehicle placing
-    vehicleplacing: false
+    vehicleplacing: true
     # Applies to: Residence
     # Allows or denys water flow, overrides flow
     waterflow: true
@@ -394,6 +397,7 @@ Global:
   FlagGui:
     admin: BEDROCK
     anchor: RESPAWN_ANCHOR
+    animalfeeding: CARROT
     animalkilling: CHICKEN
     animals: PIG_SPAWN_EGG
     anvil: ANVIL
