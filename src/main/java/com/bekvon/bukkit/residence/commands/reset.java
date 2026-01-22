@@ -123,6 +123,7 @@ public class reset implements cmd {
         c.get("Info", Arrays.asList("&eUsage: &6/res reset <residence/all> (-ownerflag)",
                 "Resets the flags on a residence to their default.  You must be the owner or an admin to do this.",
                 "-ownerflag: Reset only owner's flags."));
-        LocaleManager.addTabCompleteMain(this, "[residence]%%all", "-ownerflag");
+        LocaleManager.addTabCompleteMain(this, "[residence]%%all", "-ownerflag%%");
+
     }
 }

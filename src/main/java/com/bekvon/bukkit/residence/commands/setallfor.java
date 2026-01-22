@@ -31,7 +31,8 @@ public class setallfor implements cmd {
         if (f != null)
             flag = f.toString();
 
-        FlagState state = FlagPermissions.stringToFlagState(args[2]);
+        FlagState state = FlagState.fromString(args[2]);
+        
         ResidencePlayer resPlayer = plugin.getPlayerManager().getResidencePlayer(playerName);
         if (resPlayer == null)
             return false;

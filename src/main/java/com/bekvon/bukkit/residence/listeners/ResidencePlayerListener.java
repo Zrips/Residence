@@ -91,6 +91,7 @@ import com.bekvon.bukkit.residence.protection.ResidenceManager.ChunkRef;
 import com.bekvon.bukkit.residence.selection.VisualizerConfig;
 import com.bekvon.bukkit.residence.signsStuff.Signs;
 import com.bekvon.bukkit.residence.utils.GetTime;
+import com.bekvon.bukkit.residence.utils.PlayerLocationChecker;
 import com.bekvon.bukkit.residence.utils.Teleporting;
 import com.bekvon.bukkit.residence.utils.Utils;
 
@@ -103,7 +104,6 @@ import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -113,26 +113,14 @@ public class ResidencePlayerListener implements Listener {
 
     private Residence plugin;
 
-    private Runnable locationChangeCheck = () -> {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            Vector locfrom = playerTempData.get(player).getLastLocation(player.getLocation().toVector());
-            Vector locto = player.getLocation().toVector();
-            playerTempData.get(player).setLastLocation(locto);
-            if (locfrom.getBlockX() == locto.getBlockX() && locfrom.getBlockY() == locto.getBlockY() && locfrom.getBlockZ() == locto.getBlockZ())
-                continue;
-            Long time = playerTempData.get(player).getLastCheck();
-            if (time + 1000L > System.currentTimeMillis())
-                continue;
-            playerTempData.get(player).setLastCheck(System.currentTimeMillis());
-            handleNewLocation(player, player.getLocation(), true);
-        }
-    };
+    private PlayerLocationChecker locationChecker = new PlayerLocationChecker();
 
     public ResidencePlayerListener(Residence plugin) {
         this.plugin = plugin;
 
         playerTempData.clear();
-        CMIScheduler.scheduleSyncRepeatingTask(plugin, locationChangeCheck, 20L, 15 * 20L);
+
+        locationChecker.start();
     }
 
     public void reload() {
@@ -461,7 +449,7 @@ public class ResidencePlayerListener implements Listener {
 
         plugin.getPermissionManager().removeFromCache(player);
 
-        checkSpecialFlags(player, null, plugin.getResidenceManager().getByLoc(player.getLocation()));
+        checkSpecialFlags(player, plugin.getResidenceManager().getByLoc(player.getLocation()), playerTempData.getCurrentResidence(player.getUniqueId()));
 
         plugin.getPlayerManager().getResidencePlayer(player).onQuit();
         plugin.getTeleportMap().remove(player.getUniqueId());
@@ -917,7 +905,7 @@ public class ResidencePlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 //        lastUpdate.put(player.getUniqueId(), 0L);
-        playerTempData.get(player).setLastUpdate(0L);
+        playerTempData.get(player).setLastCheck(0L);
         if (plugin.getPermissionManager().isResidenceAdmin(player)) {
             ResAdmin.turnResAdminOn(player);
         }
@@ -1972,6 +1960,9 @@ public class ResidencePlayerListener implements Listener {
 
     private void checkSpecialFlags(Player player, ClaimedResidence newRes, ClaimedResidence oldRes) {
 
+        if (player == null || !player.isOnline())
+            return;
+
         if (newRes == null && oldRes != null) {
             if (Flags.night.isGlobalyEnabled() && oldRes.getPermissions().has(Flags.night, FlagCombo.OnlyTrue)
                     || Flags.day.isGlobalyEnabled() && oldRes.getPermissions().has(Flags.day, FlagCombo.OnlyTrue))
@@ -2064,6 +2055,7 @@ public class ResidencePlayerListener implements Listener {
         }
 
         if (newRes != null && oldRes == null) {
+
             if (Flags.glow.isGlobalyEnabled() && Version.isCurrentEqualOrHigher(Version.v1_9_R1) && newRes.getPermissions().has(Flags.glow, FlagCombo.OnlyTrue)) {
                 player.setGlowing(true);
             }
@@ -2114,6 +2106,8 @@ public class ResidencePlayerListener implements Listener {
 //			return;
 //
 //		playerTempData.get(player).setLastUpdate(System.currentTimeMillis());
+
+        playerTempData.get(player).setLastCheck(System.currentTimeMillis());
 
         boolean handled = handleNewLocation(player, locto, true);
 
@@ -2166,11 +2160,11 @@ public class ResidencePlayerListener implements Listener {
             if (locfrom.getBlockX() == locto.getBlockX() && locfrom.getBlockY() == locto.getBlockY() && locfrom.getBlockZ() == locto.getBlockZ())
                 continue;
 
-            long last = playerTempData.get(player).getLastUpdate();
+            long last = playerTempData.get(player).getLastCheck();
             if (System.currentTimeMillis() - last < plugin.getConfigManager().getMinMoveUpdateInterval())
                 continue;
 
-            playerTempData.get(player).setLastUpdate(System.currentTimeMillis());
+            playerTempData.get(player).setLastCheck(System.currentTimeMillis());
 
             boolean handled = handleNewLocation(player, locto, true);
             if (!handled) {
@@ -2281,11 +2275,14 @@ public class ResidencePlayerListener implements Listener {
     }
 
     public boolean handleNewLocation(final Player player, Location loc, boolean move) {
+
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
 
         UUID uuid = player.getUniqueId();
 
         playerTempData tempData = playerTempData.get(uuid);
+
+        tempData.setLastLocation(loc);
 
         ClaimedResidence resOld = tempData.getCurrentResidence();
 

@@ -22,9 +22,8 @@ public class playerTempData {
 
     private boolean canTeleportInsideCurrent = true;
 
-    private long lastUpdate = 0L;
     private long lastCheck = 0L;
-    private Vector lastLocation = null;
+    private Location lastLocation = null;
     private StuckInfo stuckTeleportCounter = null;
 
     private long lastEnterLeaveInformTime = 0L;
@@ -60,14 +59,6 @@ public class playerTempData {
         return true;
     }
 
-    public long getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public void setLastUpdate(long lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
-
     public StuckInfo getStuckTeleportCounter() {
         if (stuckTeleportCounter == null)
             stuckTeleportCounter = new StuckInfo();
@@ -82,13 +73,13 @@ public class playerTempData {
         this.lastCheck = lastCheck;
     }
 
-    public Vector getLastLocation(Vector defaultVector) {
+    public Location getLastLocation(Location defaultVector) {
         if (lastLocation == null)
             lastLocation = defaultVector;
         return lastLocation;
     }
 
-    public void setLastLocation(Vector lastLocation) {
+    public void setLastLocation(Location lastLocation) {
         this.lastLocation = lastLocation;
     }
 
