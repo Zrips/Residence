@@ -369,6 +369,9 @@ Global:
     # Applies to: Both
     # Allows or denys use of doors, lever, buttons, etc...
     use: true
+    # Applies to: Residence
+    # Shows or hides particle visualizer when entering residence
+    visualizer: true
     # Applies to: Both
     # Allows or denys vehicle destroy
     vehicledestroy: true
@@ -512,6 +515,7 @@ Global:
     trade: EMERALD
     trample: DIRT
     use: STONE_PRESSURE_PLATE
+    visualizer: GLOWSTONE_DUST
     vehicledestroy: MINECART
     vehicleplacing: MINECART
     waterflow: WATER_BUCKET

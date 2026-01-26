@@ -1489,15 +1489,13 @@ public class ResidencePlayerListener implements Listener {
                     item = CMIItemStack.getItemInOffHand(player);
             } catch (Throwable e) {
             }
-            if (item == null)
-                return;
 
             String world = player.getWorld().getName();
 
             ResidencePlayer resPlayer = plugin.getPlayerManager().getResidencePlayer(player);
             PermissionGroup group = resPlayer.getGroup();
 
-            if (!plugin.getItemManager().isAllowed(item.getType(), group, world)) {
+            if (item != null && !plugin.getItemManager().isAllowed(item.getType(), group, world)) {
                 lm.General_ItemBlacklisted.sendMessage(player);
                 event.setCancelled(true);
                 return;
@@ -1510,22 +1508,11 @@ public class ResidencePlayerListener implements Listener {
             lm.Flag_Deny.sendMessage(player, Flags.container);
             event.setCancelled(true);
 
-        } else if (type == CMIEntityType.COMMAND_BLOCK_MINECART) {
-
-            if (FlagPermissions.has(entity.getLocation(), player, Flags.commandblock, true))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.commandblock);
-            event.setCancelled(true);
-
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerRideVehicle(PlayerInteractEntityEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.riding.isGlobalyEnabled())
-            return;
 
         Entity entity = event.getRightClicked();
         // disabling event on world
@@ -1535,20 +1522,37 @@ public class ResidencePlayerListener implements Listener {
         if (!(entity instanceof Vehicle))
             return;
 
-        CMIEntityType type = CMIEntityType.get(entity);
-
-        // Non-rideable Vehicles
-        if (type == CMIEntityType.CHEST_MINECART ||
-                type == CMIEntityType.COMMAND_BLOCK_MINECART ||
-                type == CMIEntityType.FURNACE_MINECART ||
-                type == CMIEntityType.HOPPER_MINECART ||
-                type == CMIEntityType.TNT_MINECART)
-            return;
-
         Player player = event.getPlayer();
         if (ResAdmin.isResAdmin(player))
             return;
 
+        CMIEntityType type = CMIEntityType.get(entity);
+
+        if (type == CMIEntityType.COMMAND_BLOCK_MINECART) {
+            // Disabling listener if flag disabled globally
+            if (!Flags.commandblock.isGlobalyEnabled())
+                return;
+
+            if (FlagPermissions.has(entity.getLocation(), player, Flags.commandblock, true))
+                return;
+
+            lm.Flag_Deny.sendMessage(player, Flags.commandblock);
+            event.setCancelled(true);
+            return;
+
+        }
+
+        // Disabling listener if flag disabled globally
+        if (!Flags.riding.isGlobalyEnabled())
+            return;
+
+        // Non-rideable Vehicles
+        if (type == CMIEntityType.CHEST_MINECART ||
+                type == CMIEntityType.FURNACE_MINECART ||
+                type == CMIEntityType.HOPPER_MINECART ||
+                type == CMIEntityType.TNT_MINECART) {
+            return;
+        }
         if (FlagPermissions.has(entity.getLocation(), player, Flags.riding, true))
             return;
 
