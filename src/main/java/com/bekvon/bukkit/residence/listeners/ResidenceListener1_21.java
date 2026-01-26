@@ -5,11 +5,14 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Strider;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,6 +23,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -32,6 +36,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Entities.CMIEntityType;
+import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Logs.CMIDebug;
 
@@ -150,7 +155,8 @@ public class ResidenceListener1_21 implements Listener {
 
             EntityEquipment gloemInv = ((LivingEntity) entity).getEquipment();
             // Right-click to remove items from holding copper_golem
-            if (gloemInv != null && (!gloemInv.getItemInMainHand().isEmpty() || !gloemInv.getItemInOffHand().isEmpty())) {
+            if (gloemInv != null && (gloemInv.getItemInMainHand().getType() != Material.AIR ||
+                    gloemInv.getItemInOffHand().getType() != Material.AIR)) {
 
                 if (FlagPermissions.has(entity.getLocation(), player, Flags.container, true))
                     return;
@@ -271,7 +277,7 @@ public class ResidenceListener1_21 implements Listener {
             case NAUTILUS: return isItemTag(held, "nautilus_food");
             case OCELOT: return isItemTag(held, "ocelot_food");
             case PANDA: return isItemTag(held, "panda_food");
-            case PARROT: return isItemTag(held, "parrot_food");
+            case PARROT: return isItemTag(held, "parrot_food") || isItemTag(held, "parrot_poisonous_food");
             case PIG: return isItemTag(held, "pig_food");
             case RABBIT: return isItemTag(held, "rabbit_food");
             case SHEEP: return isItemTag(held, "sheep_food");
@@ -288,5 +294,100 @@ public class ResidenceListener1_21 implements Listener {
 
     private static boolean isItemTag(Material item, String tagName) {
         return ResidenceListener1_14.isItemTag(item, tagName);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerEquipAnimal(PlayerInteractEntityEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.container.isGlobalyEnabled())
+            return;
+
+        Entity entity = event.getRightClicked();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(entity.getWorld()))
+            return;
+
+        if (!(entity instanceof Animals))
+            return;
+
+        Player player = event.getPlayer();
+
+        Material held = event.getHand() == EquipmentSlot.OFF_HAND
+                ? player.getInventory().getItemInOffHand().getType()
+                : player.getInventory().getItemInMainHand().getType();
+
+        // check if held item and interacted entity match
+        // if conditions match, also check if the target entity slot is Air
+        if (!isEquipFitAnimal(entity, CMIMaterial.get(held)))
+            return;
+
+        if (ResAdmin.isResAdmin(player))
+            return;
+
+        if (FlagPermissions.has(entity.getLocation(), player, Flags.container, true))
+            return;
+
+        lm.Flag_Deny.sendMessage(player, Flags.container);
+        event.setCancelled(true);
+
+    }
+
+    private static boolean isEquipFitAnimal(Entity entity, CMIMaterial held) {
+        if (!(entity instanceof LivingEntity))
+            return false;
+
+        EntityEquipment entInv = ((LivingEntity) entity).getEquipment();
+        if (entInv == null)
+            return false;
+
+        CMIEntityType type = CMIEntityType.get(entity);
+        boolean isBodySlotAir = entInv.getItem(EquipmentSlot.BODY).getType() == Material.AIR;
+
+        if (held.containsCriteria(CMIMC.CARPET))
+            return (type == CMIEntityType.LLAMA || type == CMIEntityType.TRADER_LLAMA) && isBodySlotAir &&
+                    held != CMIMaterial.MOSS_CARPET && held != CMIMaterial.PALE_MOSS_CARPET;
+
+        if (held.containsCriteria(CMIMC.HARNESS))
+            return type == CMIEntityType.HAPPY_GHAST && isBodySlotAir;
+
+        if (held.containsCriteria(CMIMC.HORSEARMOR))
+            return (type == CMIEntityType.HORSE || type == CMIEntityType.ZOMBIE_HORSE) && isBodySlotAir;
+
+        if (held.containsCriteria(CMIMC.NAUTILUSARMOR))
+            return (type == CMIEntityType.NAUTILUS || type == CMIEntityType.ZOMBIE_NAUTILUS) && isBodySlotAir;
+
+        if (held == CMIMaterial.SADDLE) {
+
+            if (entity instanceof Pig)
+                return !((Pig) entity).hasSaddle();
+
+            if (entity instanceof Strider)
+                return !((Strider) entity).hasSaddle();
+
+            // Has Nautilus version, also supports EquipmentSlot.SADDLE
+            if (type == CMIEntityType.NAUTILUS || type == CMIEntityType.ZOMBIE_NAUTILUS)
+                return entInv.getItem(EquipmentSlot.SADDLE).getType() == Material.AIR;
+
+            // Ensure entity is AbstractHorse
+            switch (type) {
+                case CAMEL:
+                case CAMEL_HUSK:
+                case DONKEY:
+                case HORSE:
+                case MULE:
+                case SKELETON_HORSE:
+                case ZOMBIE_HORSE:
+                    if (!(entity instanceof AbstractHorse)) {
+                        return false;
+                    }
+                    ItemStack horseSaddle = ((AbstractHorse) entity).getInventory().getSaddle();
+                    // Do not use horseSaddle != null
+                    // Saddle slot Air, getSaddle() returns null, result always false
+                    return horseSaddle == null || horseSaddle.getType() == Material.AIR;
+                default:
+                    return false;
+            }
+        }
+        return false;
     }
 }
