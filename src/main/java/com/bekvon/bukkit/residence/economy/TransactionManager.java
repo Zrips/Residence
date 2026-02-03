@@ -239,7 +239,7 @@ public class TransactionManager implements MarketBuyInterface {
             sellerName = sellerNameFix.getName();
         }
 
-        if (econ.canAfford(res.getPermissions().getOwnerUUID(), amount)) {
+        if (econ.canAfford(player.getUniqueId(), amount)) {
             if (!econ.transfer(player.getUniqueId(), res.getPermissions().getOwnerUUID(), amount)) {
                 player.sendMessage(CMIChatColor.RED + "Error, could not transfer " + amount + " from " + buyerName + " to " + sellerName);
                 return;
