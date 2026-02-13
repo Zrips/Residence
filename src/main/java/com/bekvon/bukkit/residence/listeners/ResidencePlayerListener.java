@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import net.Zrips.CMILib.Version.Schedulers.CMITask;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -45,7 +46,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -53,7 +53,6 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
-import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -108,6 +107,8 @@ import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ResidencePlayerListener implements Listener {
 
@@ -115,40 +116,51 @@ public class ResidencePlayerListener implements Listener {
 
     private PlayerLocationChecker locationChecker = new PlayerLocationChecker();
 
+    private final Map<UUID, Location> lastBlockMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Location> lastTeleportSnapshotMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Double> lastVelocityYMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Boolean> lastOnGroundMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Location> lastVehicleBlockMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Location> lastVehicleLocationMap = new ConcurrentHashMap<>();
+    private CMITask movementTask;
+    private CMITask jumpTask;
+    private CMITask vehicleTask;
+
     public ResidencePlayerListener(Residence plugin) {
         this.plugin = plugin;
 
         playerTempData.clear();
 
         locationChecker.start();
+
+        startTasks();
     }
 
     public void reload() {
         playerTempData.clear();
     }
 
-    @EventHandler
-    public void onJump(PlayerMoveEvent event) {
+    public void startTasks() {
+        startMovementTask();
+        startJumpTask();
+        startVehicleTask();
+    }
 
-        if (!Flags.jump3.isGlobalyEnabled() && !Flags.jump2.isGlobalyEnabled())
-            return;
+    public void stopTasks() {
+        if (movementTask != null) {
+            movementTask.cancel();
+            movementTask = null;
+        }
 
-        Player player = event.getPlayer();
-        if (player.isFlying())
-            return;
+        if (jumpTask != null) {
+            jumpTask.cancel();
+            jumpTask = null;
+        }
 
-        if (event.getTo().getY() - event.getFrom().getY() != 0.41999998688697815D)
-            return;
-
-        if (player.hasMetadata("NPC"))
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(player.getLocation());
-        if (Flags.jump2.isGlobalyEnabled() && perms.has(Flags.jump2, FlagCombo.OnlyTrue))
-            player.setVelocity(player.getVelocity().add(player.getVelocity().multiply(0.3)));
-        else if (Flags.jump3.isGlobalyEnabled() && perms.has(Flags.jump3, FlagCombo.OnlyTrue))
-            player.setVelocity(player.getVelocity().add(player.getVelocity().multiply(0.6)));
-
+        if (vehicleTask != null) {
+            vehicleTask.cancel();
+            vehicleTask = null;
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -446,14 +458,19 @@ public class ResidencePlayerListener implements Listener {
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
 
         Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
 
         plugin.getPermissionManager().removeFromCache(player);
 
         checkSpecialFlags(player, plugin.getResidenceManager().getByLoc(player.getLocation()), playerTempData.getCurrentResidence(player.getUniqueId()));
 
         plugin.getPlayerManager().getResidencePlayer(player).onQuit();
-        plugin.getTeleportMap().remove(player.getUniqueId());
-        playerTempData.clearCache(player.getUniqueId());
+        plugin.getTeleportMap().remove(uuid);
+        playerTempData.clearCache(uuid);
+        lastVelocityYMap.remove(uuid);
+        lastOnGroundMap.remove(uuid);
+        lastBlockMap.remove(uuid);
+        lastTeleportSnapshotMap.remove(uuid);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -2088,105 +2105,7 @@ public class ResidencePlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerMove(PlayerMoveEvent event) {
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
-        Player player = event.getPlayer();
-        if (player == null)
-            return;
 
-        if (player.hasMetadata("NPC"))
-            return;
-
-        Location locfrom = event.getFrom();
-        Location locto = event.getTo();
-        if (locfrom.getBlockX() == locto.getBlockX() && locfrom.getBlockY() == locto.getBlockY() && locfrom.getBlockZ() == locto.getBlockZ())
-            return;
-
-//		long last = playerTempData.get(player).getLastUpdate();
-//		if (System.currentTimeMillis() - last < plugin.getConfigManager().getMinMoveUpdateInterval())
-//			return;
-//
-//		playerTempData.get(player).setLastUpdate(System.currentTimeMillis());
-
-        playerTempData.get(player).setLastCheck(System.currentTimeMillis());
-
-        boolean handled = handleNewLocation(player, locto, true);
-
-        if (!handled)
-            event.setCancelled(true);
-
-        if (Teleporting.getTeleportDelayMap().isEmpty())
-            return;
-
-        if (plugin.getConfigManager().getTeleportDelay() <= 0 || !Teleporting.isUnderTeleportDelay(player.getUniqueId()))
-            return;
-
-        Teleporting.cancelTeleportDelay(player.getUniqueId());
-
-        lm.General_TeleportCanceled.sendMessage(player);
-        if (plugin.getConfigManager().isTeleportTitleMessage())
-            CMITitleMessage.send(player, "", "");
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerMoveInVehicle(VehicleMoveEvent event) {
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getVehicle().getWorld()))
-            return;
-
-        if (event.getVehicle().getPassenger() == null)
-            return;
-
-        List<Entity> ent = new ArrayList<Entity>();
-
-        if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
-            ent.addAll(event.getVehicle().getPassengers());
-        else
-            ent.add(event.getVehicle().getPassenger());
-
-        for (Entity one : ent) {
-
-            if (!(one instanceof Player))
-                continue;
-
-            Player player = (Player) one;
-            if (player == null)
-                continue;
-
-            if (player.hasMetadata("NPC"))
-                continue;
-
-            Location locfrom = event.getFrom();
-            Location locto = event.getTo();
-            if (locfrom.getBlockX() == locto.getBlockX() && locfrom.getBlockY() == locto.getBlockY() && locfrom.getBlockZ() == locto.getBlockZ())
-                continue;
-
-            long last = playerTempData.get(player).getLastCheck();
-            if (System.currentTimeMillis() - last < plugin.getConfigManager().getMinMoveUpdateInterval())
-                continue;
-
-            playerTempData.get(player).setLastCheck(System.currentTimeMillis());
-
-            boolean handled = handleNewLocation(player, locto, true);
-            if (!handled) {
-                Teleporting.teleport(event.getVehicle(), event.getFrom());
-            }
-
-            if (Teleporting.getTeleportDelayMap().isEmpty())
-                continue;
-
-            if (plugin.getConfigManager().getTeleportDelay() <= 0 || !Teleporting.isUnderTeleportDelay(player.getUniqueId()))
-                continue;
-
-            Teleporting.cancelTeleportDelay(player.getUniqueId());
-            lm.General_TeleportCanceled.sendMessage(player);
-            if (plugin.getConfigManager().isTeleportTitleMessage())
-                CMITitleMessage.send(player, "", "");
-        }
-    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void PlayerToggleFlightEvent(PlayerToggleFlightEvent event) {
@@ -2681,6 +2600,188 @@ public class ResidencePlayerListener implements Listener {
     @Deprecated
     public void removePlayerResidenceChat(UUID uuid) {
         ChatManager.removePlayerResidenceChat(uuid);
+    }
+
+    private void startMovementTask() {
+        movementTask = CMIScheduler.scheduleSyncRepeatingTask(plugin, () -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                processPlayerMovement(player);
+            }
+        }, 5L, 5L);
+    }
+
+    private void startJumpTask() {
+        jumpTask = CMIScheduler.scheduleSyncRepeatingTask(plugin, () -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                processPlayerJump(player);
+            }
+        }, 2L, 2L);
+    }
+
+    private void processPlayerJump(Player player) {
+        if (!Flags.jump2.isGlobalyEnabled() && !Flags.jump3.isGlobalyEnabled()) {
+            return;
+        }
+        if (player.isFlying()) {
+            return;
+        }
+        if (player.hasMetadata("NPC")) {
+            return;
+        }
+
+        UUID uuid = player.getUniqueId();
+        double currentVelY = player.getVelocity().getY();
+        boolean isOnGround = player.isOnGround();
+        Double lastVelY = lastVelocityYMap.get(uuid);
+        boolean wasOnGround = lastOnGroundMap.getOrDefault(uuid, false);
+
+        if (wasOnGround && !isOnGround && currentVelY > 0.3 && (lastVelY == null || lastVelY <= 0.0)) {
+            FlagPermissions perms = FlagPermissions.getPerms(player.getLocation());
+            if (Flags.jump2.isGlobalyEnabled() && perms.has(Flags.jump2, FlagCombo.OnlyTrue)) {
+                player.setVelocity(player.getVelocity().add(player.getVelocity().multiply(0.3)));
+            } else if (Flags.jump3.isGlobalyEnabled() && perms.has(Flags.jump3, FlagCombo.OnlyTrue)) {
+                player.setVelocity(player.getVelocity().add(player.getVelocity().multiply(0.6)));
+            }
+        }
+
+        lastVelocityYMap.put(uuid, currentVelY);
+        lastOnGroundMap.put(uuid, isOnGround);
+    }
+
+    private void processPlayerMovement(Player player) {
+        if (plugin.isDisabledWorldListener(player.getWorld())) {
+            return;
+        }
+        if (player.hasMetadata("NPC")) {
+            return;
+        }
+
+        playerTempData temp = playerTempData.get(player);
+        long now = System.currentTimeMillis();
+
+        if (now - temp.getLastCheck() < plugin.getConfigManager().getMinMoveUpdateInterval()) {
+            return;
+        }
+        temp.setLastCheck(now);
+
+        Location currentLoc = player.getLocation();
+        UUID uuid = player.getUniqueId();
+        Location lastBlock = lastBlockMap.get(uuid);
+        boolean blockChanged = lastBlock == null ||
+                lastBlock.getBlockX() != currentLoc.getBlockX() ||
+                lastBlock.getBlockY() != currentLoc.getBlockY() ||
+                lastBlock.getBlockZ() != currentLoc.getBlockZ();
+
+        boolean handled = true;
+        if (blockChanged) {
+            handled = handleNewLocation(player, currentLoc, true);
+        }
+
+        if (!Teleporting.getTeleportDelayMap().isEmpty() &&
+                plugin.getConfigManager().getTeleportDelay() > 0 &&
+                Teleporting.isUnderTeleportDelay(uuid)) {
+            Location snapshot = lastTeleportSnapshotMap.get(uuid);
+            if (snapshot == null) {
+                lastTeleportSnapshotMap.put(uuid, currentLoc.clone());
+            } else if (snapshot.getX() != currentLoc.getX() ||
+                       snapshot.getY() != currentLoc.getY() ||
+                       snapshot.getZ() != currentLoc.getZ()) {
+                Teleporting.cancelTeleportDelay(uuid);
+                lm.General_TeleportCanceled.sendMessage(player);
+                if (plugin.getConfigManager().isTeleportTitleMessage()) {
+                    CMITitleMessage.send(player, "", "");
+                }
+                lastTeleportSnapshotMap.remove(uuid);
+            }
+        } else {
+            lastTeleportSnapshotMap.remove(uuid);
+        }
+
+        if (blockChanged && handled) {
+            lastBlockMap.put(uuid, currentLoc.clone());
+        } else if (!blockChanged) {
+            lastBlockMap.put(uuid, currentLoc.clone());
+        }
+    }
+
+    private void startVehicleTask() {
+        vehicleTask = CMIScheduler.scheduleSyncRepeatingTask(plugin, this::processVehicles, 5L, 5L);
+    }
+
+    private void processVehicles() {
+        for (World world : Bukkit.getWorlds()) {
+            for (Entity entity : world.getEntities()) {
+                if (!(entity instanceof Vehicle)) continue;
+                Vehicle vehicle = (Vehicle) entity;
+                List<Entity> passengers = vehicle.getPassengers();
+                if (passengers.isEmpty()) continue;
+                for (Entity passenger : passengers) {
+                    if (!(passenger instanceof Player)) continue;
+                    Player player = (Player) passenger;
+                    processVehicleMovement(vehicle, player);
+                }
+            }
+        }
+    }
+
+    private void processVehicleMovement(Vehicle vehicle, Player player) {
+        if (plugin.isDisabledWorldListener(vehicle.getWorld())) {
+            return;
+        }
+        if (player.hasMetadata("NPC")) {
+            return;
+        }
+
+        playerTempData temp = playerTempData.get(player);
+        long now = System.currentTimeMillis();
+        if (now - temp.getLastCheck() < plugin.getConfigManager().getMinMoveUpdateInterval()) {
+            return;
+        }
+        temp.setLastCheck(now);
+
+        Location currentLoc = vehicle.getLocation();
+        UUID vehicleId = vehicle.getUniqueId();
+        Location lastVehicleLoc = lastVehicleLocationMap.get(vehicleId);
+        Location lastVehicleBlock = lastVehicleBlockMap.get(vehicleId);
+
+        boolean blockChanged = lastVehicleBlock == null ||
+                lastVehicleBlock.getBlockX() != currentLoc.getBlockX() ||
+                lastVehicleBlock.getBlockY() != currentLoc.getBlockY() ||
+                lastVehicleBlock.getBlockZ() != currentLoc.getBlockZ();
+
+        if (blockChanged) {
+            boolean handled = handleNewLocation(player, currentLoc, true);
+            if (!handled) {
+                if (lastVehicleLoc != null) {
+                    Teleporting.teleport(vehicle, lastVehicleLoc);
+                }
+            } else {
+                lastVehicleLocationMap.put(vehicleId, currentLoc.clone());
+                lastVehicleBlockMap.put(vehicleId, currentLoc.clone());
+            }
+        } else {
+            lastVehicleLocationMap.put(vehicleId, currentLoc.clone());
+        }
+
+        if (!Teleporting.getTeleportDelayMap().isEmpty() &&
+                plugin.getConfigManager().getTeleportDelay() > 0 &&
+                Teleporting.isUnderTeleportDelay(player.getUniqueId())) {
+            Location snapshot = lastTeleportSnapshotMap.get(player.getUniqueId());
+            if (snapshot == null) {
+                lastTeleportSnapshotMap.put(player.getUniqueId(), currentLoc.clone());
+            } else if (snapshot.getX() != currentLoc.getX() ||
+                       snapshot.getY() != currentLoc.getY() ||
+                       snapshot.getZ() != currentLoc.getZ()) {
+                Teleporting.cancelTeleportDelay(player.getUniqueId());
+                lm.General_TeleportCanceled.sendMessage(player);
+                if (plugin.getConfigManager().isTeleportTitleMessage()) {
+                    CMITitleMessage.send(player, "", "");
+                }
+                lastTeleportSnapshotMap.remove(player.getUniqueId());
+            }
+        } else {
+            lastTeleportSnapshotMap.remove(player.getUniqueId());
+        }
     }
 
     public ClaimedResidence getCurrentResidence(UUID uuid) {
