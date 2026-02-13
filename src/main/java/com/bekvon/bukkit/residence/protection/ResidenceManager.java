@@ -711,24 +711,6 @@ public class ResidenceManager implements ResidenceInterface {
 
         cleanResidenceRecords(res, true);
 
-        if (!res.isServerLand()) {
-            if (parent == null && plugin.getConfigManager().enableEconomy() && plugin.getConfigManager().useResMoneyBack()) {
-                double chargeamount = res.getWorth();
-                if (!res.isOwner(player)) {
-                    plugin.getTransactionManager().giveEconomyMoney(res.getOwnerUUID(), chargeamount);
-                } else {
-                    if (player != null)
-                        plugin.getTransactionManager().giveEconomyMoney(player, chargeamount);
-                    else if (rPlayer != null)
-                        plugin.getTransactionManager().giveEconomyMoney(rPlayer.getUniqueId(), chargeamount);
-                }
-            }
-
-            if (res.getBank().getStoredMoneyD() > 0 && plugin.getConfigManager().isResBankBack()) {
-                plugin.getTransactionManager().giveEconomyMoney(res.getOwnerUUID(), res.getBank().getStoredMoneyD());
-            }
-        }
-
         for (ClaimedResidence sub : res.getSubzones()) {
             removeResidence(rPlayer, sub, resadmin, false);
         }

@@ -1,6 +1,5 @@
 package com.bekvon.bukkit.residence;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -21,7 +20,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -37,6 +35,7 @@ import com.bekvon.bukkit.residence.containers.RandomTeleport;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
+import com.bekvon.bukkit.residence.selection.VisualizerConfig;
 
 import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Colors.CMIChatColor;
@@ -143,17 +142,9 @@ public class ConfigManager {
     protected int NewPlayerRangeX;
     protected int NewPlayerRangeY;
     protected int NewPlayerRangeZ;
-    protected int VisualizerRange;
-    protected int VisualizerShowFor;
-    protected int VisualizerUpdateInterval;
     protected int TeleportDelay;
     protected boolean TeleportTitleMessage;
     private List<String> TeleportBlockedWorlds;
-    protected int VisualizerRowSpacing;
-    protected int VisualizerCollumnSpacing;
-    protected int VisualizerSkipBy;
-    private int VisualizerFrameCap;
-    private int VisualizerSidesCap;
     protected boolean flagsInherit;
     protected boolean ignoreGroupedFlagAcess;
     protected CMIChatColor chatColor;
@@ -193,8 +184,6 @@ public class ConfigManager {
     protected boolean NewPlayerCommandFree;
     protected boolean spoutEnable;
     protected boolean AutoMobRemoval;
-    protected boolean BounceAnimation;
-    private boolean EnterAnimation;
     protected boolean useFlagGUI;
     protected int AutoMobRemovalInterval;
     protected boolean enableLeaseMoneyAccount;
@@ -207,7 +196,6 @@ public class ConfigManager {
     private int SelectionNetherHeight = 128;
     protected boolean NoCostForYBlocks = false;
     protected boolean WorldEditIntegration = false;
-    protected boolean useVisualizer;
     protected boolean DisableListeners;
     protected boolean DisableCommands;
     private boolean DisableResidenceCreation;
@@ -259,12 +247,6 @@ public class ConfigManager {
     private HashMap<FlagState, ItemStack> guiBottonStates = new HashMap<FlagState, ItemStack>();
 
     private boolean enforceAreaInsideArea;
-
-    protected CMIParticle SelectedFrame;
-    protected CMIParticle SelectedSides;
-
-    protected CMIParticle OverlapFrame;
-    protected CMIParticle OverlapSides;
 
     // Raid
     public static boolean RaidEnabled = false;
@@ -402,10 +384,6 @@ public class ConfigManager {
             temp.add(Colors(part));
         }
         return temp;
-    }
-
-    private static int argb(int alpha, Color color) {
-        return alpha << 24 | color.getRed() << 16 | color.getGreen() << 8 | color.getBlue();
     }
 
     void UpdateFlagFile() {
@@ -979,7 +957,6 @@ public class ConfigManager {
                 else
                     lm.consoleMessage("Incorrect Lwc material name for " + oneName);
             }
-            CMIDebug.c(LwcMatList);
         }
 
         c.addComment("Global.AntiGreef.RangeGaps",
@@ -1293,91 +1270,7 @@ public class ConfigManager {
                 customRightClick.add(mat);
         }
 
-        c.addComment("Global.Visualizer.Use", "With this enabled player will see particle effects to mark selection boundaries");
-        useVisualizer = c.get("Global.Visualizer.Use", true);
-        c.addComment("Global.Visualizer.Range", "Range in blocks to draw particle effects for player", "Keep it no more as 30, as player cant see more than 16 blocks");
-        VisualizerRange = c.get("Global.Visualizer.Range", 16);
-        c.addComment("Global.Visualizer.ShowFor", "For how long in miliseconds (5000 = 5sec) to show particle effects");
-        VisualizerShowFor = c.get("Global.Visualizer.ShowFor", 5000);
-        c.addComment("Global.Visualizer.updateInterval", "How often in ticks to update particles for player");
-        VisualizerUpdateInterval = c.get("Global.Visualizer.updateInterval", 20);
-        c.addComment("Global.Visualizer.RowSpacing", "Spacing in blocks between particle effects for rows");
-        VisualizerRowSpacing = c.get("Global.Visualizer.RowSpacing", 1);
-        if (VisualizerRowSpacing < 1)
-            VisualizerRowSpacing = 1;
-        c.addComment("Global.Visualizer.CollumnSpacing", "Spacing in blocks between particle effects for collums");
-        VisualizerCollumnSpacing = c.get("Global.Visualizer.CollumnSpacing", 1);
-        if (VisualizerCollumnSpacing < 1)
-            VisualizerCollumnSpacing = 1;
-
-        c.addComment("Global.Visualizer.SkipBy", "Defines by how many particles we need to skip", "This will create moving particle effect and will improve overall look of selection",
-                "By increasing this number, you can decrease update interval");
-        VisualizerSkipBy = c.get("Global.Visualizer.SkipBy", 2);
-        if (VisualizerSkipBy < 1)
-            VisualizerSkipBy = 1;
-
-        c.addComment("Global.Visualizer.FrameCap", "Maximum amount of frame particles to show for one player");
-        VisualizerFrameCap = c.get("Global.Visualizer.FrameCap", 500);
-        if (VisualizerFrameCap < 1)
-            VisualizerFrameCap = 1;
-
-        c.addComment("Global.Visualizer.SidesCap", "Maximum amount of sides particles to show for one player");
-        VisualizerSidesCap = c.get("Global.Visualizer.SidesCap", 2000);
-        if (VisualizerSidesCap < 1)
-            VisualizerSidesCap = 1;
-
-        StringBuilder effectsList = new StringBuilder();
-
-        for (Effect one : Effect.values()) {
-            if (one == null)
-                continue;
-            if (one.name() == null)
-                continue;
-            if (!effectsList.toString().isEmpty())
-                effectsList.append(", ");
-            effectsList.append(one.name().toLowerCase());
-        }
-
-        c.addComment("Global.Visualizer.Selected", "Particle effect names. possible: explode, largeexplode, hugeexplosion, fireworksSpark, splash, wake, crit, magicCrit",
-                " smoke, largesmoke, spell, instantSpell, mobSpell, mobSpellAmbient, witchMagic, dripWater, dripLava, angryVillager, happyVillager, townaura",
-                " note, portal, enchantmenttable, flame, lava, footstep, cloud, reddust, snowballpoof, snowshovel, slime, heart, barrier", " droplet, take, mobappearance", "",
-                "If using spigot based server different particles can be used:", effectsList.toString());
-
-        // Frame
-        String efname = c.get("Global.Visualizer.Selected.Frame", "happyVillager");
-        SelectedFrame = CMIParticle.getCMIParticle(efname);
-        if (SelectedFrame == null) {
-            SelectedFrame = CMIParticle.HAPPY_VILLAGER;
-            lm.consoleMessage("Can't find effect for Selected Frame with this name, it was set to default");
-        }
-
-        // Sides
-        efname = c.get("Global.Visualizer.Selected.Sides", "reddust");
-        SelectedSides = CMIParticle.getCMIParticle(efname);
-        if (SelectedSides == null) {
-            SelectedSides = CMIParticle.COLOURED_DUST;
-            lm.consoleMessage("Can't find effect for Selected Sides with this name, it was set to default");
-        }
-
-        efname = c.get("Global.Visualizer.Overlap.Frame", "FLAME");
-        OverlapFrame = CMIParticle.getCMIParticle(efname);
-        if (OverlapFrame == null) {
-            OverlapFrame = CMIParticle.FLAME;
-            lm.consoleMessage("Can't find effect for Overlap Frame with this name, it was set to default");
-        }
-
-        efname = c.get("Global.Visualizer.Overlap.Sides", "FLAME");
-        OverlapSides = CMIParticle.getCMIParticle(efname);
-        if (OverlapSides == null) {
-            OverlapSides = CMIParticle.FLAME;
-            lm.consoleMessage("an't find effect for Selected Sides with this name, it was set to default");
-        }
-
-        c.addComment("Global.Visualizer.EnterAnimation", "Shows particle effect when player enters residence. Only applies to main residence area");
-        EnterAnimation = c.get("Global.Visualizer.EnterAnimation", true);
-
-        c.addComment("Global.BounceAnimation", "Shows particle effect when player are being pushed back");
-        BounceAnimation = c.get("Global.BounceAnimation", true);
+        VisualizerConfig.loadConfig(c);
 
         c.addComment("Global.GUI.Enabled", "Enable or disable flag GUI");
         useFlagGUI = c.get("Global.GUI.Enabled", true);
@@ -1415,7 +1308,7 @@ public class ConfigManager {
                 "By setting this to true, partial compatibility for kCouldron servers will be enabled. Action bar messages and selection visualizer will be disabled automatically as off incorrect compatibility");
         Couldroncompatibility = c.get("Global.Couldroncompatibility", false);
         if (Couldroncompatibility) {
-            useVisualizer = false;
+            VisualizerConfig.setShow(false);
             GeneralMessageType = GenMessageType.ChatBox;
             ActionBarOnSelection = false;
         }
@@ -1459,20 +1352,6 @@ public class ConfigManager {
         RaidFriendlyFire = c.get("Raid.FriendlyFire", true);
 
         c.save();
-    }
-
-    private Color processColor(String cls) {
-        try {
-            if (cls.startsWith("#")) {
-                cls = cls.substring(1);
-                cls = CMIChatColor.colorCodePrefix + cls + CMIChatColor.colorCodeSuffix;
-            }
-            CMIChatColor col = CMIChatColor.getColor(cls);
-            if (col != null && col.getJavaColor() != null)
-                return col.getJavaColor();
-        } catch (Throwable e) {
-        }
-        return new Color(125, 125, 125);
     }
 
     public void loadFlags() {
@@ -1587,16 +1466,19 @@ public class ConfigManager {
         return CreeperExplodeBelowLevel;
     }
 
+    @Deprecated
     public boolean useVisualizer() {
-        return useVisualizer;
+        return VisualizerConfig.isShow();
     }
 
+    @Deprecated
     public int getVisualizerRange() {
-        return VisualizerRange;
+        return VisualizerConfig.getRange();
     }
 
+    @Deprecated
     public int getVisualizerShowFor() {
-        return VisualizerShowFor;
+        return VisualizerConfig.getShowForMs();
     }
 
     public int getNewPlayerRangeX() {
@@ -1611,56 +1493,64 @@ public class ConfigManager {
         return NewPlayerRangeZ;
     }
 
+    @Deprecated
     public int getVisualizerRowSpacing() {
-        return VisualizerRowSpacing;
+        return (int) VisualizerConfig.getRowSpacing();
     }
 
+    @Deprecated
     public int getVisualizerCollumnSpacing() {
-        return VisualizerCollumnSpacing;
+        return (int) VisualizerConfig.getCollumnSpacing();
     }
 
+    @Deprecated
     public int getVisualizerSkipBy() {
-        return VisualizerSkipBy;
+        return VisualizerConfig.getSkipBy();
     }
 
+    @Deprecated
     public int getVisualizerUpdateInterval() {
-        return VisualizerUpdateInterval;
+        return VisualizerConfig.getUpdateInterval();
     }
 
+    @Deprecated
     public CMIParticle getSelectedFrame() {
-        return SelectedFrame;
+        return VisualizerConfig.getBaseEffect().getFrame().getParticle();
     }
 
+    @Deprecated
     public CMIParticle getSelectedSides() {
-        return SelectedSides;
+        return VisualizerConfig.getBaseEffect().getSides().getParticle();
     }
 
+    @Deprecated
     public CMIParticle getOverlapFrame() {
-        return OverlapFrame;
+        return VisualizerConfig.getErrorEffect().getFrame().getParticle();
     }
 
+    @Deprecated
     public CMIParticle getOverlapSides() {
-        return OverlapSides;
+        return VisualizerConfig.getErrorEffect().getSides().getParticle();
     }
 
     @Deprecated
     public CMIParticle getSelectedSpigotFrame() {
-        return SelectedFrame;
+        return VisualizerConfig.getBaseEffect().getFrame().getParticle();
     }
 
     @Deprecated
     public CMIParticle getSelectedSpigotSides() {
-        return SelectedSides;
+        return VisualizerConfig.getBaseEffect().getSides().getParticle();
     }
 
     @Deprecated
     public CMIParticle getOverlapSpigotFrame() {
-        return OverlapFrame;
+        return VisualizerConfig.getErrorEffect().getFrame().getParticle();
     }
 
     @Deprecated
     public CMIParticle getOverlapSpigotSides() {
-        return OverlapSides;
+        return VisualizerConfig.getErrorEffect().getSides().getParticle();
     }
 
     public int getTeleportDelay() {
@@ -2131,16 +2021,19 @@ public class ConfigManager {
         return useFlagGUI;
     }
 
+    @Deprecated
     public boolean BounceAnimation() {
-        return BounceAnimation;
+        return VisualizerConfig.isBounceAnimation();
     }
 
+    @Deprecated
     public int getVisualizerFrameCap() {
-        return VisualizerFrameCap;
+        return VisualizerConfig.getFrameCap();
     }
 
+    @Deprecated
     public int getVisualizerSidesCap() {
-        return VisualizerSidesCap;
+        return VisualizerConfig.getSidesCap();
     }
 
     public Double getWalkSpeed1() {
@@ -2175,8 +2068,9 @@ public class ConfigManager {
         return MessageType;
     }
 
+    @Deprecated
     public boolean isEnterAnimation() {
-        return EnterAnimation;
+        return VisualizerConfig.isEnterAnimation();
     }
 
     public boolean isDeductFromBank() {

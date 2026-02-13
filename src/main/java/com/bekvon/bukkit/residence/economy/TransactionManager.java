@@ -24,6 +24,7 @@ import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
 
+import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
 
 public class TransactionManager implements MarketBuyInterface {
@@ -238,9 +239,9 @@ public class TransactionManager implements MarketBuyInterface {
             sellerName = sellerNameFix.getName();
         }
 
-        if (econ.canAfford(res.getPermissions().getOwnerUUID(), amount)) {
+        if (econ.canAfford(player.getUniqueId(), amount)) {
             if (!econ.transfer(player.getUniqueId(), res.getPermissions().getOwnerUUID(), amount)) {
-                player.sendMessage(ChatColor.RED + "Error, could not transfer " + amount + " from " + buyerName + " to " + sellerName);
+                player.sendMessage(CMIChatColor.RED + "Error, could not transfer " + amount + " from " + buyerName + " to " + sellerName);
                 return;
             }
             res.getPermissions().setOwner(player, true);

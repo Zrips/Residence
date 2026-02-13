@@ -583,7 +583,7 @@ public class Residence extends JavaPlugin {
                 if (Version.isCurrentEqualOrHigher(Version.v1_16_R1))
                     pm.registerEvents(new ResidenceListener1_16(this), this);
 
-                if (Version.isCurrentEqualOrHigher(Version.v1_16_R3) && Version.isCurrentSubEqualOrHigher(5) || Version.isCurrentEqualOrHigher(Version.v1_17_R1)) {
+                if ((Version.isCurrentEqualOrHigher(Version.v1_16_R3) && Version.isCurrentSubEqualOrHigher(5)) || Version.isCurrentEqualOrHigher(Version.v1_17_R1)) {
                     if (Version.isPaperBranch())
                         pm.registerEvents(new ResidenceListener1_16_5_Paper(this), this);
                 }
@@ -597,7 +597,7 @@ public class Residence extends JavaPlugin {
                 if (Version.isCurrentEqualOrHigher(Version.v1_21_R1))
                     pm.registerEvents(new ResidenceListener1_21(this), this);
 
-                if (Version.isCurrentEqualOrHigher(Version.v1_21_R5) && Version.isCurrentSubEqualOrHigher(8) || Version.isCurrentEqualOrHigher(Version.v1_22_R1)) {
+                if ((Version.isCurrentEqualOrHigher(Version.v1_21_R5) && Version.isCurrentSubEqualOrHigher(8)) || Version.isCurrentEqualOrHigher(Version.v1_21_R6)) {
                     if (Version.isPaperBranch())
                         pm.registerEvents(new ResidenceListener1_21_8_Paper(this), this);
                     else

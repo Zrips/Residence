@@ -179,9 +179,9 @@ public class FlagPermissions {
     }
 
     public static void addFlagToFlagGroup(String group, String flag) {
-        
-		group = group.toLowerCase();
-		
+
+        group = group.toLowerCase();
+
         FlagState state = FlagState.TRUE;
 
         if (flag.contains("-")) {
@@ -195,16 +195,16 @@ public class FlagPermissions {
         if (f != null && !f.isGlobalyEnabled()) {
             return;
         }
-        
+
         if (!FlagPermissions.validFlags.contains(group) && !FlagPermissions.validAreaFlags.contains(group) && !FlagPermissions.validPlayerFlags.contains(group)) {
             validFlagGroups.computeIfAbsent(group, k -> new HashMap<String, FlagState>()).put(flag, state);
         }
     }
 
     public static void removeFlagFromFlagGroup(String group, String flag) {
-        
+
         group = group.toLowerCase();
-        
+
         if (validFlagGroups.containsKey(group)) {
             HashMap<String, FlagState> flags = validFlagGroups.get(group);
             flags.remove(flag);
@@ -242,51 +242,39 @@ public class FlagPermissions {
 
         Residence.getInstance().getConfigManager().UpdateGroupedFlagsFile();
 
-        addMaterialToUseFlag(CMIMaterial.REPEATER.getMaterial(), Flags.diode);
-        addMaterialToUseFlag(CMIMaterial.COMPARATOR.getMaterial(), Flags.diode);
-
-        addMaterialToUseFlag(CMIMaterial.CRAFTING_TABLE.getMaterial(), Flags.table);
-
-        if (Version.isCurrentEqualOrHigher(Version.v1_21_R1))
-            addMaterialToUseFlag(CMIMaterial.CRAFTER.getMaterial(), Flags.table);
-
         for (CMIMaterial one : CMIMaterial.values()) {
             if (one.getMaterial() == null)
                 continue;
 
-            if (one.isDoor())
-                matUseFlagList.put(one.getMaterial(), Flags.door);
+            if (one.containsCriteria(CMIMC.BED))
+                addMaterialToUseFlag(one.getMaterial(), Flags.bed);
 
-            if (one.isGate())
-                matUseFlagList.put(one.getMaterial(), Flags.door);
-
-            if (one.isTrapDoor())
-                matUseFlagList.put(one.getMaterial(), Flags.door);
-
-            if (one.isShulkerBox())
-                matUseFlagList.put(one.getMaterial(), Flags.container);
-
-            if (one.equals(CMIMaterial.DECORATED_POT))
-                matUseFlagList.put(one.getMaterial(), Flags.container);
-
-            if (one.isButton())
-                matUseFlagList.put(one.getMaterial(), Flags.button);
-
-            if (one.containsCriteria(CMIMC.PRESSUREPLATE))
-                matUseFlagList.put(one.getMaterial(), Flags.button);
-
-            if (one.isBed()) {
-                matUseFlagList.put(one.getMaterial(), Flags.bed);
-            }
-
-            if (one.isPotted())
-                matUseFlagList.put(one.getMaterial(), Flags.flowerpot);
+            if (one.containsCriteria(CMIMC.BUTTON))
+                addMaterialToUseFlag(one.getMaterial(), Flags.button);
 
             if (one.containsCriteria(CMIMC.CAKE))
                 addMaterialToUseFlag(one.getMaterial(), Flags.cake);
 
+            if (one.containsCriteria(CMIMC.SHULKERBOX))
+                addMaterialToUseFlag(one.getMaterial(), Flags.container);
+
+            if (one.containsCriteria(CMIMC.DOOR))
+                addMaterialToUseFlag(one.getMaterial(), Flags.door);
+
+            if (one.containsCriteria(CMIMC.FENCEGATE))
+                addMaterialToUseFlag(one.getMaterial(), Flags.door);
+
+            if (one.containsCriteria(CMIMC.TRAPDOOR))
+                addMaterialToUseFlag(one.getMaterial(), Flags.door);
+
+            if (one.containsCriteria(CMIMC.POTTED))
+                addMaterialToUseFlag(one.getMaterial(), Flags.flowerpot);
+
+            if (one.containsCriteria(CMIMC.PRESSUREPLATE))
+                addMaterialToUseFlag(one.getMaterial(), Flags.pressure);
+
             if (Version.isCurrentEqualOrHigher(Version.v1_17_R1)) {
-                if (one.isCandle())
+                if (one.containsCriteria(CMIMC.CANDLE))
                     addMaterialToUseFlag(one.getMaterial(), Flags.use);
 
                 if (one.containsCriteria(CMIMC.CANDLECAKE))
@@ -303,51 +291,59 @@ public class FlagPermissions {
 
         }
 
-        if (CMIMaterial.DAYLIGHT_DETECTOR.getMaterial() != null)
-            matUseFlagList.put(CMIMaterial.DAYLIGHT_DETECTOR.getMaterial(), Flags.diode);
-
-        if (CMIMaterial.ENCHANTING_TABLE.getMaterial() != null)
-            addMaterialToUseFlag(CMIMaterial.ENCHANTING_TABLE.getMaterial(), Flags.enchant);
-
-        addMaterialToUseFlag(Material.LEVER, Flags.lever);
-        addMaterialToUseFlag(Material.BREWING_STAND, Flags.brew);
-        addMaterialToUseFlag(Material.NOTE_BLOCK, Flags.note);
-        addMaterialToUseFlag(Material.DRAGON_EGG, Flags.egg);
-        addMaterialToUseFlag(CMIMaterial.COMMAND_BLOCK.getMaterial(), Flags.commandblock);
-
         addMaterialToUseFlag(CMIMaterial.ANVIL.getMaterial(), Flags.anvil);
         addMaterialToUseFlag(CMIMaterial.CHIPPED_ANVIL.getMaterial(), Flags.anvil);
         addMaterialToUseFlag(CMIMaterial.DAMAGED_ANVIL.getMaterial(), Flags.anvil);
 
-        addMaterialToUseFlag(Material.FLOWER_POT, Flags.flowerpot);
-        addMaterialToUseFlag(Material.BEACON, Flags.beacon);
-        addMaterialToUseFlag(Material.JUKEBOX, Flags.container);
+        addMaterialToUseFlag(CMIMaterial.BEACON.getMaterial(), Flags.beacon);
 
-        addMaterialToUseFlag(Material.CHEST, Flags.container);
-        addMaterialToUseFlag(Material.TRAPPED_CHEST, Flags.container);
+        addMaterialToUseFlag(CMIMaterial.BREWING_STAND.getMaterial(), Flags.brew);
 
-        addMaterialToUseFlag(Material.HOPPER, Flags.container);
-        addMaterialToUseFlag(Material.DROPPER, Flags.container);
-        addMaterialToUseFlag(Material.FURNACE, Flags.container);
+        addMaterialToUseFlag(CMIMaterial.CHAIN_COMMAND_BLOCK.getMaterial(), Flags.commandblock);
+        addMaterialToUseFlag(CMIMaterial.COMMAND_BLOCK.getMaterial(), Flags.commandblock);
+        addMaterialToUseFlag(CMIMaterial.REPEATING_COMMAND_BLOCK.getMaterial(), Flags.commandblock);
+
+        addMaterialToUseFlag(CMIMaterial.CHEST.getMaterial(), Flags.container);
+        addMaterialToUseFlag(CMIMaterial.DISPENSER.getMaterial(), Flags.container);
+        addMaterialToUseFlag(CMIMaterial.DROPPER.getMaterial(), Flags.container);
+        addMaterialToUseFlag(CMIMaterial.FURNACE.getMaterial(), Flags.container);
+        addMaterialToUseFlag(CMIMaterial.HOPPER.getMaterial(), Flags.container);
+        addMaterialToUseFlag(CMIMaterial.JUKEBOX.getMaterial(), Flags.container);
         addMaterialToUseFlag(CMIMaterial.LEGACY_BURNING_FURNACE.getMaterial(), Flags.container);
+        addMaterialToUseFlag(CMIMaterial.TRAPPED_CHEST.getMaterial(), Flags.container);
+
+        addMaterialToUseFlag(CMIMaterial.COMPARATOR.getMaterial(), Flags.diode);
+        addMaterialToUseFlag(CMIMaterial.DAYLIGHT_DETECTOR.getMaterial(), Flags.diode);
+        addMaterialToUseFlag(CMIMaterial.REPEATER.getMaterial(), Flags.diode);
+
+        addMaterialToUseFlag(CMIMaterial.DRAGON_EGG.getMaterial(), Flags.egg);
+
+        addMaterialToUseFlag(CMIMaterial.ENCHANTING_TABLE.getMaterial(), Flags.enchant);
+
+        addMaterialToUseFlag(CMIMaterial.FLOWER_POT.getMaterial(), Flags.flowerpot);
+
+        addMaterialToUseFlag(CMIMaterial.LEVER.getMaterial(), Flags.lever);
+
+        addMaterialToUseFlag(CMIMaterial.NOTE_BLOCK.getMaterial(), Flags.note);
+
+        addMaterialToUseFlag(CMIMaterial.CRAFTING_TABLE.getMaterial(), Flags.table);
 
         if (Version.isCurrentEqualOrHigher(Version.v1_14_R1)) {
-            addMaterialToUseFlag(CMIMaterial.LECTERN.getMaterial(), Flags.use);
-
             addMaterialToUseFlag(CMIMaterial.BARREL.getMaterial(), Flags.container);
             addMaterialToUseFlag(CMIMaterial.BLAST_FURNACE.getMaterial(), Flags.container);
             addMaterialToUseFlag(CMIMaterial.CARTOGRAPHY_TABLE.getMaterial(), Flags.container);
+            addMaterialToUseFlag(CMIMaterial.COMPOSTER.getMaterial(), Flags.container);
             addMaterialToUseFlag(CMIMaterial.FLETCHING_TABLE.getMaterial(), Flags.container);
-            addMaterialToUseFlag(CMIMaterial.GRINDSTONE.getMaterial(), Flags.container);
 
+            addMaterialToUseFlag(CMIMaterial.GRINDSTONE.getMaterial(), Flags.container);
             addMaterialToUseFlag(CMIMaterial.LOOM.getMaterial(), Flags.container);
             addMaterialToUseFlag(CMIMaterial.SMITHING_TABLE.getMaterial(), Flags.container);
             addMaterialToUseFlag(CMIMaterial.SMOKER.getMaterial(), Flags.container);
-            addMaterialToUseFlag(CMIMaterial.COMPOSTER.getMaterial(), Flags.container);
             addMaterialToUseFlag(CMIMaterial.STONECUTTER.getMaterial(), Flags.container);
 
             addMaterialToUseFlag(CMIMaterial.BELL.getMaterial(), Flags.use);
             addMaterialToUseFlag(CMIMaterial.CAMPFIRE.getMaterial(), Flags.use);
+            addMaterialToUseFlag(CMIMaterial.LECTERN.getMaterial(), Flags.use);
         }
 
         if (Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
@@ -356,10 +352,13 @@ public class FlagPermissions {
 
         if (Version.isCurrentEqualOrHigher(Version.v1_20_R1)) {
             addMaterialToUseFlag(CMIMaterial.CHISELED_BOOKSHELF.getMaterial(), Flags.container);
+            addMaterialToUseFlag(CMIMaterial.DECORATED_POT.getMaterial(), Flags.container);
         }
 
-        addMaterialToUseFlag(Material.DISPENSER, Flags.container);
-//	addMaterialToUseFlag(CMIMaterial.CAKE.getMaterial(), Flags.cake);
+        if (Version.isCurrentEqualOrHigher(Version.v1_21_R1)) {
+            addMaterialToUseFlag(CMIMaterial.CRAFTER.getMaterial(), Flags.table);
+        }
+
     }
 
     public void parseCommandLimits(ConfigurationSection node) {
@@ -546,7 +545,7 @@ public class FlagPermissions {
 
     public boolean setGroupFlag(String group, String flag, FlagState state) {
         group = group.toLowerCase();
-                
+
         if (!groupFlags.containsKey(group)) {
             groupFlags.put(group, Collections.synchronizedMap(new HashMap<String, Boolean>()));
         }
@@ -1198,7 +1197,7 @@ public class FlagPermissions {
 
                 String pName = ResidencePlayer.getName(pUUID);
 
-                if (!perms.equals("none")) {
+                if (pName != null && !perms.equals("none")) {
                     sbuild.append(pName).append(CMIChatColor.WHITE).append("[").append(perms).append(CMIChatColor.WHITE).append("] ");
                 }
             }
@@ -1409,7 +1408,10 @@ public class FlagPermissions {
     private boolean addPlayerFlagToRM(RawMessage rm, String playerName, Map<String, Boolean> permMap, boolean random) {
         String perms = printPlayerFlags(permMap);
 
-        if (playerName.equalsIgnoreCase(Residence.getInstance().getServerLandName()))
+        if (playerName == null)
+            return random;
+
+        if (Residence.getInstance().getServerLandName().equalsIgnoreCase(playerName))
             return random;
 
         if (perms.equals("none"))
@@ -1518,6 +1520,9 @@ public class FlagPermissions {
         String perms = printPlayerFlags(permMap);
 
         String next = ResidencePlayer.getName(uuid);
+
+        if (next == null)
+            return;
 
         if (next.equalsIgnoreCase(Residence.getInstance().getServerLandName()))
             return;

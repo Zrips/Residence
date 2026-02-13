@@ -1,6 +1,12 @@
 package com.bekvon.bukkit.residence.listeners;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -9,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -33,6 +40,31 @@ public class ResidenceListener1_14 implements Listener {
 
     public ResidenceListener1_14(Residence plugin) {
         this.plugin = plugin;
+    }
+
+    private static final Map<String, Tag<Material>> BLOCK_TAG_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, Tag<Material>> ITEM_TAG_CACHE = new ConcurrentHashMap<>();
+
+    // https://minecraft.wiki/w/Block_tag_(Java_Edition)
+    public static boolean isBlockTag(Material block, String tagName) {
+        if (block == null || tagName == null) {
+            return false;
+        }
+        Tag<Material> tag = BLOCK_TAG_CACHE.computeIfAbsent(tagName, key ->
+                Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.minecraft(key), Material.class)
+        );
+        return tag != null && tag.isTagged(block);
+    }
+
+    // https://minecraft.wiki/w/Item_tag_(Java_Edition)
+    public static boolean isItemTag(Material item, String tagName) {
+        if (item == null || tagName == null) {
+            return false;
+        }
+        Tag<Material> tag = ITEM_TAG_CACHE.computeIfAbsent(tagName, key ->
+                Bukkit.getTag(Tag.REGISTRY_ITEMS, NamespacedKey.minecraft(key), Material.class)
+        );
+        return tag != null && tag.isTagged(item);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -181,6 +213,27 @@ public class ResidenceListener1_14 implements Listener {
 
         lm.Flag_Deny.sendMessage(player, Flags.harvest);
         event.setCancelled(true);
+
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onCoralDryFade(BlockFadeEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.coraldryup.isGlobalyEnabled())
+            return;
+
+        Block block = event.getBlock();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
+
+        Material mat = block.getType();
+
+        if (!(isBlockTag(mat, "corals") || isBlockTag(mat, "coral_blocks") || isBlockTag(mat, "wall_corals")))
+            return;
+
+        if (FlagPermissions.has(block.getLocation(), Flags.coraldryup, FlagCombo.OnlyFalse))
+            event.setCancelled(true);
 
     }
 }

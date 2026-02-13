@@ -16,6 +16,8 @@ import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 
+import net.Zrips.CMILib.Version.Version;
+
 public class ResidenceListener1_16 implements Listener {
 
     private Residence plugin;
@@ -36,11 +38,22 @@ public class ResidenceListener1_16 implements Listener {
         if (plugin.isDisabledWorldListener(event.getWorld()))
             return;
 
-        FlagPermissions perms = FlagPermissions.getPerms(event.getLightning().getLocation());
-        if (perms.has(Flags.animalkilling, true))
-            return;
+        Player player = Version.isCurrentEqualOrHigher(Version.v1_20_R2)
+                ? event.getLightning().getCausingPlayer()
+                : null;
+
+        if (player != null) {
+            if (ResAdmin.isResAdmin(player))
+                return;
+            if (FlagPermissions.has(event.getLightning().getLocation(), player, Flags.animalkilling, true))
+                return;
+        } else {
+            if (FlagPermissions.has(event.getLightning().getLocation(), Flags.animalkilling, true))
+                return;
+        }
 
         event.setCancelled(true);
+
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

@@ -22,6 +22,9 @@ Global:
     # Allows or denys respawn anchor usage
     anchor: true
     # Applies to: Both
+    # Allows or denys animal feeding
+    animalfeeding: true
+    # Applies to: Both
     # Allows or denys animal killing
     animalkilling: true
     # Applies to: Residence
@@ -86,7 +89,7 @@ Global:
     commandblock: false
     # Applies to: Both
     # Allows or denys use of furnaces, chests, dispensers, etc...
-    container: false
+    container: true
     # Applies to: Residence
     # Hides residence coordinates
     coords: true
@@ -94,11 +97,14 @@ Global:
     # Allows to modify copper blocks
     copper: true
     # Applies to: Residence
+    # Allow or deny all corals from drying up
+    coraldryup: true
+    # Applies to: Residence
     # Gives table, enchant, brew flags
     craft: true
     # Applies to: Residence
     # Allow or deny creeper explosions
-    creeper: false
+    creeper: true
     # Applies to: Residence
     # Allows or denys all entity damage within the residence
     damage: false
@@ -155,7 +161,7 @@ Global:
     fireball: true
     # Applies to: Residence
     # Allows or denys fire spread
-    firespread: false
+    firespread: true
     # Applies to: Residence
     # Allows or denys liquid flow
     flow: true
@@ -185,7 +191,7 @@ Global:
     grow: true
     # Applies to: Both
     # Allows harvesting
-    harvest: false
+    harvest: true
     # Applies to: Residence
     # Setting to true makes the residence heal its occupants
     healing: true
@@ -314,7 +320,7 @@ Global:
     sanimals: true
     # Applies to: Both
     # Allows or denys sheep shear
-    shear: false
+    shear: true
     # Applies to: Residence
     # Allows or denys shooting projectile in area
     shoot: true
@@ -323,7 +329,7 @@ Global:
     shop: true
     # Applies to: Residence
     # Prevents skulk catalyst spreading
-    skulk: false
+    skulk: true
     # Applies to: Residence
     # Allows or denys spawner or spawn egg monster spawns
     smonsters: true
@@ -362,10 +368,16 @@ Global:
     trample: true
     # Applies to: Both
     # Allows or denys use of doors, lever, buttons, etc...
-    use: false
+    use: true
+    # Applies to: Residence
+    # Shows or hides particle visualizer when entering residence
+    visualizer: true
     # Applies to: Both
     # Allows or denys vehicle destroy
-    vehicledestroy: false
+    vehicledestroy: true
+    # Applies to: Both
+    # Allows or denys vehicle placing
+    vehicleplacing: true
     # Applies to: Residence
     # Allows or denys water flow, overrides flow
     waterflow: true
@@ -388,6 +400,7 @@ Global:
   FlagGui:
     admin: BEDROCK
     anchor: RESPAWN_ANCHOR
+    animalfeeding: CARROT
     animalkilling: CHICKEN
     animals: PIG_SPAWN_EGG
     anvil: ANVIL
@@ -398,6 +411,7 @@ Global:
     bed: WHITE_BED
     boarding: ACACIA_BOAT
     brew: BREWING_STAND
+    brush: BRUSH
     build: BRICKS
     burn: TORCH
     button: OAK_BUTTON
@@ -410,6 +424,8 @@ Global:
     commandblock: COMMAND_BLOCK
     container: CHEST_MINECART
     coords: COMPASS
+    copper: COPPER_BLOCK
+    coraldryup: FIRE_CORAL
     craft: STONE
     creeper: CREEPER_SPAWN_EGG
     damage: GOLDEN_SWORD
@@ -422,6 +438,7 @@ Global:
     dryup: BLUE_STAINED_GLASS_PANE
     dye: ORANGE_DYE
     egg: EGG
+    elytra: ELYTRA
     enchant: ENCHANTING_TABLE
     enderpearl: ENDER_PEARL
     explode: TNT_MINECART
@@ -436,8 +453,10 @@ Global:
     fly: ORANGE_CARPET
     friendlyfire: SUNFLOWER
     glow: SEA_LANTERN
+    goathorn: GOAT_HORN
     golemopenchest: COPPER_GOLEM_STATUE
     grow: WHEAT_SEEDS
+    harvest: SWEET_BERRIES
     healing: POTION
     hidden: GLASS_PANE
     honey: BEEHIVE
@@ -496,18 +515,15 @@ Global:
     trade: EMERALD
     trample: DIRT
     use: STONE_PRESSURE_PLATE
+    visualizer: GLOWSTONE_DUST
     vehicledestroy: MINECART
+    vehicleplacing: MINECART
     waterflow: WATER_BUCKET
     witherdamage: WITHER_SKELETON_SKULL
     witherdestruction: WITHER_SKELETON_SKULL
     witherspawn: WITHER_SKELETON_SKULL
     wspeed1: POTION
     wspeed2: POTION
-    brush: BRUSH
-    copper: IRON_BLOCK
-    elytra: ELYTRA
-    goathorn: GOAT_HORN
-    harvest: SWEET_BERRIES
     safezone: APPLE
     skulk: SCULK_CATALYST
   # These are default flags applied to all residences from any user group.

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>Residence</groupId>
   <artifactId>Residence</artifactId>
-  <version>6.0.1.2</version>
+  <version>6.0.1.4</version>
   <name>Residence</name>
   
   
@@ -22,13 +22,13 @@
         <dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>1.21.10-R0.1-SNAPSHOT</version>
+			<version>1.21.11-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.21.10-R0.1-SNAPSHOT</version>
+            <version>1.21.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -39,9 +39,9 @@
         </dependency>
 		<!-- LWCX -->
         <dependency>
-		    <groupId>com.griefcraft.lwc</groupId>
-		    <artifactId>LWCX</artifactId>
-		    <version>2.2.8</version>
+		    <groupId>com.griefcraft</groupId>
+		    <artifactId>lwc</artifactId>
+		    <version>2.2.9-dev</version>
 		    <scope>provided</scope>
 		</dependency>
 		<!-- LuckPerms -->
@@ -66,7 +66,7 @@
 		<dependency>
 			<groupId>com.github.Zrips</groupId>
 			<artifactId>CMILib</artifactId>
-			<version>1.5.7.4</version>
+			<version>1.5.8.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- CMI -->

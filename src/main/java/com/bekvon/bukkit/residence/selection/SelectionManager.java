@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -31,9 +30,9 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
 
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
+import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Effects.CMIEffect;
-import net.Zrips.CMILib.Effects.CMIEffectManager.CMIParticle;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
 
@@ -520,9 +519,9 @@ public class SelectionManager {
 
             if (plugin.getConfigManager().enableEconomy())
                 lm.General_LandCost.sendMessage(player, cuboidArea.getCost(group));
-            lm.showMessage(player, ChatColor.YELLOW + "X" + lm.General_Size.getMessage(cuboidArea.getXSize()));
-            lm.showMessage(player, ChatColor.YELLOW + "Y" + lm.General_Size.getMessage(cuboidArea.getYSize()));
-            lm.showMessage(player, ChatColor.YELLOW + "Z" + lm.General_Size.getMessage(cuboidArea.getZSize()));
+            lm.showMessage(player, CMIChatColor.YELLOW + "X" + lm.General_Size.getMessage(cuboidArea.getXSize()));
+            lm.showMessage(player, CMIChatColor.YELLOW + "Y" + lm.General_Size.getMessage(cuboidArea.getYSize()));
+            lm.showMessage(player, CMIChatColor.YELLOW + "Z" + lm.General_Size.getMessage(cuboidArea.getZSize()));
             lm.General_Separator.sendMessage(player);
             Visualizer v = new Visualizer(player);
             v.setAreas(this.getSelectionCuboid(player));
@@ -533,7 +532,7 @@ public class SelectionManager {
 
     public void showBounds(final Player player, final Visualizer v) {
 
-        if (!plugin.getConfigManager().useVisualizer())
+        if (!VisualizerConfig.isShow())
             return;
 
         Visualizer tv = vMap.get(player.getUniqueId());
@@ -568,8 +567,8 @@ public class SelectionManager {
 
     public List<Location> getLocations(Location lowLoc, Location loc, Double TX, Double TY, Double TZ, Double Range, boolean StartFromZero) {
 
-        double eachCollumn = plugin.getConfigManager().getVisualizerRowSpacing();
-        double eachRow = plugin.getConfigManager().getVisualizerCollumnSpacing();
+        double eachCollumn = VisualizerConfig.getCollumnSpacing();
+        double eachRow = VisualizerConfig.getRowSpacing();
 
         if (TX == 0D)
             TX = eachCollumn + eachCollumn * 0.1;
@@ -714,7 +713,7 @@ public class SelectionManager {
             areas = v.getErrorAreas();
 
         Location loc = player.getLocation();
-        int Range = plugin.getConfigManager().getVisualizerRange();
+        int range = VisualizerConfig.getRange();
 
         final List<Location> locList = new ArrayList<Location>();
         final List<Location> errorLocList = new ArrayList<Location>();
@@ -729,12 +728,12 @@ public class SelectionManager {
 
                 SelectionSides Sides = new SelectionSides();
 
-                double PLLX = loc.getBlockX() - Range;
-                double PLLZ = loc.getBlockZ() - Range;
-                double PLLY = loc.getBlockY() - Range;
-                double PLHX = loc.getBlockX() + Range;
-                double PLHZ = loc.getBlockZ() + Range;
-                double PLHY = loc.getBlockY() + Range;
+                double PLLX = loc.getBlockX() - range;
+                double PLLZ = loc.getBlockZ() - range;
+                double PLLY = loc.getBlockY() - range;
+                double PLHX = loc.getBlockX() + range;
+                double PLHZ = loc.getBlockZ() + range;
+                double PLHY = loc.getBlockY() + range;
 
                 if (cuboidArea.getLowVector().getBlockX() < PLLX) {
                     cuboidArea.getLowVector().setX(PLLX);
@@ -776,8 +775,8 @@ public class SelectionManager {
                     v.getErrorId().cancel();
                 }
 
-                locList.addAll(GetLocationsWallsByData(loc, TX, TY, TZ, cuboidArea.getLowLocation().clone(), Sides, Range));
-                errorLocList.addAll(GetLocationsCornersByData(loc, TX, TY, TZ, cuboidArea.getLowLocation().clone(), Sides, Range));
+                locList.addAll(GetLocationsWallsByData(loc, TX, TY, TZ, cuboidArea.getLowLocation().clone(), Sides, range));
+                errorLocList.addAll(GetLocationsCornersByData(loc, TX, TY, TZ, cuboidArea.getLowLocation().clone(), Sides, range));
             }
             v.setLoc(player.getLocation());
         } else {
@@ -800,20 +799,20 @@ public class SelectionManager {
             int timesMore = 1;
             int errorTimesMore = 1;
 
-            if (size > plugin.getConfigManager().getVisualizerSidesCap()) {
-                timesMore = size / plugin.getConfigManager().getVisualizerSidesCap() + 1;
+            if (size > VisualizerConfig.getSidesCap()) {
+                timesMore = size / VisualizerConfig.getSidesCap() + 1;
             }
-            if (errorSize > plugin.getConfigManager().getVisualizerFrameCap()) {
-                errorTimesMore = errorSize / plugin.getConfigManager().getVisualizerFrameCap() + 1;
+            if (errorSize > VisualizerConfig.getFrameCap()) {
+                errorTimesMore = errorSize / VisualizerConfig.getFrameCap() + 1;
             }
 
             v.addCurrentSkip();
-            if (v.getCurrentSkip() > plugin.getConfigManager().getVisualizerSkipBy())
+            if (v.getCurrentSkip() > VisualizerConfig.getSkipBy())
                 v.setCurrentSkip(1);
 
             try {
-                showParticles(locList, player, timesMore, error, true, v.getCurrentSkip());
-                showParticles(errorLocList, player, errorTimesMore, error, false, v.getCurrentSkip());
+                showParticles(locList, player, timesMore, error, true, v);
+                showParticles(errorLocList, player, errorTimesMore, error, false, v);
             } catch (Exception e) {
                 return;
             }
@@ -832,7 +831,7 @@ public class SelectionManager {
         if (v.isOnce())
             return true;
 
-        if (v.getStart() + plugin.getConfigManager().getVisualizerShowFor() < System.currentTimeMillis())
+        if (v.getStart() + VisualizerConfig.getShowForMs() < System.currentTimeMillis())
             return false;
 
         CMITask scid = CMIScheduler.runTaskLater(Residence.getInstance(), () -> {
@@ -840,7 +839,7 @@ public class SelectionManager {
                 MakeBorders(player, error);
             }
             return;
-        }, plugin.getConfigManager().getVisualizerUpdateInterval() * 1L);
+        }, VisualizerConfig.getUpdateInterval() * 1L);
         if (!error)
             v.setScheduler(scid);
         else
@@ -850,30 +849,31 @@ public class SelectionManager {
 
     }
 
-    private void showParticles(List<Location> locList, Player player, int timesMore, boolean error, boolean sides, int currentSkipBy) {
+    private void showParticles(List<Location> locList, Player player, int timesMore, boolean error, boolean sides, Visualizer v) {
         int s = 0;
 
         for (int i = 0; i < locList.size(); i += timesMore) {
-            s++;
 
-            if (s > plugin.getConfigManager().getVisualizerSkipBy())
-                s = 1;
+            if (!v.isOnce()) {
+                s++;
 
-            if (s != currentSkipBy)
-                continue;
+                if (s > VisualizerConfig.getSkipBy())
+                    s = 1;
+
+                if (s != v.getCurrentSkip())
+                    continue;
+            }
 
             Location l = locList.get(i);
 
-            CMIParticle effect = null;
+            CMIEffect effect = null;
             if (sides) {
-                effect = error ? plugin.getConfigManager().getOverlapSides() : plugin.getConfigManager().getSelectedSides();
+                effect = error ? VisualizerConfig.getErrorEffect().getSides() : VisualizerConfig.getBaseEffect().getSides();
             } else {
-                effect = error ? plugin.getConfigManager().getOverlapFrame() : plugin.getConfigManager().getSelectedFrame();
+                effect = error ? VisualizerConfig.getErrorEffect().getFrame() : VisualizerConfig.getBaseEffect().getFrame();
             }
 
-            CMIEffect ef = new CMIEffect(effect);
-
-            ef.show(player, l);
+            effect.show(player, l);
         }
     }
 

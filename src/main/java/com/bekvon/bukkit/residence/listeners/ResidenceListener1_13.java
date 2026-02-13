@@ -78,9 +78,7 @@ public class ResidenceListener1_13 implements Listener {
                 farm.setMoisture(7);
                 block.setBlockData(farm);
             }
-        } catch (
-
-        NoClassDefFoundError e) {
+        } catch (NoClassDefFoundError e) {
         }
         return true;
     }
