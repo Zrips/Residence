@@ -1677,18 +1677,9 @@ public class ResidencePlayerListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
 
-        Block block = event.getBlockClicked();
+        Block clickBlock = event.getBlockClicked();
 
-        if (CMIMaterial.get(block.getType()) == CMIMaterial.CAULDRON && !player.isSneaking()) {
-            if (FlagPermissions.has(block.getLocation(), player, Flags.build, true))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.build);
-            event.setCancelled(true);
-            return;
-        }
-
-        Location loc = block.getRelative(event.getBlockFace()).getLocation();
+        Location loc = clickBlock.getRelative(event.getBlockFace()).getLocation();
 
         CMIMaterial cmat = CMIMaterial.get(event.getBucket());
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
@@ -1711,11 +1702,24 @@ public class ResidencePlayerListener implements Listener {
             }
         }
 
-        FlagPermissions perms = FlagPermissions.getPerms(loc, player);
-        if (!perms.playerHas(player, Flags.build, true)) {
-            lm.Flag_Deny.sendMessage(player, Flags.build);
-            event.setCancelled(true);
-            return;
+        // place inside the block
+        if (!player.isSneaking() && ((CMIMaterial.get(clickBlock.getType()) == CMIMaterial.CAULDRON)
+                || (Version.isCurrentEqualOrHigher(Version.v1_13_R1) && clickBlock.getBlockData() instanceof org.bukkit.block.data.Waterlogged))) {
+
+            if (FlagPermissions.has(clickBlock.getLocation(), player, Flags.build, FlagCombo.OnlyFalse)) {
+                lm.Flag_Deny.sendMessage(player, Flags.build);
+                event.setCancelled(true);
+                return;
+            }
+            // place outside the block
+        } else {
+
+            if (FlagPermissions.has(loc ,player, Flags.build, FlagCombo.OnlyFalse)) {
+                lm.Flag_Deny.sendMessage(player, Flags.build);
+                event.setCancelled(true);
+                return;
+            }
+
         }
 
         int level = plugin.getConfigManager().getPlaceLevel();
