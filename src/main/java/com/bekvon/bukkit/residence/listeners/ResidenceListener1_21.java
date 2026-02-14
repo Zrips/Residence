@@ -239,6 +239,9 @@ public class ResidenceListener1_21 implements Listener {
 
         CMIEntityType type = CMIEntityType.get(entity.getType());
 
+        if (type == null)
+            return;
+
         if (!isFeedingAnimal(type, held))
             return;
 
@@ -255,9 +258,6 @@ public class ResidenceListener1_21 implements Listener {
     }
 
     private boolean isFeedingAnimal(CMIEntityType type, Material held) {
-        if (type == null) {
-            return false;
-        }
         switch (type) {
             case ARMADILLO: return isItemTag(held, "armadillo_food");
             case AXOLOTL: return isItemTag(held, "axolotl_food");
