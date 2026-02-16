@@ -1860,6 +1860,10 @@ public class ResidencePlayerListener implements Listener {
         if (player.hasMetadata("NPC"))
             return;
 
+        if (player.isDead()) {
+            return;
+        }
+
         Location loc = event.getTo();
         boolean handled = handleNewLocation(player, loc, false);
         ClaimedResidence resTo = plugin.getResidenceManager().getByLoc(loc);
@@ -2360,6 +2364,10 @@ public class ResidencePlayerListener implements Listener {
     }
 
     public boolean handleNewLocation(final Player player, Location loc, boolean move) {
+
+        if (player.isDead()) {
+            return true;
+        }
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
 
