@@ -271,17 +271,15 @@ public class ResidenceBlockListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onBlockForm(BlockFormEvent event) {
+    public void onSnowGolemTrailForm(EntityBlockFormEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.snowtrail.isGlobalyEnabled())
             return;
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
             return;
-        if (!(event instanceof EntityBlockFormEvent))
-            return;
 
-        if (((EntityBlockFormEvent) event).getEntity() instanceof Snowman) {
+        if (event.getEntity() instanceof Snowman) {
             FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
             if (!perms.has(Flags.snowtrail, true)) {
                 event.setCancelled(true);
@@ -297,11 +295,19 @@ public class ResidenceBlockListener implements Listener {
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
             return;
-
-        Material ice = Material.getMaterial("FROSTED_ICE");
-
-        if (event.getNewState().getType() != Material.SNOW && event.getNewState().getType() != Material.ICE && ice != null && ice != event.getNewState().getType())
+        // SnowGolem already has SnowTrail Flag
+        if (event instanceof EntityBlockFormEvent
+                && ((EntityBlockFormEvent) event).getEntity() instanceof Snowman) {
             return;
+        }
+
+        CMIMaterial newBlock = CMIMaterial.get(event.getNewState().getType());
+
+        if (newBlock != CMIMaterial.FROSTED_ICE
+                && newBlock != CMIMaterial.ICE
+                && newBlock != CMIMaterial.SNOW) {
+            return;
+        }
 
         FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
         if (!perms.has(Flags.iceform, true)) {
