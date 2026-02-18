@@ -38,6 +38,9 @@ public class Placeholder {
     static LinkedHashMap<String, LinkedHashSet<CMIPlaceHolders>> byNameComplex = new LinkedHashMap<String, LinkedHashSet<CMIPlaceHolders>>();
 
     public enum CMIPlaceHolders {
+        residence_ownername_$1("Get owner name by residence name", "residenceName"),
+        residence_user_main_name,
+        residence_user_main_owner,
         residence_user_amount,
         residence_user_group,
         residence_user_admin,
@@ -369,7 +372,7 @@ public class Placeholder {
             return (String) cached;
         }
 
-        ResidencePlayer user = plugin.getPlayerManager().getResidencePlayer(player);
+        ResidencePlayer user = ResidencePlayer.get(player);
 
         String result = null;
 
@@ -478,6 +481,14 @@ public class Placeholder {
                     res = plugin.getResidenceManager().getByLoc(user.getPlayer().getLocation());
                     result = res == null ? "" : String.valueOf(res.isForRent());
                     break;
+                case residence_user_main_name:
+                    res = user.getMainResidence();
+                    result = res == null ? "" : res.getName();
+                    break;
+                case residence_user_main_owner:
+                    res = user.getMainResidence();
+                    result = res == null ? "" : res.getOwner();
+                    break;
                 default:
                     break;
                 }
@@ -489,15 +500,23 @@ public class Placeholder {
                     switch (placeHolder) {
                     case residence_user_current_flag_$1:
                         List<String> values = placeHolder.getComplexValues(value);
-                        if (values.size() < 1)
+                        if (values.isEmpty())
                             return "";
                         ClaimedResidence res = plugin.getResidenceManager().getByLoc(user.getPlayer().getLocation());
                         if (res == null)
-                            return null;
+                            return "";
                         Flags flag = Flags.getFlag(values.get(0));
                         if (flag == null)
                             return "";
                         return variable(res.getPermissions().playerHas(player, flag, FlagCombo.TrueOrNone));
+                    case residence_ownername_$1:
+                        values = placeHolder.getComplexValues(value);
+                        if (values.isEmpty())
+                            return "";
+                         res = plugin.getResidenceManager().getByName(values.get(0));                         
+                        if (res == null)
+                            return "";
+                        return res == null ? "" : res.getName();
                     }
                 }
             }
