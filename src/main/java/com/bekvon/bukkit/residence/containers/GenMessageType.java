@@ -1,5 +1,7 @@
 package com.bekvon.bukkit.residence.containers;
 
+import net.Zrips.CMILib.Locale.LC;
+
 public enum GenMessageType {
     ActionBar, TitleBar, ChatBox;
 
@@ -12,12 +14,12 @@ public enum GenMessageType {
     }
 
     public static String getAllValuesAsString() {
-        String v = "";
+        StringBuilder v = new StringBuilder();
         for (GenMessageType one : GenMessageType.values()) {
-            if (!v.isEmpty())
-                v += ", ";
-            v += one.toString();
+            if (!v.toString().isEmpty())
+                v.append(LC.info_ListSpliter);
+            v.append(one.toString());
         }
-        return v;
+        return v.toString();
     }
 }

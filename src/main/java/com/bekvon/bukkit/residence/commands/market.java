@@ -2,14 +2,12 @@ package com.bekvon.bukkit.residence.commands;
 
 import java.util.Arrays;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.Zrips.CMILib.FileHandler.ConfigReader;
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
@@ -21,6 +19,9 @@ import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.signsStuff.Signs;
 import com.bekvon.bukkit.residence.utils.Utils;
+
+import net.Zrips.CMILib.Colors.CMIChatColor;
+import net.Zrips.CMILib.FileHandler.ConfigReader;
 
 public class market implements cmd {
     Residence plugin;
@@ -394,7 +395,7 @@ public class market implements cmd {
         } else if (res.isForRent()) {
             plugin.getRentManager().setRentRepeatable(player, res.getName(), value, resadmin);
         } else {
-            lm.Economy_RentReleaseInvalid.sendMessage(player, ChatColor.YELLOW + res.getName() + ChatColor.RED);
+            lm.Economy_RentReleaseInvalid.sendMessage(player, CMIChatColor.YELLOW + res.getName() + CMIChatColor.RED);
         }
         return true;
     }

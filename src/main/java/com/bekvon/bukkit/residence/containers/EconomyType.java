@@ -1,5 +1,7 @@
 package com.bekvon.bukkit.residence.containers;
 
+import net.Zrips.CMILib.Locale.LC;
+
 public enum EconomyType {
 
     Vault, @Deprecated
@@ -15,12 +17,12 @@ public enum EconomyType {
     }
 
     public static String toStringLine() {
-        StringBuilder l = new StringBuilder();
+        StringBuilder v = new StringBuilder();
         for (EconomyType one : EconomyType.values()) {
-            if (!l.toString().isEmpty())
-                l.append(", ");
-            l.append(one.toString());
+            if (!v.toString().isEmpty())
+                v.append(LC.info_ListSpliter);
+            v.append(one.toString());
         }
-        return l.toString();
+        return v.toString();
     }
 }

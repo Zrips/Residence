@@ -2,19 +2,19 @@ package com.bekvon.bukkit.residence.containers;
 
 public class CommandStatus {
 
-    private Boolean simple;
-    private Integer priority;
+    private boolean simple;
+    private int priority = 0;
     private String info;
     private String[] usage;
 
-    public CommandStatus(Boolean simple, Integer priority, String info, String[] usage) {
+    public CommandStatus(boolean simple, int priority, String info, String[] usage) {
         this.simple = simple;
         this.priority = priority;
         this.info = info;
         this.usage = usage;
     }
 
-    public Integer getPriority() {
+    public int getPriority() {
         return priority;
     }
 
@@ -22,7 +22,7 @@ public class CommandStatus {
         this.priority = priority;
     }
 
-    public Boolean getSimple() {
+    public boolean getSimple() {
         return simple;
     }
 
