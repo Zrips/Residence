@@ -848,7 +848,12 @@ public class ResidenceEntityListener implements Listener {
         EntityType entity = event.getEntityType();
         FlagPermissions perms = FlagPermissions.getPerms(ent.getLocation());
 
-        switch (CMIEntityType.get(entity)) {
+        CMIEntityType type = CMIEntityType.get(entity);
+
+        if (type == null)
+            return;
+
+        switch (type) {
         case CREEPER:
 
             // Disabling listener if flag disabled globally
