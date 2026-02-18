@@ -1633,19 +1633,19 @@ public class ResidenceManager implements ResidenceInterface {
     }
 
     private void cleanResidenceRecords(ClaimedResidence res, boolean removeSigns) {
-        String name = res.getName();
 
         plugin.getLeaseManager().removeExpireTime(res);
         for (ClaimedResidence oneSub : res.getSubzones()) {
-            plugin.getPlayerManager().removeResFromPlayer(res.getOwnerUUID(), oneSub);
-            plugin.getRentManager().removeRentable(ClaimedResidence.getByName(name + "." + oneSub.getResidenceName()), removeSigns);
-            plugin.getTransactionManager().removeFromSale(ClaimedResidence.getByName(name + "." + oneSub.getResidenceName()), removeSigns);
+            cleanResidenceRecords(oneSub, removeSigns);
         }
         plugin.getPlayerManager().removeResFromPlayer(res.getOwnerUUID(), res);
         plugin.getRentManager().removeRentable(res, removeSigns);
         plugin.getTransactionManager().removeFromSale(res, removeSigns);
 
+        res.setMainResidence(false);
+
         giveBackOwnerMoneyForResidence(res);
+
     }
 
     public int getResidenceCount() {

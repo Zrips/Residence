@@ -2128,7 +2128,7 @@ public class ResidencePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerMoveInVehicle(VehicleMoveEvent event) {
-        CMIDebug.d("??ss???");
+
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getVehicle().getWorld()))
             return;

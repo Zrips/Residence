@@ -74,7 +74,11 @@ public class ResidencePlayer {
     }
 
     public ClaimedResidence getMainResidence() {
-        if (mainResidence == null || !mainResidence.isOwner(this.getPlayerName())) {
+
+        if (mainResidence != null && !mainResidence.isMainResidence())
+            mainResidence = null;
+
+        if (mainResidence == null || !mainResidence.isOwner(this.getUniqueId())) {
             for (ClaimedResidence one : residenceList) {
                 if (one == null)
                     continue;
