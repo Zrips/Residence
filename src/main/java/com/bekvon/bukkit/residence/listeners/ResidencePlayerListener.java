@@ -1677,19 +1677,14 @@ public class ResidencePlayerListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
 
-        Location loc = event.getBlockClicked().getLocation().clone();
+        Block clickBlock = event.getBlockClicked();
+        // default place outside the block
+        Location loc = clickBlock.getRelative(event.getBlockFace()).getLocation();
 
-        if (Version.isCurrentHigher(Version.v1_12_R1)) {
-
-            if (Version.isCurrentHigher(Version.v1_13_R1) && event.getBlockClicked().getBlockData() instanceof org.bukkit.block.data.Waterlogged) {
-                org.bukkit.block.data.Waterlogged waterloggedBlock = (org.bukkit.block.data.Waterlogged) event.getBlockClicked().getBlockData();
-                if (waterloggedBlock.isWaterlogged())
-                    loc.add(event.getBlockFace().getDirection());
-            } else
-                try {
-                    loc.add(event.getBlockFace().getDirection());
-                } catch (Throwable e) {
-                }
+        if (!player.isSneaking() && ((CMIMaterial.get(clickBlock.getType()) == CMIMaterial.CAULDRON)
+                || (Version.isCurrentEqualOrHigher(Version.v1_13_R1) && clickBlock.getBlockData() instanceof org.bukkit.block.data.Waterlogged))) {
+            // if place inside the block
+            loc = clickBlock.getLocation();
         }
 
         CMIMaterial cmat = CMIMaterial.get(event.getBucket());
@@ -1713,8 +1708,7 @@ public class ResidencePlayerListener implements Listener {
             }
         }
 
-        FlagPermissions perms = FlagPermissions.getPerms(loc, player);
-        if (!perms.playerHas(player, Flags.build, true)) {
+        if (FlagPermissions.has(loc ,player, Flags.build, FlagCombo.OnlyFalse)) {
             lm.Flag_Deny.sendMessage(player, Flags.build);
             event.setCancelled(true);
             return;
