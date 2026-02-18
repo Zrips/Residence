@@ -104,6 +104,7 @@ import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -1708,7 +1709,7 @@ public class ResidencePlayerListener implements Listener {
             }
         }
 
-        if (FlagPermissions.has(loc ,player, Flags.build, FlagCombo.OnlyFalse)) {
+        if (FlagPermissions.has(loc, player, Flags.build, FlagCombo.OnlyFalse)) {
             lm.Flag_Deny.sendMessage(player, Flags.build);
             event.setCancelled(true);
             return;
@@ -2127,6 +2128,7 @@ public class ResidencePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerMoveInVehicle(VehicleMoveEvent event) {
+        CMIDebug.d("??ss???");
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getVehicle().getWorld()))
             return;
@@ -2147,6 +2149,7 @@ public class ResidencePlayerListener implements Listener {
                 continue;
 
             Player player = (Player) one;
+
             if (player == null)
                 continue;
 
@@ -2344,6 +2347,10 @@ public class ResidencePlayerListener implements Listener {
 
             StuckInfo info = updateStuckTeleport(player, loc);
             player.closeInventory();
+
+            if (player.getVehicle() != null)
+                player.leaveVehicle();
+
             if (info != null && info.getTimesTeleported() > 12) {
                 Teleporting.teleport(player, lastLoc).thenAccept(success -> {
                     if (!success)
