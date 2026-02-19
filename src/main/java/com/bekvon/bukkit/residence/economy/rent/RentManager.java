@@ -30,6 +30,7 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.utils.GetTime;
 
+import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
@@ -444,7 +445,7 @@ public class RentManager implements MarketRentInterface {
                 }
 
             } else {
-                player.sendMessage(ChatColor.RED + "Error, unable to transfer money...");
+                player.sendMessage(CMIChatColor.RED + "Error, unable to transfer money...");
             }
         } else {
             lm.Economy_NotEnoughMoney.sendMessage(player);

@@ -20,6 +20,7 @@ import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowman;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.entity.WaterMob;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -58,6 +59,17 @@ public class Utils {
             return false;
         }
         return true;
+    }
+
+    public static List<Entity> getPassengers(Vehicle vehicle) {
+        if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
+            return vehicle.getPassengers();
+        else {
+            List<Entity> passengers = new ArrayList<>();
+            if (vehicle.getPassenger() != null)
+                passengers.add(vehicle.getPassenger());
+            return passengers;
+        }
     }
 
     public static boolean verifyResidenceNameCharacters(@NotNull String name) {

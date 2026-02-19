@@ -69,6 +69,7 @@ public class Placeholder {
         residence_user_current_rentdays,
         residence_user_current_rentends,
         residence_user_current_flag_$1("Get flags from current residence by flag name", "flagName"),
+        
         ;
 
         static {

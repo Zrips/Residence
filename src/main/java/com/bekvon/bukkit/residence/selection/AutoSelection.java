@@ -13,8 +13,6 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
-
 public class AutoSelection {
 
     private HashMap<UUID, AutoSelector> list = new HashMap<UUID, AutoSelector>();

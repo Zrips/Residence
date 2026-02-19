@@ -24,7 +24,7 @@ public class setmain implements cmd {
             return false;
 
         Player player = (Player) sender;
-        if (args.length != 0 && args.length != 1) {
+        if (args.length > 1) {
             return false;
         }
 
@@ -41,8 +41,8 @@ public class setmain implements cmd {
         }
 
         if (res.isOwner(player)) {
-            res.setMainResidence(res.isMainResidence() ? false : true);
-        } else if (plugin.getRentManager().isRented(res.getName()) && !plugin.getRentManager().getRentingPlayer(res.getName()).equalsIgnoreCase(player.getName())) {
+            res.setMainResidence(!res.isMainResidence());
+        } else if (plugin.getRentManager().isRented(res) && !plugin.getRentManager().getRentingPlayer(res).equalsIgnoreCase(player.getName())) {
             lm.Invalid_Residence.sendMessage(sender);
             return false;
         }

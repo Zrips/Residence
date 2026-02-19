@@ -97,6 +97,11 @@ public enum lm {
     Select_AutoDisabled("&eAuto selection mode turned &6OFF&e. To enable it again write &6/res select auto"),
     Select_Disabled("&cYou don't have access to selections commands"),
 
+    Schematic_NoSchematic("&6No Residence schematic found!"),
+    Schematic_Saved("&6Residence schematic saved!"),
+    Schematic_Restored("&6Residence schematic restored!"),
+    Schematic_Failed("&6Residence schematic failed to save or restore!"),
+
     Sign_Updated("&6%1 &esigns updated!"),
     Sign_TopLine("[market]"),
     Sign_DateFormat("YY/MM/dd HH:mm"),

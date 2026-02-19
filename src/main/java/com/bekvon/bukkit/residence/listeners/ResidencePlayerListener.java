@@ -285,6 +285,7 @@ public class ResidencePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceBackup(ResidenceFlagChangeEvent event) {
+        CMIDebug.c("flag change");
         if (!event.getFlag().equalsIgnoreCase(Flags.backup.toString()))
             return;
         Player player = event.getPlayer();
@@ -2133,15 +2134,10 @@ public class ResidencePlayerListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getVehicle().getWorld()))
             return;
 
-        if (event.getVehicle().getPassenger() == null)
+        List<Entity> ent = Utils.getPassengers(event.getVehicle());
+
+        if (ent.isEmpty())
             return;
-
-        List<Entity> ent = new ArrayList<Entity>();
-
-        if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
-            ent.addAll(event.getVehicle().getPassengers());
-        else
-            ent.add(event.getVehicle().getPassenger());
 
         for (Entity one : ent) {
 
