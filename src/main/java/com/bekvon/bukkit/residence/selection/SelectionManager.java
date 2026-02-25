@@ -497,15 +497,13 @@ public class SelectionManager {
 
         CuboidArea cuboidArea = this.getSelectionCuboid(player);
 
-        String Message = lm.Select_TotalSize.getMessage(cuboidArea.getSize());
+        String message = lm.Select_TotalSize.getMessage(cuboidArea.getSize());
 
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
         if (plugin.getConfigManager().enableEconomy())
-            Message += " " + lm.General_LandCost.getMessage(cuboidArea.getCost(group));
-
-        CMIActionBar.send(player, Message);
-
+            message += " " + lm.General_LandCost.getMessage(plugin.getEconomyManager().format(cuboidArea.getCost(group)));
+        CMIActionBar.send(player, message);
     }
 
     public void showSelectionInfo(Player player) {

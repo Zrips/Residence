@@ -150,10 +150,10 @@ public class CuboidArea {
     }
 
     public long getSize() {
-        int xsize = (highPoints.getBlockX() - lowPoints.getBlockX()) + 1;
-        int zsize = (highPoints.getBlockZ() - lowPoints.getBlockZ()) + 1;
+        long xsize = (highPoints.getBlockX() - lowPoints.getBlockX()) + 1;
+        long zsize = (highPoints.getBlockZ() - lowPoints.getBlockZ()) + 1;
         if (!Residence.getInstance().getConfigManager().isNoCostForYBlocks()) {
-            int ysize = (highPoints.getBlockY() - lowPoints.getBlockY()) + 1;
+            long ysize = (highPoints.getBlockY() - lowPoints.getBlockY()) + 1;
             return CMINumber.abs(xsize * ysize * zsize);
         }
         return CMINumber.abs(xsize * zsize);
@@ -289,6 +289,6 @@ public class CuboidArea {
     }
 
     public double getCost(PermissionGroup group) {
-        return (long) (getSize() * group.getCostPerBlock() * 100) / 100D;
+        return (long) (getSize() * group.getCostPerBlock() * 100L) / 100D;
     }
 }
