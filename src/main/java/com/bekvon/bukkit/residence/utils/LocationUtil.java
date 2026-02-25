@@ -3,7 +3,6 @@ package com.bekvon.bukkit.residence.utils;
 import java.lang.reflect.Method;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
@@ -27,8 +26,6 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
-import net.Zrips.CMILib.Messages.CMIMessages;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.PaperMethods.CMIChunkSnapShot;
 import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
@@ -405,7 +402,8 @@ public class LocationUtil {
 
             CMIMaterial material = getBlockType(chunk.getSnapshot(), tempLoc.getWorld(), chunkX, tempLoc.getBlockY(), chunkZ);
 
-            // In later updates can be changed to check if material contains CMIMC.DAMAGECAUSING
+            // In later updates can be changed to check if material contains
+            // CMIMC.DAMAGECAUSING
             if (material.isLava()
                     || material.equals(CMIMaterial.MAGMA_BLOCK)
                     || material.equals(CMIMaterial.FIRE)

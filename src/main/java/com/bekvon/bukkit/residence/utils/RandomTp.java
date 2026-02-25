@@ -3,7 +3,6 @@ package com.bekvon.bukkit.residence.utils;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,12 +20,10 @@ import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
 import net.Zrips.CMILib.Container.CMIWorld;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
-import net.Zrips.CMILib.Version.Teleporters.CMITeleporter;
 
 public class RandomTp {
 

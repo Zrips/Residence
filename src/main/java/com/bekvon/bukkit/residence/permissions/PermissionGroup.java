@@ -23,7 +23,6 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 
 import net.Zrips.CMILib.Container.CMIWorld;
-import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class PermissionGroup {
 

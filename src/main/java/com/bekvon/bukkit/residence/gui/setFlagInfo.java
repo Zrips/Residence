@@ -28,7 +28,6 @@ import net.Zrips.CMILib.Container.CMIText;
 import net.Zrips.CMILib.Enchants.CMIEnchantEnum;
 import net.Zrips.CMILib.GUI.CMIGuiButton;
 import net.Zrips.CMILib.GUI.GUIManager.GUIClickType;
-import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class setFlagInfo {
 

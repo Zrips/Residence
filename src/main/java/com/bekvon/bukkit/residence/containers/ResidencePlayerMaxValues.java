@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
-
 public class ResidencePlayerMaxValues {
 
     private static ConcurrentHashMap<UUID, ResidencePlayerMaxValues> data = new ConcurrentHashMap<UUID, ResidencePlayerMaxValues>();

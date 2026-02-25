@@ -45,7 +45,6 @@ import net.Zrips.CMILib.Effects.CMIEffectManager.CMIParticle;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Locale.YmlMaker;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class ConfigManager {

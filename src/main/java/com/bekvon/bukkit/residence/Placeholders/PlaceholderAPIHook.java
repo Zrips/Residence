@@ -6,7 +6,6 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.Placeholders.Placeholder.CMIPlaceHolders;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class PlaceholderAPIHook extends PlaceholderExpansion {
 

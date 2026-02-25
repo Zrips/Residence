@@ -38,7 +38,6 @@ import com.bekvon.bukkit.residence.utils.Utils;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class ResidenceListener1_21 implements Listener {
 
@@ -259,39 +258,72 @@ public class ResidenceListener1_21 implements Listener {
 
     private boolean isFeedingAnimal(CMIEntityType type, Material held) {
         switch (type) {
-            case ARMADILLO: return isItemTag(held, "armadillo_food");
-            case AXOLOTL: return isItemTag(held, "axolotl_food");
-            case BEE: return isItemTag(held, "bee_food");
-            case CAMEL: return isItemTag(held, "camel_food");
-            case CAMEL_HUSK: return isItemTag(held, "camel_husk_food");
-            case CAT: return isItemTag(held, "cat_food");
-            case CHICKEN: return isItemTag(held, "chicken_food");
-            case COW: return isItemTag(held, "cow_food");
-            case DONKEY: return isItemTag(held, "horse_food");
-            case FOX: return isItemTag(held, "fox_food");
-            case FROG: return isItemTag(held, "frog_food");
-            case GOAT: return isItemTag(held, "goat_food");
-            case HAPPY_GHAST: return isItemTag(held, "happy_ghast_food");
-            case HOGLIN: return isItemTag(held, "hoglin_food");
-            case HORSE: return isItemTag(held, "horse_food");
-            case LLAMA: return isItemTag(held, "llama_food");
-            case MOOSHROOM: return isItemTag(held, "cow_food");
-            case MULE: return isItemTag(held, "horse_food");
-            case NAUTILUS: return isItemTag(held, "nautilus_food");
-            case OCELOT: return isItemTag(held, "ocelot_food");
-            case PANDA: return isItemTag(held, "panda_food");
-            case PARROT: return isItemTag(held, "parrot_food") || isItemTag(held, "parrot_poisonous_food");
-            case PIG: return isItemTag(held, "pig_food");
-            case RABBIT: return isItemTag(held, "rabbit_food");
-            case SHEEP: return isItemTag(held, "sheep_food");
-            case SNIFFER: return isItemTag(held, "sniffer_food");
-            case STRIDER: return isItemTag(held, "strider_food");
-            case TRADER_LLAMA: return isItemTag(held, "llama_food");
-            case TURTLE: return isItemTag(held, "turtle_food");
-            case WOLF: return isItemTag(held, "wolf_food") || held == Material.BONE;
-            case ZOMBIE_HORSE: return held == Material.RED_MUSHROOM;
-            case ZOMBIE_NAUTILUS: return isItemTag(held, "nautilus_food");
-            default: return false;
+        case ARMADILLO:
+            return isItemTag(held, "armadillo_food");
+        case AXOLOTL:
+            return isItemTag(held, "axolotl_food");
+        case BEE:
+            return isItemTag(held, "bee_food");
+        case CAMEL:
+            return isItemTag(held, "camel_food");
+        case CAMEL_HUSK:
+            return isItemTag(held, "camel_husk_food");
+        case CAT:
+            return isItemTag(held, "cat_food");
+        case CHICKEN:
+            return isItemTag(held, "chicken_food");
+        case COW:
+            return isItemTag(held, "cow_food");
+        case DONKEY:
+            return isItemTag(held, "horse_food");
+        case FOX:
+            return isItemTag(held, "fox_food");
+        case FROG:
+            return isItemTag(held, "frog_food");
+        case GOAT:
+            return isItemTag(held, "goat_food");
+        case HAPPY_GHAST:
+            return isItemTag(held, "happy_ghast_food");
+        case HOGLIN:
+            return isItemTag(held, "hoglin_food");
+        case HORSE:
+            return isItemTag(held, "horse_food");
+        case LLAMA:
+            return isItemTag(held, "llama_food");
+        case MOOSHROOM:
+            return isItemTag(held, "cow_food");
+        case MULE:
+            return isItemTag(held, "horse_food");
+        case NAUTILUS:
+            return isItemTag(held, "nautilus_food");
+        case OCELOT:
+            return isItemTag(held, "ocelot_food");
+        case PANDA:
+            return isItemTag(held, "panda_food");
+        case PARROT:
+            return isItemTag(held, "parrot_food") || isItemTag(held, "parrot_poisonous_food");
+        case PIG:
+            return isItemTag(held, "pig_food");
+        case RABBIT:
+            return isItemTag(held, "rabbit_food");
+        case SHEEP:
+            return isItemTag(held, "sheep_food");
+        case SNIFFER:
+            return isItemTag(held, "sniffer_food");
+        case STRIDER:
+            return isItemTag(held, "strider_food");
+        case TRADER_LLAMA:
+            return isItemTag(held, "llama_food");
+        case TURTLE:
+            return isItemTag(held, "turtle_food");
+        case WOLF:
+            return isItemTag(held, "wolf_food") || held == Material.BONE;
+        case ZOMBIE_HORSE:
+            return held == Material.RED_MUSHROOM;
+        case ZOMBIE_NAUTILUS:
+            return isItemTag(held, "nautilus_food");
+        default:
+            return false;
         }
     }
 
@@ -376,22 +408,22 @@ public class ResidenceListener1_21 implements Listener {
 
             // Ensure entity is AbstractHorse
             switch (type) {
-                case CAMEL:
-                case CAMEL_HUSK:
-                case DONKEY:
-                case HORSE:
-                case MULE:
-                case SKELETON_HORSE:
-                case ZOMBIE_HORSE:
-                    if (!(entity instanceof AbstractHorse)) {
-                        return false;
-                    }
-                    ItemStack horseSaddle = ((AbstractHorse) entity).getInventory().getSaddle();
-                    // Do not use horseSaddle != null
-                    // Saddle slot Air, getSaddle() returns null, result always false
-                    return horseSaddle == null || horseSaddle.getType() == Material.AIR;
-                default:
+            case CAMEL:
+            case CAMEL_HUSK:
+            case DONKEY:
+            case HORSE:
+            case MULE:
+            case SKELETON_HORSE:
+            case ZOMBIE_HORSE:
+                if (!(entity instanceof AbstractHorse)) {
                     return false;
+                }
+                ItemStack horseSaddle = ((AbstractHorse) entity).getInventory().getSaddle();
+                // Do not use horseSaddle != null
+                // Saddle slot Air, getSaddle() returns null, result always false
+                return horseSaddle == null || horseSaddle.getType() == Material.AIR;
+            default:
+                return false;
             }
         }
         return false;

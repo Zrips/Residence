@@ -21,7 +21,6 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
-import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class select implements cmd {
 

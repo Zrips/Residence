@@ -28,8 +28,6 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
-import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class ResidenceListener1_13 implements Listener {
 

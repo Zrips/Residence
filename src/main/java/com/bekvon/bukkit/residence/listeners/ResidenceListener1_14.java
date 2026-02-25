@@ -31,7 +31,6 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Items.CMIMaterial;
 
 public class ResidenceListener1_14 implements Listener {
@@ -50,9 +49,7 @@ public class ResidenceListener1_14 implements Listener {
         if (block == null || tagName == null) {
             return false;
         }
-        Tag<Material> tag = BLOCK_TAG_CACHE.computeIfAbsent(tagName, key ->
-                Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.minecraft(key), Material.class)
-        );
+        Tag<Material> tag = BLOCK_TAG_CACHE.computeIfAbsent(tagName, key -> Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.minecraft(key), Material.class));
         return tag != null && tag.isTagged(block);
     }
 
@@ -61,9 +58,7 @@ public class ResidenceListener1_14 implements Listener {
         if (item == null || tagName == null) {
             return false;
         }
-        Tag<Material> tag = ITEM_TAG_CACHE.computeIfAbsent(tagName, key ->
-                Bukkit.getTag(Tag.REGISTRY_ITEMS, NamespacedKey.minecraft(key), Material.class)
-        );
+        Tag<Material> tag = ITEM_TAG_CACHE.computeIfAbsent(tagName, key -> Bukkit.getTag(Tag.REGISTRY_ITEMS, NamespacedKey.minecraft(key), Material.class));
         return tag != null && tag.isTagged(item);
     }
 
@@ -200,7 +195,7 @@ public class ResidenceListener1_14 implements Listener {
 
         CMIMaterial mat = CMIMaterial.get(block.getType());
 
-        if (mat != CMIMaterial.SWEET_BERRY_BUSH && mat !=CMIMaterial.CAVE_VINES && mat != CMIMaterial.CAVE_VINES_PLANT) {
+        if (mat != CMIMaterial.SWEET_BERRY_BUSH && mat != CMIMaterial.CAVE_VINES && mat != CMIMaterial.CAVE_VINES_PLANT) {
             return;
         }
 

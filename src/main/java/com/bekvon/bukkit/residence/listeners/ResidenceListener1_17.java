@@ -30,9 +30,7 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
-import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_17 implements Listener {
@@ -196,7 +194,8 @@ public class ResidenceListener1_17 implements Listener {
                 return;
             }
         }
-        // player has build permission at click position, or event is not triggered by player
+        // player has build permission at click position, or event is not triggered by
+        // player
         // check build permission for spread blocks
         ClaimedResidence originRes = ClaimedResidence.getByLoc(block.getLocation());
 

@@ -8,12 +8,12 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.Snowman;
-import org.bukkit.event.block.EntityBlockFormEvent;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.AreaEffectCloudApplyEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.entity.LingeringPotionSplashEvent;
@@ -31,10 +31,8 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Teleporting;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
-import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class ResidenceListener1_09 implements Listener {

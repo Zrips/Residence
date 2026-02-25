@@ -15,8 +15,6 @@ import com.bekvon.bukkit.residence.permissions.LuckPerms5Adapter;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
-
 public class FileCleanUp {
 
     private Residence plugin;

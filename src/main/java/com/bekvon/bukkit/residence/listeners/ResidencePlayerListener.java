@@ -104,7 +104,6 @@ import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
@@ -285,7 +284,6 @@ public class ResidencePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceBackup(ResidenceFlagChangeEvent event) {
-        CMIDebug.c("flag change");
         if (!event.getFlag().equalsIgnoreCase(Flags.backup.toString()))
             return;
         Player player = event.getPlayer();
@@ -1132,7 +1130,6 @@ public class ResidencePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onSelection(PlayerInteractEvent event) {
-
         Block block = event.getClickedBlock();
         if (block == null)
             return;
@@ -1158,9 +1155,11 @@ public class ResidencePlayerListener implements Listener {
 
         if (player.hasMetadata("NPC"))
             return;
+
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
         boolean resadmin = ResAdmin.isResAdmin(player);
+
         if (ResPerm.select.hasPermission(player) || ResPerm.create.hasPermission(player) && !ResPerm.select.hasSetPermission(player) || group
                 .canCreateResidences() && !ResPerm.create.hasSetPermission(player) && !ResPerm.select.hasSetPermission(player) || resadmin) {
 
