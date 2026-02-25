@@ -516,7 +516,7 @@ public class SelectionManager {
             PermissionGroup group = rPlayer.getGroup();
 
             if (plugin.getConfigManager().enableEconomy())
-                lm.General_LandCost.sendMessage(player, cuboidArea.getCost(group));
+                lm.General_LandCost.sendMessage(player, plugin.getEconomyManager().format(cuboidArea.getCost(group)));
             lm.showMessage(player, CMIChatColor.YELLOW + "X" + lm.General_Size.getMessage(cuboidArea.getXSize()));
             lm.showMessage(player, CMIChatColor.YELLOW + "Y" + lm.General_Size.getMessage(cuboidArea.getYSize()));
             lm.showMessage(player, CMIChatColor.YELLOW + "Z" + lm.General_Size.getMessage(cuboidArea.getZSize()));
