@@ -3,9 +3,7 @@ package com.bekvon.bukkit.residence.containers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -20,8 +18,6 @@ public class Visualizer {
     private List<CuboidArea> areas = new ArrayList<CuboidArea>();
     private List<CuboidArea> errorAreas = new ArrayList<CuboidArea>();
     private CMITask mainSchduler = null;
-    private CMITask errorScheduler = null;
-    private CompletableFuture<Void> baseSheduler = null;
     private boolean once = false;
     private int starting = 0;
     private int currentSkip = 0;
@@ -41,14 +37,6 @@ public class Visualizer {
         if (mainSchduler != null) {
             mainSchduler.cancel();
             mainSchduler = null;
-        }
-        if (errorScheduler != null) {
-            errorScheduler.cancel();
-            errorScheduler = null;
-        }
-        if (baseSheduler != null) {
-            baseSheduler.cancel(true);
-            baseSheduler = null;
         }
     }
 
@@ -132,14 +120,6 @@ public class Visualizer {
         this.mainSchduler = scheduler;
     }
 
-    public CMITask getErrorId() {
-        return errorScheduler;
-    }
-
-    public void setErrorId(CMITask errorId) {
-        this.errorScheduler = errorId;
-    }
-
     public boolean isOnce() {
         return once;
     }
@@ -194,14 +174,6 @@ public class Visualizer {
 
     public void setStarting(int starting) {
         this.starting = starting;
-    }
-
-    public CompletableFuture<Void> getBaseSheduler() {
-        return baseSheduler;
-    }
-
-    public void setBaseSheduler(CompletableFuture<Void> scheduler) {
-        this.baseSheduler = scheduler;
     }
 
     public int getCurrentSkip() {

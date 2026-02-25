@@ -34,7 +34,6 @@ import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Effects.CMIEffect;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
-import net.Zrips.CMILib.Version.Schedulers.CMITask;
 
 public class SelectionManager {
     protected Map<UUID, Selection> selections;
@@ -417,6 +416,7 @@ public class SelectionManager {
     public void afterSelectionUpdate(Player player, boolean force) {
         if (!this.hasPlacedBoth(player))
             return;
+
         Visualizer v = vMap.get(player.getUniqueId());
         if (v == null) {
             v = new Visualizer(player);
@@ -535,10 +535,6 @@ public class SelectionManager {
         if (!VisualizerConfig.isShow())
             return;
 
-        Visualizer tv = vMap.get(player.getUniqueId());
-        if (tv != null) {
-            tv.cancelAll();
-        }
         CMIScheduler.runTask(Residence.getInstance(), () -> {
 
             // Only firing selection event if its selection and not one time showing. Check
@@ -552,15 +548,30 @@ public class SelectionManager {
                     return;
             }
 
+            Visualizer tv = vMap.get(player.getUniqueId());
+            if (tv != null) {
+                tv.cancelAll();
+            }
+
             vMap.put(player.getUniqueId(), v);
             if (!plugin.isEnabled())
                 return;
-            v.setBaseSheduler(CMIScheduler.runTaskAsynchronously(Residence.getInstance(), () -> {
+
+            v.setScheduler(CMIScheduler.runTimerAsync(Residence.getInstance(), () -> {
+
+                boolean result = true;
                 if (!v.getAreas().isEmpty())
-                    MakeBorders(player, false);
+                    result = MakeBorders(player, false);
+
                 if (!v.getErrorAreas().isEmpty())
-                    MakeBorders(player, true);
-            }));
+                    result = MakeBorders(player, true) && result ? true : result;
+
+                if (v.getStart() + VisualizerConfig.getShowForMs() < System.currentTimeMillis() || !result || v.isOnce())
+                    v.cancelAll();
+
+            }, 0, 1L)
+
+            );
 
         });
     }
@@ -769,12 +780,6 @@ public class SelectionManager {
                 double TY = cuboidArea.getYSize() - 1;
                 double TZ = cuboidArea.getZSize() - 1;
 
-                if (!error && v.getScheduler() != null) {
-                    v.getScheduler().cancel();
-                } else if (error && v.getErrorId() != null) {
-                    v.getErrorId().cancel();
-                }
-
                 locList.addAll(GetLocationsWallsByData(loc, TX, TY, TZ, cuboidArea.getLowLocation().clone(), Sides, range));
                 errorLocList.addAll(GetLocationsCornersByData(loc, TX, TY, TZ, cuboidArea.getLowLocation().clone(), Sides, range));
             }
@@ -791,62 +796,40 @@ public class SelectionManager {
 
         if (!plugin.isEnabled())
             return false;
-        CMIScheduler.runTaskAsynchronously(Residence.getInstance(), () -> {
 
-            int size = locList.size();
-            int errorSize = errorLocList.size();
+        int size = locList.size();
+        int errorSize = errorLocList.size();
 
-            int timesMore = 1;
-            int errorTimesMore = 1;
+        int timesMore = 1;
+        int errorTimesMore = 1;
 
-            if (size > VisualizerConfig.getSidesCap()) {
-                timesMore = size / VisualizerConfig.getSidesCap() + 1;
-            }
-            if (errorSize > VisualizerConfig.getFrameCap()) {
-                errorTimesMore = errorSize / VisualizerConfig.getFrameCap() + 1;
-            }
+        if (size > VisualizerConfig.getSidesCap()) {
+            timesMore = size / VisualizerConfig.getSidesCap() + 1;
+        }
+        if (errorSize > VisualizerConfig.getFrameCap()) {
+            errorTimesMore = errorSize / VisualizerConfig.getFrameCap() + 1;
+        }
 
-            v.addCurrentSkip();
-            if (v.getCurrentSkip() > VisualizerConfig.getSkipBy())
-                v.setCurrentSkip(1);
+        v.addCurrentSkip();
+        if (v.getCurrentSkip() > VisualizerConfig.getSkipBy())
+            v.setCurrentSkip(1);
 
-            try {
-                showParticles(locList, player, timesMore, error, true, v);
-                showParticles(errorLocList, player, errorTimesMore, error, false, v);
-            } catch (Exception e) {
-                return;
-            }
-
-            if (error) {
-                v.setErrorLocations(locList);
-                v.setErrorLocations2(errorLocList);
-            } else {
-                v.setLocations(locList);
-                v.setLocations2(errorLocList);
-            }
-
-            return;
-        });
-
-        if (v.isOnce())
-            return true;
-
-        if (v.getStart() + VisualizerConfig.getShowForMs() < System.currentTimeMillis())
+        try {
+            showParticles(locList, player, timesMore, error, true, v);
+            showParticles(errorLocList, player, errorTimesMore, error, false, v);
+        } catch (Exception e) {
             return false;
+        }
 
-        CMITask scid = CMIScheduler.runTaskLater(Residence.getInstance(), () -> {
-            if (player.isOnline()) {
-                MakeBorders(player, error);
-            }
-            return;
-        }, VisualizerConfig.getUpdateInterval() * 1L);
-        if (!error)
-            v.setScheduler(scid);
-        else
-            v.setErrorId(scid);
+        if (error) {
+            v.setErrorLocations(locList);
+            v.setErrorLocations2(errorLocList);
+        } else {
+            v.setLocations(locList);
+            v.setLocations2(errorLocList);
+        }
 
         return true;
-
     }
 
     private void showParticles(List<Location> locList, Player player, int timesMore, boolean error, boolean sides, Visualizer v) {
