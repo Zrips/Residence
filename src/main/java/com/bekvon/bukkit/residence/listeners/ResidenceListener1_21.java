@@ -7,8 +7,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Animals;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Leashable;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
@@ -39,6 +39,7 @@ import com.bekvon.bukkit.residence.utils.Utils;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_21 implements Listener {
 
@@ -67,19 +68,28 @@ public class ResidenceListener1_21 implements Listener {
         if (plugin.isDisabledWorldListener(vehicle.getWorld()))
             return;
 
-        if (!(vehicle instanceof Leashable))
-            return;
-        // if vehicle is not leashed, skip check
-        if (!((Leashable) vehicle).isLeashed())
+        if (!(vehicle instanceof Boat))
             return;
 
         Entity entity = event.getEntered();
 
-        if (!(entity instanceof LivingEntity))
+        if (!(entity instanceof LivingEntity) || !Utils.isAnimal(entity))
             return;
 
-        if (!Utils.isAnimal(entity))
-            return;
+        if (Version.isPaperBranch()) {
+            // if vehicle is not leashed, skip check
+            if (!((io.papermc.paper.entity.Leashable) vehicle).isLeashed()) {
+                return;
+            }
+
+        } else if (Version.isCurrentEqualOrHigher(Version.v1_21_R7)) {
+            // spigot
+            if (vehicle instanceof org.bukkit.entity.Leashable
+                    && !((org.bukkit.entity.Leashable) vehicle).isLeashed()) {
+                return;
+            }
+
+        }
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
         if (res == null)
