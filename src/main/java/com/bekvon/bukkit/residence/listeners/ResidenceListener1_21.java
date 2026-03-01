@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Leashable;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
@@ -49,18 +50,27 @@ public class ResidenceListener1_21 implements Listener {
 
     HashMap<UUID, Long> boats = new HashMap<UUID, Long>();
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
         boats.remove(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void OnVehicleEnterEvent(VehicleEnterEvent event) {
+    // Prevent player from taking away animals in Residence by pulling boat
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onAnimalEntersLeashedStateVehicle(VehicleEnterEvent event) {
         // Disabling listener if flag disabled globally
-        if (!Flags.boarding.isGlobalyEnabled())
+        if (!Flags.leash.isGlobalyEnabled())
             return;
+
+        Entity vehicle = event.getVehicle();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getVehicle().getWorld()))
+        if (plugin.isDisabledWorldListener(vehicle.getWorld()))
+            return;
+
+        if (!(vehicle instanceof Leashable))
+            return;
+        // if vehicle is not leashed, skip check
+        if (!((Leashable) vehicle).isLeashed())
             return;
 
         Entity entity = event.getEntered();
@@ -70,11 +80,6 @@ public class ResidenceListener1_21 implements Listener {
 
         if (!Utils.isAnimal(entity))
             return;
-
-        if (FlagPermissions.getPerms(entity.getLocation()).has(Flags.boarding, FlagCombo.OnlyFalse)) {
-            event.setCancelled(true);
-            return;
-        }
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
         if (res == null)
@@ -104,6 +109,28 @@ public class ResidenceListener1_21 implements Listener {
                 lm.Residence_FlagDeny.sendMessage(closest, Flags.leash, res.getName());
             }
 
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onAnimalEnterVehicle(VehicleEnterEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.boarding.isGlobalyEnabled())
+            return;
+
+        Entity entity = event.getEntered();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(entity.getWorld()))
+            return;
+
+        if (!(entity instanceof LivingEntity))
+            return;
+
+        if (!Utils.isAnimal(entity))
+            return;
+
+        if (FlagPermissions.getPerms(entity.getLocation()).has(Flags.boarding, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
         }
     }

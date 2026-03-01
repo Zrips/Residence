@@ -8,13 +8,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -24,6 +23,7 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
+import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_19 implements Listener {
@@ -34,31 +34,24 @@ public class ResidenceListener1_19 implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onUseGoatHorn(PlayerInteractEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.goathorn.isGlobalyEnabled())
             return;
 
         Player player = event.getPlayer();
-        if (player == null)
-            return;
         // disabling event on world
         if (plugin.isDisabledWorldListener(player.getWorld()))
             return;
 
-        if (player.hasMetadata("NPC"))
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
-        ItemStack horn = event.getItem();
-
-        if (horn == null)
+        if (CMIMaterial.get(event.getItem()) != CMIMaterial.GOAT_HORN)
             return;
 
-        if (!horn.getType().equals(Material.GOAT_HORN))
-            return;
-
-        if (ResAdmin.isResAdmin(player))
+        if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player))
             return;
 
         FlagPermissions perms = FlagPermissions.getPerms(player.getLocation(), player);
@@ -94,13 +87,8 @@ public class ResidenceListener1_19 implements Listener {
         if (!Flags.container.isGlobalyEnabled())
             return;
 
-        Inventory source = event.getSource();
-        Inventory dest = event.getDestination();
-        if (source == null || dest == null)
-            return;
-
-        ClaimedResidence sourceRes = ClaimedResidence.getByLoc(source.getLocation());
-        ClaimedResidence destRes = ClaimedResidence.getByLoc(dest.getLocation());
+        ClaimedResidence sourceRes = ClaimedResidence.getByLoc(event.getSource().getLocation());
+        ClaimedResidence destRes = ClaimedResidence.getByLoc(event.getDestination().getLocation());
 
         // source & dest not in Res
         if (sourceRes == null && destRes == null)
@@ -171,7 +159,9 @@ public class ResidenceListener1_19 implements Listener {
             return false;
         }
         if(Version.isCurrentEqualOrHigher(Version.v1_21_R7)) {
-            return (entity instanceof AbstractHorse || entity instanceof ChestBoat || entity instanceof org.bukkit.entity.AbstractNautilus);
+            return (entity instanceof AbstractHorse ||
+                    entity instanceof ChestBoat ||
+                    entity instanceof org.bukkit.entity.AbstractNautilus);
         }
         return (entity instanceof AbstractHorse || entity instanceof ChestBoat);
     }
