@@ -1,23 +1,20 @@
 package com.bekvon.bukkit.residence.listeners;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
-import org.bukkit.inventory.ItemStack;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
-import net.Zrips.CMILib.Items.CMIItemStack;
+import net.Zrips.CMILib.Items.CMIMaterial;
 
 public class ResidenceListener1_12 implements Listener {
 
@@ -28,52 +25,62 @@ public class ResidenceListener1_12 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerPickupItemEvent(EntityPickupItemEvent event) {
+    public void onEntityPickupItemEvent(EntityPickupItemEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.itempickup.isGlobalyEnabled())
             return;
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(event.getItem().getLocation());
-        if (res == null)
-            return;
-        if (event.getEntity().hasMetadata("NPC"))
+
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(event.getItem().getWorld()))
             return;
 
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            if (!res.getPermissions().playerHas(player, Flags.itempickup, FlagCombo.OnlyFalse))
+        Entity entity = event.getEntity();
+        if (entity.hasMetadata("NPC"))
+            return;
+
+        if (entity instanceof Player) {
+
+            Player player = (Player) entity;
+
+            if (FlagPermissions.has(event.getItem().getLocation(), player, Flags.itempickup, true))
                 return;
+
             if (ResPerm.bypass_itempickup.hasPermission(player, 10000L))
                 return;
+
         } else {
-            if (!res.getPermissions().has(Flags.itempickup, FlagCombo.OnlyFalse))
+
+            if (FlagPermissions.has(event.getItem().getLocation(), Flags.itempickup, true))
                 return;
+
         }
+
         event.setCancelled(true);
         event.getItem().setPickupDelay(plugin.getConfigManager().getItemPickUpDelay() * 20);
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onItemDamage(PlayerItemDamageEvent event) {
+    public void onPlayerItemDamageEvent(PlayerItemDamageEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.nodurability.isGlobalyEnabled())
             return;
-        // disabling event on world
-        if (Residence.getInstance().isDisabledWorldListener(event.getPlayer().getWorld()))
-            return;
+
         Player player = event.getPlayer();
-        Location loc = player.getLocation();
-        if (!FlagPermissions.has(loc, Flags.nodurability, false))
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(player.getWorld()))
             return;
 
-        ItemStack held = CMIItemStack.getItemInMainHand(player);
-
-        if (held.getType() == Material.AIR)
+        if (FlagPermissions.has(player.getLocation(), Flags.nodurability, FlagCombo.FalseOrNone))
             return;
 
-        if (held.getType().toString().equalsIgnoreCase("TRIDENT"))
+        CMIMaterial held = CMIMaterial.get(event.getItem());
+        // https://github.com/Zrips/Residence/issues/359
+        // not sure if we need to keep this check line
+        if (held == CMIMaterial.TRIDENT)
             return;
 
-        event.setDamage(0);
         event.setCancelled(true);
+
     }
 }

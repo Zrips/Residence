@@ -995,38 +995,31 @@ public class ResidencePlayerListener implements Listener {
         if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
-        Player player = event.getPlayer();
-        if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player))
-            return;
+        Location loc = null;
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
             CMIMaterial heldItem = CMIMaterial.get(event.getItem());
             CMIMaterial bType = CMIMaterial.get(block.getType());
 
-            // Dye Interact Sign, change Monster_Spawner or Pumpkin
+            // Dye or Honeycomb Interact Sign, change Spawner,Pumpkin,Redstone_Wire
             // check Hoe Interact Rooted_Dirt, Fix upstream dupe
             // bug(https://github.com/PaperMC/Paper/issues/13536)
-            if ((bType.containsCriteria(CMIMC.SIGN) && heldItem.containsCriteria(CMIMC.DYE))
+            if ((bType.containsCriteria(CMIMC.SIGN) && (heldItem.containsCriteria(CMIMC.DYE) || heldItem == CMIMaterial.HONEYCOMB))
                     ||
                     ((bType == CMIMaterial.SPAWNER || bType == CMIMaterial.TRIAL_SPAWNER) && heldItem.containsCriteria(CMIMC.SPAWNEGG))
                     ||
                     (bType == CMIMaterial.PUMPKIN && heldItem == CMIMaterial.SHEARS)
                     ||
+                    (bType == CMIMaterial.REDSTONE_WIRE)
+                    ||
                     (bType == CMIMaterial.ROOTED_DIRT && heldItem.name().contains("_HOE"))) {
 
-                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-                if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
-                    return;
+                loc = block.getLocation();
 
-                lm.Flag_Deny.sendMessage(player, Flags.build);
-                event.setCancelled(true);
-                return;
-            }
-
-            // place Armor_Stand or End_Crystal
-            // Bone_Meal Interact block, Cocoa_BeansS checks maybe for lower versions
-            if (heldItem == CMIMaterial.ARMOR_STAND
+                // place Armor_Stand or End_Crystal
+                // Bone_Meal Interact block, Cocoa_BeansS checks maybe for lower versions
+            } else if (heldItem == CMIMaterial.ARMOR_STAND
                     ||
                     (heldItem == CMIMaterial.END_CRYSTAL && (bType == CMIMaterial.BEDROCK || bType == CMIMaterial.OBSIDIAN))
                     ||
@@ -1042,36 +1035,8 @@ public class ResidencePlayerListener implements Listener {
                             bType == CMIMaterial.COCOA ||
                             bType.containsCriteria(CMIMC.SAPLING)))) {
 
-                FlagPermissions perms = FlagPermissions.getPerms(block.getRelative(event.getBlockFace()).getLocation(), player);
-                if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
-                    return;
+                loc = block.getRelative(event.getBlockFace()).getLocation();
 
-                lm.Flag_Deny.sendMessage(player, Flags.build);
-                event.setCancelled(true);
-                return;
-            }
-
-            // place Boat or Minecart
-            if (Flags.vehicleplacing.isGlobalyEnabled()) {
-
-                if (heldItem.containsCriteria(CMIMC.BOAT)) {
-                    FlagPermissions perms = FlagPermissions.getPerms(block.getRelative(event.getBlockFace()).getLocation(), player);
-                    if (perms.playerHas(player, Flags.vehicleplacing, perms.playerHas(player, Flags.build, true)))
-                        return;
-
-                    lm.Flag_Deny.sendMessage(player, Flags.vehicleplacing);
-                    event.setCancelled(true);
-                    return;
-                }
-                if (heldItem.containsCriteria(CMIMC.MINECART) && bType.containsCriteria(CMIMC.RAIL)) {
-                    FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-                    if (perms.playerHas(player, Flags.vehicleplacing, perms.playerHas(player, Flags.build, true)))
-                        return;
-
-                    lm.Flag_Deny.sendMessage(player, Flags.vehicleplacing);
-                    event.setCancelled(true);
-                    return;
-                }
             }
 
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
@@ -1079,17 +1044,31 @@ public class ResidencePlayerListener implements Listener {
             if (Material.FIRE != block.getRelative(event.getBlockFace()).getType())
                 return;
 
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-            if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
-                return;
+            loc = block.getLocation();
 
-            lm.Flag_Deny.sendMessage(player, Flags.build);
-            event.setCancelled(true);
         }
+
+        if (loc == null)
+            return;
+
+        Player player = event.getPlayer();
+        if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player))
+            return;
+
+        FlagPermissions perms = FlagPermissions.getPerms(loc, player);
+        if (perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true)))
+            return;
+
+        lm.Flag_Deny.sendMessage(player, Flags.build);
+        event.setCancelled(true);
+
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerStepOn(PlayerInteractEvent event) {
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onPlayerStepOnPressurePlate(PlayerInteractEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.pressure.isGlobalyEnabled())
+            return;
 
         Block block = event.getClickedBlock();
         if (block == null)
@@ -1101,31 +1080,48 @@ public class ResidencePlayerListener implements Listener {
         if (event.getAction() != Action.PHYSICAL)
             return;
 
+        if (!CMIMaterial.get(block.getType()).containsCriteria(CMIMC.PRESSUREPLATE))
+            return;
+
+        Player player = event.getPlayer();
+        if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player))
+            return;
+
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+        if (perms.playerHas(player, Flags.pressure, (perms.playerHas(player, Flags.use, true))))
+            return;
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onPlayerStepOnFarmland(PlayerInteractEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.trample.isGlobalyEnabled())
+            return;
+
+        Block block = event.getClickedBlock();
+        if (block == null)
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
+
+        if (event.getAction() != Action.PHYSICAL)
+            return;
+
+        if (CMIMaterial.get(block.getType()) != CMIMaterial.FARMLAND)
+            return;
+
         Player player = event.getPlayer();
         if (player.hasMetadata("NPC"))
             return;
 
-        CMIMaterial mat = CMIMaterial.get(block.getType());
-        if (mat.isPlate()) {
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+        if (perms.playerHas(player, Flags.trample, (perms.playerHas(player, Flags.build, true))))
+            return;
 
-            if (ResAdmin.isResAdmin(player))
-                return;
-
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-            if (perms.playerHas(player, Flags.pressure, (perms.playerHas(player, Flags.use, true))))
-                return;
-
-            event.setCancelled(true);
-
-        } else if (mat == CMIMaterial.FARMLAND) {
-
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-            if (perms.playerHas(player, Flags.trample, (perms.playerHas(player, Flags.build, true))))
-                return;
-
-            event.setCancelled(true);
-
-        }
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -1514,6 +1510,9 @@ public class ResidencePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerRideVehicle(PlayerInteractEntityEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.riding.isGlobalyEnabled())
+            return;
 
         Entity entity = event.getRightClicked();
         // disabling event on world
@@ -1523,41 +1522,91 @@ public class ResidencePlayerListener implements Listener {
         if (!(entity instanceof Vehicle))
             return;
 
-        Player player = event.getPlayer();
-        if (ResAdmin.isResAdmin(player))
-            return;
-
         CMIEntityType type = CMIEntityType.get(entity);
-
-        if (type == CMIEntityType.COMMAND_BLOCK_MINECART) {
-            // Disabling listener if flag disabled globally
-            if (!Flags.commandblock.isGlobalyEnabled())
-                return;
-
-            if (FlagPermissions.has(entity.getLocation(), player, Flags.commandblock, true))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.commandblock);
-            event.setCancelled(true);
-            return;
-
-        }
-
-        // Disabling listener if flag disabled globally
-        if (!Flags.riding.isGlobalyEnabled())
-            return;
 
         // Non-rideable Vehicles
         if (type == CMIEntityType.CHEST_MINECART ||
                 type == CMIEntityType.FURNACE_MINECART ||
                 type == CMIEntityType.HOPPER_MINECART ||
+                type == CMIEntityType.COMMAND_BLOCK_MINECART ||
                 type == CMIEntityType.TNT_MINECART) {
             return;
         }
+
+        Player player = event.getPlayer();
+        if (ResAdmin.isResAdmin(player))
+            return;
+
         if (FlagPermissions.has(entity.getLocation(), player, Flags.riding, true))
             return;
 
         lm.Flag_Deny.sendMessage(player, Flags.riding);
+        event.setCancelled(true);
+
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerInteractCommandBlockMinecart(PlayerInteractEntityEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.commandblock.isGlobalyEnabled())
+            return;
+
+        Entity entity = event.getRightClicked();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(entity.getWorld()))
+            return;
+
+        if (CMIEntityType.get(entity) != CMIEntityType.COMMAND_BLOCK_MINECART)
+            return;
+
+        Player player = event.getPlayer();
+        if (ResAdmin.isResAdmin(player))
+            return;
+
+        if (FlagPermissions.has(entity.getLocation(), player, Flags.commandblock, true))
+            return;
+
+        lm.Flag_Deny.sendMessage(player, Flags.commandblock);
+        event.setCancelled(true);
+
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerPlaceVehicle(PlayerInteractEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.vehicleplacing.isGlobalyEnabled())
+            return;
+
+        Block block = event.getClickedBlock();
+        if (block == null)
+            return;
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
+            return;
+
+        Location loc = null;
+
+        CMIMaterial heldItem = CMIMaterial.get(event.getItem());
+
+        if (heldItem.containsCriteria(CMIMC.BOAT)) {
+            loc = block.getRelative(event.getBlockFace()).getLocation();
+        } else if (heldItem.containsCriteria(CMIMC.MINECART)
+                && CMIMaterial.get(block.getType()).containsCriteria(CMIMC.RAIL)) {
+            loc = block.getLocation();
+        }
+
+        if (loc == null)
+            return;
+
+        Player player = event.getPlayer();
+        if (ResAdmin.isResAdmin(player))
+            return;
+
+        FlagPermissions perms = FlagPermissions.getPerms(loc, player);
+        if (perms.playerHas(player, Flags.vehicleplacing, perms.playerHas(player, Flags.build, true)))
+            return;
+
+        lm.Flag_Deny.sendMessage(player, Flags.vehicleplacing);
         event.setCancelled(true);
 
     }

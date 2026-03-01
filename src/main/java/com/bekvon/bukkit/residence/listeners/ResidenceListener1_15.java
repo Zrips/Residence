@@ -47,35 +47,33 @@ public class ResidenceListener1_15 implements Listener {
         if (mat != Material.BEE_NEST && mat != Material.BEEHIVE)
             return;
 
-        Player player = event.getPlayer();
-        if (ResAdmin.isResAdmin(player))
-            return;
+        Flags flag = null;
 
         CMIMaterial heldItem = CMIMaterial.get(event.getItem());
 
         if (heldItem == CMIMaterial.GLASS_BOTTLE) {
-            if (CMILib.getInstance().getReflectionManager().getHoneyLevel(block) < CMILib.getInstance().getReflectionManager().getMaxHoneyLevel(block)) {
-                return;
-            }
-
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-            if (perms.playerHas(player, Flags.honey, perms.playerHas(player, Flags.build, true)))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.honey);
-            event.setCancelled(true);
-
+            flag = Flags.honey;
         } else if (heldItem == CMIMaterial.SHEARS) {
-            if (CMILib.getInstance().getReflectionManager().getHoneyLevel(block) < CMILib.getInstance().getReflectionManager().getMaxHoneyLevel(block)) {
-                return;
-            }
-
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-            if (perms.playerHas(player, Flags.honeycomb, perms.playerHas(player, Flags.build, true)))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.honeycomb);
-            event.setCancelled(true);
+            flag = Flags.honeycomb;
         }
+
+        if (flag == null)
+            return;
+
+        if (CMILib.getInstance().getReflectionManager().getHoneyLevel(block) < CMILib.getInstance().getReflectionManager().getMaxHoneyLevel(block)) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        if (ResAdmin.isResAdmin(player))
+            return;
+
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+        if (perms.playerHas(player, flag, perms.playerHas(player, Flags.build, true)))
+            return;
+
+        lm.Flag_Deny.sendMessage(player, flag);
+        event.setCancelled(true);
+
     }
 }

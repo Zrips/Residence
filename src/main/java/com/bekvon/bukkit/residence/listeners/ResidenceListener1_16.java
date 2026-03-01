@@ -31,11 +31,11 @@ public class ResidenceListener1_16 implements Listener {
         // Disabling listener if flag disabled globally
         if (!Flags.animalkilling.isGlobalyEnabled())
             return;
-
-        if (!event.getCause().equals(LightningStrikeEvent.Cause.TRIDENT))
-            return;
         // disabling event on world
         if (plugin.isDisabledWorldListener(event.getWorld()))
+            return;
+
+        if (event.getCause() != LightningStrikeEvent.Cause.TRIDENT)
             return;
 
         Player player = Version.isCurrentEqualOrHigher(Version.v1_20_R2)
@@ -59,7 +59,7 @@ public class ResidenceListener1_16 implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteractRespawn(PlayerInteractEvent event) {
         // Disabling listener if flag disabled globally
-        if (!Flags.destroy.isGlobalyEnabled())
+        if (!Flags.anchor.isGlobalyEnabled())
             return;
 
         Block block = event.getClickedBlock();
@@ -72,30 +72,19 @@ public class ResidenceListener1_16 implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
+        if (block.getType() != Material.RESPAWN_ANCHOR)
+            return;
+
         Player player = event.getPlayer();
         if (ResAdmin.isResAdmin(player))
             return;
 
-        Material mat = block.getType();
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+        if (perms.playerHas(player, Flags.anchor, perms.playerHas(player, Flags.destroy, true)))
+            return;
 
-        if (mat == Material.RESPAWN_ANCHOR) {
+        lm.Flag_Deny.sendMessage(player, Flags.anchor);
+        event.setCancelled(true);
 
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-            if (perms.playerHas(player, Flags.anchor, perms.playerHas(player, Flags.destroy, true)))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.anchor);
-            event.setCancelled(true);
-
-        } else if (mat == Material.REDSTONE_WIRE) {
-
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-            if (perms.playerHas(player, Flags.build, true))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.build);
-            event.setCancelled(true);
-
-        }
     }
 }
