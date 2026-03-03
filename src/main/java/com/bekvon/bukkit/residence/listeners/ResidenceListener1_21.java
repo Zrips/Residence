@@ -58,7 +58,7 @@ public class ResidenceListener1_21 implements Listener {
 
     // Prevent player from taking away animals in Residence by pulling boat
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onAnimalEntersLeashedStateVehicle(VehicleEnterEvent event) {
+    public void onAnimalEntersLeashedBoat(VehicleEnterEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.leash.isGlobalyEnabled())
             return;
@@ -78,7 +78,8 @@ public class ResidenceListener1_21 implements Listener {
 
         if (Version.isPaperBranch()) {
             // if vehicle is not leashed, skip check
-            if (!((io.papermc.paper.entity.Leashable) vehicle).isLeashed()) {
+            if (vehicle instanceof io.papermc.paper.entity.Leashable
+                    && !((io.papermc.paper.entity.Leashable) vehicle).isLeashed()) {
                 return;
             }
 
