@@ -178,7 +178,7 @@ public class ResidenceListener1_14 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerharvest(PlayerInteractEvent event) {
+    public void onPlayerInteractHarvest(PlayerInteractEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.harvest.isGlobalyEnabled())
             return;

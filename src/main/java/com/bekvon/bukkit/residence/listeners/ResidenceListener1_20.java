@@ -8,16 +8,13 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSignOpenEvent;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
@@ -34,52 +31,12 @@ public class ResidenceListener1_20 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onSignWax(PlayerInteractEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.build.isGlobalyEnabled())
-            return;
-
-        Player player = event.getPlayer();
-        if (player == null)
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(player.getWorld()))
-            return;
-
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
-            return;
-
-        if (event.getItem() == null || event.getItem().getType() != Material.HONEYCOMB)
-            return;
-
-        Block block = event.getClickedBlock();
-        if (block == null)
-            return;
-
-        if (!CMIMaterial.isSign(block.getType()))
-            return;
-
-        if (ResPerm.bypass_build.hasPermission(player, 10000L))
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-
-        if (perms.playerHas(player, Flags.build, true))
-            return;
-
-        lm.Flag_Deny.sendMessage(player, Flags.build);
-        event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onSignInteract(PlayerSignOpenEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.build.isGlobalyEnabled())
             return;
 
         Player player = event.getPlayer();
-        if (player == null)
-            return;
         // disabling event on world
         if (plugin.isDisabledWorldListener(player.getWorld()))
             return;
@@ -104,84 +61,79 @@ public class ResidenceListener1_20 implements Listener {
 
     }
 
-    // Projectile hit chorus_flower decorated_pot pointed_dripstone
-    // Sweep SuspiciousBlocks
+    // Projectile hit chorus_flower,decorated_pot,pointed_dripstone
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onProjectilePlayerChangeBlock(EntityChangeBlockEvent event) {
+    public void onProjectileChangeBlock(EntityChangeBlockEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.destroy.isGlobalyEnabled())
             return;
 
         Block block = event.getBlock();
-        if (block == null)
-            return;
-
         // disabling event on world
         if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
         Entity entity = event.getEntity();
-        // Only check projectile
-        if (entity instanceof Projectile) {
-            Projectile projectile = (Projectile) entity;
 
-            Player player = null;
+        if (!(entity instanceof Projectile))
+            return;
 
-            // Get projectile player source
-            if (projectile.getShooter() instanceof Player) {
-                player = (Player) projectile.getShooter();
-            }
+        Player player = Utils.potentialProjectileToPlayer(entity);
 
-            // have player source
-            if (player != null) {
+        if (player != null) {
 
-                if (ResAdmin.isResAdmin(player))
-                    return;
-
-                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-                if (perms.playerHas(player, Flags.destroy, true))
-                    return;
-
-                lm.Flag_Deny.sendMessage(player, Flags.destroy);
-                event.setCancelled(true);
+            if (ResAdmin.isResAdmin(player))
                 return;
 
-            }
-            // Not player source
+            if (FlagPermissions.has(block.getLocation(), player, Flags.destroy, true))
+                return;
+
+            lm.Flag_Deny.sendMessage(player, Flags.destroy);
+            event.setCancelled(true);
+
+        } else {
             // Check potential block as a shooter which should be allowed if its inside same
             // residence
             if (Utils.isSourceBlockInsideSameResidence(entity, ClaimedResidence.getByLoc(block.getLocation())))
                 return;
 
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
-            if (perms.has(Flags.destroy, true))
+            if (FlagPermissions.has(block.getLocation(), Flags.destroy, true))
                 return;
 
             event.setCancelled(true);
-            return;
 
         }
-        // Event not triggered by projectile
-        // Only check SuspiciousBlocks
-        CMIMaterial blockM = CMIMaterial.get(block.getType());
-        if (blockM != CMIMaterial.SUSPICIOUS_SAND &&
-                blockM != CMIMaterial.SUSPICIOUS_GRAVEL)
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onPlayerChangeSuspiciousBlock(EntityChangeBlockEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.brush.isGlobalyEnabled())
             return;
 
-        // Only check player
-        if (!(entity instanceof Player))
+        Block block = event.getBlock();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
-        Player player = (Player) entity;
+        if (!(event.getEntity() instanceof Player))
+            return;
 
+        Material mat = block.getType();
+
+        if (mat != Material.SUSPICIOUS_GRAVEL && mat != Material.SUSPICIOUS_SAND)
+            return;
+
+        Player player = (Player) event.getEntity();
         if (ResAdmin.isResAdmin(player))
             return;
 
         FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-        if (perms.playerHas(player, Flags.brush, perms.playerHas(player, Flags.destroy, true)))
+        if (perms.playerHas(player, Flags.brush, perms.playerHas(player, Flags.build, true)))
             return;
 
         lm.Flag_Deny.sendMessage(player, Flags.brush);
         event.setCancelled(true);
+
     }
 }

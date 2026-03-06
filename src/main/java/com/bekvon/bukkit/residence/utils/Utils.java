@@ -258,13 +258,18 @@ public class Utils {
     }
 
     public static boolean isAnimal(Entity ent) {
+        if (ent == null) {
+            return false;
+        }
+        CMIEntityType type = CMIEntityType.get(ent);
         return (ent instanceof Animals ||
                 ent instanceof WaterMob ||
                 ent instanceof NPC ||
                 ent instanceof Bat ||
                 ent instanceof Snowman ||
                 ent instanceof IronGolem ||
-                (ent != null && (CMIEntityType.get(ent) == CMIEntityType.ALLAY || CMIEntityType.get(ent) == CMIEntityType.COPPER_GOLEM)));
+                type == CMIEntityType.ALLAY ||
+                type == CMIEntityType.COPPER_GOLEM);
     }
 
     public static boolean isArmorStandEntity(EntityType ent) {
