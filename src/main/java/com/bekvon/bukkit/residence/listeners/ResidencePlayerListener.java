@@ -982,47 +982,6 @@ public class ResidencePlayerListener implements Listener {
         return false;
     }
 
-    private boolean isBuildClickBlock(CMIMaterial block, CMIMaterial held) {
-        // Dye or Honeycomb Interact Sign, change Spawner,Pumpkin,Redstone_Wire
-        // check Hoe Interact Rooted_Dirt, Fix upstream dupe
-        // bug(https://github.com/PaperMC/Paper/issues/13536)
-        if (block.containsCriteria(CMIMC.SIGN)) {
-            return held.containsCriteria(CMIMC.DYE) || held == CMIMaterial.HONEYCOMB;
-        }
-        switch (block) {
-        case PUMPKIN:
-            return held == CMIMaterial.SHEARS;
-        case REDSTONE_WIRE:
-            return true;
-        case ROOTED_DIRT:
-            return held.name().contains("_HOE");
-        case SPAWNER:
-        case TRIAL_SPAWNER:
-            return held.containsCriteria(CMIMC.SPAWNEGG);
-        default:
-            break;
-        }
-        return false;
-    }
-
-    private boolean isBuildClickBlockFace(CMIMaterial block, CMIMaterial held) {
-        // place Armor_Stand or End_Crystal
-        // Bone_Meal Interact block, Cocoa_BeansS checks maybe for lower versions
-        switch (held) {
-        case ARMOR_STAND:
-            return true;
-        case BONE_MEAL:
-            return isBlockFertilizable(block);
-        case COCOA_BEANS:
-            return block == CMIMaterial.JUNGLE_LOG || block == CMIMaterial.JUNGLE_WOOD;
-        case END_CRYSTAL:
-            return block == CMIMaterial.BEDROCK || block == CMIMaterial.OBSIDIAN;
-        default:
-            break;
-        }
-        return false;
-    }
-
     private boolean isBlockFertilizable(CMIMaterial block) {
         if (block.containsCriteria(CMIMC.SAPLING)) {
             return true;
@@ -1042,6 +1001,50 @@ public class ResidencePlayerListener implements Listener {
             return true;
         default:
             break;
+        }
+        return false;
+    }
+
+    private boolean isBuildClickBlock(CMIMaterial block, CMIMaterial held) {
+        if(held == CMIMaterial.BONE_MEAL) {
+            return isBlockFertilizable(block);
+        }
+        if (block.containsCriteria(CMIMC.SIGN)) {
+            return held.containsCriteria(CMIMC.DYE) || held == CMIMaterial.HONEYCOMB;
+        }
+        switch (block) {
+        case PUMPKIN:
+            return held == CMIMaterial.SHEARS;
+        case REDSTONE_WIRE:
+            return true;
+        case ROOTED_DIRT:
+            // check Hoe interact Rooted_Dirt, Fix upstream dupe
+            // bug(https://github.com/PaperMC/Paper/issues/13536)
+            return held.name().contains("_HOE");
+        case SPAWNER:
+        case TRIAL_SPAWNER:
+            return held.containsCriteria(CMIMC.SPAWNEGG);
+        default:
+            break;
+        }
+        return false;
+    }
+
+    private boolean isBuildClickBlockFace(CMIMaterial block, CMIMaterial held) {
+        switch (held) {
+        case ARMOR_STAND:
+            return true;
+        case COCOA_BEANS:
+            return block == CMIMaterial.JUNGLE_LOG || block == CMIMaterial.JUNGLE_WOOD;
+        default:
+            break;
+        }
+        return false;
+    }
+
+    private boolean isBuildClickBlockTop(CMIMaterial block, CMIMaterial held) {
+        if (held == CMIMaterial.END_CRYSTAL) {
+            return block == CMIMaterial.BEDROCK || block == CMIMaterial.OBSIDIAN;
         }
         return false;
     }
@@ -1067,12 +1070,16 @@ public class ResidencePlayerListener implements Listener {
             CMIMaterial heldItem = CMIMaterial.get(event.getItem());
             if (isBuildClickBlock(blockType, heldItem)) {
                 loc = block.getLocation();
+
             } else if (isBuildClickBlockFace(blockType, heldItem)) {
                 loc = block.getRelative(event.getBlockFace()).getLocation();
+
+            } else if (isBuildClickBlockTop(blockType, heldItem)) {
+                loc = block.getLocation().clone().add(0, 1, 0);
+
             }
             break;
         case LEFT_CLICK_BLOCK:
-            // Check extinguish Fire by hand, this checks maybe for lower versions
             if (block.getRelative(event.getBlockFace()).getType() == Material.FIRE) {
                 loc = block.getLocation();
             }
