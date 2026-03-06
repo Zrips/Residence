@@ -982,6 +982,70 @@ public class ResidencePlayerListener implements Listener {
         return false;
     }
 
+    private boolean isBuildClickBlock(CMIMaterial block, CMIMaterial held) {
+        // Dye or Honeycomb Interact Sign, change Spawner,Pumpkin,Redstone_Wire
+        // check Hoe Interact Rooted_Dirt, Fix upstream dupe
+        // bug(https://github.com/PaperMC/Paper/issues/13536)
+        if (block.containsCriteria(CMIMC.SIGN)) {
+            return held.containsCriteria(CMIMC.DYE) || held == CMIMaterial.HONEYCOMB;
+        }
+        switch (block) {
+        case PUMPKIN:
+            return held == CMIMaterial.SHEARS;
+        case REDSTONE_WIRE:
+            return true;
+        case ROOTED_DIRT:
+            return held.name().contains("_HOE");
+        case SPAWNER:
+        case TRIAL_SPAWNER:
+            return held.containsCriteria(CMIMC.SPAWNEGG);
+        default:
+            break;
+        }
+        return false;
+    }
+
+    private boolean isBuildClickBlockFace(CMIMaterial block, CMIMaterial held) {
+        // place Armor_Stand or End_Crystal
+        // Bone_Meal Interact block, Cocoa_BeansS checks maybe for lower versions
+        switch (held) {
+        case ARMOR_STAND:
+            return true;
+        case BONE_MEAL:
+            return isBlockFertilizable(block);
+        case COCOA_BEANS:
+            return block == CMIMaterial.JUNGLE_LOG || block == CMIMaterial.JUNGLE_WOOD;
+        case END_CRYSTAL:
+            return block == CMIMaterial.BEDROCK || block == CMIMaterial.OBSIDIAN;
+        default:
+            break;
+        }
+        return false;
+    }
+
+    private boolean isBlockFertilizable(CMIMaterial block) {
+        if (block.containsCriteria(CMIMC.SAPLING)) {
+            return true;
+        }
+        // 1.17+ has BlockFertilizeEvent, only need to check the Sapling above
+        if (Version.isCurrentEqualOrHigher(Version.v1_17_R1)) {
+            return false;
+        }
+        switch (block) {
+        case COCOA:
+        case GRASS_BLOCK:
+        case KELP:
+        case KELP_PLANT:
+        case SEAGRASS:
+        case SEA_PICKLE:
+        case SHORT_GRASS:
+            return true;
+        default:
+            break;
+        }
+        return false;
+    }
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerBuildWithSpecificItems(PlayerInteractEvent event) {
         // Disabling listener if flag disabled globally
@@ -997,55 +1061,24 @@ public class ResidencePlayerListener implements Listener {
 
         Location loc = null;
 
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-
+        switch (event.getAction()) {
+        case RIGHT_CLICK_BLOCK:
+            CMIMaterial blockType = CMIMaterial.get(block.getType());
             CMIMaterial heldItem = CMIMaterial.get(event.getItem());
-            CMIMaterial bType = CMIMaterial.get(block.getType());
-
-            // Dye or Honeycomb Interact Sign, change Spawner,Pumpkin,Redstone_Wire
-            // check Hoe Interact Rooted_Dirt, Fix upstream dupe
-            // bug(https://github.com/PaperMC/Paper/issues/13536)
-            if ((bType.containsCriteria(CMIMC.SIGN) && (heldItem.containsCriteria(CMIMC.DYE) || heldItem == CMIMaterial.HONEYCOMB))
-                    ||
-                    ((bType == CMIMaterial.SPAWNER || bType == CMIMaterial.TRIAL_SPAWNER) && heldItem.containsCriteria(CMIMC.SPAWNEGG))
-                    ||
-                    (bType == CMIMaterial.PUMPKIN && heldItem == CMIMaterial.SHEARS)
-                    ||
-                    (bType == CMIMaterial.REDSTONE_WIRE)
-                    ||
-                    (bType == CMIMaterial.ROOTED_DIRT && heldItem.name().contains("_HOE"))) {
-
+            if (isBuildClickBlock(blockType, heldItem)) {
                 loc = block.getLocation();
-
-                // place Armor_Stand or End_Crystal
-                // Bone_Meal Interact block, Cocoa_BeansS checks maybe for lower versions
-            } else if (heldItem == CMIMaterial.ARMOR_STAND
-                    ||
-                    (heldItem == CMIMaterial.END_CRYSTAL && (bType == CMIMaterial.BEDROCK || bType == CMIMaterial.OBSIDIAN))
-                    ||
-                    (heldItem == CMIMaterial.COCOA_BEANS && (bType == CMIMaterial.JUNGLE_LOG || bType == CMIMaterial.JUNGLE_WOOD))
-                    ||
-                    (heldItem == CMIMaterial.BONE_MEAL && (bType == CMIMaterial.GRASS_BLOCK ||
-                            bType == CMIMaterial.SHORT_GRASS ||
-                            bType == CMIMaterial.TALL_SEAGRASS ||
-                            bType == CMIMaterial.MOSS_BLOCK ||
-                            bType == CMIMaterial.BIG_DRIPLEAF_STEM ||
-                            bType == CMIMaterial.BIG_DRIPLEAF ||
-                            bType == CMIMaterial.SMALL_DRIPLEAF ||
-                            bType == CMIMaterial.COCOA ||
-                            bType.containsCriteria(CMIMC.SAPLING)))) {
-
+            } else if (isBuildClickBlockFace(blockType, heldItem)) {
                 loc = block.getRelative(event.getBlockFace()).getLocation();
-
             }
-
-        } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            break;
+        case LEFT_CLICK_BLOCK:
             // Check extinguish Fire by hand, this checks maybe for lower versions
-            if (Material.FIRE != block.getRelative(event.getBlockFace()).getType())
-                return;
-
-            loc = block.getLocation();
-
+            if (block.getRelative(event.getBlockFace()).getType() == Material.FIRE) {
+                loc = block.getLocation();
+            }
+            break;
+        default:
+            return;
         }
 
         if (loc == null)
@@ -1440,12 +1473,29 @@ public class ResidencePlayerListener implements Listener {
         }
     }
 
-    private static boolean canHaveContainer(Entity entity) {
-
-        if (Version.isCurrentEqualOrHigher(Version.v1_19_R1)) {
-            return ResidenceListener1_19.canHaveContainer1_19(entity);
+    private boolean canHaveContainer(Entity entity, Player player) {
+        CMIEntityType type = CMIEntityType.get(entity);
+        if (type != null) {
+            // Click to open container entities
+            switch (type) {
+            case ALLAY:
+            case CHEST_MINECART:
+            case FURNACE_MINECART:
+            case HOPPER_MINECART:
+                return true;
+            default:
+                break;
+            }
         }
-        return entity instanceof AbstractHorse;
+        // Click requires sneaking to open these entity containers
+        // Avoid overriding Flags.riding
+        if (player.isSneaking()) {
+            if (Version.isCurrentEqualOrHigher(Version.v1_19_R1)) {
+                return ResidenceListener1_19.canHaveContainer1_19(entity);
+            }
+            return entity instanceof AbstractHorse;
+        }
+        return false;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1463,14 +1513,8 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         Entity entity = event.getRightClicked();
-        CMIEntityType type = CMIEntityType.get(entity);
 
-        if ((player.isSneaking() && canHaveContainer(entity))
-                ||
-                (type == CMIEntityType.CHEST_MINECART ||
-                        type == CMIEntityType.FURNACE_MINECART ||
-                        type == CMIEntityType.HOPPER_MINECART ||
-                        type == CMIEntityType.ALLAY)) {
+        if (canHaveContainer(entity, player)) {
 
             if (FlagPermissions.has(entity.getLocation(), player, Flags.container, true))
                 return;
@@ -1523,14 +1567,19 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         CMIEntityType type = CMIEntityType.get(entity);
-
-        // Non-rideable Vehicles
-        if (type == CMIEntityType.CHEST_MINECART ||
-                type == CMIEntityType.FURNACE_MINECART ||
-                type == CMIEntityType.HOPPER_MINECART ||
-                type == CMIEntityType.COMMAND_BLOCK_MINECART ||
-                type == CMIEntityType.TNT_MINECART) {
-            return;
+        if (type != null) {
+            // Non-rideable Vehicles
+            switch (type) {
+            case CHEST_MINECART:
+            case COMMAND_BLOCK_MINECART:
+            case FURNACE_MINECART:
+            case HOPPER_MINECART:
+            case SPAWNER_MINECART:
+            case TNT_MINECART:
+                return;
+            default:
+                break;
+            }
         }
 
         Player player = event.getPlayer();
