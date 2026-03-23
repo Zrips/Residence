@@ -1,6 +1,7 @@
 package com.bekvon.bukkit.residence.webmap;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -14,6 +15,7 @@ import net.Zrips.CMILib.FileHandler.ConfigReader;
 public class WebMapManager {
 
     WebMap webmap = null;
+    private final List<WebMap> webmaps = new ArrayList<>();
     MapSettings settings = null;
 
     private boolean use;
@@ -70,59 +72,73 @@ public class WebMapManager {
         if (!use)
             return;
 
-        try {
-            // DynMap
-            Plugin dynmap = Bukkit.getPluginManager().getPlugin("dynmap");
-            if (dynmap != null) {
-                webmap = new DynWebMap();
-
+        Plugin dynmap = Bukkit.getPluginManager().getPlugin("dynmap");
+        if (dynmap != null) {
+            try {
+                DynWebMap d = new DynWebMap();
+                d.settings = settings;
+                d.activate();
+                webmaps.add(d);
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
-        } catch (Throwable e) {
-            e.printStackTrace();
         }
 
-        try {
-            // Pl3xMap
-            Plugin pl3xmap = Bukkit.getPluginManager().getPlugin("Pl3xMap");
-            if (pl3xmap != null) {
-                webmap = new Pl3xWebMap();
+// Try Pl3xMap
+        Plugin pl3xmap = Bukkit.getPluginManager().getPlugin("Pl3xMap");
+        if (pl3xmap != null) {
+            try {
+                Pl3xWebMap p = new Pl3xWebMap();
+                p.settings = settings;
+                p.activate();
+                webmaps.add(p);
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
-        } catch (Throwable e) {
-            e.printStackTrace();
         }
 
-        try {
-            // BlueMap
-            Plugin bluemap = Bukkit.getPluginManager().getPlugin("BlueMap");
-            if (bluemap != null) {
-                webmap = new BlueWebMap();
+// Try BlueMap
+        Plugin bluemap = Bukkit.getPluginManager().getPlugin("BlueMap");
+        if (bluemap != null) {
+            try {
+                BlueWebMap b = new BlueWebMap();
+                b.settings = settings;
+                b.activate();
+                webmaps.add(b);
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
-        } catch (Throwable e) {
-            e.printStackTrace();
         }
 
-        if (webmap != null) {
-            // Config load can happen before initialization
-            if (settings != null)
-                webmap.settings = settings;
-            webmap.activate();
-            Bukkit.getServer().getPluginManager().registerEvents(new WebMapListeners(Residence.getInstance()), Residence.getInstance());
+        if (!webmaps.isEmpty()) {
+            Bukkit.getServer().getPluginManager().registerEvents(
+                    new WebMapListeners(Residence.getInstance()),
+                    Residence.getInstance()
+            );
         }
     }
 
     public void fireUpdateRemove(final ClaimedResidence res) {
-        if (webmap != null)
-            webmap.fireUpdateRemove(res, res.getSubzoneDeep());
+        if (webmaps.isEmpty()) return;
+        int depth = res.getSubzoneDeep();
+        for (WebMap map : webmaps) {
+            map.fireUpdateRemove(res, depth);
+        }
     }
 
     public void fireUpdateAdd(final ClaimedResidence res) {
-        if (webmap != null)
-            webmap.fireUpdateAdd(res, res.getSubzoneDeep());
+        if (webmaps.isEmpty()) return;
+        int depth = res.getSubzoneDeep();
+        for (WebMap map : webmaps) {
+            map.fireUpdateAdd(res, depth);
+        }
     }
 
     public void handleResidenceRemove(String resid, ClaimedResidence res) {
-        if (webmap != null)
-            webmap.handleResidenceRemove(resid, res, res.getSubzoneDeep());
+        if (webmaps.isEmpty()) return;
+        int depth = res.getSubzoneDeep();
+        for (WebMap map : webmaps) {
+            map.handleResidenceRemove(resid, res, depth);
+        }
     }
-
 }

@@ -36,6 +36,9 @@ public class reload implements cmd {
             return true;
         case "config":
             plugin.getConfigManager().UpdateConfigFile();
+            if (plugin.getWebMapManager() != null) {
+                plugin.getWebMapManager().activate();
+            }
             CMIMessages.sendMessage(sender, plugin.getPrefix() + " Reloaded config file.");
             return true;
         case "groups":
