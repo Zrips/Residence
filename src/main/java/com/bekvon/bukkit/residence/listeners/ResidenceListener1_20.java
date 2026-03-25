@@ -15,12 +15,8 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
-import com.bekvon.bukkit.residence.utils.Utils;
-
-import net.Zrips.CMILib.Items.CMIMaterial;
 
 public class ResidenceListener1_20 implements Listener {
 
@@ -64,45 +60,15 @@ public class ResidenceListener1_20 implements Listener {
     // Projectile hit chorus_flower,decorated_pot,pointed_dripstone
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onProjectileChangeBlock(EntityChangeBlockEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.destroy.isGlobalyEnabled())
-            return;
-
-        Block block = event.getBlock();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld()))
-            return;
 
         Entity entity = event.getEntity();
-
-        if (!(entity instanceof Projectile))
+        if (!(entity instanceof Projectile)) {
             return;
-
-        Player player = Utils.potentialProjectileToPlayer(entity);
-
-        if (player != null) {
-
-            if (ResAdmin.isResAdmin(player))
-                return;
-
-            if (FlagPermissions.has(block.getLocation(), player, Flags.destroy, true))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.destroy);
-            event.setCancelled(true);
-
-        } else {
-            // Check potential block as a shooter which should be allowed if its inside same
-            // residence
-            if (Utils.isSourceBlockInsideSameResidence(entity, ClaimedResidence.getByLoc(block.getLocation())))
-                return;
-
-            if (FlagPermissions.has(block.getLocation(), Flags.destroy, true))
-                return;
-
-            event.setCancelled(true);
-
         }
+        if (ResidenceListener1_14.shouldBlockProjectileHit(event.getBlock(), (Projectile) entity, Flags.destroy)) {
+            event.setCancelled(true);
+        }
+
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

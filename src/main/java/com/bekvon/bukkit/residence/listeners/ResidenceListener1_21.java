@@ -160,11 +160,19 @@ public class ResidenceListener1_21 implements Listener {
         if (!ent.hasPotionEffect(PotionEffectType.WEAVING))
             return;
 
-        Location loc = ent.getLocation();
-        FlagPermissions perms = FlagPermissions.getPerms(loc);
-        if (perms.has(Flags.build, FlagCombo.TrueOrNone))
-            return;
+        if (ent instanceof Player) {
 
+            Player player = (Player) ent;
+            if (ResAdmin.isResAdmin(player)) {
+                return;
+            }
+            if (FlagPermissions.has(ent.getLocation(), player, Flags.build, true)) {
+                return;
+            }
+
+        } else if (FlagPermissions.has(ent.getLocation(), Flags.build, true)) {
+            return;
+        }
         // Removing weaving effect on death as there is no other way to properly handle
         // this effect inside residence
         ent.removePotionEffect(PotionEffectType.WEAVING);

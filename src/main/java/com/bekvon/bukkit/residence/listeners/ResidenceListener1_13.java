@@ -99,35 +99,18 @@ public class ResidenceListener1_13 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onEntityTouchButtonPlateDenyMsg(ProjectileHitEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.use.isGlobalyEnabled())
-            return;
-        // Avoid Projectile getWorld NPE
+    public void onEntityInteractDenyMsg(ProjectileHitEvent event) {
+
         Block hitBlock = event.getHitBlock();
-        if (hitBlock == null)
+        if (hitBlock == null || event.getHitBlockFace() == null) {
             return;
-
-        if (plugin.isDisabledWorldListener(hitBlock.getWorld()))
-            return;
-
-        if (event.getHitBlockFace() == null)
-            return;
-
-        Block block = hitBlock.getLocation().clone().add(event.getHitBlockFace().getDirection()).getBlock();
-
-        Flags flag = null;
-
-        CMIMaterial cmat = CMIMaterial.get(block.getType());
-
-        if (cmat.containsCriteria(CMIMC.BUTTON)) {
-            flag = Flags.button;
-        } else if (cmat.containsCriteria(CMIMC.PRESSUREPLATE)) {
-            flag = Flags.pressure;
         }
+        Block hitBlockFace = hitBlock.getLocation().clone().add(event.getHitBlockFace().getDirection()).getBlock();
 
-        if (flag == null)
+        Flags flag = getBlockFlag(hitBlockFace);
+        if (flag == null) {
             return;
+        }
 
         Player player = Utils.potentialProjectileToPlayer(event.getEntity());
         if (player == null)
@@ -136,7 +119,7 @@ public class ResidenceListener1_13 implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
 
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+        FlagPermissions perms = FlagPermissions.getPerms(hitBlockFace.getLocation(), player);
         if (perms.playerHas(player, flag, perms.playerHas(player, Flags.use, true)))
             return;
 
@@ -146,35 +129,52 @@ public class ResidenceListener1_13 implements Listener {
 
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onEntityTouchButtonPlate(EntityInteractEvent event) {
+    private Flags getBlockFlag(Block block) {
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld())) {
+            return null;
+        }
+        CMIMaterial mat = CMIMaterial.get(block.getType());
+        CMIMC type;
+        if (mat.containsCriteria(CMIMC.BUTTON)) {
+            type = CMIMC.BUTTON;
+
+        } else if (mat.containsCriteria(CMIMC.PRESSUREPLATE)) {
+            type = CMIMC.PRESSUREPLATE;
+
+        } else {
+            return null;
+
+        }
+        Flags flag = (type == CMIMC.BUTTON) ? Flags.button : Flags.pressure;
         // Disabling listener if flag disabled globally
-        if (!Flags.use.isGlobalyEnabled())
-            return;
+        if (!flag.isGlobalyEnabled()) {
+            return null;
+        }
+        return flag;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onEntityInteractEvent(EntityInteractEvent event) {
 
         Block block = event.getBlock();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld()))
+        Flags flag = getBlockFlag(block);
+        if (flag == null) {
             return;
-
-        Entity entity = event.getEntity();
-        // Only check Projectile and DropItem
-        if (!(entity instanceof Projectile) && !(entity instanceof Item))
-            return;
-
-        Flags flag = null;
-
-        CMIMaterial cmat = CMIMaterial.get(block.getType());
-
-        if (cmat.containsCriteria(CMIMC.BUTTON)) {
-            flag = Flags.button;
-        } else if (cmat.containsCriteria(CMIMC.PRESSUREPLATE)) {
-            flag = Flags.pressure;
         }
+        Entity entity = event.getEntity();
 
-        if (flag == null)
-            return;
-
+        if (flag == Flags.button) {
+            // Button: Only projectiles
+            if (!(entity instanceof Projectile)) {
+                return;
+            }
+        } else {
+            // Pressure Plate: Projectiles and items
+            if (!(entity instanceof Projectile) && !(entity instanceof Item)) {
+                return;
+            }
+        }
         Player player = Utils.potentialProjectileToPlayer(entity);
         if (player != null) {
 

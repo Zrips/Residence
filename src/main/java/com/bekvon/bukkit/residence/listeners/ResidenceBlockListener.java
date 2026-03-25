@@ -301,11 +301,14 @@ public class ResidenceBlockListener implements Listener {
             return;
         }
 
-        CMIMaterial newBlock = CMIMaterial.get(event.getNewState().getType());
+        CMIMaterial mat = CMIMaterial.get(event.getNewState().getType());
 
-        if (newBlock != CMIMaterial.FROSTED_ICE
-                && newBlock != CMIMaterial.ICE
-                && newBlock != CMIMaterial.SNOW) {
+        switch (mat) {
+        case FROSTED_ICE:
+        case ICE:
+        case SNOW:
+            break;
+        default:
             return;
         }
 

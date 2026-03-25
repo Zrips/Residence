@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -136,44 +137,46 @@ public class ResidenceListener1_14 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onProjectileHitBell(ProjectileHitEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.use.isGlobalyEnabled())
-            return;
 
         Block block = event.getHitBlock();
-        if (block == null)
+        if (block == null || block.getType() != Material.BELL) {
             return;
+        }
+        if (shouldBlockProjectileHit(block, event.getEntity(), Flags.use)) {
+            event.setCancelled(true);
+        }
+
+    }
+
+    public static boolean shouldBlockProjectileHit(Block block, Projectile projectile, Flags flag) {
+        // Disabling listener if flag disabled globally
+        if (!flag.isGlobalyEnabled()) {
+            return false;
+        }
         // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld()))
-            return;
-
-        if (block.getType() != Material.BELL)
-            return;
-
-        Player player = Utils.potentialProjectileToPlayer(event.getEntity());
+        if (Residence.getInstance().isDisabledWorldListener(block.getWorld())) {
+            return false;
+        }
+        Player player = Utils.potentialProjectileToPlayer(projectile);
         if (player != null) {
 
-            if (ResAdmin.isResAdmin(player))
-                return;
-
-            if (FlagPermissions.has(block.getLocation(), player, Flags.use, true))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.use);
-            event.setCancelled(true);
+            if (ResAdmin.isResAdmin(player)) {
+                return false;
+            }
+            if (FlagPermissions.has(block.getLocation(), player, flag, FlagCombo.OnlyFalse)) {
+                lm.Flag_Deny.sendMessage(player, flag);
+                return true;
+            }
+            return false;
 
         } else {
-            // Entity not player source
+            // projectile not player source
             // Check potential block as a shooter which should be allowed if its inside same
             // residence
-            if (Utils.isSourceBlockInsideSameResidence(event.getEntity(), ClaimedResidence.getByLoc(block.getLocation())))
-                return;
-
-            if (FlagPermissions.has(block.getLocation(), Flags.use, true))
-                return;
-
-            event.setCancelled(true);
-
+            if (Utils.isSourceBlockInsideSameResidence(projectile, ClaimedResidence.getByLoc(block.getLocation()))) {
+                return false;
+            }
+            return FlagPermissions.has(block.getLocation(), flag, FlagCombo.OnlyFalse);
         }
     }
 
@@ -195,7 +198,12 @@ public class ResidenceListener1_14 implements Listener {
 
         CMIMaterial mat = CMIMaterial.get(block.getType());
 
-        if (mat != CMIMaterial.SWEET_BERRY_BUSH && mat != CMIMaterial.CAVE_VINES && mat != CMIMaterial.CAVE_VINES_PLANT) {
+        switch (mat) {
+        case CAVE_VINES:
+        case CAVE_VINES_PLANT:
+        case SWEET_BERRY_BUSH:
+            break;
+        default:
             return;
         }
 
