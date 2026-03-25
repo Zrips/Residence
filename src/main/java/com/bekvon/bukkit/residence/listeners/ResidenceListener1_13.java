@@ -6,32 +6,24 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Farmland;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fish;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
-import net.Zrips.CMILib.Items.CMIMC;
-import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_13 implements Listener {
@@ -86,18 +78,7 @@ public class ResidenceListener1_13 implements Listener {
         return true;
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onTrampleTurtleEgg(PlayerInteractEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.destroy.isGlobalyEnabled())
-            return;
-        Block block = event.getClickedBlock();
-        if (block == null || event.getAction() != Action.PHYSICAL || block.getType() != Material.TURTLE_EGG)
-            return;
-        if (!ResidenceBlockListener.canBreakBlock(event.getPlayer(), block.getLocation(), true))
-            event.setCancelled(true);
-    }
-
+    // Send message when player projectile hitting Button/Pressure_Plate is denied
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityInteractDenyMsg(ProjectileHitEvent event) {
 
@@ -107,8 +88,8 @@ public class ResidenceListener1_13 implements Listener {
         }
         Block hitBlockFace = hitBlock.getLocation().clone().add(event.getHitBlockFace().getDirection()).getBlock();
 
-        Flags flag = getBlockFlag(hitBlockFace);
-        if (flag == null) {
+        Flags flag = FlagPermissions.checkBlockPhysicalFlag(hitBlockFace);
+        if (flag != Flags.button && flag != Flags.pressure) {
             return;
         }
 
@@ -124,85 +105,14 @@ public class ResidenceListener1_13 implements Listener {
             return;
 
         // The perfect spot, the earlier check sends exactly one deny msg
-        // for the EntityInteractEvent below to avoid chat spam
+        // avoid chat spam
         lm.Flag_Deny.sendMessage(player, flag);
-
-    }
-
-    private Flags getBlockFlag(Block block) {
-        CMIMaterial mat = CMIMaterial.get(block.getType());
-        Flags flag;
-        if (mat.containsCriteria(CMIMC.BUTTON)) {
-            flag = Flags.button;
-
-        } else if (mat.containsCriteria(CMIMC.PRESSUREPLATE)) {
-            flag = Flags.pressure;
-
-        } else {
-            return null;
-
-        }
-        // Disabling listener if flag disabled globally
-        if (!flag.isGlobalyEnabled()) {
-            return null;
-        }
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld())) {
-            return null;
-        }
-        return flag;
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onEntityInteractEvent(EntityInteractEvent event) {
-
-        Block block = event.getBlock();
-        Flags flag = getBlockFlag(block);
-        if (flag == null) {
-            return;
-        }
-        Entity entity = event.getEntity();
-
-        if (flag == Flags.button) {
-            // Button: Only projectiles
-            if (!(entity instanceof Projectile)) {
-                return;
-            }
-        } else {
-            // Pressure Plate: Projectiles and items
-            if (!(entity instanceof Projectile) && !(entity instanceof Item)) {
-                return;
-            }
-        }
-        Player player = Utils.potentialProjectileToPlayer(entity);
-        if (player != null) {
-
-            if (ResAdmin.isResAdmin(player))
-                return;
-
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-            if (perms.playerHas(player, flag, perms.playerHas(player, Flags.use, true)))
-                return;
-
-        } else {
-            // Check potential block as a shooter which should be allowed if its inside same
-            // residence
-            if (Utils.isSourceBlockInsideSameResidence(entity, ClaimedResidence.getByLoc(block.getLocation())))
-                return;
-
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
-            if (perms.has(flag, perms.has(Flags.use, true)))
-                return;
-
-        }
-
-        event.setCancelled(true);
 
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractAtFish(PlayerInteractEntityEvent event) {
-
+        // 1.17+ has PlayerBucketEntityEvent
         if (Version.isCurrentEqualOrHigher(Version.v1_17_R1))
             return;
         // Disabling listener if flag disabled globally

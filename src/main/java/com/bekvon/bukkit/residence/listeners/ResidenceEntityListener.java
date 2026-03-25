@@ -20,6 +20,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Hanging;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
@@ -183,27 +184,72 @@ public class ResidenceEntityListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onEntityInteract(EntityInteractEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.trample.isGlobalyEnabled())
-            return;
-        // disabling event on world
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onEntityInteractEvent(EntityInteractEvent event) {
+
         Block block = event.getBlock();
-        if (block == null)
+        Flags flag = FlagPermissions.checkBlockPhysicalFlag(block);
+        if (flag == null) {
             return;
-        if (plugin.isDisabledWorldListener(block.getWorld()))
+        }
+        Entity entity = event.getEntity();
+        switch (flag) {
+        case destroy:
+            // Turtle Egg: Mob StepOn
+            if (FlagPermissions.has(block.getLocation(), Flags.destroy, true)) {
+                return;
+            }
+            event.setCancelled(true);
             return;
 
-        if (event.getEntity().getType() != EntityType.FALLING_BLOCK)
+        case trample:
+            // Farmland: Mob StepOn
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+            if (perms.has(Flags.trample, (perms.has(Flags.build, true)))) {
+                return;
+            }
+            event.setCancelled(true);
             return;
 
-        if (CMIMaterial.get(block.getType()) != CMIMaterial.FARMLAND)
-            return;
+        // Only Button & Pressure_Plate use break(not return) to allow further checks
+        case button:
+            // Button: Projectiles Hit
+            if (!(entity instanceof Projectile)) {
+                return;
+            }
+            break;
 
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
-        if (perms.has(Flags.trample, perms.has(Flags.build, true)))
+        case pressure:
+            // Pressure Plate: Projectile and Item Touch
+            if (!(entity instanceof Projectile) && !(entity instanceof Item)) {
+                return;
+            }
+            break;
+
+        default:
             return;
+        }
+        Player player = Utils.potentialProjectileToPlayer(entity);
+        if (player != null) {
+
+            if (ResAdmin.isResAdmin(player)) {
+                return;
+            }
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, flag, perms.playerHas(player, Flags.use, true))) {
+                return;
+            }
+        } else {
+            // Check potential block as a shooter which should be allowed if its inside same
+            // residence
+            if (Utils.isSourceBlockInsideSameResidence(entity, ClaimedResidence.getByLoc(block.getLocation()))) {
+                return;
+            }
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+            if (perms.has(flag, perms.has(Flags.use, true))) {
+                return;
+            }
+        }
 
         event.setCancelled(true);
 

@@ -1105,62 +1105,44 @@ public class ResidencePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerStepOnPressurePlate(PlayerInteractEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.pressure.isGlobalyEnabled())
-            return;
+    public void onPlayerStepOn(PlayerInteractEvent event) {
 
+        if (event.getAction() != Action.PHYSICAL) {
+            return;
+        }
         Block block = event.getClickedBlock();
-        if (block == null)
+        Flags flag = FlagPermissions.checkBlockPhysicalFlag(block);
+        if (flag == null) {
             return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld()))
-            return;
-
-        if (event.getAction() != Action.PHYSICAL)
-            return;
-
-        if (!CMIMaterial.get(block.getType()).containsCriteria(CMIMC.PRESSUREPLATE))
-            return;
-
+        }
         Player player = event.getPlayer();
-        if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player))
+        if (player.hasMetadata("NPC") || (flag != Flags.trample && ResAdmin.isResAdmin(player))) {
             return;
-
+        }
         FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-        if (perms.playerHas(player, Flags.pressure, (perms.playerHas(player, Flags.use, true))))
-            return;
 
-        event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerStepOnFarmland(PlayerInteractEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.trample.isGlobalyEnabled())
+        switch (flag) {
+        case destroy:
+            // Turtle Egg
+            if (perms.playerHas(player, Flags.destroy, true)) {
+                return;
+            }
+            break;
+        case pressure:
+            // Pressure Plate
+            if (perms.playerHas(player, Flags.pressure, (perms.playerHas(player, Flags.use, true)))) {
+                return;
+            }
+            break;
+        case trample:
+            // Farmland
+            if (perms.playerHas(player, Flags.trample, (perms.playerHas(player, Flags.build, true)))) {
+                return;
+            }
+            break;
+        default:
             return;
-
-        Block block = event.getClickedBlock();
-        if (block == null)
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld()))
-            return;
-
-        if (event.getAction() != Action.PHYSICAL)
-            return;
-
-        if (CMIMaterial.get(block.getType()) != CMIMaterial.FARMLAND)
-            return;
-
-        Player player = event.getPlayer();
-        if (player.hasMetadata("NPC"))
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-        if (perms.playerHas(player, Flags.trample, (perms.playerHas(player, Flags.build, true))))
-            return;
-
+        }
         event.setCancelled(true);
     }
 
@@ -1388,7 +1370,7 @@ public class ResidencePlayerListener implements Listener {
             Flags result = FlagPermissions.getMaterialUseFlagList().get(mat);
             // Residence assigns Flags internally for Material
             if (result != null) {
-                // Start AbstractFlags Check
+                // Start AbstractBlockClickFlag Check
                 main: if (!perms.playerHas(player, result, hasUse)) {
 
                     if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -1398,16 +1380,16 @@ public class ResidencePlayerListener implements Listener {
                         }
 
                         switch (result) {
+                        case button:
+                            if (ResPerm.bypass_button.hasPermission(player, 10000L))
+                                break main;
+                            break;
                         case container:
                             if (ResPerm.bypass_container.hasPermission(player, 10000L))
                                 break main;
                             break;
                         case door:
                             if (ResPerm.bypass_door.hasPermission(player, 10000L))
-                                break main;
-                            break;
-                        case button:
-                            if (ResPerm.bypass_button.hasPermission(player, 10000L))
                                 break main;
                             break;
                         }
@@ -1426,7 +1408,7 @@ public class ResidencePlayerListener implements Listener {
                     }
                     return;
                 }
-                // End AbstractFlags Check
+                // End AbstractBlockClickFlag Check
             }
         }
         // Restrict custom both-click container use
