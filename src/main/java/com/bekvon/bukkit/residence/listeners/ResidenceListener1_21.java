@@ -413,51 +413,30 @@ public class ResidenceListener1_21 implements Listener {
 
     }
 
-    private boolean isBodySlotAir(EntityEquipment entInv) {
-        return entInv.getItem(EquipmentSlot.BODY).getType() == Material.AIR;
-    }
-
     private boolean isEquipFitAnimal(Entity entity, CMIMaterial held) {
-        if (!(entity instanceof LivingEntity))
-            return false;
-
-        EntityEquipment entInv = ((LivingEntity) entity).getEquipment();
-        if (entInv == null)
-            return false;
-
         CMIEntityType type = CMIEntityType.get(entity);
-        if (type == null)
+        if (type == null) {
             return false;
-
-        if (held.containsCriteria(CMIMC.CARPET))
-            return (type == CMIEntityType.LLAMA || type == CMIEntityType.TRADER_LLAMA) && isBodySlotAir(entInv) &&
-                    held != CMIMaterial.MOSS_CARPET && held != CMIMaterial.PALE_MOSS_CARPET;
-
-        if (held.containsCriteria(CMIMC.HARNESS))
-            return type == CMIEntityType.HAPPY_GHAST && isBodySlotAir(entInv);
-
-        if (held.containsCriteria(CMIMC.HORSEARMOR))
-            return (type == CMIEntityType.HORSE || type == CMIEntityType.ZOMBIE_HORSE) && isBodySlotAir(entInv);
-
-        if (held.containsCriteria(CMIMC.NAUTILUSARMOR))
-            return (type == CMIEntityType.NAUTILUS || type == CMIEntityType.ZOMBIE_NAUTILUS) && isBodySlotAir(entInv);
-
+        }
+        EntityEquipment entInv = null;
+        if (entity instanceof LivingEntity) {
+            entInv = ((LivingEntity) entity).getEquipment();
+        }
         if (held == CMIMaterial.SADDLE) {
-
-            if (entity instanceof Pig)
-                return !((Pig) entity).hasSaddle();
-
-            if (entity instanceof Strider)
-                return !((Strider) entity).hasSaddle();
-
             switch (type) {
+            // 1.21.11+ supports EquipmentSlot.SADDLE
+            // Add new Saddle-Equippable entities here in the future
+            case CAMEL_HUSK:
             case NAUTILUS:
             case ZOMBIE_NAUTILUS:
-                // Has Nautilus version, also supports EquipmentSlot.SADDLE
-                return entInv.getItem(EquipmentSlot.SADDLE).getType() == Material.AIR;
-            // Ensure entity is AbstractHorse
+                return entInv != null && entInv.getItem(EquipmentSlot.SADDLE).getType() == Material.AIR;
+
+            // Legacy version compatibility(< 1.21.11)
+            case PIG:
+                return entity instanceof Pig && !((Pig) entity).hasSaddle();
+            case STRIDER:
+                return entity instanceof Strider && !((Strider) entity).hasSaddle();
             case CAMEL:
-            case CAMEL_HUSK:
             case DONKEY:
             case HORSE:
             case MULE:
@@ -474,6 +453,28 @@ public class ResidenceListener1_21 implements Listener {
                 return false;
             }
         }
-        return false;
+        // Non-Saddle Equipment check
+        switch (type) {
+        case LLAMA:
+        case TRADER_LLAMA:
+            if (held.containsCriteria(CMIMC.CARPET) && isBodySlotAir(entInv)) {
+                return held != CMIMaterial.MOSS_CARPET && held != CMIMaterial.PALE_MOSS_CARPET;
+            }
+            return false;
+        case HAPPY_GHAST:
+            return held.containsCriteria(CMIMC.HARNESS) && isBodySlotAir(entInv);
+        case HORSE:
+        case ZOMBIE_HORSE:
+            return held.containsCriteria(CMIMC.HORSEARMOR) && isBodySlotAir(entInv);
+        case NAUTILUS:
+        case ZOMBIE_NAUTILUS:
+            return held.containsCriteria(CMIMC.NAUTILUSARMOR) && isBodySlotAir(entInv);
+        default:
+            return false;
+        }
+    }
+
+    private boolean isBodySlotAir(EntityEquipment entInv) {
+        return entInv != null && entInv.getItem(EquipmentSlot.BODY).getType() == Material.AIR;
     }
 }
