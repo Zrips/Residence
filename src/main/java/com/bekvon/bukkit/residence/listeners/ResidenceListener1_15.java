@@ -17,6 +17,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 
 import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Reflections;
 
 public class ResidenceListener1_15 implements Listener {
 
@@ -60,7 +61,9 @@ public class ResidenceListener1_15 implements Listener {
         if (flag == null)
             return;
 
-        if (CMILib.getInstance().getReflectionManager().getHoneyLevel(block) < CMILib.getInstance().getReflectionManager().getMaxHoneyLevel(block)) {
+        Reflections ref = CMILib.getInstance().getReflectionManager();
+
+        if (ref.getHoneyLevel(block) < ref.getMaxHoneyLevel(block)) {
             return;
         }
 

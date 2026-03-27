@@ -57,15 +57,17 @@ public class ResidenceListener1_20 implements Listener {
 
     }
 
-    // Projectile hit chorus_flower,decorated_pot,pointed_dripstone
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onProjectileChangeBlock(EntityChangeBlockEvent event) {
-
+        // Only valid for versions 1.20+
         Entity entity = event.getEntity();
         if (!(entity instanceof Projectile)) {
             return;
         }
-        if (ResidenceListener1_14.shouldBlockProjectileHit(event.getBlock(), (Projectile) entity, Flags.destroy)) {
+        // Projectile hit chorus_flower/decorated_pot
+        // Trident hit pointed_dripstone
+        // Flame_Arrow hit tnt
+        if (ResidenceListener1_14.shouldBlockProjectileHit(event.getBlock(), (Projectile) entity)) {
             event.setCancelled(true);
         }
 

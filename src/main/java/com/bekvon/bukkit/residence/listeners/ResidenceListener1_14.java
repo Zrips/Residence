@@ -142,19 +142,16 @@ public class ResidenceListener1_14 implements Listener {
         if (block == null || block.getType() != Material.BELL) {
             return;
         }
-        if (shouldBlockProjectileHit(block, event.getEntity(), Flags.use)) {
+        if (shouldBlockProjectileHit(block, event.getEntity())) {
             event.setCancelled(true);
         }
 
     }
 
-    public static boolean shouldBlockProjectileHit(Block block, Projectile projectile, Flags flag) {
-        // Disabling listener if flag disabled globally
-        if (!flag.isGlobalyEnabled()) {
-            return false;
-        }
-        // disabling event on world
-        if (Residence.getInstance().isDisabledWorldListener(block.getWorld())) {
+    public static boolean shouldBlockProjectileHit(Block block, Projectile projectile) {
+
+        Flags flag = FlagPermissions.checkBlockPhysicalFlag(block);
+        if (flag == null) {
             return false;
         }
         Player player = Utils.potentialProjectileToPlayer(projectile);

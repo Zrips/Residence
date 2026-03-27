@@ -1,6 +1,5 @@
 package com.bekvon.bukkit.residence.listeners;
 
-import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -8,7 +7,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import com.bekvon.bukkit.residence.Residence;
-import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.utils.Utils;
 import com.destroystokyo.paper.event.entity.EntityZapEvent;
 
@@ -24,12 +22,8 @@ public class ResidenceListener1_16_5_Paper implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onHitTargetBlock(TargetHitEvent event) {
-
-        Block block = event.getHitBlock();
-        if (block == null) {
-            return;
-        }
-        if (ResidenceListener1_14.shouldBlockProjectileHit(block, event.getEntity(), Flags.use)) {
+        // Event only triggered by Projectile hitting TargetBlock
+        if (ResidenceListener1_14.shouldBlockProjectileHit(event.getHitBlock(), event.getEntity())) {
             event.setCancelled(true);
         }
 
@@ -37,7 +31,7 @@ public class ResidenceListener1_16_5_Paper implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityZapEvent(EntityZapEvent event) {
-
+        // Check if animal can be damaged or converted by lightning
         Entity entity = event.getEntity();
         if (!(entity instanceof LivingEntity) || !Utils.isAnimal(entity)) {
             return;

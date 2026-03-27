@@ -1031,13 +1031,13 @@ public class ResidenceBlockListener implements Listener {
             FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
             if (!perms.has(Flags.firespread, true))
                 event.setCancelled(true);
-        } else if (cause == IgniteCause.FLINT_AND_STEEL) {
+        } else if (event.getPlayer() != null) {
             // Disabling listener if flag disabled globally
             if (!Flags.ignite.isGlobalyEnabled())
                 return;
             Player player = event.getPlayer();
             FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation(), player);
-            if (player != null && !perms.playerHas(player, Flags.ignite, true) && !ResAdmin.isResAdmin(player)) {
+            if (!perms.playerHas(player, Flags.ignite, true) && !ResAdmin.isResAdmin(player)) {
                 event.setCancelled(true);
                 lm.Flag_Deny.sendMessage(player, Flags.ignite);
             }
