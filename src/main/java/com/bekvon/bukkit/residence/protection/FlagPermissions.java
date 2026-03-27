@@ -18,9 +18,11 @@ import java.util.stream.Collectors;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -359,6 +361,50 @@ public class FlagPermissions {
             addMaterialToUseFlag(CMIMaterial.CRAFTER.getMaterial(), Flags.table);
         }
 
+    }
+
+    // Checks physical interaction flags (trample, projectile hit)
+    // not for right/left-clicking blocks
+    @Nullable
+    public static Flags checkBlockPhysicalFlag(Block block) {
+        if (block == null) {
+            return null;
+        }
+        CMIMaterial mat = CMIMaterial.get(block.getType());
+        Flags flag = null;
+        switch (mat) {
+        case BELL:
+        case TARGET:
+            flag = Flags.use;
+            break;
+        case FARMLAND:
+            flag = Flags.trample;
+            break;
+        case CHORUS_FLOWER:
+        case DECORATED_POT:
+        case POINTED_DRIPSTONE:
+        case TNT:
+        case TURTLE_EGG:
+            flag = Flags.destroy;
+            break;
+        default:
+            if (mat.containsCriteria(CMIMC.BUTTON)) {
+                flag = Flags.button;
+            } else if (mat.containsCriteria(CMIMC.PRESSUREPLATE)) {
+                flag = Flags.pressure;
+            }
+            break;
+        }
+        if (flag == null) {
+            return null;
+        }
+        if (!flag.isGlobalyEnabled()) {
+            return null;
+        }
+        if (Residence.getInstance().isDisabledWorldListener(block.getWorld())) {
+            return null;
+        }
+        return flag;
     }
 
     public void parseCommandLimits(ConfigurationSection node) {

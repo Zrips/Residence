@@ -19,7 +19,6 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerBucketEntityEvent;
-import org.bukkit.inventory.ItemStack;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -84,17 +83,13 @@ public class ResidenceListener1_17 implements Listener {
         if (!Flags.animalkilling.isGlobalyEnabled())
             return;
 
+        Entity ent = event.getEntity();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(ent.getWorld()))
+            return;
+
         Player player = event.getPlayer();
         if (ResAdmin.isResAdmin(player))
-            return;
-
-        Entity ent = event.getEntity();
-
-        ItemStack iih = event.getOriginalBucket();
-        if (iih == null)
-            return;
-
-        if (!CMIMaterial.get(iih).equals(CMIMaterial.WATER_BUCKET))
             return;
 
         if (FlagPermissions.has(ent.getLocation(), player, Flags.animalkilling, FlagCombo.OnlyFalse)) {
@@ -110,9 +105,6 @@ public class ResidenceListener1_17 implements Listener {
             return;
 
         Block block = event.getBlock();
-        if (block == null)
-            return;
-
         // disabling event on world
         if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
@@ -175,8 +167,6 @@ public class ResidenceListener1_17 implements Listener {
         if (!Flags.build.isGlobalyEnabled())
             return;
         Block block = event.getBlock();
-        if (block == null)
-            return;
         // disabling event on world
         if (plugin.isDisabledWorldListener(block.getWorld()))
             return;

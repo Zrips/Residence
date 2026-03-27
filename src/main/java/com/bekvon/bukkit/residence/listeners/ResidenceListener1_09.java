@@ -131,8 +131,6 @@ public class ResidenceListener1_09 implements Listener {
         // disabling event on world
         if (Residence.getInstance().isDisabledWorldListener(potion.getWorld()))
             return;
-        if (event.isCancelled())
-            return;
 
         boolean harmfull = false;
         mein: for (PotionEffect one : potion.getEffects()) {
@@ -220,8 +218,9 @@ public class ResidenceListener1_09 implements Listener {
         }
     }
 
+    // FrostWalker form frosted_ice, Wither form wither_rose
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onFrostWalker(EntityBlockFormEvent event) {
+    public void onEntityBlockFormEvent(EntityBlockFormEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.build.isGlobalyEnabled())
             return;
@@ -247,18 +246,18 @@ public class ResidenceListener1_09 implements Listener {
                 return;
 
             event.setCancelled(true);
-            return;
-        }
 
-        // SnowGolem already has SnowTrail Flag
-        // Check all entity trigger FrostWalker
-        // ArmorStand Skeleton Zombies ..
-        if (!(entity instanceof Snowman)) {
+            // SnowGolem already has SnowTrail Flag
+            // Check all entity trigger FrostWalker
+            // ArmorStand Skeleton Zombies ...
+        } else if (!(entity instanceof Snowman)) {
+
             FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
             if (perms.has(Flags.build, true))
                 return;
 
             event.setCancelled(true);
+
         }
     }
 

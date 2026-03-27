@@ -5,29 +5,26 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Farmland;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
+import org.bukkit.entity.Fish;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
-import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_13 implements Listener {
 
@@ -81,40 +78,20 @@ public class ResidenceListener1_13 implements Listener {
         return true;
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onTrampleTurtleEgg(PlayerInteractEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.destroy.isGlobalyEnabled())
-            return;
-        Block block = event.getClickedBlock();
-        if (block == null || event.getAction() != Action.PHYSICAL || block.getType() != Material.TURTLE_EGG)
-            return;
-        if (!ResidenceBlockListener.canBreakBlock(event.getPlayer(), block.getLocation(), true))
-            event.setCancelled(true);
-    }
-
+    // Send message when player projectile hitting Button/Pressure_Plate is denied
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onEntityTouchButtonPlateDenyMsg(ProjectileHitEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.use.isGlobalyEnabled())
-            return;
-        // Avoid Projectile getWorld NPE
+    public void onEntityInteractDenyMsg(ProjectileHitEvent event) {
+
         Block hitBlock = event.getHitBlock();
-        if (hitBlock == null)
+        if (hitBlock == null || event.getHitBlockFace() == null) {
             return;
+        }
+        Block hitBlockFace = hitBlock.getLocation().clone().add(event.getHitBlockFace().getDirection()).getBlock();
 
-        if (plugin.isDisabledWorldListener(hitBlock.getWorld()))
+        Flags flag = FlagPermissions.checkBlockPhysicalFlag(hitBlockFace);
+        if (flag != Flags.button && flag != Flags.pressure) {
             return;
-
-        if (event.getHitBlockFace() == null)
-            return;
-
-        Block block = hitBlock.getLocation().clone().add(event.getHitBlockFace().getDirection()).getBlock();
-
-        CMIMaterial cmat = CMIMaterial.get(block.getType());
-
-        if (!cmat.isButton() && !cmat.isPlate())
-            return;
+        }
 
         Player player = Utils.potentialProjectileToPlayer(event.getEntity());
         if (player == null)
@@ -123,91 +100,49 @@ public class ResidenceListener1_13 implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
 
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-        boolean hasUse = perms.playerHas(player, Flags.use, true);
+        FlagPermissions perms = FlagPermissions.getPerms(hitBlockFace.getLocation(), player);
+        if (perms.playerHas(player, flag, perms.playerHas(player, Flags.use, true)))
+            return;
 
-        if (cmat.isButton()) {
-            if (perms.playerHas(player, Flags.button, hasUse))
-                return;
+        // The perfect spot, the earlier check sends exactly one deny msg
+        // avoid chat spam
+        lm.Flag_Deny.sendMessage(player, flag);
 
-            // The perfect spot, the earlier check sends exactly one deny msgs
-            // Deny msgs for the EntityInteractEvent below to avoid chat spam
-            lm.Flag_Deny.sendMessage(player, Flags.button);
-
-        } else {
-            if (perms.playerHas(player, Flags.pressure, hasUse))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.pressure);
-
-        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onEntityTouchButtonPlate(EntityInteractEvent event) {
+    public void onPlayerInteractAtFish(PlayerInteractEntityEvent event) {
+        // 1.17+ has PlayerBucketEntityEvent
+        if (Version.isCurrentEqualOrHigher(Version.v1_17_R1))
+            return;
         // Disabling listener if flag disabled globally
-        if (!Flags.use.isGlobalyEnabled())
+        if (!Flags.animalkilling.isGlobalyEnabled())
             return;
 
-        Block block = event.getBlock();
-        if (block == null)
-            return;
+        Entity ent = event.getRightClicked();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld()))
+        if (plugin.isDisabledWorldListener(ent.getWorld()))
             return;
 
-        Entity entity = event.getEntity();
-        // Only check Projectile and DropItem
-        if (!(entity instanceof Projectile) && !(entity instanceof Item))
+        if (!(ent instanceof Fish))
             return;
 
-        CMIMaterial cmat = CMIMaterial.get(block.getType());
+        Player player = event.getPlayer();
 
-        // Only check Button and Plate
-        if (!cmat.isButton() && !cmat.isPlate())
+        Material held = (event.getHand() == EquipmentSlot.OFF_HAND)
+                ? player.getInventory().getItemInOffHand().getType()
+                : player.getInventory().getItemInMainHand().getType();
+
+        if (held != Material.WATER_BUCKET)
             return;
 
-        // Only get projectile player source
-        Player player = Utils.potentialProjectileToPlayer(entity);
-        if (player != null) {
+        if (ResAdmin.isResAdmin(player))
+            return;
 
-            if (ResAdmin.isResAdmin(player))
-                return;
+        if (FlagPermissions.has(ent.getLocation(), player, Flags.animalkilling, true))
+            return;
 
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-            boolean hasUse = perms.playerHas(player, Flags.use, true);
-
-            if (cmat.isButton()) {
-                if (perms.playerHas(player, Flags.button, hasUse))
-                    return;
-
-            } else {
-                if (perms.playerHas(player, Flags.pressure, hasUse))
-                    return;
-
-            }
-
-        } else {
-            // Entity not player source
-            // Check potential block as a shooter which should be allowed if its inside same
-            // residence
-            if (Utils.isSourceBlockInsideSameResidence(entity, ClaimedResidence.getByLoc(block.getLocation())))
-                return;
-
-            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
-            boolean hasUse = perms.has(Flags.use, true);
-
-            if (cmat.isButton()) {
-                if (perms.has(Flags.button, hasUse))
-                    return;
-
-            } else {
-                if (perms.has(Flags.pressure, hasUse))
-                    return;
-
-            }
-        }
-
+        lm.Flag_Deny.sendMessage(player, Flags.animalkilling);
         event.setCancelled(true);
 
     }

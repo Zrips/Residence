@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Animals;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Pig;
@@ -38,6 +39,7 @@ import com.bekvon.bukkit.residence.utils.Utils;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Version.Version;
 
 public class ResidenceListener1_21 implements Listener {
 
@@ -49,31 +51,45 @@ public class ResidenceListener1_21 implements Listener {
 
     HashMap<UUID, Long> boats = new HashMap<UUID, Long>();
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
         boats.remove(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void OnVehicleEnterEvent(VehicleEnterEvent event) {
+    // Prevent player from taking away animals in Residence by pulling boat
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onAnimalEntersLeashedBoat(VehicleEnterEvent event) {
         // Disabling listener if flag disabled globally
-        if (!Flags.boarding.isGlobalyEnabled())
+        if (!Flags.leash.isGlobalyEnabled())
             return;
+
+        Entity vehicle = event.getVehicle();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getVehicle().getWorld()))
+        if (plugin.isDisabledWorldListener(vehicle.getWorld()))
+            return;
+
+        if (!(vehicle instanceof Boat))
             return;
 
         Entity entity = event.getEntered();
 
-        if (!(entity instanceof LivingEntity))
+        if (!(entity instanceof LivingEntity) || !Utils.isAnimal(entity))
             return;
 
-        if (!Utils.isAnimal(entity))
-            return;
+        if (Version.isPaperBranch()) {
+            // if vehicle is not leashed, skip check
+            if (vehicle instanceof io.papermc.paper.entity.Leashable
+                    && !((io.papermc.paper.entity.Leashable) vehicle).isLeashed()) {
+                return;
+            }
 
-        if (FlagPermissions.getPerms(entity.getLocation()).has(Flags.boarding, FlagCombo.OnlyFalse)) {
-            event.setCancelled(true);
-            return;
+        } else if (Version.isCurrentEqualOrHigher(Version.v1_21_R7)) {
+            // spigot
+            if (vehicle instanceof org.bukkit.entity.Leashable
+                    && !((org.bukkit.entity.Leashable) vehicle).isLeashed()) {
+                return;
+            }
+
         }
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
@@ -108,6 +124,28 @@ public class ResidenceListener1_21 implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onAnimalEnterVehicle(VehicleEnterEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.boarding.isGlobalyEnabled())
+            return;
+
+        Entity entity = event.getEntered();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(entity.getWorld()))
+            return;
+
+        if (!(entity instanceof LivingEntity))
+            return;
+
+        if (!Utils.isAnimal(entity))
+            return;
+
+        if (FlagPermissions.getPerms(entity.getLocation()).has(Flags.boarding, FlagCombo.OnlyFalse)) {
+            event.setCancelled(true);
+        }
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void OnEntityDeath(EntityDeathEvent event) {
         // Disabling listener if flag disabled globally
@@ -122,11 +160,19 @@ public class ResidenceListener1_21 implements Listener {
         if (!ent.hasPotionEffect(PotionEffectType.WEAVING))
             return;
 
-        Location loc = ent.getLocation();
-        FlagPermissions perms = FlagPermissions.getPerms(loc);
-        if (perms.has(Flags.build, FlagCombo.TrueOrNone))
-            return;
+        if (ent instanceof Player) {
 
+            Player player = (Player) ent;
+            if (ResAdmin.isResAdmin(player)) {
+                return;
+            }
+            if (FlagPermissions.has(ent.getLocation(), player, Flags.build, true)) {
+                return;
+            }
+
+        } else if (FlagPermissions.has(ent.getLocation(), Flags.build, true)) {
+            return;
+        }
         // Removing weaving effect on death as there is no other way to properly handle
         // this effect inside residence
         ent.removePotionEffect(PotionEffectType.WEAVING);
@@ -327,7 +373,7 @@ public class ResidenceListener1_21 implements Listener {
         }
     }
 
-    private static boolean isItemTag(Material item, String tagName) {
+    private boolean isItemTag(Material item, String tagName) {
         return ResidenceListener1_14.isItemTag(item, tagName);
     }
 
@@ -367,49 +413,30 @@ public class ResidenceListener1_21 implements Listener {
 
     }
 
-    private static boolean isEquipFitAnimal(Entity entity, CMIMaterial held) {
-        if (!(entity instanceof LivingEntity))
-            return false;
-
-        EntityEquipment entInv = ((LivingEntity) entity).getEquipment();
-        if (entInv == null)
-            return false;
-
+    private boolean isEquipFitAnimal(Entity entity, CMIMaterial held) {
         CMIEntityType type = CMIEntityType.get(entity);
-        if (type == null)
+        if (type == null) {
             return false;
-
-        boolean isBodySlotAir = entInv.getItem(EquipmentSlot.BODY).getType() == Material.AIR;
-
-        if (held.containsCriteria(CMIMC.CARPET))
-            return (type == CMIEntityType.LLAMA || type == CMIEntityType.TRADER_LLAMA) && isBodySlotAir &&
-                    held != CMIMaterial.MOSS_CARPET && held != CMIMaterial.PALE_MOSS_CARPET;
-
-        if (held.containsCriteria(CMIMC.HARNESS))
-            return type == CMIEntityType.HAPPY_GHAST && isBodySlotAir;
-
-        if (held.containsCriteria(CMIMC.HORSEARMOR))
-            return (type == CMIEntityType.HORSE || type == CMIEntityType.ZOMBIE_HORSE) && isBodySlotAir;
-
-        if (held.containsCriteria(CMIMC.NAUTILUSARMOR))
-            return (type == CMIEntityType.NAUTILUS || type == CMIEntityType.ZOMBIE_NAUTILUS) && isBodySlotAir;
-
+        }
+        EntityEquipment entInv = null;
+        if (entity instanceof LivingEntity) {
+            entInv = ((LivingEntity) entity).getEquipment();
+        }
         if (held == CMIMaterial.SADDLE) {
-
-            if (entity instanceof Pig)
-                return !((Pig) entity).hasSaddle();
-
-            if (entity instanceof Strider)
-                return !((Strider) entity).hasSaddle();
-
-            // Has Nautilus version, also supports EquipmentSlot.SADDLE
-            if (type == CMIEntityType.NAUTILUS || type == CMIEntityType.ZOMBIE_NAUTILUS)
-                return entInv.getItem(EquipmentSlot.SADDLE).getType() == Material.AIR;
-
-            // Ensure entity is AbstractHorse
             switch (type) {
-            case CAMEL:
+            // 1.21.11+ supports EquipmentSlot.SADDLE
+            // Add new Saddle-Equippable entities here in the future
             case CAMEL_HUSK:
+            case NAUTILUS:
+            case ZOMBIE_NAUTILUS:
+                return entInv != null && entInv.getItem(EquipmentSlot.SADDLE).getType() == Material.AIR;
+
+            // Legacy version compatibility(< 1.21.11)
+            case PIG:
+                return entity instanceof Pig && !((Pig) entity).hasSaddle();
+            case STRIDER:
+                return entity instanceof Strider && !((Strider) entity).hasSaddle();
+            case CAMEL:
             case DONKEY:
             case HORSE:
             case MULE:
@@ -426,6 +453,28 @@ public class ResidenceListener1_21 implements Listener {
                 return false;
             }
         }
-        return false;
+        // Non-Saddle Equipment check
+        switch (type) {
+        case LLAMA:
+        case TRADER_LLAMA:
+            if (held.containsCriteria(CMIMC.CARPET) && isBodySlotAir(entInv)) {
+                return held != CMIMaterial.MOSS_CARPET && held != CMIMaterial.PALE_MOSS_CARPET;
+            }
+            return false;
+        case HAPPY_GHAST:
+            return held.containsCriteria(CMIMC.HARNESS) && isBodySlotAir(entInv);
+        case HORSE:
+        case ZOMBIE_HORSE:
+            return held.containsCriteria(CMIMC.HORSEARMOR) && isBodySlotAir(entInv);
+        case NAUTILUS:
+        case ZOMBIE_NAUTILUS:
+            return held.containsCriteria(CMIMC.NAUTILUSARMOR) && isBodySlotAir(entInv);
+        default:
+            return false;
+        }
+    }
+
+    private boolean isBodySlotAir(EntityEquipment entInv) {
+        return entInv != null && entInv.getItem(EquipmentSlot.BODY).getType() == Material.AIR;
     }
 }
