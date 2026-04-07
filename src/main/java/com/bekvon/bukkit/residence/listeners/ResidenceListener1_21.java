@@ -282,12 +282,7 @@ public class ResidenceListener1_21 implements Listener {
                 ? player.getInventory().getItemInOffHand().getType()
                 : player.getInventory().getItemInMainHand().getType();
 
-        CMIEntityType type = CMIEntityType.get(entity.getType());
-
-        if (type == null)
-            return;
-
-        if (!isFeedingAnimal(type, held))
+        if (!isFeedingAnimal((Animals) entity, held))
             return;
 
         if (ResAdmin.isResAdmin(player))
@@ -302,7 +297,14 @@ public class ResidenceListener1_21 implements Listener {
 
     }
 
-    private boolean isFeedingAnimal(CMIEntityType type, Material held) {
+    private boolean isFeedingAnimal(Animals entity, Material held) {
+        if (held.name().equals("GOLDEN_DANDELION")) {
+            return !entity.isAdult();
+        }
+        CMIEntityType type = CMIEntityType.get(entity);
+        if (type == null) {
+            return false;
+        }
         switch (type) {
         case ARMADILLO:
             return isItemTag(held, "armadillo_food");

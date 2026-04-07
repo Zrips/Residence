@@ -1766,20 +1766,22 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         Block clickBlock = event.getBlockClicked();
-        // default place outside the block
-        Location loc = clickBlock.getRelative(event.getBlockFace()).getLocation();
+        Location loc;
 
         if (!player.isSneaking() && ((CMIMaterial.get(clickBlock.getType()) == CMIMaterial.CAULDRON)
                 || (Version.isCurrentEqualOrHigher(Version.v1_13_R1) && clickBlock.getBlockData() instanceof org.bukkit.block.data.Waterlogged))) {
             // if place inside the block
             loc = clickBlock.getLocation();
+        } else {
+            // place outside the block
+            loc = clickBlock.getRelative(event.getBlockFace()).getLocation();
         }
 
         CMIMaterial cmat = CMIMaterial.get(event.getBucket());
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
         if (res != null) {
             if (plugin.getConfigManager().preventRentModify() && plugin.getConfigManager().enabledRentSystem()) {
-                if (plugin.getRentManager().isRented(res.getName())) {
+                if (plugin.getRentManager().isRented(res)) {
                     lm.Rent_ModifyDeny.sendMessage(player);
                     event.setCancelled(true);
                     return;
@@ -1833,7 +1835,7 @@ public class ResidencePlayerListener implements Listener {
         Location loc = event.getBlockClicked().getLocation();
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
-        if (res != null && plugin.getConfigManager().preventRentModify() && plugin.getConfigManager().enabledRentSystem() && plugin.getRentManager().isRented(res.getName())) {
+        if (res != null && plugin.getConfigManager().preventRentModify() && plugin.getConfigManager().enabledRentSystem() && plugin.getRentManager().isRented(res)) {
             lm.Rent_ModifyDeny.sendMessage(player);
             event.setCancelled(true);
             return;
