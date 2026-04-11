@@ -27,6 +27,7 @@ import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Slime;
+import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.Vehicle;
@@ -119,7 +120,7 @@ public class ResidenceEntityListener implements Listener {
 
         Entity entity = event.getEntity();
 
-        if (entity instanceof Enderman) {
+        if (entity instanceof Enderman || entity instanceof Silverfish) {
             if (FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
                 event.setCancelled(true);
 
