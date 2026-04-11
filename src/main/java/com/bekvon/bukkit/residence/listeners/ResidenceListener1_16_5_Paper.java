@@ -1,22 +1,14 @@
 package com.bekvon.bukkit.residence.listeners;
 
-import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import com.bekvon.bukkit.residence.Residence;
-import com.bekvon.bukkit.residence.containers.Flags;
-import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.containers.ResAdmin;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
-import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.utils.Utils;
 import com.destroystokyo.paper.event.entity.EntityZapEvent;
-
-import net.Zrips.CMILib.Version.Version;
 
 import io.papermc.paper.event.block.TargetHitEvent;
 
@@ -30,73 +22,23 @@ public class ResidenceListener1_16_5_Paper implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onHitTargetBlock(TargetHitEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.use.isGlobalyEnabled())
-            return;
-
-        Block block = event.getHitBlock();
-        if (block == null)
-            return;
-
-        if (plugin.isDisabledWorldListener(block.getWorld()))
-            return;
-
-        Player player = Utils.potentialProjectileToPlayer(event.getEntity());
-        if (player != null) {
-
-            if (ResAdmin.isResAdmin(player))
-                return;
-
-            if (FlagPermissions.has(block.getLocation(), player, Flags.use, true))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.use);
+        // Event only triggered by Projectile hitting TargetBlock
+        if (ResidenceListener1_14.shouldBlockProjectileHit(event.getHitBlock(), event.getEntity())) {
             event.setCancelled(true);
-
-        } else {
-            // Entity not player source
-            // Check potential block as a shooter which should be allowed if its inside same
-            // residence
-            if (Utils.isSourceBlockInsideSameResidence(event.getEntity(), ClaimedResidence.getByLoc(block.getLocation())))
-                return;
-
-            if (FlagPermissions.has(block.getLocation(), Flags.use, true))
-                return;
-
-            event.setCancelled(true);
-
         }
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityZapEvent(EntityZapEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.animalkilling.isGlobalyEnabled())
-            return;
-
+        // Check if animal can be damaged or converted by lightning
         Entity entity = event.getEntity();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(entity.getWorld()))
+        if (!(entity instanceof LivingEntity) || !Utils.isAnimal(entity)) {
             return;
-
-        if (!Utils.isAnimal(entity))
-            return;
-
-        Player player = Version.isCurrentEqualOrHigher(Version.v1_20_R2)
-                ? event.getBolt().getCausingPlayer()
-                : null;
-
-        if (player != null) {
-            if (ResAdmin.isResAdmin(player))
-                return;
-            if (FlagPermissions.has(entity.getLocation(), player, Flags.animalkilling, true))
-                return;
-        } else {
-            if (FlagPermissions.has(entity.getLocation(), Flags.animalkilling, true))
-                return;
         }
-
-        event.setCancelled(true);
+        if (ResidenceListener1_16.shouldBlockLightning(event.getBolt(), entity.getLocation())) {
+            event.setCancelled(true);
+        }
 
     }
 }
