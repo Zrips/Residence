@@ -1909,7 +1909,13 @@ public class ClaimedResidence {
     }
 
     public PermissionGroup getOwnerGroup() {
-        return getRPlayer().getGroup(getPermissions().getWorldName());
+
+        ResidencePlayer rPlayer = getRPlayer();
+
+        if (rPlayer == null)
+            return Residence.getInstance().getPermissionManager().getDefaultGroup();
+
+        return rPlayer.getGroup(getPermissions().getWorldName()); 
     }
 
     public String getOwner() {

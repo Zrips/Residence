@@ -445,7 +445,7 @@ public class RentManager implements MarketRentInterface {
                 }
 
             } else {
-                player.sendMessage(CMIChatColor.RED + "Error, unable to transfer money...");
+                player.sendMessage(CMIChatColor.RED + "Error, unable to transfer money... (rent)");
             }
         } else {
             lm.Economy_NotEnoughMoney.sendMessage(player);
@@ -514,7 +514,7 @@ public class RentManager implements MarketRentInterface {
                 lm.Rent_Extended.sendMessage(player, land.days, res.getName());
                 lm.Rent_Expire.sendMessage(player, GetTime.getTime(rentedLand.endTime));
             } else {
-                player.sendMessage(ChatColor.RED + "Error, unable to transfer money...");
+                player.sendMessage(CMIChatColor.RED + "Error, unable to transfer money... (pay rent)");
             }
         } else {
             lm.Economy_NotEnoughMoney.sendMessage(player);
