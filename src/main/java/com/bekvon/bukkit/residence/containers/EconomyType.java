@@ -20,7 +20,7 @@ public enum EconomyType {
         StringBuilder v = new StringBuilder();
         for (EconomyType one : EconomyType.values()) {
             if (!v.toString().isEmpty())
-                v.append(LC.info_ListSpliter);
+                v.append(LC.info_ListSpliter.getLocale());
             v.append(one.toString());
         }
         return v.toString();

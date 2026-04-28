@@ -32,6 +32,7 @@ import com.bekvon.bukkit.residence.utils.GetTime;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 
 public class RentManager implements MarketRentInterface {
@@ -415,6 +416,8 @@ public class RentManager implements MarketRentInterface {
                 AutoPay = false;
             }
 
+            CMIDebug.c("transfer user? " , player.getUniqueId(), res.getPermissions().getOwnerUUID(), land.cost);
+            
             if (plugin.getEconomyManager().transfer(player.getUniqueId(), res.getPermissions().getOwnerUUID(), land.cost)) {
                 RentedLand newrent = new RentedLand();
 //                newrent.player = player.getName();

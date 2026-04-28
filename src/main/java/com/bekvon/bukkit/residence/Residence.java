@@ -199,6 +199,7 @@ public class Residence extends JavaPlugin {
     private CMIMaterial wepid;
 
     private UUID ServerLandUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+    private String ServerLandName = "Server_Land";
 
     private Placeholder Placeholder;
     private boolean PlaceholderAPIEnabled = false;
@@ -474,6 +475,12 @@ public class Residence extends JavaPlugin {
                     this.loadEssentialsEconomy();
                     break;
                 case None:
+                    if (economy == null) {
+                        this.loadCMIEconomy();
+                    }
+                    if (economy == null) {
+                        this.loadEssentialsEconomy();
+                    }
                     if (this.getPermissionManager().getPermissionsPlugin() instanceof ResidenceVaultAdapter) {
                         ResidenceVaultAdapter vault = (ResidenceVaultAdapter) this.getPermissionManager().getPermissionsPlugin();
                         if (vault.economyOK()) {
@@ -483,12 +490,6 @@ public class Residence extends JavaPlugin {
                     }
                     if (economy == null) {
                         this.loadVaultEconomy();
-                    }
-                    if (economy == null) {
-                        this.loadCMIEconomy();
-                    }
-                    if (economy == null) {
-                        this.loadEssentialsEconomy();
                     }
                     break;
                 case Vault:
@@ -953,6 +954,7 @@ public class Residence extends JavaPlugin {
             if (vault.economyOK()) {
                 lm.consoleMessage("Found Vault using economy: &5" + vault.getEconomyName());
                 economy = vault;
+
             } else {
                 lm.consoleMessage("Found Vault, but Vault reported no usable economy system...");
             }
@@ -1290,7 +1292,9 @@ public class Residence extends JavaPlugin {
     }
 
     public String getServerLandName() {
-        return this.getLM().getMessage(lm.server_land);
+        if (ServerLandName == null)
+            ServerLandName = this.getLM().getMessage(lm.server_land);
+        return ServerLandName;
     }
 
     public UUID getServerUUID() {

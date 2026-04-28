@@ -7,6 +7,7 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.economy.EconomyInterface;
 import com.bekvon.bukkit.residence.permissions.PermissionsInterface;
@@ -33,7 +34,8 @@ public class ResidenceVaultAdapter implements EconomyInterface, PermissionsInter
 
     public ResidenceVaultAdapter(Server s) {
         setupPermissions(s);
-        setupEconomy(s);
+        if (setupEconomy(s) && !economy.hasAccount(Residence.getInstance().getServerLandName()))
+            economy.createPlayerAccount(Residence.getInstance().getServerLandName());
     }
 
     private static boolean setupPermissions(Server s) {
@@ -171,7 +173,7 @@ public class ResidenceVaultAdapter implements EconomyInterface, PermissionsInter
         if (amount < 0)
             return false;
         if (economy.withdrawPlayer(playerFrom, amount).transactionSuccess()) {
-            if (economy.depositPlayer(playerTo, amount).transactionSuccess()) {
+            if (economy.depositPlayer(playerTo, amount).transactionSuccess() || ResidencePlayer.isServerLand(playerTo)) {
                 return true;
             }
             economy.depositPlayer(playerFrom, amount);
@@ -184,8 +186,9 @@ public class ResidenceVaultAdapter implements EconomyInterface, PermissionsInter
     public boolean transfer(UUID playerFrom, UUID playerTo, double amount) {
         if (amount < 0)
             return false;
+
         if (economy.withdrawPlayer(ResidencePlayer.getName(playerFrom), amount).transactionSuccess()) {
-            if (economy.depositPlayer(ResidencePlayer.getName(playerTo), amount).transactionSuccess()) {
+            if (economy.depositPlayer(ResidencePlayer.getName(playerTo), amount).transactionSuccess() || ResidencePlayer.isServerLand(playerTo)) {
                 return true;
             }
             economy.depositPlayer(ResidencePlayer.getName(playerFrom), amount);

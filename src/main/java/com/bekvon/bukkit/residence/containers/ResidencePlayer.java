@@ -484,6 +484,14 @@ public class ResidencePlayer {
         return Residence.getInstance().getPlayerManager().getUUID(name);
     }
 
+    public static boolean isServerLand(String name) {
+        return Residence.getInstance().getServerLandName().equals(name);
+    }
+
+    public static boolean isServerLand(UUID uuid) {
+        return Residence.getInstance().getServerUUID().equals(uuid);
+    }
+
     public static @Nullable Player getOnlinePlayer(UUID uuid) {
         return Bukkit.getPlayer(uuid);
     }
