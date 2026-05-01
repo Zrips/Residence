@@ -4,11 +4,14 @@ import net.Zrips.CMILib.Locale.LC;
 
 public enum EconomyType {
 
-    Vault, @Deprecated
-    iConomy, Essentials, @Deprecated
-    RealEconomy, CMIEconomy, None;
+    Vault,
+    Essentials,
+    CMIEconomy,
+    Auto;
 
     public static EconomyType getByName(String string) {
+        if (string.equalsIgnoreCase("none"))
+			return Auto;
         for (EconomyType one : EconomyType.values()) {
             if (one.toString().equalsIgnoreCase(string))
                 return one;

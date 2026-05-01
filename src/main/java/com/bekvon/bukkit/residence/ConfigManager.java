@@ -1087,7 +1087,7 @@ public class ConfigManager {
         c.addComment("Global.EnablePermissions", "Whether or not to use the Permissions system in conjunction with this config.");
         c.get("Global.EnablePermissions", true);
 
-        c.addComment("Global.EnableEconomy", "Enable / Disable Residence's Economy System (iConomy, MineConomy, Essentials, BOSEconomy, and RealEconomy supported).");
+        c.addComment("Global.EnableEconomy", "Enable / Disable Residence's Economy System (CMIEconomy, Essentials, Vault supported).");
         enableEconomy = c.get("Global.EnableEconomy", true);
 
         c.addComment("Global.ChargeWhen", "Defines when we should charge money. Only works if economy is enabled");
@@ -1100,13 +1100,13 @@ public class ConfigManager {
 
         c.addComment("Global.Type", "Defaults to None which will start by looking to default economy engine throw vault API and if it fails to any supported economy engine",
                 "Custom economy engines can be defined to access economy directly", "Supported variables: " + EconomyType.toStringLine());
-        VaultEconomy = EconomyType.getByName(c.get("Global.Type", "None"));
+        VaultEconomy = EconomyType.getByName(c.get("Global.Type", "Auto"));
         if (VaultEconomy == null)
 
         {
-            lm.consoleMessage("&cCould not determine economy from " + c.get("Global.Type", "Vault"));
+            lm.consoleMessage("&cCould not determine economy from " + c.get("Global.Type", "Auto"));
             lm.consoleMessage("&cTrying to find suitable economy system");
-            VaultEconomy = EconomyType.None;
+            VaultEconomy = EconomyType.Auto;
         }
 
         c.addComment("Global.ExtraEnterMessage", "When enabled extra message will appear in chat if residence is for rent or for sell to inform how he can rent/buy residence with basic information.");

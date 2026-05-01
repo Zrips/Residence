@@ -112,6 +112,7 @@ import com.residence.zip.ZipLibrary;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Util.CMIVersionChecker;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -465,6 +466,21 @@ public class Residence extends JavaPlugin {
             LocaleManager.parseHelpEntries();
 
             economy = null;
+
+            String vaultEconomyName = null;
+            if (this.getPermissionManager().getPermissionsPlugin() instanceof ResidenceVaultAdapter) {
+                ResidenceVaultAdapter vault = (ResidenceVaultAdapter) this.getPermissionManager().getPermissionsPlugin();
+                if (vault.economyOK()) {
+                }
+            }
+            Plugin p = getServer().getPluginManager().getPlugin("Vault");
+            if (p != null) {
+                ResidenceVaultAdapter vault = new ResidenceVaultAdapter(getServer());
+                if (vault.economyOK()) {
+                    vaultEconomyName = vault.getEconomyName();
+                }
+            }
+
             if (this.getConfig().getBoolean("Global.EnableEconomy", false)) {
                 lm.consoleMessage("Scanning for economy systems...");
                 switch (this.getConfigManager().getEconomyType()) {
@@ -474,13 +490,15 @@ public class Residence extends JavaPlugin {
                 case Essentials:
                     this.loadEssentialsEconomy();
                     break;
-                case None:
-                    if (economy == null) {
+                case Auto:
+                    if (economy == null && (vaultEconomyName == null || vaultEconomyName.equals("CMIEconomy"))) {
                         this.loadCMIEconomy();
                     }
-                    if (economy == null) {
+
+                    if (economy == null && (vaultEconomyName == null || vaultEconomyName.equals("EssentialsX Economy") || vaultEconomyName.equals("EssentialsEconomy"))) {
                         this.loadEssentialsEconomy();
                     }
+
                     if (this.getPermissionManager().getPermissionsPlugin() instanceof ResidenceVaultAdapter) {
                         ResidenceVaultAdapter vault = (ResidenceVaultAdapter) this.getPermissionManager().getPermissionsPlugin();
                         if (vault.economyOK()) {
@@ -931,9 +949,7 @@ public class Residence extends JavaPlugin {
         Plugin p = getServer().getPluginManager().getPlugin("Essentials");
         if (p != null) {
             economy = new EssentialsEcoAdapter((Essentials) p);
-            lm.consoleMessage("Successfully linked with &5Essentials Economy");
-        } else {
-            lm.consoleMessage("Essentials Economy NOT found!");
+            lm.consoleMessage("Successfully linked with &5" + economy.getName());
         }
     }
 
@@ -941,9 +957,7 @@ public class Residence extends JavaPlugin {
         Plugin p = getServer().getPluginManager().getPlugin("CMI");
         if (p != null) {
             economy = new CMIEconomy();
-            lm.consoleMessage("Successfully linked with &5CMIEconomy");
-        } else {
-            lm.consoleMessage("CMIEconomy NOT found!");
+            lm.consoleMessage("Successfully linked with &5" + economy.getName());
         }
     }
 

@@ -416,8 +416,6 @@ public class RentManager implements MarketRentInterface {
                 AutoPay = false;
             }
 
-            CMIDebug.c("transfer user? " , player.getUniqueId(), res.getPermissions().getOwnerUUID(), land.cost);
-            
             if (plugin.getEconomyManager().transfer(player.getUniqueId(), res.getPermissions().getOwnerUUID(), land.cost)) {
                 RentedLand newrent = new RentedLand();
 //                newrent.player = player.getName();
