@@ -52,6 +52,7 @@ public class reload implements cmd {
             plugin.getPermissionManager().load();
             plugin.getItemManager().load();
             plugin.getWorldFlags().load();
+            plugin.getFlagUtilManager().load();
             FlagPermissions.initValidFlags();
             CMIMessages.sendMessage(sender, plugin.getPrefix() + " Reloaded flags file.");
             return true;

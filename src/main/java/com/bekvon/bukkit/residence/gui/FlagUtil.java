@@ -32,6 +32,7 @@ public class FlagUtil {
     }
 
     public void load() {
+        flagData = new FlagData();
         ConfigReader c = null;
         try {
             c = new ConfigReader(Residence.getInstance(), "flags.yml");
