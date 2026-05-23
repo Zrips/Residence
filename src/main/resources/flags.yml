@@ -97,6 +97,9 @@ Global:
     # Allows to modify copper blocks
     copper: true
     # Applies to: Residence
+    # Allow or deny all copper blocks oxidation
+    copperoxidation: true
+    # Applies to: Residence
     # Allow or deny all corals from drying up
     coraldryup: true
     # Applies to: Residence
@@ -425,6 +428,7 @@ Global:
     container: CHEST_MINECART
     coords: COMPASS
     copper: COPPER_BLOCK
+    copperoxidation: OXIDIZED_COPPER
     coraldryup: FIRE_CORAL
     craft: STONE
     creeper: CREEPER_SPAWN_EGG

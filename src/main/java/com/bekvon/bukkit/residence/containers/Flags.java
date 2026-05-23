@@ -36,6 +36,7 @@ public enum Flags {
     container(CMIMaterial.CHEST_MINECART, FlagMode.Both, "Allows or denys use of furnaces, chests, dispensers, etc...", true),
     coords(CMIMaterial.COMPASS, FlagMode.Residence, "Hides residence coordinates", true),
     copper(CMIMaterial.COPPER_BLOCK, FlagMode.Both, "Allows to modify copper blocks", true),
+	copperoxidation(CMIMaterial.OXIDIZED_COPPER, FlagMode.Residence, "Allow or deny all copper blocks oxidation", true),
     coraldryup(CMIMaterial.FIRE_CORAL, FlagMode.Residence, "Allow or deny all corals from drying up", true),
     craft(CMIMaterial.STONE, FlagMode.Residence, "Gives table, enchant, brew flags", true),
     creeper(CMIMaterial.CREEPER_SPAWN_EGG, FlagMode.Residence, "Allow or deny creeper explosions", true),
