@@ -287,6 +287,18 @@ public class ResidenceBlockListener implements Listener {
         }
     }
 
+    private boolean isIceOrSnow(Material material) {
+        CMIMaterial mat = CMIMaterial.get(material);
+        switch (mat) {
+            case FROSTED_ICE:
+            case ICE:
+            case SNOW:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onIceForm(BlockFormEvent event) {
         // Disabling listener if flag disabled globally
@@ -300,18 +312,9 @@ public class ResidenceBlockListener implements Listener {
                 && ((EntityBlockFormEvent) event).getEntity() instanceof Snowman) {
             return;
         }
-
-        CMIMaterial mat = CMIMaterial.get(event.getNewState().getType());
-
-        switch (mat) {
-        case FROSTED_ICE:
-        case ICE:
-        case SNOW:
-            break;
-        default:
+        if (!isIceOrSnow(event.getNewState().getType())) {
             return;
         }
-
         FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
         if (!perms.has(Flags.iceform, true)) {
             event.setCancelled(true);
@@ -327,10 +330,9 @@ public class ResidenceBlockListener implements Listener {
         if (plugin.isDisabledWorldListener(event.getBlock().getWorld()))
             return;
 
-        if (!CMIMaterial.get(event.getNewState().getType()).equals(CMIMaterial.WATER) && event.getBlock().getState().getType() != Material.SNOW && event.getBlock().getState()
-                .getType() != Material.SNOW_BLOCK)
+        if (!isIceOrSnow(event.getBlock().getType())) {
             return;
-
+        }
         FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
         if (!perms.has(Flags.icemelt, true)) {
             event.setCancelled(true);
