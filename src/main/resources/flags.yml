@@ -307,6 +307,9 @@ Global:
     # Allow or deny pvp in the residence
     pvp: false
     # Applies to: Residence
+    # Allow or deny vanilla raid trigger in the residence
+    raid: true
+    # Applies to: Residence
     # Sets weather to rainny in residence
     rain: true
     # Applies to: Residence
@@ -499,6 +502,7 @@ Global:
     place: SEA_LANTERN
     pressure: LIGHT_WEIGHTED_PRESSURE_PLATE
     pvp: WOODEN_SWORD
+    raid: CROSSBOW
     rain: BLUE_ORCHID
     respawn: SUNFLOWER
     riding: SADDLE

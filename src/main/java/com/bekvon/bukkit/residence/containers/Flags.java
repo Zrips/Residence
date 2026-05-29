@@ -104,6 +104,7 @@ public enum Flags {
     pistonprotection(CMIMaterial.STICKY_PISTON, FlagMode.Residence, "Enables or disabled piston block move in or out of residence", true),
     place(CMIMaterial.SEA_LANTERN, FlagMode.Both, "Allows or denys only placement of blocks, overrides the build flag", true),
     pvp(CMIMaterial.WOODEN_SWORD, FlagMode.Residence, "Allow or deny pvp in the residence", false),
+	raid(CMIMaterial.CROSSBOW, FlagMode.Residence, "Allow or deny vanilla raid trigger in the residence", true),
     rain(CMIMaterial.BLUE_ORCHID, FlagMode.Residence, "Sets weather to rainny in residence", true),
     respawn(CMIMaterial.SUNFLOWER, FlagMode.Residence, "Automaticaly respawns player", false),
     riding(CMIMaterial.SADDLE, FlagMode.Both, "Prevent riding a horse", true),

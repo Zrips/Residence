@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
@@ -21,6 +22,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTakeLecternBookEvent;
+import org.bukkit.event.raid.RaidTriggerEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -236,4 +238,20 @@ public class ResidenceListener1_14 implements Listener {
             event.setCancelled(true);
 
     }
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onVanillaRaidTrigger(RaidTriggerEvent event) {
+		// Disabling listener if flag disabled globally
+		if (!Flags.raid.isGlobalyEnabled()) {
+			return;
+		}
+		Location raidLoc = event.getRaid().getLocation();
+		// disabling event on world
+		if (plugin.isDisabledWorldListener(raidLoc.getWorld())) {
+			return;
+		}
+		if (FlagPermissions.has(raidLoc, Flags.raid, FlagCombo.OnlyFalse)) {
+			event.setCancelled(true);
+		}
+	}
 }
