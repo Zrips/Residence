@@ -290,12 +290,12 @@ public class ResidenceBlockListener implements Listener {
     private boolean isIceOrSnow(Material material) {
         CMIMaterial mat = CMIMaterial.get(material);
         switch (mat) {
-            case FROSTED_ICE:
-            case ICE:
-            case SNOW:
-                return true;
-            default:
-                return false;
+        case FROSTED_ICE:
+        case ICE:
+        case SNOW:
+            return true;
+        default:
+            return false;
         }
     }
 
