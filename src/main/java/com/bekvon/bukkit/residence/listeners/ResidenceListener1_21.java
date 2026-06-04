@@ -298,7 +298,7 @@ public class ResidenceListener1_21 implements Listener {
     }
 
     private boolean isFeedingAnimal(Animals entity, Material held) {
-        if (held.name().equals("GOLDEN_DANDELION")) {
+        if (CMIMaterial.get(held) == CMIMaterial.GOLDEN_DANDELION) {
             return !entity.isAdult();
         }
         CMIEntityType type = CMIEntityType.get(entity);
@@ -321,8 +321,11 @@ public class ResidenceListener1_21 implements Listener {
         case CHICKEN:
             return isItemTag(held, "chicken_food");
         case COW:
+        case MOOSHROOM:
             return isItemTag(held, "cow_food");
         case DONKEY:
+        case HORSE:
+        case MULE:
             return isItemTag(held, "horse_food");
         case FOX:
             return isItemTag(held, "fox_food");
@@ -334,15 +337,11 @@ public class ResidenceListener1_21 implements Listener {
             return isItemTag(held, "happy_ghast_food");
         case HOGLIN:
             return isItemTag(held, "hoglin_food");
-        case HORSE:
-            return isItemTag(held, "horse_food");
         case LLAMA:
+        case TRADER_LLAMA:
             return isItemTag(held, "llama_food");
-        case MOOSHROOM:
-            return isItemTag(held, "cow_food");
-        case MULE:
-            return isItemTag(held, "horse_food");
         case NAUTILUS:
+        case ZOMBIE_NAUTILUS:
             return isItemTag(held, "nautilus_food");
         case OCELOT:
             return isItemTag(held, "ocelot_food");
@@ -360,16 +359,12 @@ public class ResidenceListener1_21 implements Listener {
             return isItemTag(held, "sniffer_food");
         case STRIDER:
             return isItemTag(held, "strider_food");
-        case TRADER_LLAMA:
-            return isItemTag(held, "llama_food");
         case TURTLE:
             return isItemTag(held, "turtle_food");
         case WOLF:
             return isItemTag(held, "wolf_food") || held == Material.BONE;
         case ZOMBIE_HORSE:
             return held == Material.RED_MUSHROOM;
-        case ZOMBIE_NAUTILUS:
-            return isItemTag(held, "nautilus_food");
         default:
             return false;
         }

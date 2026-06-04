@@ -1013,6 +1013,9 @@ public class ResidencePlayerListener implements Listener {
             return held.containsCriteria(CMIMC.DYE) || held == CMIMaterial.HONEYCOMB;
         }
         switch (block) {
+        case CAULDRON:
+            // Cauldron uses CauldronLevelChangeEvent for checks on 1.9+
+            return Version.isCurrentLower(Version.v1_9_0) && (held == CMIMaterial.GLASS_BOTTLE || held == CMIMaterial.POTION);
         case PUMPKIN:
             return held == CMIMaterial.SHEARS;
         case REDSTONE_WIRE:
@@ -1766,10 +1769,14 @@ public class ResidencePlayerListener implements Listener {
             return;
 
         Block clickBlock = event.getBlockClicked();
+        boolean isCauldron = CMIMaterial.get(clickBlock.getType()) == CMIMaterial.CAULDRON;
+        // Cauldron uses CauldronLevelChangeEvent for checks on 1.9+
+        if (isCauldron && Version.isCurrentEqualOrHigher(Version.v1_9_0)) {
+            return;
+        }
         Location loc;
 
-        if (!player.isSneaking() && ((CMIMaterial.get(clickBlock.getType()) == CMIMaterial.CAULDRON)
-                || (Version.isCurrentEqualOrHigher(Version.v1_13_R1) && clickBlock.getBlockData() instanceof org.bukkit.block.data.Waterlogged))) {
+        if (!player.isSneaking() && (isCauldron || (Version.isCurrentEqualOrHigher(Version.v1_13_0) && clickBlock.getBlockData() instanceof org.bukkit.block.data.Waterlogged))) {
             // if place inside the block
             loc = clickBlock.getLocation();
         } else {
@@ -1831,7 +1838,10 @@ public class ResidencePlayerListener implements Listener {
         Player player = event.getPlayer();
         if (ResAdmin.isResAdmin(player))
             return;
-
+        // Cauldron uses CauldronLevelChangeEvent for checks on 1.9+
+        if (Version.isCurrentEqualOrHigher(Version.v1_9_0) && CMIMaterial.get(event.getBlockClicked().getType()) == CMIMaterial.WATER_CAULDRON) {
+            return;
+        }
         Location loc = event.getBlockClicked().getLocation();
 
         ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);

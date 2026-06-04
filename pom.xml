@@ -22,13 +22,13 @@
         <dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>1.21.11-R0.1-SNAPSHOT</version>
+			<version>26.1.2.build.69-stable</version>
 			<scope>provided</scope>
 		</dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.21.11-R0.1-SNAPSHOT</version>
+            <version>26.1.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -66,14 +66,14 @@
 		<dependency>
 			<groupId>com.github.Zrips</groupId>
 			<artifactId>CMILib</artifactId>
-			<version>1.5.8.1</version>
+			<version>1.5.9.6</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- CMI -->
 		<dependency>
 			<groupId>com.github.Zrips</groupId>
 			<artifactId>CMI-API</artifactId>
-			<version>9.7.14.3</version>
+			<version>9.8.6.4</version>
 			<scope>provided</scope> 
 		</dependency>
 		<dependency>
