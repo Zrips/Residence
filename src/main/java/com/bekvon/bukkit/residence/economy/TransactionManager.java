@@ -27,15 +27,32 @@ import com.bekvon.bukkit.residence.protection.CuboidArea;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
 
+/**
+ * Manages land buying, selling, and economy transactions for residences.
+ * Implements {@link MarketBuyInterface} to provide marketplace functionality.
+ * Get the instance via {@code ResidenceApi.getMarketBuyManager()}.
+ */
 public class TransactionManager implements MarketBuyInterface {
     private Set<ClaimedResidence> sellAmount;
     private Residence plugin;
 
+    /**
+     * Creates a new TransactionManager instance.
+     *
+     * @param plugin Residence plugin instance
+     */
     public TransactionManager(Residence plugin) {
         this.plugin = plugin;
         sellAmount = new HashSet<ClaimedResidence>();
     }
 
+    /**
+     * Charges a player a specified amount of money.
+     *
+     * @param player       Player to charge
+     * @param chargeamount Amount to charge
+     * @return true if the charge was successful, false otherwise
+     */
     public boolean chargeEconomyMoney(Player player, double chargeamount) {
         EconomyInterface econ = plugin.getEconomyManager();
         if (econ == null) {
@@ -55,6 +72,13 @@ public class TransactionManager implements MarketBuyInterface {
         return true;
     }
 
+    /**
+     * Gives money to an online player.
+     *
+     * @param player Player to receive money
+     * @param amount Amount to give
+     * @return true if the transfer was successful, false otherwise
+     */
     public boolean giveEconomyMoney(Player player, double amount) {
         if (player == null)
             return false;
@@ -70,11 +94,26 @@ public class TransactionManager implements MarketBuyInterface {
         return false;
     }
 
+    /**
+     * Gives money to a player by name.
+     *
+     * @param playerName Player name
+     * @param amount     Amount to give
+     * @return true if the transfer was successful, false otherwise
+     * @deprecated Use {@link #giveEconomyMoney(UUID, double)} instead
+     */
     @Deprecated
     public boolean giveEconomyMoney(String playerName, double amount) {
         return giveEconomyMoney(ResidencePlayer.getUUID(playerName), amount);
     }
 
+    /**
+     * Gives money to a player by UUID.
+     *
+     * @param uuid   Player UUID
+     * @param amount Amount to give
+     * @return true if the transfer was successful, false otherwise
+     */
     public boolean giveEconomyMoney(UUID uuid, double amount) {
         if (uuid == null)
             return false;
@@ -88,11 +127,27 @@ public class TransactionManager implements MarketBuyInterface {
         return true;
     }
 
+    /**
+     * Puts a residence up for sale by name.
+     *
+     * @param areaname Residence name
+     * @param player   Player listing the sale
+     * @param amount   Sale price
+     * @param resadmin Whether in admin mode
+     */
     public void putForSale(String areaname, Player player, int amount, boolean resadmin) {
         ClaimedResidence res = ClaimedResidence.getByName(areaname);
         putForSale(res, player, amount, resadmin);
     }
 
+    /**
+     * Puts a residence up for sale.
+     *
+     * @param res      Residence to sell
+     * @param player   Player listing the sale
+     * @param amount   Sale price
+     * @param resadmin Whether in admin mode
+     */
     public void putForSale(ClaimedResidence res, Player player, int amount, boolean resadmin) {
 
         if (res == null) {
@@ -156,12 +211,27 @@ public class TransactionManager implements MarketBuyInterface {
         lm.Residence_ForSale.sendMessage(player, res.getName(), amount);
     }
 
+    /**
+     * Puts a residence up for sale by name (API method).
+     *
+     * @param areaname Residence name
+     * @param amount   Sale price
+     * @return true if the residence was put up for sale, false otherwise
+     * @deprecated Use {@link #putForSale(ClaimedResidence, int)} instead
+     */
     @Override
     @Deprecated
     public boolean putForSale(String areaname, int amount) {
         return putForSale(ClaimedResidence.getByName(areaname), amount);
     }
 
+    /**
+     * Puts a residence up for sale (API method).
+     *
+     * @param res    Residence to sell
+     * @param amount Sale price
+     * @return true if the residence was put up for sale, false otherwise
+     */
     @Override
     public boolean putForSale(ClaimedResidence res, int amount) {
         if (res == null)
@@ -178,12 +248,27 @@ public class TransactionManager implements MarketBuyInterface {
         return true;
     }
 
+    /**
+     * Buys a plot for a player by residence name.
+     *
+     * @param areaname Residence name
+     * @param player   Buyer
+     * @param resadmin Whether in admin mode
+     * @deprecated Use {@link #buyPlot(ClaimedResidence, Player, boolean)} instead
+     */
     @Override
     @Deprecated
     public void buyPlot(String areaname, Player player, boolean resadmin) {
         buyPlot(ClaimedResidence.getByName(areaname), player, resadmin);
     }
 
+    /**
+     * Buys a plot for a player.
+     *
+     * @param res      Residence to buy
+     * @param player   Buyer
+     * @param resadmin Whether in admin mode
+     */
     public void buyPlot(ClaimedResidence res, Player player, boolean resadmin) {
         if (res == null || !res.isForSell()) {
             lm.Invalid_Residence.sendMessage(player);
@@ -270,11 +355,26 @@ public class TransactionManager implements MarketBuyInterface {
 
     }
 
+    /**
+     * Removes a residence from sale by name.
+     *
+     * @param player   Player requesting removal
+     * @param areaname Residence name
+     * @param resadmin Whether in admin mode
+     * @deprecated Use {@link #removeFromSale(Player, ClaimedResidence, boolean)} instead
+     */
     @Deprecated
     public void removeFromSale(Player player, String areaname, boolean resadmin) {
         removeFromSale(player, ClaimedResidence.getByName(areaname), resadmin);
     }
 
+    /**
+     * Removes a residence from sale.
+     *
+     * @param player   Player requesting removal
+     * @param res      Residence to remove from sale
+     * @param resadmin Whether in admin mode
+     */
     public void removeFromSale(Player player, ClaimedResidence res, boolean resadmin) {
         if (res == null) {
             lm.Invalid_Area.sendMessage(player);
@@ -294,16 +394,33 @@ public class TransactionManager implements MarketBuyInterface {
         }
     }
 
+    /**
+     * Removes a residence from sale by name (API method).
+     *
+     * @param areaname Residence name
+     * @deprecated Use {@link #removeFromSale(ClaimedResidence)} instead
+     */
     @Override
     @Deprecated
     public void removeFromSale(String areaname) {
         removeFromSale(ClaimedResidence.getByName(areaname));
     }
 
+    /**
+     * Removes a residence from sale and updates signs.
+     *
+     * @param res Residence to remove from sale
+     */
     public void removeFromSale(ClaimedResidence res) {
         removeFromSale(res, true);
     }
 
+    /**
+     * Removes a residence from sale.
+     *
+     * @param res        Residence to remove from sale
+     * @param removeSigns Whether to remove associated signs
+     */
     public void removeFromSale(ClaimedResidence res, boolean removeSigns) {
         if (res == null)
             return;
@@ -312,6 +429,13 @@ public class TransactionManager implements MarketBuyInterface {
             plugin.getSignUtil().removeSign(res);
     }
 
+    /**
+     * Checks if a residence is for sale by name.
+     *
+     * @param areaname Residence name
+     * @return true if the residence is for sale, false otherwise
+     * @deprecated Use {@link #isForSale(ClaimedResidence)} instead
+     */
     @Override
     @Deprecated
     public boolean isForSale(String areaname) {
@@ -319,17 +443,37 @@ public class TransactionManager implements MarketBuyInterface {
         return isForSale(res);
     }
 
+    /**
+     * Checks if a residence is for sale.
+     *
+     * @param res Residence to check
+     * @return true if the residence is for sale, false otherwise
+     */
     public boolean isForSale(ClaimedResidence res) {
         if (res == null)
             return false;
         return sellAmount.contains(res);
     }
 
+    /**
+     * Displays sale information for a residence by name.
+     *
+     * @param areaname Residence name
+     * @param player   Player to display info to
+     * @return true if sale info was displayed, false otherwise
+     */
     public boolean viewSaleInfo(String areaname, Player player) {
         ClaimedResidence res = plugin.getResidenceManager().getByName(areaname);
         return viewSaleInfo(res, player);
     }
 
+    /**
+     * Displays sale information for a residence.
+     *
+     * @param res    Residence to display info for
+     * @param player Player to display info to
+     * @return true if sale info was displayed, false otherwise
+     */
     public boolean viewSaleInfo(ClaimedResidence res, Player player) {
 
         if (res == null || !res.isForSell()) {
@@ -352,6 +496,12 @@ public class TransactionManager implements MarketBuyInterface {
         return true;
     }
 
+    /**
+     * Prints a paginated list of residences for sale to a player.
+     *
+     * @param player Player to display the list to
+     * @param page   Page number to display
+     */
     public void printForSaleResidences(Player player, int page) {
         List<ClaimedResidence> toRemove = new ArrayList<ClaimedResidence>();
         lm.Economy_LandForSale.sendMessage(player);
@@ -381,6 +531,9 @@ public class TransactionManager implements MarketBuyInterface {
         pi.autoPagination(player, "/res market list sell");
     }
 
+    /**
+     * Clears all residences from sale and resets their sell prices.
+     */
     public void clearSales() {
         for (ClaimedResidence res : sellAmount) {
             if (res == null)
@@ -391,18 +544,35 @@ public class TransactionManager implements MarketBuyInterface {
         System.out.println("[Residence] - ReInit land selling.");
     }
 
+    /**
+     * Gets the sale price of a residence by name.
+     *
+     * @param areaname Residence name
+     * @return Sale price, or -1 if not found
+     */
     @Override
     public int getSaleAmount(String areaname) {
         ClaimedResidence res = plugin.getResidenceManager().getByName(areaname);
         return getSaleAmount(res);
     }
 
+    /**
+     * Gets the sale price of a residence.
+     *
+     * @param res Residence to check
+     * @return Sale price, or -1 if not found
+     */
     public int getSaleAmount(ClaimedResidence res) {
         if (res == null)
             return -1;
         return res.getSellPrice();
     }
 
+    /**
+     * Loads sale data from a map of residence names to sell prices.
+     *
+     * @param root Map of residence names to sell prices
+     */
     public void load(Map<String, Integer> root) {
         if (root == null)
             return;
@@ -416,6 +586,11 @@ public class TransactionManager implements MarketBuyInterface {
         }
     }
 
+    /**
+     * Gets all residences currently for sale with their prices.
+     *
+     * @return Map of residence names to sale prices
+     */
     @Override
     public Map<String, Integer> getBuyableResidences() {
         Map<String, Integer> list = new HashMap<String, Integer>();
@@ -427,6 +602,11 @@ public class TransactionManager implements MarketBuyInterface {
         return list;
     }
 
+    /**
+     * Saves all sale data as a map of residence names to sell prices.
+     *
+     * @return Map of residence names to sale prices
+     */
     public Map<String, Integer> save() {
         return getBuyableResidences();
     }

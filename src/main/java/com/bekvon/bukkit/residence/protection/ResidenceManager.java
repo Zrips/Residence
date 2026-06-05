@@ -63,12 +63,21 @@ import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
+/**
+ * Manages all claimed residences. Implements {@link ResidenceInterface}.
+ * Obtain the singleton instance via {@code ResidenceApi.getResidenceManager()}.
+ */
 public class ResidenceManager implements ResidenceInterface {
     protected ConcurrentHashMap<String, ClaimedResidence> residences;
     protected Map<String, Map<ChunkRef, List<ClaimedResidence>>> chunkResidences;
     protected List<ClaimedResidence> shops = new ArrayList<ClaimedResidence>();
     private Residence plugin;
 
+    /**
+     * Construct a new ResidenceManager
+     *
+     * @param plugin Residence plugin instance
+     */
     public ResidenceManager(Residence plugin) {
         residences = new ConcurrentHashMap<String, ClaimedResidence>();
         chunkResidences = new HashMap<String, Map<ChunkRef, List<ClaimedResidence>>>();
@@ -76,6 +85,13 @@ public class ResidenceManager implements ResidenceInterface {
         this.plugin = plugin;
     }
 
+    /**
+     * Check if a player owns the residence at the given location
+     *
+     * @param player Bukkit player
+     * @param loc    location to check
+     * @return true if the player owns the residence at the location
+     */
     public boolean isOwnerOfLocation(Player player, Location loc) {
         ClaimedResidence res = getByLoc(loc);
         if (res != null && res.isOwner(player))
@@ -83,16 +99,34 @@ public class ResidenceManager implements ResidenceInterface {
         return false;
     }
 
+    /**
+     * Get residence at the sender's location
+     *
+     * @param sender command sender (must be a Player)
+     * @return ClaimedResidence or null
+     */
     public ClaimedResidence getByLoc(CommandSender sender) {
         if ((sender instanceof Player))
             return getByLoc(((Player) sender).getLocation());
         return null;
     }
 
+    /**
+     * Get residence at the player's current location
+     *
+     * @param player Bukkit player
+     * @return ClaimedResidence or null
+     */
     public ClaimedResidence getByLoc(Player player) {
         return getByLoc(player.getLocation());
     }
 
+    /**
+     * Get residence by location
+     *
+     * @param loc Bukkit location
+     * @return ClaimedResidence or null
+     */
     @Override
     public @Nullable ClaimedResidence getByLoc(@Nullable Location loc) {
 
@@ -131,6 +165,12 @@ public class ResidenceManager implements ResidenceInterface {
         return null;
     }
 
+    /**
+     * Get all residences in a specific chunk
+     *
+     * @param chunk Bukkit chunk
+     * @return list of residences in the chunk
+     */
     public List<ClaimedResidence> getByChunk(Chunk chunk) {
         List<ClaimedResidence> list = new ArrayList<ClaimedResidence>();
         if (chunk == null)
@@ -149,6 +189,12 @@ public class ResidenceManager implements ResidenceInterface {
         return ls == null ? list : new ArrayList<ClaimedResidence>(ls);
     }
 
+    /**
+     * Get residence by name, supports subzone notation (e.g. "res.subzone")
+     *
+     * @param name residence name
+     * @return ClaimedResidence or null
+     */
     @Override
     public ClaimedResidence getByName(String name) {
         if (name == null) {
@@ -173,6 +219,12 @@ public class ResidenceManager implements ResidenceInterface {
         return res;
     }
 
+    /**
+     * Add a shop residence by name
+     *
+     * @param resName residence name
+     * @deprecated use {@link #addShop(ClaimedResidence)} instead
+     */
     @Override
     @Deprecated
     public void addShop(String resName) {
@@ -181,6 +233,11 @@ public class ResidenceManager implements ResidenceInterface {
             shops.add(res);
     }
 
+    /**
+     * Recursively add a residence and its subzones as shops if they have the shop flag
+     *
+     * @param res residence to add
+     */
     public void addShops(ClaimedResidence res) {
         ResidencePermissions perms = res.getPermissions();
         if (perms.has(Flags.shop, FlagCombo.OnlyTrue, false))
@@ -190,16 +247,32 @@ public class ResidenceManager implements ResidenceInterface {
         }
     }
 
+    /**
+     * Add a residence to the shop list
+     *
+     * @param res residence to add as shop
+     */
     @Override
     public void addShop(ClaimedResidence res) {
         shops.add(res);
     }
 
+    /**
+     * Remove a residence from the shop list
+     *
+     * @param res residence to remove
+     */
     @Override
     public void removeShop(ClaimedResidence res) {
         shops.remove(res);
     }
 
+    /**
+     * Remove a shop residence by name
+     *
+     * @param resName residence name
+     * @deprecated use {@link #removeShop(ClaimedResidence)} instead
+     */
     @Override
     @Deprecated
     public void removeShop(String resName) {
@@ -211,46 +284,133 @@ public class ResidenceManager implements ResidenceInterface {
         }
     }
 
+    /**
+     * Get all shop residences
+     *
+     * @return list of shop residences
+     */
     @Override
     public List<ClaimedResidence> getShops() {
         return shops;
     }
 
+    /**
+     * Add a server-owned residence with two corner locations
+     *
+     * @param name residence name
+     * @param loc1 first corner location
+     * @param loc2 second corner location
+     * @return true if the residence was created successfully
+     * @deprecated use player-based overload instead
+     */
     @Override
     @Deprecated
     public boolean addResidence(String name, Location loc1, Location loc2) {
         return this.addResidence(null, name, null, plugin.getServerLandName(), new CuboidArea(loc1, loc2), true, false);
     }
 
+    /**
+     * Add a residence for a specific owner with two corner locations
+     *
+     * @param name   residence name
+     * @param owner  owner name
+     * @param loc1   first corner location
+     * @param loc2   second corner location
+     * @return true if the residence was created successfully
+     * @deprecated use player-based overload instead
+     */
     @Override
     @Deprecated
     public boolean addResidence(String name, String owner, Location loc1, Location loc2) {
         return this.addResidence(null, owner, null, name, new CuboidArea(loc1, loc2), true, false);
     }
 
+    /**
+     * Add a residence for a player with two corner locations
+     *
+     * @param player   player creating the residence
+     * @param name     residence name
+     * @param loc1     first corner location
+     * @param loc2     second corner location
+     * @param resadmin whether to bypass permission checks
+     * @return true if the residence was created successfully
+     */
     @Override
     public boolean addResidence(Player player, String name, Location loc1, Location loc2, boolean resadmin) {
         return this.addResidence(player, player.getName(), player.getUniqueId(), name, new CuboidArea(loc1, loc2), resadmin, !resadmin);
     }
 
+    /**
+     * Add a residence for a specific owner with two corner locations
+     *
+     * @param player   player creating the residence
+     * @param owner    owner name
+     * @param name     residence name
+     * @param loc1     first corner location
+     * @param loc2     second corner location
+     * @param resadmin whether to bypass permission checks
+     * @return true if the residence was created successfully
+     * @deprecated use UUID-based overload instead
+     */
     @Deprecated
     public boolean addResidence(Player player, String owner, String name, Location loc1, Location loc2, boolean resadmin) {
         return addResidence(player, owner, null, name, new CuboidArea(loc1, loc2), resadmin, !resadmin);
     }
 
+    /**
+     * Add a residence using the player's current selection
+     *
+     * @param player   player creating the residence
+     * @param resName  residence name
+     * @param resadmin whether to bypass permission checks
+     * @return true if the residence was created successfully
+     */
     @Override
     public boolean addResidence(Player player, String resName, boolean resadmin) {
         return addResidence(player, player.getName(), player.getUniqueId(), resName, plugin.getSelectionManager().getSelectionCuboid(player), resadmin, !resadmin);
     }
 
+    /**
+     * Add a residence using the player's current selection with money deduction control
+     *
+     * @param player      player creating the residence
+     * @param resName     residence name
+     * @param resadmin    whether to bypass permission checks
+     * @param deductMoney whether to deduct money for creation
+     * @return true if the residence was created successfully
+     */
     public boolean addResidence(Player player, String resName, boolean resadmin, boolean deductMoney) {
         return addResidence(player, player.getName(), player.getUniqueId(), resName, plugin.getSelectionManager().getSelectionCuboid(player), resadmin, deductMoney);
     }
 
+    /**
+     * Add a residence for a specific owner UUID with two corner locations
+     *
+     * @param player     player creating the residence
+     * @param owner      owner name
+     * @param ownerUUId  owner UUID
+     * @param resName    residence name
+     * @param loc1       first corner location
+     * @param loc2       second corner location
+     * @param resadmin   whether to bypass permission checks
+     * @return true if the residence was created successfully
+     */
     public boolean addResidence(Player player, String owner, UUID ownerUUId, String resName, Location loc1, Location loc2, boolean resadmin) {
         return addResidence(player, owner, ownerUUId, resName, new CuboidArea(loc1, loc2), resadmin, !resadmin);
     }
 
+    /**
+     * Core method to add a residence. Handles validation, economy charges, events, and persistence.
+     *
+     * @param player      player creating the residence
+     * @param owner       owner name
+     * @param ownerUUId   owner UUID
+     * @param resName     residence name
+     * @param area        cuboid area for the residence
+     * @param resadmin    whether to bypass permission checks
+     * @param deductMoney whether to deduct money for creation
+     * @return true if the residence was created successfully
+     */
     public boolean addResidence(Player player, String owner, UUID ownerUUId, String resName, CuboidArea area, boolean resadmin, boolean deductMoney) {
 
         if (!Utils.verifyResidenceName(player, resName))
@@ -349,47 +509,132 @@ public class ResidenceManager implements ResidenceInterface {
 
     }
 
+    /**
+     * List residences owned by the sender (page 1)
+     *
+     * @param sender command sender
+     */
     public void listResidences(CommandSender sender) {
         this.listResidences(sender, (UUID) null, 1, false, false, false, null);
     }
 
+    /**
+     * List residences owned by the sender with resadmin flag
+     *
+     * @param sender    command sender
+     * @param resadmin  whether running as resadmin
+     */
     public void listResidences(CommandSender sender, boolean resadmin) {
         this.listResidences(sender, (UUID) null, 1, false, false, resadmin, null);
     }
 
+    /**
+     * List residences for a target player
+     *
+     * @param sender       command sender
+     * @param targetplayer target player name
+     * @param showhidden   whether to show hidden residences
+     * @deprecated use UUID-based overload instead
+     */
     @Deprecated
     public void listResidences(CommandSender sender, String targetplayer, boolean showhidden) {
         this.listResidences(sender, targetplayer, 1, showhidden, false, showhidden);
     }
 
+    /**
+     * List residences for a target player at a specific page
+     *
+     * @param sender       command sender
+     * @param targetplayer target player name
+     * @param page         page number
+     * @deprecated use UUID-based overload instead
+     */
     @Deprecated
     public void listResidences(CommandSender sender, String targetplayer, int page) {
         this.listResidences(sender, targetplayer, page, false, false, false);
     }
 
+    /**
+     * List residences for the sender at a specific page
+     *
+     * @param sender     command sender
+     * @param page       page number
+     * @param showhidden whether to show hidden residences
+     */
     public void listResidences(CommandSender sender, int page, boolean showhidden) {
         this.listResidences(sender, (UUID) null, page, showhidden, false, showhidden, null);
     }
 
+    /**
+     * List residences for the sender with hidden filter options
+     *
+     * @param sender     command sender
+     * @param page       page number
+     * @param showhidden whether to show hidden residences
+     * @param onlyHidden whether to show only hidden residences
+     */
     public void listResidences(CommandSender sender, int page, boolean showhidden, boolean onlyHidden) {
         this.listResidences(sender, (UUID) null, page, showhidden, onlyHidden, showhidden, null);
     }
 
+    /**
+     * List residences for a target player at a specific page
+     *
+     * @param sender       command sender
+     * @param string       target player name
+     * @param page         page number
+     * @param showhidden   whether to show hidden residences
+     * @deprecated use UUID-based overload instead
+     */
     @Deprecated
     public void listResidences(CommandSender sender, String string, int page, boolean showhidden) {
         this.listResidences(sender, string, page, showhidden, false, showhidden);
     }
 
+    /**
+     * List residences for a target player with full filter options
+     *
+     * @param sender       command sender
+     * @param targetplayer target player name
+     * @param page         page number
+     * @param showhidden   whether to show hidden residences
+     * @param onlyHidden   whether to show only hidden residences
+     * @param resadmin     whether running as resadmin
+     * @deprecated use UUID-based overload instead
+     */
     @Deprecated
     public void listResidences(CommandSender sender, String targetplayer, int page, boolean showhidden, boolean onlyHidden, boolean resadmin) {
         this.listResidences(sender, targetplayer, page, showhidden, onlyHidden, resadmin, null);
     }
 
+    /**
+     * List residences for a target player with full filter options and world filter
+     *
+     * @param sender       command sender
+     * @param targetplayer target player name
+     * @param page         page number
+     * @param showhidden   whether to show hidden residences
+     * @param onlyHidden   whether to show only hidden residences
+     * @param resadmin     whether running as resadmin
+     * @param world        world to filter by, or null for all worlds
+     * @deprecated use UUID-based overload instead
+     */
     @Deprecated
     public void listResidences(CommandSender sender, String targetplayer, int page, boolean showhidden, boolean onlyHidden, boolean resadmin, World world) {
         listResidences(sender, ResidencePlayer.getUUID(targetplayer), page, showhidden, onlyHidden, resadmin, world);
     }
 
+    /**
+     * List residences for a target player UUID with full filter options and world filter
+     *
+     * @param sender     command sender
+     * @param targetUuid target player UUID, null for self
+     * @param page       page number
+     * @param showhidden whether to show hidden residences
+     * @param onlyHidden whether to show only hidden residences
+     * @param resadmin   whether running as resadmin
+     * @param world      world to filter by, or null for all worlds
+     */
     public void listResidences(CommandSender sender, UUID targetUuid, int page, boolean showhidden, boolean onlyHidden, boolean resadmin, World world) {
 
         if (targetUuid == null) {
@@ -415,28 +660,70 @@ public class ResidenceManager implements ResidenceInterface {
         plugin.getInfoPageManager().printListInfo(sender, targetUuid, ownedResidences, page, resadmin, world);
     }
 
+    /**
+     * List all residences (page 1)
+     *
+     * @param sender command sender
+     * @param page   page number
+     */
     public void listAllResidences(CommandSender sender, int page) {
         this.listAllResidences(sender, page, false);
     }
 
+    /**
+     * List all residences in a specific world
+     *
+     * @param sender     command sender
+     * @param page       page number
+     * @param showhidden whether to show hidden residences
+     * @param world      world to filter by
+     */
     public void listAllResidences(CommandSender sender, int page, boolean showhidden, World world) {
         TreeMap<String, ClaimedResidence> list = getFromAllResidencesMap(showhidden, false, world);
         plugin.getInfoPageManager().printListInfo(sender, (UUID) null, list, page, showhidden, world);
     }
 
+    /**
+     * List all residences across all worlds
+     *
+     * @param sender     command sender
+     * @param page       page number
+     * @param showhidden whether to show hidden residences
+     */
     public void listAllResidences(CommandSender sender, int page, boolean showhidden) {
         this.listAllResidences(sender, page, showhidden, false);
     }
 
+    /**
+     * List all residences with hidden filter options
+     *
+     * @param sender     command sender
+     * @param page       page number
+     * @param showhidden whether to show hidden residences
+     * @param onlyHidden whether to show only hidden residences
+     */
     public void listAllResidences(CommandSender sender, int page, boolean showhidden, boolean onlyHidden) {
         TreeMap<String, ClaimedResidence> list = getFromAllResidencesMap(showhidden, onlyHidden, null);
         plugin.getInfoPageManager().printListInfo(sender, (UUID) null, list, page, showhidden, null);
     }
 
+    /**
+     * Get an array of all residence names
+     *
+     * @return array of residence names
+     */
     public String[] getResidenceList() {
         return this.getResidenceList(true, true).toArray(new String[0]);
     }
 
+    /**
+     * Get a map of residences owned by a player
+     *
+     * @param targetplayer target player name
+     * @param showhidden   whether to include hidden residences
+     * @return map of residence name to ClaimedResidence
+     * @deprecated use UUID-based methods instead
+     */
     @Deprecated
     public Map<String, ClaimedResidence> getResidenceMapList(String targetplayer, boolean showhidden) {
         Map<String, ClaimedResidence> temp = new HashMap<String, ClaimedResidence>();
@@ -451,6 +738,14 @@ public class ResidenceManager implements ResidenceInterface {
         return temp;
     }
 
+    /**
+     * Get all residences as a list with filter options
+     *
+     * @param showhidden whether to include hidden residences
+     * @param onlyHidden whether to include only hidden residences
+     * @param world      world to filter by, or null for all worlds
+     * @return list of residences
+     */
     public ArrayList<ClaimedResidence> getFromAllResidences(boolean showhidden, boolean onlyHidden, World world) {
         ArrayList<ClaimedResidence> list = new ArrayList<>();
         for (Entry<String, ClaimedResidence> res : residences.entrySet()) {
@@ -466,6 +761,14 @@ public class ResidenceManager implements ResidenceInterface {
         return list;
     }
 
+    /**
+     * Get all residences as a sorted map with filter options
+     *
+     * @param showhidden whether to include hidden residences
+     * @param onlyHidden whether to include only hidden residences
+     * @param world      world to filter by, or null for all worlds
+     * @return sorted map of residence name to ClaimedResidence
+     */
     public TreeMap<String, ClaimedResidence> getFromAllResidencesMap(boolean showhidden, boolean onlyHidden, World world) {
         TreeMap<String, ClaimedResidence> list = new TreeMap<String, ClaimedResidence>();
         for (Entry<String, ClaimedResidence> res : residences.entrySet()) {
@@ -481,24 +784,69 @@ public class ResidenceManager implements ResidenceInterface {
         return list;
     }
 
+    /**
+     * Get residence name list with subzone option
+     *
+     * @param showhidden   whether to show hidden residences
+     * @param showsubzones whether to include subzones
+     * @return list of residence names
+     */
     public ArrayList<String> getResidenceList(boolean showhidden, boolean showsubzones) {
         return this.getResidenceList((UUID) null, showhidden, showsubzones, false, false);
     }
 
+    /**
+     * Get residence name list for a player
+     *
+     * @param targetplayer target player name
+     * @param showhidden   whether to show hidden residences
+     * @param showsubzones whether to include subzones
+     * @return list of residence names
+     * @deprecated use UUID-based overload instead
+     */
     @Deprecated
     public ArrayList<String> getResidenceList(String targetplayer, boolean showhidden, boolean showsubzones) {
         return this.getResidenceList(targetplayer, showhidden, showsubzones, false, false);
     }
 
+    /**
+     * Get residence name list for a player UUID
+     *
+     * @param uuid         target player UUID
+     * @param showhidden   whether to show hidden residences
+     * @param showsubzones whether to include subzones
+     * @param onlyHidden   whether to show only hidden residences
+     * @return list of residence names
+     */
     public ArrayList<String> getResidenceList(UUID uuid, boolean showhidden, boolean showsubzones, boolean onlyHidden) {
         return this.getResidenceList(uuid, showhidden, showsubzones, false, onlyHidden);
     }
 
+    /**
+     * Get residence name list for a player
+     *
+     * @param targetplayer target player name
+     * @param showhidden   whether to show hidden residences
+     * @param showsubzones whether to include subzones
+     * @param onlyHidden   whether to show only hidden residences
+     * @return list of residence names
+     * @deprecated use UUID-based overload instead
+     */
     @Deprecated
     public ArrayList<String> getResidenceList(String targetplayer, boolean showhidden, boolean showsubzones, boolean onlyHidden) {
         return this.getResidenceList(targetplayer, showhidden, showsubzones, false, onlyHidden);
     }
 
+    /**
+     * Get residence name list for a player UUID with formatted output option
+     *
+     * @param uuid           target player UUID
+     * @param showhidden     whether to show hidden residences
+     * @param showsubzones   whether to include subzones
+     * @param formattedOutput whether to format output with world info
+     * @param onlyHidden     whether to show only hidden residences
+     * @return list of residence names
+     */
     public ArrayList<String> getResidenceList(UUID uuid, boolean showhidden, boolean showsubzones, boolean formattedOutput, boolean onlyHidden) {
         ArrayList<String> list = new ArrayList<>();
         for (Entry<String, ClaimedResidence> res : residences.entrySet()) {
@@ -507,6 +855,17 @@ public class ResidenceManager implements ResidenceInterface {
         return list;
     }
 
+    /**
+     * Get residence name list for a player with formatted output option
+     *
+     * @param targetplayer   target player name
+     * @param showhidden     whether to show hidden residences
+     * @param showsubzones   whether to include subzones
+     * @param formattedOutput whether to format output with world info
+     * @param onlyHidden     whether to show only hidden residences
+     * @return list of residence names
+     * @deprecated use UUID-based overload instead
+     */
     @Deprecated
     public ArrayList<String> getResidenceList(String targetplayer, boolean showhidden, boolean showsubzones, boolean formattedOutput, boolean onlyHidden) {
         ArrayList<String> list = new ArrayList<>();
@@ -549,6 +908,13 @@ public class ResidenceManager implements ResidenceInterface {
         return list;
     }
 
+    /**
+     * Check if a cuboid area collides with any existing residence
+     *
+     * @param newarea           the area to check
+     * @param parentResidence   the parent residence to exclude from collision check
+     * @return the name of the colliding residence, or null if no collision
+     */
     public String checkAreaCollision(CuboidArea newarea, ClaimedResidence parentResidence) {
         Set<Entry<String, ClaimedResidence>> set = residences.entrySet();
         for (Entry<String, ClaimedResidence> entry : set) {
@@ -560,6 +926,14 @@ public class ResidenceManager implements ResidenceInterface {
         return null;
     }
 
+    /**
+     * Check if a cuboid area collides with any existing residence, ignoring a specific owner
+     *
+     * @param newarea           the area to check
+     * @param parentResidence   the parent residence to exclude from collision check
+     * @param ignoredOwner      owner UUID to ignore in collision check
+     * @return the name of the colliding residence, or null if no collision
+     */
     public String checkAreaCollision(CuboidArea newarea, ClaimedResidence parentResidence, UUID ignoredOwner) {
         Set<Entry<String, ClaimedResidence>> set = residences.entrySet();
         for (Entry<String, ClaimedResidence> entry : set) {
@@ -572,6 +946,13 @@ public class ResidenceManager implements ResidenceInterface {
         return null;
     }
 
+    /**
+     * Get all residences in the given chunks for a specific world
+     *
+     * @param worldName world name
+     * @param chunks    list of chunk references
+     * @return set of residences in the chunks
+     */
     public Set<ClaimedResidence> getResidences(String worldName, List<ChunkRef> chunks) {
 
         Map<ChunkRef, List<ClaimedResidence>> refs = chunkResidences.get(worldName);
@@ -590,6 +971,12 @@ public class ResidenceManager implements ResidenceInterface {
         return resSet;
     }
 
+    /**
+     * Find the first residence that collides with the given area
+     *
+     * @param newarea the area to check
+     * @return the colliding ClaimedResidence, or null if no collision
+     */
     public ClaimedResidence collidesWithResidence(CuboidArea newarea) {
         Set<ClaimedResidence> res = getResidences(newarea.getWorldName(), newarea.getChunks());
         for (ClaimedResidence check : res) {
@@ -600,15 +987,33 @@ public class ResidenceManager implements ResidenceInterface {
         return null;
     }
 
+    /**
+     * Remove a residence without a player context
+     *
+     * @param res residence to remove
+     */
     public void removeResidence(ClaimedResidence res) {
         this.removeResidence(null, res, true, false);
     }
 
+    /**
+     * Remove a residence by name without a player context
+     *
+     * @param name residence name
+     * @deprecated use {@link #removeResidence(ClaimedResidence)} instead
+     */
     @Deprecated
     public void removeResidence(String name) {
         this.removeResidence(null, name, true);
     }
 
+    /**
+     * Remove a residence with a command sender context
+     *
+     * @param sender    command sender
+     * @param res       residence to remove
+     * @param resadmin  whether running as resadmin
+     */
     public void removeResidence(CommandSender sender, ClaimedResidence res, boolean resadmin) {
         if (sender instanceof Player)
             removeResidence((Player) sender, res, resadmin);
@@ -616,6 +1021,14 @@ public class ResidenceManager implements ResidenceInterface {
             removeResidence(null, res, true, false);
     }
 
+    /**
+     * Remove a residence by name with a command sender context
+     *
+     * @param sender    command sender
+     * @param name      residence name
+     * @param resadmin  whether running as resadmin
+     * @deprecated use {@link #removeResidence(CommandSender, ClaimedResidence, boolean)} instead
+     */
     @Deprecated
     public void removeResidence(CommandSender sender, String name, boolean resadmin) {
         if (sender instanceof Player)
@@ -624,6 +1037,14 @@ public class ResidenceManager implements ResidenceInterface {
             removeResidence(null, name, true);
     }
 
+    /**
+     * Remove a residence by name with a player context
+     *
+     * @param player    player requesting removal
+     * @param name      residence name
+     * @param resadmin  whether running as resadmin
+     * @deprecated use {@link #removeResidence(Player, ClaimedResidence, boolean)} instead
+     */
     @Deprecated
     public void removeResidence(Player player, String name, boolean resadmin) {
         ClaimedResidence res = this.getByName(name);
@@ -634,14 +1055,36 @@ public class ResidenceManager implements ResidenceInterface {
         removeResidence(player, res, resadmin);
     }
 
+    /**
+     * Remove a residence with a player context
+     *
+     * @param player    player requesting removal
+     * @param res       residence to remove
+     * @param resadmin  whether running as resadmin
+     */
     public void removeResidence(Player player, ClaimedResidence res, boolean resadmin) {
         removeResidence(ResidencePlayer.get(player), res, resadmin);
     }
 
+    /**
+     * Remove a residence with a ResidencePlayer context
+     *
+     * @param rPlayer   residence player requesting removal, or null
+     * @param res       residence to remove
+     * @param resadmin  whether running as resadmin
+     */
     public void removeResidence(ResidencePlayer rPlayer, ClaimedResidence res, boolean resadmin) {
         removeResidence(rPlayer, res, resadmin, false);
     }
 
+    /**
+     * Core method to remove a residence. Handles permissions, events, cleanup, and optional regeneration.
+     *
+     * @param rPlayer    residence player requesting removal, or null
+     * @param res        residence to remove
+     * @param resadmin   whether running as resadmin
+     * @param regenerate whether to regenerate the area after removal
+     */
     public void removeResidence(ResidencePlayer rPlayer, ClaimedResidence res, boolean resadmin, boolean regenerate) {
 
         Player player = null;
@@ -716,6 +1159,11 @@ public class ResidenceManager implements ResidenceInterface {
         }
     }
 
+    /**
+     * Refund the residence owner's money based on residence worth and bank balance
+     *
+     * @param res residence being removed
+     */
     public void giveBackOwnerMoneyForResidence(ClaimedResidence res) {
         if (res.isServerLand())
             return;
@@ -826,6 +1274,12 @@ public class ResidenceManager implements ResidenceInterface {
         return future;
     }
 
+    /**
+     * Remove all residences owned by a player
+     *
+     * @param owner owner name
+     * @return true if the player was found and residences removed
+     */
     public boolean removeAllByOwner(String owner) {
         ResidencePlayer rPlayer = ResidencePlayer.get(owner);
         if (rPlayer == null)
@@ -836,29 +1290,72 @@ public class ResidenceManager implements ResidenceInterface {
         return true;
     }
 
+    /**
+     * Get the number of zones owned by a player UUID
+     *
+     * @param playerUUID player UUID
+     * @return number of owned zones
+     */
     public int getOwnedZoneCount(UUID playerUUID) {
         return ResidencePlayer.get(playerUUID).getResAmount();
     }
 
+    /**
+     * Get the number of zones owned by a player name
+     *
+     * @param player player name
+     * @return number of owned zones
+     * @deprecated use UUID-based overload instead
+     */
     @Deprecated
     public int getOwnedZoneCount(String player) {
         return ResidencePlayer.get(player).getResAmount();
     }
 
+    /**
+     * Check if a player UUID has not reached a target zone count
+     *
+     * @param playerUUID player UUID
+     * @param target     maximum zone count to compare against
+     * @return true if the player has fewer zones than the target
+     */
     public boolean hasMaxZones(UUID playerUUID, int target) {
         return getOwnedZoneCount(playerUUID) < target;
     }
 
+    /**
+     * Check if a player name has not reached a target zone count
+     *
+     * @param player player name
+     * @param target maximum zone count to compare against
+     * @return true if the player has fewer zones than the target
+     * @deprecated use UUID-based overload instead
+     */
     @Deprecated
     public boolean hasMaxZones(String player, int target) {
         return getOwnedZoneCount(player) < target;
     }
 
+    /**
+     * Print area info for a residence by name
+     *
+     * @param areaname residence name
+     * @param sender   command sender
+     * @deprecated use {@link #printAreaInfo(ClaimedResidence, CommandSender, boolean)} instead
+     */
     @Deprecated
     public void printAreaInfo(String areaname, CommandSender sender) {
         printAreaInfo(areaname, sender, false);
     }
 
+    /**
+     * Print area info for a residence by name with resadmin flag
+     *
+     * @param areaname residence name
+     * @param sender   command sender
+     * @param resadmin whether running as resadmin
+     * @deprecated use {@link #printAreaInfo(ClaimedResidence, CommandSender, boolean)} instead
+     */
     @Deprecated
     public void printAreaInfo(String areaname, CommandSender sender, boolean resadmin) {
         ClaimedResidence res = this.getByName(areaname);
@@ -870,6 +1367,13 @@ public class ResidenceManager implements ResidenceInterface {
         printAreaInfo(res, sender, resadmin);
     }
 
+    /**
+     * Print detailed area information for a residence
+     *
+     * @param res      residence to print info for
+     * @param sender   command sender
+     * @param resadmin whether running as resadmin
+     */
     public void printAreaInfo(ClaimedResidence res, CommandSender sender, boolean resadmin) {
 
         String areaname = res.getName();
@@ -1013,6 +1517,14 @@ public class ResidenceManager implements ResidenceInterface {
         lm.General_Separator.sendMessage(sender);
     }
 
+    /**
+     * Print players with permissions in a residence by name
+     *
+     * @param areaname residence name
+     * @param sender   command sender
+     * @param page     page number
+     * @deprecated use {@link #printAreaPlayers(ClaimedResidence, CommandSender, int)} instead
+     */
     @Deprecated
     public void printAreaPlayers(String areaname, CommandSender sender, int page) {
         ClaimedResidence res = this.getByName(areaname);
@@ -1024,6 +1536,13 @@ public class ResidenceManager implements ResidenceInterface {
         printAreaPlayers(res, sender, page);
     }
 
+    /**
+     * Print players with permissions in a residence
+     *
+     * @param res    residence to print players for
+     * @param sender command sender
+     * @param page   page number
+     */
     public void printAreaPlayers(ClaimedResidence res, CommandSender sender, int page) {
 
         if (res == null) {
@@ -1047,6 +1566,14 @@ public class ResidenceManager implements ResidenceInterface {
         pi.autoPagination(sender, "res info " + res.getName() + " -players", "-p:");
     }
 
+    /**
+     * Copy permissions from one residence to another
+     *
+     * @param reqPlayer  player requesting the mirror
+     * @param targetArea target residence name
+     * @param sourceArea source residence name
+     * @param resadmin   whether running as resadmin
+     */
     public void mirrorPerms(Player reqPlayer, String targetArea, String sourceArea, boolean resadmin) {
         ClaimedResidence receiver = this.getByName(targetArea);
         ClaimedResidence source = this.getByName(sourceArea);
@@ -1063,6 +1590,11 @@ public class ResidenceManager implements ResidenceInterface {
         receiver.getPermissions().applyTemplate(reqPlayer, source.getPermissions(), resadmin);
     }
 
+    /**
+     * Save all residences to a serializable map structure
+     *
+     * @return map of world names to residence data
+     */
     public Map<String, Object> save() {
         clearSaveChache();
         Map<String, Object> worldmap = new LinkedHashMap<>();
@@ -1094,6 +1626,14 @@ public class ResidenceManager implements ResidenceInterface {
     HashMap<String, List<MinimizeMessages>> optimizeMessages = new HashMap<String, List<MinimizeMessages>>();
     HashMap<String, List<MinimizeFlags>> optimizeFlags = new HashMap<String, List<MinimizeFlags>>();
 
+    /**
+     * Add enter/leave messages to the temp cache for save optimization
+     *
+     * @param world world name
+     * @param enter enter message
+     * @param leave leave message
+     * @return the MinimizeMessages entry
+     */
     public MinimizeMessages addMessageToTempCache(String world, String enter, String leave) {
         List<MinimizeMessages> ls = optimizeMessages.get(world);
         if (ls == null)
@@ -1109,6 +1649,12 @@ public class ResidenceManager implements ResidenceInterface {
         return m;
     }
 
+    /**
+     * Get the cached messages for a world
+     *
+     * @param world world name
+     * @return map of message ID to message data, or null
+     */
     public HashMap<Integer, Object> getMessageCatch(String world) {
         HashMap<Integer, Object> t = new HashMap<Integer, Object>();
         List<MinimizeMessages> ls = optimizeMessages.get(world);
@@ -1123,6 +1669,13 @@ public class ResidenceManager implements ResidenceInterface {
         return t;
     }
 
+    /**
+     * Add flags to the temp cache for save optimization
+     *
+     * @param world world name
+     * @param map   flag map
+     * @return the MinimizeFlags entry, or null if world is null
+     */
     public MinimizeFlags addFlagsTempCache(String world, Map<String, Boolean> map) {
         if (world == null)
             return null;
@@ -1140,6 +1693,12 @@ public class ResidenceManager implements ResidenceInterface {
         return m;
     }
 
+    /**
+     * Get the cached flags for a world
+     *
+     * @param world world name
+     * @return map of flag ID to flag data, or null
+     */
     public HashMap<Integer, Object> getFlagsCatch(String world) {
         HashMap<Integer, Object> t = new HashMap<Integer, Object>();
         List<MinimizeFlags> ls = optimizeFlags.get(world);
@@ -1159,14 +1718,31 @@ public class ResidenceManager implements ResidenceInterface {
     HashMap<String, HashMap<Integer, MinimizeMessages>> cacheMessages = new HashMap<String, HashMap<Integer, MinimizeMessages>>();
     HashMap<String, HashMap<Integer, MinimizeFlags>> cacheFlags = new HashMap<String, HashMap<Integer, MinimizeFlags>>();
 
+    /**
+     * Get the message cache used during loading
+     *
+     * @return message cache map
+     */
     public HashMap<String, HashMap<Integer, MinimizeMessages>> getCacheMessages() {
         return cacheMessages;
     }
 
+    /**
+     * Get the flags cache used during loading
+     *
+     * @return flags cache map
+     */
     public HashMap<String, HashMap<Integer, MinimizeFlags>> getCacheFlags() {
         return cacheFlags;
     }
 
+    /**
+     * Get cached enter message for a world and ID
+     *
+     * @param world world name
+     * @param id    message ID
+     * @return enter message string, or null
+     */
     public String getChacheMessageEnter(String world, int id) {
         HashMap<Integer, MinimizeMessages> c = cacheMessages.get(world);
         if (c == null)
@@ -1177,6 +1753,13 @@ public class ResidenceManager implements ResidenceInterface {
         return m.getEnter();
     }
 
+    /**
+     * Get cached leave message for a world and ID
+     *
+     * @param world world name
+     * @param id    message ID
+     * @return leave message string, or null
+     */
     public String getChacheMessageLeave(String world, int id) {
         HashMap<Integer, MinimizeMessages> c = cacheMessages.get(world);
         if (c == null)
@@ -1187,6 +1770,13 @@ public class ResidenceManager implements ResidenceInterface {
         return m.getLeave();
     }
 
+    /**
+     * Get cached flags for a world and ID
+     *
+     * @param world world name
+     * @param id    flag ID
+     * @return flag map, or null
+     */
     public Map<String, Boolean> getChacheFlags(String world, int id) {
         HashMap<Integer, MinimizeFlags> c = cacheFlags.get(world);
         if (c == null)
@@ -1197,6 +1787,11 @@ public class ResidenceManager implements ResidenceInterface {
         return m.getFlags();
     }
 
+    /**
+     * Get all world names that have residence data
+     *
+     * @return set of world names
+     */
     public Set<String> getWorldNames() {
         Set<String> worldnames = new HashSet<String>();
         File saveFolder = new File(plugin.dataFolder, "Save");
@@ -1228,6 +1823,12 @@ public class ResidenceManager implements ResidenceInterface {
     int batchSize = 1000000;
     ExecutorService executorService = null;
 
+    /**
+     * Load all residences from a serialized map structure
+     *
+     * @param root map of world names to residence data
+     * @throws Exception if loading fails and stopOnSaveError is enabled
+     */
     public void load(Map<String, Object> root) throws Exception {
         if (root == null)
             return;
@@ -1275,6 +1876,15 @@ public class ResidenceManager implements ResidenceInterface {
 
     int chunkCount = 0;
 
+    /**
+     * Load residences for a world using multiple threads
+     *
+     * @param worldName world name
+     * @param root      map of residence names to residence data
+     * @return map of chunk references to residence lists
+     * @throws InterruptedException if the thread is interrupted
+     * @throws ExecutionException   if a thread task fails
+     */
     public Map<ChunkRef, List<ClaimedResidence>> multithreadLoadMap(String worldName, Map<String, Object> root) throws InterruptedException, ExecutionException {
         Map<ChunkRef, List<ClaimedResidence>> retRes = new ConcurrentHashMap<>();
 
@@ -1382,7 +1992,14 @@ public class ResidenceManager implements ResidenceInterface {
         });
     }
 
-    // Old method for single core loading
+    /**
+     * Load residences for a world using a single thread (legacy method)
+     *
+     * @param worldName world name
+     * @param root      map of residence names to residence data
+     * @return map of chunk references to residence lists
+     * @throws Exception if loading fails
+     */
     public Map<ChunkRef, List<ClaimedResidence>> loadMap(String worldName, Map<String, Object> root) throws Exception {
         Map<ChunkRef, List<ClaimedResidence>> retRes = new HashMap<>();
         if (root == null)
@@ -1464,14 +2081,39 @@ public class ResidenceManager implements ResidenceInterface {
         return chunks;
     }
 
+    /**
+     * Rename a residence without a player context
+     *
+     * @param oldName current residence name
+     * @param newName new residence name
+     * @return true if the rename was successful
+     */
     public boolean renameResidence(String oldName, String newName) {
         return this.renameResidence(null, oldName, newName, true);
     }
 
+    /**
+     * Rename a residence with a player context
+     *
+     * @param player    player requesting the rename
+     * @param oldName   current residence name
+     * @param newName   new residence name
+     * @param resadmin  whether running as resadmin
+     * @return true if the rename was successful
+     */
     public boolean renameResidence(Player player, String oldName, String newName, boolean resadmin) {
         return this.renameResidence((CommandSender) player, oldName, newName, resadmin);
     }
 
+    /**
+     * Rename a residence. Handles subzones, events, and chunk recalculation.
+     *
+     * @param sender   command sender
+     * @param oldName  current residence name
+     * @param newName  new residence name
+     * @param resadmin whether running as resadmin
+     * @return true if the rename was successful
+     */
     public boolean renameResidence(CommandSender sender, String oldName, String newName, boolean resadmin) {
         if (!ResPerm.rename.hasPermission(sender, true)) {
             return false;
@@ -1536,14 +2178,40 @@ public class ResidenceManager implements ResidenceInterface {
         return false;
     }
 
+    /**
+     * Give a residence to another player
+     *
+     * @param reqPlayer  player giving the residence
+     * @param targPlayer target player name
+     * @param residence  residence name
+     * @param resadmin   whether running as resadmin
+     */
     public void giveResidence(Player reqPlayer, String targPlayer, String residence, boolean resadmin) {
         giveResidence(reqPlayer, targPlayer, residence, resadmin, false);
     }
 
+    /**
+     * Give a residence to another player with subzone option
+     *
+     * @param reqPlayer       player giving the residence
+     * @param targPlayer      target player name
+     * @param residence       residence name
+     * @param resadmin        whether running as resadmin
+     * @param includeSubzones whether to also give subzones
+     */
     public void giveResidence(Player reqPlayer, String targPlayer, String residence, boolean resadmin, boolean includeSubzones) {
         giveResidence(reqPlayer, targPlayer, getByName(residence), resadmin, includeSubzones);
     }
 
+    /**
+     * Give a residence to another player. Handles permission checks and limits.
+     *
+     * @param reqPlayer       player giving the residence
+     * @param targPlayer      target player name
+     * @param res             residence to give
+     * @param resadmin        whether running as resadmin
+     * @param includeSubzones whether to also give subzones
+     */
     public void giveResidence(Player reqPlayer, String targPlayer, ClaimedResidence res, boolean resadmin, boolean includeSubzones) {
 
         if (res == null) {
@@ -1597,10 +2265,23 @@ public class ResidenceManager implements ResidenceInterface {
             }
     }
 
+    /**
+     * Remove all residences from a specific world
+     *
+     * @param sender command sender
+     * @param world  world name
+     */
     public void removeAllFromWorld(CommandSender sender, String world) {
         removeAllFromWorld(sender, world, null);
     }
 
+    /**
+     * Remove all residences from a specific world with player exceptions
+     *
+     * @param sender          command sender
+     * @param world           world name
+     * @param playerExceptions list of player names or UUIDs to exclude from removal
+     */
     public void removeAllFromWorld(CommandSender sender, String world, List<String> playerExceptions) {
         int count = 0;
         Iterator<ClaimedResidence> it = residences.values().iterator();
@@ -1648,14 +2329,30 @@ public class ResidenceManager implements ResidenceInterface {
 
     }
 
+    /**
+     * Get the total number of residences
+     *
+     * @return residence count
+     */
     public int getResidenceCount() {
         return residences.size();
     }
 
+    /**
+     * Get all residences as a map
+     *
+     * @return map of residence name to ClaimedResidence
+     */
     public Map<String, ClaimedResidence> getResidences() {
         return residences;
     }
 
+    /**
+     * Remove a residence from the chunk lookup by name
+     *
+     * @param name residence name
+     * @deprecated use {@link #removeChunkList(ClaimedResidence)} instead
+     */
     @Deprecated
     public void removeChunkList(String name) {
         if (name == null)
@@ -1668,6 +2365,11 @@ public class ResidenceManager implements ResidenceInterface {
         removeChunkList(res);
     }
 
+    /**
+     * Remove a residence from the chunk lookup
+     *
+     * @param res residence to remove from chunk map
+     */
     public void removeChunkList(ClaimedResidence res) {
         if (res == null)
             return;
@@ -1688,6 +2390,12 @@ public class ResidenceManager implements ResidenceInterface {
         }
     }
 
+    /**
+     * Recalculate chunk entries for a residence by name
+     *
+     * @param name residence name
+     * @deprecated use {@link #calculateChunks(ClaimedResidence)} instead
+     */
     @Deprecated
     public void calculateChunks2(String name) {
         if (name == null)
@@ -1699,6 +2407,11 @@ public class ResidenceManager implements ResidenceInterface {
         calculateChunks(res);
     }
 
+    /**
+     * Calculate and register chunk entries for a residence
+     *
+     * @param res residence to calculate chunks for
+     */
     public void calculateChunks(ClaimedResidence res) {
         if (res == null)
             return;
@@ -1715,8 +2428,17 @@ public class ResidenceManager implements ResidenceInterface {
         }
     }
 
+    /**
+     * Represents a chunk coordinate pair used as a key for chunk-based residence lookups.
+     */
     public static final class ChunkRef {
 
+        /**
+         * Convert a block coordinate to a chunk coordinate
+         *
+         * @param val block coordinate
+         * @return chunk coordinate
+         */
         public static int getChunkCoord(final int val) {
             // For more info, see CraftBukkit.CraftWorld.getChunkAt( Location )
             return val >> 4;
@@ -1725,11 +2447,22 @@ public class ResidenceManager implements ResidenceInterface {
         private final int z;
         private final int x;
 
+        /**
+         * Create a ChunkRef from a Bukkit location
+         *
+         * @param loc Bukkit location
+         */
         public ChunkRef(Location loc) {
             this.x = getChunkCoord(loc.getBlockX());
             this.z = getChunkCoord(loc.getBlockZ());
         }
 
+        /**
+         * Create a ChunkRef from chunk coordinates
+         *
+         * @param x chunk x coordinate
+         * @param z chunk z coordinate
+         */
         public ChunkRef(int x, int z) {
             this.x = x;
             this.z = z;
@@ -1767,10 +2500,20 @@ public class ResidenceManager implements ResidenceInterface {
             return sb.toString();
         }
 
+        /**
+         * Get the chunk z coordinate
+         *
+         * @return z coordinate
+         */
         public int getZ() {
             return z;
         }
 
+        /**
+         * Get the chunk x coordinate
+         *
+         * @return x coordinate
+         */
         public int getX() {
             return x;
         }
