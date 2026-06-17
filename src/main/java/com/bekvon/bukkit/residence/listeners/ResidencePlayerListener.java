@@ -912,6 +912,13 @@ public class ResidencePlayerListener implements Listener {
 
         CMIScheduler.runAtEntityLater(plugin, player, () -> {
             handleNewLocation(player, player.getLocation(), true);
+            ClaimedResidence res = plugin.getResidenceManager().getByLoc(player.getLocation());
+            if (res != null) {
+                if (Flags.wspeed1.isGlobalyEnabled() && res.getPermissions().has(Flags.wspeed1, FlagCombo.OnlyTrue))
+                    player.setWalkSpeed(plugin.getConfigManager().getWalkSpeed1().floatValue());
+                else if (Flags.wspeed2.isGlobalyEnabled() && res.getPermissions().has(Flags.wspeed2, FlagCombo.OnlyTrue))
+                    player.setWalkSpeed(plugin.getConfigManager().getWalkSpeed2().floatValue());
+            }
         }, 1L);
 
         plugin.getPlayerManager().playerJoin(player);
