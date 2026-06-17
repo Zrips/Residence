@@ -79,7 +79,7 @@
 		<dependency>
 		    <groupId>com.github.Slimefun</groupId>
 		    <artifactId>Slimefun4</artifactId>
-		    <version>5374034</version>
+		    <version>RC-37</version>
 		    <scope>provided</scope>
 		</dependency>		
 		<!-- Pl3xMap -->
