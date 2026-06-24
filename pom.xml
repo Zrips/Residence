@@ -22,13 +22,13 @@
         <dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>26.1.2.build.69-stable</version>
+			<version>26.2.build.34-alpha</version>
 			<scope>provided</scope>
 		</dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>26.1.2-R0.1-SNAPSHOT</version>
+            <version>26.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -79,7 +79,7 @@
 		<dependency>
 		    <groupId>com.github.Slimefun</groupId>
 		    <artifactId>Slimefun4</artifactId>
-		    <version>5374034</version>
+		    <version>RC-37</version>
 		    <scope>provided</scope>
 		</dependency>		
 		<!-- Pl3xMap -->

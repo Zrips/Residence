@@ -261,15 +261,27 @@ public class Utils {
         if (ent == null) {
             return false;
         }
+        if (ent instanceof Animals
+                || ent instanceof WaterMob
+                || ent instanceof NPC
+                || ent instanceof Bat
+                || ent instanceof Snowman
+                || ent instanceof IronGolem
+                // Temporary code, replace with enum after CMILib new GitHub Releases release
+                || (Version.isCurrentEqualOrHigher(Version.v26_2_0) && ent instanceof org.bukkit.entity.SulfurCube)) {
+            return true;
+        }
         CMIEntityType type = CMIEntityType.get(ent);
-        return (ent instanceof Animals ||
-                ent instanceof WaterMob ||
-                ent instanceof NPC ||
-                ent instanceof Bat ||
-                ent instanceof Snowman ||
-                ent instanceof IronGolem ||
-                type == CMIEntityType.ALLAY ||
-                type == CMIEntityType.COPPER_GOLEM);
+        if (type != null) {
+            switch (type) {
+            case ALLAY:
+            case COPPER_GOLEM:
+                return true;
+            default:
+                return false;
+            }
+        }
+        return false;
     }
 
     public static boolean isArmorStandEntity(EntityType ent) {
