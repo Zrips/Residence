@@ -3,6 +3,7 @@ package com.bekvon.bukkit.residence.protection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -690,11 +691,19 @@ public class ResidencePermissions extends FlagPermissions {
     }
 
     public void applyDefaultFlags() {
-        ResidencePlayer rPlayer = Residence.getInstance().getPlayerManager().getResidencePlayer(this.getOwner());
-        PermissionGroup group = rPlayer.getGroup(world);
-        Set<Entry<String, Boolean>> dflags = group.getDefaultResidenceFlags();
+        ResidencePlayer rPlayer = ResidencePlayer.get(this.getOwner());
+        Set<Entry<String, Boolean>> dflags = new HashSet<>();
+        Set<Entry<String, Map<String, Boolean>>> dgflags = new HashSet<>();
+
+        if (rPlayer != null) {
+            PermissionGroup group = rPlayer.getGroup(world);
+            if (group != null) {
+                dflags = group.getDefaultResidenceFlags();
 //	Set<Entry<String, Boolean>> dcflags = group.getDefaultCreatorFlags();
-        Set<Entry<String, Map<String, Boolean>>> dgflags = group.getDefaultGroupFlags();
+                dgflags = group.getDefaultGroupFlags();
+            }
+        }
+
         this.applyGlobalDefaults();
 
         for (Entry<String, Boolean> next : dflags) {
@@ -992,7 +1001,7 @@ public class ResidencePermissions extends FlagPermissions {
                     break;
                 default:
                     break;
-                } 
+                }
                 flagString.append(flag.getKey());
             } else
                 changedAll = false;
