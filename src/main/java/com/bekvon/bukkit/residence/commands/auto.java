@@ -16,6 +16,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.Visualizer;
+import com.bekvon.bukkit.residence.containers.WorldBorderData;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
@@ -90,7 +91,7 @@ public class auto implements cmd {
         else
             result = optimizedResize(player, cuboid, true, length);
 
-        if (!result.equals(failReason.none)) { 
+        if (!result.equals(failReason.none)) {
             return true;
         }
 
@@ -104,7 +105,7 @@ public class auto implements cmd {
             Visualizer v = new Visualizer(player);
             v.setErrorAreas(collision);
             Residence.getInstance().getSelectionManager().showBounds(player, v);
- 
+
             return null;
         }
 
@@ -354,6 +355,8 @@ public class auto implements cmd {
             dir = dir.getNext();
         }
 
+        new WorldBorderData(cuboid.getWorld()).clampCuboidToBorder(cuboid);
+
         plugin.getSelectionManager().placeLoc1(player, cuboid.getLowLocation());
         plugin.getSelectionManager().placeLoc2(player, cuboid.getHighLocation());
 
@@ -395,8 +398,8 @@ public class auto implements cmd {
 
             Visualizer v = new Visualizer(player);
             v.setErrorAreas(plugin.getResidenceManager().collidesWithResidence(cuboid));
-            Residence.getInstance().getSelectionManager().showBounds(player, v); 
-            
+            Residence.getInstance().getSelectionManager().showBounds(player, v);
+
             return failReason.collision;
         }
 
@@ -720,6 +723,8 @@ public class auto implements cmd {
             dir = dir.getNext();
         }
 
+        new WorldBorderData(cuboid.getWorld()).clampCuboidToBorder(cuboid);
+
         plugin.getSelectionManager().placeLoc1(player, cuboid.getLowLocation());
         plugin.getSelectionManager().placeLoc2(player, cuboid.getHighLocation());
 
@@ -738,8 +743,8 @@ public class auto implements cmd {
 
             Visualizer v = new Visualizer(player);
             v.setErrorAreas(collison);
-            Residence.getInstance().getSelectionManager().showBounds(player, v); 
-            
+            Residence.getInstance().getSelectionManager().showBounds(player, v);
+
             return failReason.collision;
         }
 

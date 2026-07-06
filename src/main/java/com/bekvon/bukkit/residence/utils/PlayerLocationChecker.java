@@ -39,7 +39,7 @@ public class PlayerLocationChecker {
 
     }
 
-    private boolean poolNextPlayer() {
+    private boolean poolNextPlayer() { 
 
         if (queue.isEmpty())
             return false;
