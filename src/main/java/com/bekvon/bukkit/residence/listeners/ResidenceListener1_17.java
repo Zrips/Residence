@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFertilizeEvent;
+import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -29,6 +30,7 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
+import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
 
@@ -129,6 +131,33 @@ public class ResidenceListener1_17 implements Listener {
         event.setCancelled(true);
 
     }
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onCopperOxidation(BlockFormEvent event) {
+		// Disabling listener if flag disabled globally
+		if (!Flags.copperoxidation.isGlobalyEnabled()) {
+			return;
+		}
+		Block block = event.getBlock();
+		// disabling event on world
+		if (plugin.isDisabledWorldListener(block.getWorld())) {
+			return;
+		}
+		if (!isUnwaxedCopper(block)) {
+			return;
+		}
+		if (FlagPermissions.has(block.getLocation(), Flags.copperoxidation, FlagCombo.OnlyFalse)) {
+			event.setCancelled(true);
+		}
+	}
+
+	private boolean isUnwaxedCopper(Block block) {
+		CMIMaterial mat = CMIMaterial.get(block.getType());
+		if (mat.containsCriteria(CMIMC.COPPER)) {
+			return !mat.name().startsWith("WAXED_");
+		}
+		return false;
+	}
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPowderSnowPhysics(BlockPhysicsEvent event) {

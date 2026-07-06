@@ -107,7 +107,7 @@ public class ResidenceListener1_19 implements Listener {
                     destRes.getPermissions().has(Flags.container, true))
                 return;
 
-            // source in Res, destRes definitely not in Res
+            // source in Res, dest definitely not in Res
         } else if (sourceRes != null) {
 
             if (sourceRes.getPermissions().has(Flags.container, true))
@@ -158,11 +158,8 @@ public class ResidenceListener1_19 implements Listener {
         if (entity == null) {
             return false;
         }
-        if(Version.isCurrentEqualOrHigher(Version.v1_21_R7)) {
-            return (entity instanceof AbstractHorse ||
-                    entity instanceof ChestBoat ||
-                    entity instanceof org.bukkit.entity.AbstractNautilus);
-        }
-        return (entity instanceof AbstractHorse || entity instanceof ChestBoat);
+        return entity instanceof AbstractHorse
+                || entity instanceof ChestBoat
+                || (Version.isCurrentEqualOrHigher(Version.v1_21_11) && entity instanceof org.bukkit.entity.AbstractNautilus);
     }
 }

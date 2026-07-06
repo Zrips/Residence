@@ -13,6 +13,7 @@ import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.CauldronLevelChangeEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.AreaEffectCloudApplyEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
@@ -286,5 +287,34 @@ public class ResidenceListener1_09 implements Listener {
             event.setCancelled(true);
 
         }
+    }
+
+    // Bucket, glass_bottle, potion, pattern banners & dyed shulker_boxes change cauldron level
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onCauldronLevelChange(CauldronLevelChangeEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.build.isGlobalyEnabled()) {
+            return;
+        }
+        Entity entity = event.getEntity();
+        if (entity == null) {
+            return;
+        }
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(entity.getWorld())) {
+            return;
+        }
+        if (!(entity instanceof Player)) {
+            return;
+        }
+        Player player = (Player) entity;
+        if (ResAdmin.isResAdmin(player)) {
+            return;
+        }
+        if (FlagPermissions.has(event.getBlock().getLocation(), player, Flags.build, true)) {
+            return;
+        }
+        lm.Flag_Deny.sendMessage(player, Flags.build);
+        event.setCancelled(true);
     }
 }
