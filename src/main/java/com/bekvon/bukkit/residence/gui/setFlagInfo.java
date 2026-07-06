@@ -15,6 +15,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.google.common.collect.HashMultimap;
+
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.lm;
@@ -28,6 +33,7 @@ import net.Zrips.CMILib.Container.CMIText;
 import net.Zrips.CMILib.Enchants.CMIEnchantEnum;
 import net.Zrips.CMILib.GUI.CMIGuiButton;
 import net.Zrips.CMILib.GUI.GUIManager.GUIClickType;
+import net.Zrips.CMILib.Version.Version;
 
 public class setFlagInfo {
 
@@ -361,6 +367,8 @@ public class setFlagInfo {
             lore.addAll(description.get(flag));
         lore.addAll(lm.Gui_Actions.getMessageList());
         MiscInfoMeta.setLore(lore);
+        if (Version.isCurrentEqualOrHigher(Version.v1_20_R4))
+            MiscInfoMeta.setAttributeModifiers(HashMultimap.<Attribute, AttributeModifier>create());
         miscInfo.setItemMeta(MiscInfoMeta);
 
         return miscInfo;
