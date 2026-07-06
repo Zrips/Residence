@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -30,6 +31,7 @@ import org.bukkit.util.BlockIterator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.Zrips.CMI.CMI;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -37,10 +39,21 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
+import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
+import net.Zrips.CMILib.Version.Schedulers.CMITaskResult;
 
 public class Utils {
 
     public Utils() {
+    }
+
+    public static CompletableFuture<CMITaskResult> closeInventory(@NotNull Player player) {
+        if (player == null || !player.isOnline())
+            return CompletableFuture.completedFuture(null);
+        return CMIScheduler.runAtEntity(CMI.getInstance(), player, () -> {
+            if (player.isOnline())
+                player.closeInventory();
+        });
     }
 
     public static boolean verifyResidenceName(@Nullable CommandSender sender, @NotNull String name) {

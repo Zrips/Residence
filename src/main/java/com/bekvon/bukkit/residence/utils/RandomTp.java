@@ -396,7 +396,8 @@ public class RandomTp {
     }
 
     public void performInstantTp(Location loc, Player targetPlayer) {
-        targetPlayer.closeInventory();
+        Utils.closeInventory(targetPlayer);
+
         Teleporting.teleport(targetPlayer, loc);
 
         lm.RandomTeleport_TeleportSuccess.sendMessage(targetPlayer, loc.getX(), loc.getY(), loc.getZ());

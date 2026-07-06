@@ -220,6 +220,7 @@ public class ConfigManager {
 
     protected List<String> NoFlowWorlds;
     protected List<String> AutoCleanUpWorlds;
+    
     private boolean AutoCleanTrasnferToUser;
     private String AutoCleanUserName;
     protected List<String> NoPlaceWorlds;
@@ -1214,7 +1215,8 @@ public class ConfigManager {
         flagsInherit = c.get("Global.ResidenceFlagsInherit", true);
 
         c.addComment("Global.PreventRentModify", "Setting this to false will allow rented residences to be modified by the renting player.");
-        preventBuildInRent = c.get("Global.PreventRentModify", true);
+        // Keep it at false, so that rented areas permissions can be modified with flags by default
+        preventBuildInRent = c.get("Global.PreventRentModify", false);
 
         c.addComment("Global.PreventSubZoneRemoval", "Setting this to true will prevent subzone deletion when subzone owner is not same as parent zone owner.");
         PreventSubZoneRemoval = c.get("Global.PreventSubZoneRemoval", true);

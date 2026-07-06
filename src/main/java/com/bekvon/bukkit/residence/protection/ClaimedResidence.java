@@ -1331,7 +1331,8 @@ public class ClaimedResidence {
                 return;
             Teleporting.cancelTeleportDelay(targetPlayer.getUniqueId());
 
-            targetPlayer.closeInventory();
+            Utils.closeInventory(targetPlayer);
+
             Teleporting.teleport(targetPlayer, targloc);
             if (near)
                 lm.Residence_TeleportNear.sendMessage(targetPlayer);
@@ -1349,7 +1350,7 @@ public class ClaimedResidence {
         if (tpevent.isCancelled())
             return;
 
-        targetPlayer.closeInventory();
+        Utils.closeInventory(targetPlayer);
 
         try {
             if (!Version.isFolia())
@@ -1915,7 +1916,7 @@ public class ClaimedResidence {
         if (rPlayer == null)
             return Residence.getInstance().getPermissionManager().getDefaultGroup();
 
-        return rPlayer.getGroup(getPermissions().getWorldName()); 
+        return rPlayer.getGroup(getPermissions().getWorldName());
     }
 
     public String getOwner() {
@@ -2058,7 +2059,8 @@ public class ClaimedResidence {
         // return false;
 
         Location loc = Residence.getInstance().getConfigManager().getKickLocation();
-        player.closeInventory();
+
+        Utils.closeInventory(player);
 
         if (loc == null) {
             CompletableFuture<Location> future = LocationUtil.getOutsideFreeLocASYNC(this, player, true);

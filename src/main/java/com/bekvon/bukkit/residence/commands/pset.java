@@ -15,6 +15,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
+import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 
@@ -128,7 +129,8 @@ public class pset implements cmd {
                 return false;
 
             final Player player = (Player) sender;
-            player.closeInventory();
+
+            Utils.closeInventory(player);
 
             if (!residence.isOwner(sender) && !resadmin && !residence.getPermissions().playerHas(sender, Flags.admin, false)) {
                 lm.General_NoPermission.sendMessage(sender);

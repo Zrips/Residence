@@ -13,6 +13,8 @@ import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
+import net.Zrips.CMILib.Logs.CMIDebug;
+
 public class playerTempData {
 
     protected static ConcurrentHashMap<UUID, playerTempData> playersTempData = new ConcurrentHashMap<UUID, playerTempData>();
@@ -74,13 +76,14 @@ public class playerTempData {
     }
 
     public Location getLastLocation(Location defaultVector) {
-        if (lastLocation == null)
+        if (lastLocation == null) {
             lastLocation = defaultVector;
+        }
         return lastLocation;
     }
 
     public void setLastLocation(Location lastLocation) {
-        this.lastLocation = lastLocation;
+        this.lastLocation = lastLocation.clone();
     }
 
     public Location getLastInsideLoc() {

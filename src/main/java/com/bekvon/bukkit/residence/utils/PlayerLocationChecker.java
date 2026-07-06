@@ -30,25 +30,37 @@ public class PlayerLocationChecker {
             }
         }
 
+        // Increase cycle count if we have more players online to avoid delays between
+        // checks, which should happen no less than once every second for each player
+        int cycles = ((queue.size() - 1) / 20) + 1;
+
+        for (int i = 0; i < cycles; i++)
+            poolNextPlayer();
+
+    }
+
+    private boolean poolNextPlayer() {
+
         if (queue.isEmpty())
-            return;
+            return false;
 
         UUID uuid = queue.poll();
         if (uuid == null)
-            return;
+            return true;
 
         Player player = Bukkit.getPlayer(uuid);
         if (player == null || !player.isOnline()) {
             if (player != null)
                 playerTempData.get(player).setLastLocation(null);
-            return;
+            return true;
         }
 
         playerTempData playerData = playerTempData.get(player);
 
         Long time = playerData.getLastCheck();
+
         if (time + 1000L > System.currentTimeMillis())
-            return;
+            return true;
 
         playerData.setLastCheck(System.currentTimeMillis());
 
@@ -63,7 +75,10 @@ public class PlayerLocationChecker {
             if (previous == null || hasChanged(previous, current)) {
                 onLocationChange(player, previous, current);
             }
+
+            playerData.setLastLocation(current);
         });
+        return true;
     }
 
     private boolean hasChanged(Location from, Location to) {

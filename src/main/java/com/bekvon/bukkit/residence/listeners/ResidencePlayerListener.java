@@ -904,8 +904,7 @@ public class ResidencePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-//        lastUpdate.put(player.getUniqueId(), 0L);
-        playerTempData.get(player).setLastCheck(0L);
+
         if (plugin.getPermissionManager().isResidenceAdmin(player)) {
             ResAdmin.turnResAdminOn(player);
         }
@@ -1013,7 +1012,7 @@ public class ResidencePlayerListener implements Listener {
     }
 
     private boolean isBuildClickBlock(CMIMaterial block, CMIMaterial held) {
-        if(held == CMIMaterial.BONE_MEAL) {
+        if (held == CMIMaterial.BONE_MEAL) {
             return isBlockFertilizable(block);
         }
         if (block.containsCriteria(CMIMC.SIGN)) {
@@ -2228,8 +2227,6 @@ public class ResidencePlayerListener implements Listener {
 //
 //		playerTempData.get(player).setLastUpdate(System.currentTimeMillis());
 
-        playerTempData.get(player).setLastCheck(System.currentTimeMillis());
-
         boolean handled = handleNewLocation(player, locto, true);
 
         if (!handled)
@@ -2281,8 +2278,6 @@ public class ResidencePlayerListener implements Listener {
             long last = playerTempData.get(player).getLastCheck();
             if (System.currentTimeMillis() - last < plugin.getConfigManager().getMinMoveUpdateInterval())
                 continue;
-
-            playerTempData.get(player).setLastCheck(System.currentTimeMillis());
 
             boolean handled = handleNewLocation(player, locto, true);
             if (!handled) {
@@ -2399,8 +2394,6 @@ public class ResidencePlayerListener implements Listener {
         UUID uuid = player.getUniqueId();
 
         playerTempData tempData = playerTempData.get(uuid);
-
-        tempData.setLastLocation(loc);
 
         ClaimedResidence resOld = tempData.getCurrentResidence();
 

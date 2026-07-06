@@ -13,6 +13,7 @@ import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import com.bekvon.bukkit.residence.utils.Utils;
 
 public class set implements cmd {
 
@@ -49,7 +50,7 @@ public class set implements cmd {
             return true;
         } else if ((args.length == 0 || args.length == 1) && plugin.getConfigManager().useFlagGUI()) {
             final Player player = (Player) sender;
-            player.closeInventory();
+            Utils.closeInventory(player);
             ClaimedResidence res = null;
             if (args.length == 0)
                 res = plugin.getResidenceManager().getByLoc(player.getLocation());
