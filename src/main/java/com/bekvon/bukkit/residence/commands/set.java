@@ -50,7 +50,7 @@ public class set implements cmd {
             return true;
         } else if ((args.length == 0 || args.length == 1) && plugin.getConfigManager().useFlagGUI()) {
             final Player player = (Player) sender;
-            Utils.closeInventory(player);
+
             ClaimedResidence res = null;
             if (args.length == 0)
                 res = plugin.getResidenceManager().getByLoc(player.getLocation());
@@ -60,16 +60,23 @@ public class set implements cmd {
                 lm.Invalid_Residence.sendMessage(sender);
                 return true;
             }
-            if (!res.isOwner(player) && !resadmin && !res.getPermissions().playerHas(player, Flags.admin, false)) {
-                lm.General_NoPermission.sendMessage(sender);
-                return true;
-            }
-
-            plugin.getFlagUtilManager().openSetFlagGui(player, res, resadmin, 1);
+            
+            open(player, res, resadmin);
 
             return true;
         }
         return false;
+    }
+
+    private void open(Player player, ClaimedResidence res, boolean resadmin) {
+
+        Utils.closeInventory(player).thenRun(() -> {
+            if (!res.isOwner(player) && !resadmin && !res.getPermissions().playerHas(player, Flags.admin, false)) {
+                lm.General_NoPermission.sendMessage(player);
+                return;
+            }
+            Residence.getInstance().getFlagUtilManager().openSetFlagGui(player, res, resadmin, 1);
+        });
     }
 
     @Override

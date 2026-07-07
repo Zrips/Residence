@@ -18,6 +18,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class pset implements cmd {
 
@@ -128,16 +129,7 @@ public class pset implements cmd {
             if (!(sender instanceof Player))
                 return false;
 
-            final Player player = (Player) sender;
-
-            Utils.closeInventory(player);
-
-            if (!residence.isOwner(sender) && !resadmin && !residence.getPermissions().playerHas(sender, Flags.admin, false)) {
-                lm.General_NoPermission.sendMessage(sender);
-                return true;
-            }
-
-            plugin.getFlagUtilManager().openPsetFlagGui(player, rplayer.getUniqueId(), residence, resadmin, 1);
+            open((Player) sender, residence, resadmin);
 
             return true;
         case removeall:
@@ -148,6 +140,19 @@ public class pset implements cmd {
         }
 
         return false;
+    }
+
+    private void open(Player player, ClaimedResidence residence, boolean resadmin) {
+
+        Utils.closeInventory(player).thenRun(() -> {
+
+            if (!residence.isOwner(player) && !resadmin && !residence.getPermissions().playerHas(player, Flags.admin, false)) {
+                lm.General_NoPermission.sendMessage(player);
+            }
+
+            Residence.getInstance().getFlagUtilManager().openPsetFlagGui(player, player.getUniqueId(), residence, resadmin, 1);
+
+        });
     }
 
     @Override
