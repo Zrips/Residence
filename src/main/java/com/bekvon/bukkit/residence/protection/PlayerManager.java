@@ -201,7 +201,7 @@ public class PlayerManager implements ResidencePlayerInterface {
             resPlayer.updatePlayer(player);
         }
         resPlayer.save();
-        resPlayer.setLastSeen(System.currentTimeMillis());
+        resPlayer.getData().setLastSeen(System.currentTimeMillis());
         resPlayer.updateLastKnownWorld();
 
         return resPlayer;
@@ -570,7 +570,7 @@ public class PlayerManager implements ResidencePlayerInterface {
                     continue;
                 ResidencePlayer rp = addPlayer(name, player.getUniqueId());
                 if (rp != null)
-                    rp.setLastSeen(player.getLastPlayed());
+                    rp.getData().setLastSeen(player.getLastPlayed());
             } catch (Exception e) {
                 lm.consoleMessage("Failed to cache data of a player " + player.getUniqueId() + " (" + i + "/" + total + ")");
             }

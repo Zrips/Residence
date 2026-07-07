@@ -65,7 +65,9 @@ import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class ResidenceManager implements ResidenceInterface {
     protected ConcurrentHashMap<String, ClaimedResidence> residences;
+
     protected Map<String, Map<ChunkRef, List<ClaimedResidence>>> chunkResidences;
+
     protected List<ClaimedResidence> shops = new ArrayList<ClaimedResidence>();
     private Residence plugin;
 
@@ -1350,7 +1352,7 @@ public class ResidenceManager implements ResidenceInterface {
                         resName += increment;
                     }
 
-                    List<ChunkRef> chunks = getChunks(residence);
+                    List<ChunkRef> chunks = residence.getChunks();
 
                     if (chunks.size() > 1000000)
                         lm.consoleMessage(CMIChatColor.YELLOW + "Detected extensively big residence area (" + currentEntry.getKey() + ") which covers " + chunks
@@ -1420,7 +1422,7 @@ public class ResidenceManager implements ResidenceInterface {
                     resName += increment;
                 }
 
-                for (ChunkRef chunk : getChunks(residence)) {
+                for (ChunkRef chunk : residence.getChunks()) {
                     List<ClaimedResidence> ress = new ArrayList<>();
                     if (retRes.containsKey(chunk)) {
                         ress.addAll(retRes.get(chunk));
@@ -1458,21 +1460,21 @@ public class ResidenceManager implements ResidenceInterface {
         return i;
     }
 
-    private static List<ChunkRef> getChunks(ClaimedResidence res) {
-        List<ChunkRef> chunks = new ArrayList<>();
-        res.getAreaMap().values().forEach(area -> chunks.addAll(area.getChunks()));
-        return chunks;
-    }
-
+    @Deprecated
     public boolean renameResidence(String oldName, String newName) {
         return this.renameResidence(null, oldName, newName, true);
     }
 
+    @Deprecated
     public boolean renameResidence(Player player, String oldName, String newName, boolean resadmin) {
         return this.renameResidence((CommandSender) player, oldName, newName, resadmin);
     }
 
     public boolean renameResidence(CommandSender sender, String oldName, String newName, boolean resadmin) {
+        return this.renameResidence(sender, this.getByName(oldName), newName, resadmin);
+    }
+
+    public boolean renameResidence(CommandSender sender, ClaimedResidence res, String newName, boolean resadmin) {
         if (!ResPerm.rename.hasPermission(sender, true)) {
             return false;
         }
@@ -1480,7 +1482,6 @@ public class ResidenceManager implements ResidenceInterface {
         if (!Utils.verifyResidenceName(sender, newName))
             return false;
 
-        ClaimedResidence res = this.getByName(oldName);
         if (res == null) {
             lm.Invalid_Residence.sendMessage(sender);
             return false;
@@ -1491,49 +1492,49 @@ public class ResidenceManager implements ResidenceInterface {
             return false;
         }
 
-        oldName = res.getName();
-        if (res.getPermissions().hasResidencePermission(sender, true) || resadmin) {
-            if (res.getParent() == null) {
-                if (residences.containsKey(newName.toLowerCase())) {
-                    lm.Residence_AlreadyExists.sendMessage(sender, newName);
-                    return false;
-                }
+        String oldName = res.getName();
+        if (!res.getPermissions().hasResidencePermission(sender, true) && !resadmin) {
+            lm.General_NoPermission.sendMessage(sender);
+            return false;
+        }
 
-                ResidenceRenameEvent resevent = new ResidenceRenameEvent(res, newName, oldName);
-                plugin.getServ().getPluginManager().callEvent(resevent);
-
-                if (resevent.isCancelled())
-                    return false;
-
-                newName = resevent.getNewResidenceName();
-
-                removeChunkList(oldName);
-                res.setName(newName);
-
-                residences.put(newName.toLowerCase(), res);
-                residences.remove(oldName.toLowerCase());
-
-                calculateChunks(res);
-
-                plugin.getSignUtil().updateSignResName(res);
-
-                lm.Residence_Rename.sendMessage(sender, oldName, newName);
-
-                return true;
+        if (res.getParent() == null) {
+            if (residences.containsKey(newName.toLowerCase())) {
+                lm.Residence_AlreadyExists.sendMessage(sender, newName);
+                return false;
             }
-            String[] oldname = oldName.split("\\.");
-            ClaimedResidence parent = res.getParent();
 
-            boolean feed = parent.renameSubzone(sender, oldname[oldname.length - 1], newName, resadmin);
+            ResidenceRenameEvent resevent = new ResidenceRenameEvent(res, newName, oldName);
+            plugin.getServ().getPluginManager().callEvent(resevent);
+
+            if (resevent.isCancelled())
+                return false;
+
+            newName = resevent.getNewResidenceName();
+
+            removeChunkList(res);
+            res.setName(newName);
+
+            residences.put(newName.toLowerCase(), res);
+            residences.remove(oldName.toLowerCase());
+
+            calculateChunks(res);
 
             plugin.getSignUtil().updateSignResName(res);
 
-            return feed;
+            lm.Residence_Rename.sendMessage(sender, oldName, newName);
+
+            return true;
         }
 
-        lm.General_NoPermission.sendMessage(sender);
+        String[] oldname = oldName.split("\\.");
+        ClaimedResidence parent = res.getParent();
 
-        return false;
+        boolean feed = parent.renameSubzone(sender, oldname[oldname.length - 1], newName, resadmin);
+
+        plugin.getSignUtil().updateSignResName(res);
+
+        return feed;
     }
 
     public void giveResidence(Player reqPlayer, String targPlayer, String residence, boolean resadmin) {
@@ -1678,9 +1679,7 @@ public class ResidenceManager implements ResidenceInterface {
         if (worldChunks == null)
             return;
 
-        List<ChunkRef> chunks = getChunks(res);
-
-        for (ChunkRef chunk : chunks) {
+        for (ChunkRef chunk : res.getChunks()) {
             List<ClaimedResidence> ress = worldChunks.get(chunk);
             if (ress == null)
                 continue;
@@ -1689,7 +1688,7 @@ public class ResidenceManager implements ResidenceInterface {
     }
 
     @Deprecated
-    public void calculateChunks2(String name) {
+    public void calculateChunks(String name) {
         if (name == null)
             return;
         name = name.toLowerCase();
@@ -1706,9 +1705,7 @@ public class ResidenceManager implements ResidenceInterface {
 
         Map<ChunkRef, List<ClaimedResidence>> worldChunks = chunkResidences.computeIfAbsent(world, k -> new HashMap<ChunkRef, List<ClaimedResidence>>());
 
-        List<ChunkRef> chunks = getChunks(res);
-
-        for (ChunkRef chunk : chunks) {
+        for (ChunkRef chunk : res.getChunks()) {
             List<ClaimedResidence> resList = worldChunks.computeIfAbsent(chunk, k -> new ArrayList<ClaimedResidence>());
             if (!resList.contains(res))
                 resList.add(res);

@@ -11,7 +11,6 @@ import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
-import net.Zrips.CMILib.CMILib;
 import net.Zrips.CMILib.Container.PageInfo;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import net.Zrips.CMILib.GUI.CMIGui;

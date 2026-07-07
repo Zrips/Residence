@@ -52,6 +52,7 @@ import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
+import com.bekvon.bukkit.residence.protection.ResidenceManager.ChunkRef;
 import com.bekvon.bukkit.residence.raid.ResidenceRaid;
 import com.bekvon.bukkit.residence.shopStuff.ShopVote;
 import com.bekvon.bukkit.residence.signsStuff.Signs;
@@ -2146,7 +2147,7 @@ public class ClaimedResidence {
 
     @Deprecated
     public boolean isTrusted(String playerName) {
-        return isTrusted(ResidencePlayer.getUUID(playerName));
+        return isTrusted(ResidencePlayer.get(playerName));
     }
 
     public boolean isTrusted(UUID uuid) {
@@ -2209,7 +2210,13 @@ public class ClaimedResidence {
         }
         return trusted;
     }
-
+    
+    public List<ChunkRef> getChunks() {
+        List<ChunkRef> chunks = new ArrayList<>();
+        getAreaMap().values().forEach(area -> chunks.addAll(area.getChunks()));
+        return chunks;
+    }
+    
     public static ClaimedResidence getByName(String landName) {
         return Residence.getInstance().getResidenceManager().getByName(landName);
     }
