@@ -31,7 +31,6 @@ import org.bukkit.util.BlockIterator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.Zrips.CMI.CMI;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -50,7 +49,7 @@ public class Utils {
     public static CompletableFuture<CMITaskResult> closeInventory(@NotNull Player player) {
         if (player == null || !player.isOnline())
             return CompletableFuture.completedFuture(null);
-        return CMIScheduler.runAtEntity(CMI.getInstance(), player, () -> {
+        return CMIScheduler.runAtEntity(Residence.getInstance(), player, () -> {
             if (player.isOnline())
                 player.closeInventory();
         });
