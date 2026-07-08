@@ -1153,11 +1153,6 @@ CommandHelp:
               Description: 允许或禁止改变铜块状态
               Info:
               - '&e用法: &6/res set/pset <领地名称> copper true/false/remove'
-            craft:
-              Translated: craft - 给予 table, enchant and brew 权限
-              Description: 给予 table, enchant and brew 权限
-              Info:
-              - '&e用法: &6/res set <领地名称> craft true/false/remove'
             creeper:
               Translated: creeper - 苦力怕爆炸
               Description: 允许或禁止苦力怕爆炸

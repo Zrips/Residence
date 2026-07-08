@@ -106,9 +106,6 @@ Global:
     # Allow or deny all corals from drying up
     coraldryup: true
     # Applies to: Residence
-    # Gives table, enchant, brew flags
-    craft: true
-    # Applies to: Residence
     # Allow or deny creeper explosions
     creeper: true
     # Applies to: Residence
@@ -452,7 +449,6 @@ Global:
     copper: COPPER_BLOCK
     copperoxidation: OXIDIZED_COPPER
     coraldryup: FIRE_CORAL
-    craft: STONE
     creeper: CREEPER_SPAWN_EGG
     damage: GOLDEN_SWORD
     day: DANDELION

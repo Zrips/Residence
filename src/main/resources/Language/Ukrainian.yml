@@ -1172,11 +1172,6 @@ CommandHelp:
               Description: Дозволяє модифікувати мідні блоки
               Info:
               - '&eВикористання: &6/res set/pset <резиденція> copper true/false/remove'
-            craft:
-              Translated: крафт
-              Description: Дає стіл, зачаровує, варить прапори
-              Info:
-              - '&eВикористання: &6/res set <резиденція> craft true/false/remove'
             creeper:
               Translated: кріпер
               Description: Дозволити або заборонити вибухи криперів

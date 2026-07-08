@@ -1036,11 +1036,6 @@ CommandHelp:
               Description: Ukázat/skrýt koordináty residence
               Info:
               - '&ePoužití: &6/res set <název residence> coords true/false/remove'
-            craft:
-              Translated: craft
-              Description: 'Dát vlajky: table, enchant, brew'
-              Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             creeper:
               Translated: creeper
               Description: Povolit/zakázat výbuch creeperu v residenci

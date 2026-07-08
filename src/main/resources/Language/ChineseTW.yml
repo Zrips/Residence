@@ -819,11 +819,6 @@ CommandHelp:
               Description: 允許或禁止珊瑚乾涸
               Info:
               - '&e用法：&6/res set <領地名稱> coraldryup true/false/remove'
-            craft:
-              Translated: 合成 (craft)
-              Description: 給予工作台、附魔台、釀造台等的權限
-              Info:
-              - '&e用法：&6/res set <領地名稱> craft true/false/remove'
             creeper:
               Translated: 苦力怕爆炸 (creeper)
               Description: 允許或禁止苦力怕爆炸

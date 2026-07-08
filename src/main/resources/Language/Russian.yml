@@ -1162,11 +1162,6 @@ CommandHelp:
               Description: Скрывает координаты резиденции
               Info:
               - '&eПишите: &6/res set <резиденция> coords true/false/remove'
-            craft:
-              Translated: craft
-              Description: Разрешает table, enchant, brew флаги
-              Info:
-              - '&eПишите: &6/res set <резиденция> craft true/false/remove'
             creeper:
               Translated: creeper
               Description: Разрешить или запретить взрывы крипера
