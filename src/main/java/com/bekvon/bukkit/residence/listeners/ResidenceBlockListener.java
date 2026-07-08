@@ -3,9 +3,7 @@ package com.bekvon.bukkit.residence.listeners;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Location;
@@ -53,6 +51,7 @@ import org.bukkit.util.Vector;
 import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.commands.auto;
+import com.bekvon.bukkit.residence.containers.ResidenceBlockData;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
@@ -117,11 +116,7 @@ public class ResidenceBlockListener implements Listener {
                 e1.printStackTrace();
             }
         } else {
-            BlockFace face = ((Directional) b.getBlockData()).getFacing();
-            b.setType(CMIMaterial.ANVIL.getMaterial());
-            Directional directional = (Directional) b.getBlockData();
-            directional.setFacing(face);
-            b.setBlockData(directional);
+            ResidenceBlockData.updateAnvilFacing(b);
         }
     }
 
@@ -496,10 +491,10 @@ public class ResidenceBlockListener implements Listener {
             return;
 
         Player player = event.getPlayer();
-        
+
         if (ResAdmin.isResAdmin(player))
             return;
-        
+
         Block block = event.getBlock();
 
         if (!CMIMaterial.get(block.getType()).containsCriteria(CMIMC.CHEST))
@@ -836,9 +831,9 @@ public class ResidenceBlockListener implements Listener {
             return;
 
         // target location
-        Location targetLoc = Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? block.getRelative(((Dispenser) block.getBlockData()).getFacing()).getLocation()
+        Location targetLoc = Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? ResidenceBlockData.getRelative(block)
                 : block.getRelative((((org.bukkit.material.Dispenser) ((org.bukkit.block.Dispenser) block).getData()).getFacing())).getLocation();
-
+ 
         ClaimedResidence targetRes = ClaimedResidence.getByLoc(targetLoc);
 
         CMIMaterial cmat = CMIMaterial.get(event.getItem());
@@ -862,7 +857,7 @@ public class ResidenceBlockListener implements Listener {
         ClaimedResidence sourceRes = ClaimedResidence.getByLoc(block.getLocation());
 
         // source & target in Same Res, or have Same Res owner
-        if (sourceRes !=null && (sourceRes.equals(targetRes) || sourceRes.isOwner(targetRes.getOwner())))
+        if (sourceRes != null && (sourceRes.equals(targetRes) || sourceRes.isOwner(targetRes.getOwner())))
             return;
 
         // check targetRes Flag_build
@@ -1081,7 +1076,7 @@ public class ResidenceBlockListener implements Listener {
         if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player))
             return;
 
-        if(FlagPermissions.has(block.getLocation(), player, Flags.ignite, true))
+        if (FlagPermissions.has(block.getLocation(), player, Flags.ignite, true))
             return;
 
         lm.Flag_Deny.sendMessage(player, Flags.ignite);

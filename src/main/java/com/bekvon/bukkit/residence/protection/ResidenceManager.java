@@ -29,9 +29,9 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -807,8 +807,9 @@ public class ResidenceManager implements ResidenceInterface {
 
                 if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
                     for (int y = low.getBlockY(); y <= hy; y++) {
-                        BlockData type = chunkSnapshot.getBlockData(cx, y, cz);
-                        if (!plugin.getConfigManager().getCleanBlocks().contains(type.getMaterial()))
+                        @NotNull
+                        Material type = chunkSnapshot.getBlockType(cx, y, cz);
+                        if (!plugin.getConfigManager().getCleanBlocks().contains(type))
                             continue;
                         locations.add(new Location(world, x, y, z));
                     }

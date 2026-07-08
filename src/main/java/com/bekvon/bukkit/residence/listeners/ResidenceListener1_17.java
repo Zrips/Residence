@@ -1,14 +1,11 @@
 package com.bekvon.bukkit.residence.listeners;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,6 +21,7 @@ import org.bukkit.event.player.PlayerBucketEntityEvent;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
+import com.bekvon.bukkit.residence.containers.ResidenceBlockData;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -41,14 +39,6 @@ public class ResidenceListener1_17 implements Listener {
     public ResidenceListener1_17(Residence plugin) {
         this.plugin = plugin;
     }
-
-    private static int MAX_ENTRIES = 50;
-    public static LinkedHashMap<String, BlockData> powder_snow = new LinkedHashMap<String, BlockData>(MAX_ENTRIES + 1, .75F, false) {
-        @Override
-        protected boolean removeEldestEntry(Map.Entry<String, BlockData> eldest) {
-            return size() > MAX_ENTRIES;
-        }
-    };
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
@@ -68,15 +58,7 @@ public class ResidenceListener1_17 implements Listener {
         if (event.getBlock().getType() != Material.POWDER_SNOW)
             return;
 
-        BlockData data = ResidenceListener1_17.powder_snow.remove(event.getBlock().getLocation().toString());
-        if (data == null)
-            return;
-
-        Block blockUnder = event.getBlock().getLocation().clone().add(0, -1, 0).getBlock();
-
-        if (data.getMaterial().equals(blockUnder.getType())) {
-            blockUnder.setBlockData(data);
-        }
+        ResidenceBlockData.updatePowderedSnow(event.getBlock());
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -132,32 +114,32 @@ public class ResidenceListener1_17 implements Listener {
 
     }
 
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-	public void onCopperOxidation(BlockFormEvent event) {
-		// Disabling listener if flag disabled globally
-		if (!Flags.copperoxidation.isGlobalyEnabled()) {
-			return;
-		}
-		Block block = event.getBlock();
-		// disabling event on world
-		if (plugin.isDisabledWorldListener(block.getWorld())) {
-			return;
-		}
-		if (!isUnwaxedCopper(block)) {
-			return;
-		}
-		if (FlagPermissions.has(block.getLocation(), Flags.copperoxidation, FlagCombo.OnlyFalse)) {
-			event.setCancelled(true);
-		}
-	}
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onCopperOxidation(BlockFormEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.copperoxidation.isGlobalyEnabled()) {
+            return;
+        }
+        Block block = event.getBlock();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld())) {
+            return;
+        }
+        if (!isUnwaxedCopper(block)) {
+            return;
+        }
+        if (FlagPermissions.has(block.getLocation(), Flags.copperoxidation, FlagCombo.OnlyFalse)) {
+            event.setCancelled(true);
+        }
+    }
 
-	private boolean isUnwaxedCopper(Block block) {
-		CMIMaterial mat = CMIMaterial.get(block.getType());
-		if (mat.containsCriteria(CMIMC.COPPER)) {
-			return !mat.name().startsWith("WAXED_");
-		}
-		return false;
-	}
+    private boolean isUnwaxedCopper(Block block) {
+        CMIMaterial mat = CMIMaterial.get(block.getType());
+        if (mat.containsCriteria(CMIMC.COPPER)) {
+            return !mat.name().startsWith("WAXED_");
+        }
+        return false;
+    }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPowderSnowPhysics(BlockPhysicsEvent event) {
@@ -185,7 +167,7 @@ public class ResidenceListener1_17 implements Listener {
         if (res == null)
             return;
 
-        powder_snow.put(event.getSourceBlock().getLocation().toString(), block.getBlockData().clone());
+        ResidenceBlockData.addPowderedSnow(event.getSourceBlock(), block);
 
     }
 

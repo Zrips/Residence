@@ -2,8 +2,6 @@ package com.bekvon.bukkit.residence.listeners;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.type.Farmland;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fish;
 import org.bukkit.entity.Player;
@@ -19,6 +17,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
+import com.bekvon.bukkit.residence.containers.ResidenceBlockData;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
@@ -67,12 +66,7 @@ public class ResidenceListener1_13 implements Listener {
             return false;
 
         try {
-            BlockData data = block.getBlockData();
-            Farmland farm = (Farmland) data;
-            if (farm.getMoisture() < 2) {
-                farm.setMoisture(7);
-                block.setBlockData(farm);
-            }
+            ResidenceBlockData.updateFarmLand(block);
         } catch (NoClassDefFoundError e) {
         }
         return true;
