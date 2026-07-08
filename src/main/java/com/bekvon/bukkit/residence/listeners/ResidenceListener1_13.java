@@ -1,5 +1,8 @@
 package com.bekvon.bukkit.residence.listeners;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -13,17 +16,21 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.Vector;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.ResidenceBlockData;
 import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Version.Version;
+import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class ResidenceListener1_13 implements Listener {
 
@@ -31,6 +38,22 @@ public class ResidenceListener1_13 implements Listener {
 
     public ResidenceListener1_13(Residence plugin) {
         this.plugin = plugin;
+    }
+
+    public static void checkBoundingBox(ClaimedResidence res, double range, org.bukkit.World world) {
+        for (Player player : res.getPlayersInResidence()) {
+            Vector vloc = player.getLocation().toVector();
+
+            // Limit check area in case residence is very big
+            BoundingBox searchBox = BoundingBox.of(
+                    vloc.clone().subtract(new Vector(range, range, range)),
+                    vloc.clone().add(new Vector(range, range, range)));
+
+            CMIScheduler.runAtLocation(Residence.getInstance(), player.getLocation(), () -> {
+                Set<Entity> ent = new HashSet<>(world.getNearbyEntities(searchBox));
+                ResidencePlayerListener.processEntities(ent, res);
+            });
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

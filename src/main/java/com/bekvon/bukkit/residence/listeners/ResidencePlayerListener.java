@@ -2701,20 +2701,7 @@ public class ResidencePlayerListener implements Listener {
                     continue;
 
                 if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
-                    for (Player player : res.getPlayersInResidence()) {
-                        Vector vloc = player.getLocation().toVector();
-
-                        // Limit check area in case residence is very big
-                        BoundingBox searchBox = BoundingBox.of(
-                                vloc.clone().subtract(new Vector(range, range, range)),
-                                vloc.clone().add(new Vector(range, range, range)));
-
-                        CMIScheduler.runAtLocation(plugin, player.getLocation(), () -> {
-                            Set<Entity> ent = new HashSet<>(world.getNearbyEntities(searchBox));
-                            processEntities(ent, res);
-                        });
-
-                    }
+                    ResidenceListener1_13.checkBoundingBox(res, range, world);
                     continue;
                 }
 
@@ -2749,7 +2736,7 @@ public class ResidencePlayerListener implements Listener {
         }
     }
 
-    private void processEntities(Set<Entity> entities, ClaimedResidence res) {
+    public static void processEntities(Set<Entity> entities, ClaimedResidence res) {
         for (Entity ent : entities) {
             if (!ResidenceEntityListener.isMonster(ent))
                 continue;
