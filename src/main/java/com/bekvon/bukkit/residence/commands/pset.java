@@ -1,6 +1,7 @@
 package com.bekvon.bukkit.residence.commands;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -129,7 +130,7 @@ public class pset implements cmd {
             if (!(sender instanceof Player))
                 return false;
 
-            open((Player) sender, residence, resadmin);
+            open((Player) sender, rplayer.getUniqueId(), residence, resadmin);
 
             return true;
         case removeall:
@@ -142,7 +143,7 @@ public class pset implements cmd {
         return false;
     }
 
-    private void open(Player player, ClaimedResidence residence, boolean resadmin) {
+    private void open(Player player, UUID target, ClaimedResidence residence, boolean resadmin) {
 
         Utils.closeInventory(player).thenRun(() -> {
 
@@ -150,7 +151,7 @@ public class pset implements cmd {
                 lm.General_NoPermission.sendMessage(player);
             }
 
-            Residence.getInstance().getFlagUtilManager().openPsetFlagGui(player, player.getUniqueId(), residence, resadmin, 1);
+            Residence.getInstance().getFlagUtilManager().openPsetFlagGui(player, target, residence, resadmin, 1);
 
         });
     }

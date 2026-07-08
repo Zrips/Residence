@@ -577,4 +577,10 @@ public class ResidencePlayer {
             data = new ResidencePlayerData();
         return data;
     }
+    
+    public void updateResidenceLocation() {
+		if (this.getPlayer() != null)
+	        Residence.getInstance().getPlayerListener().handleNewLocation(this.getPlayer(), this.getPlayer().getLocation(), true);
+	}
+    
 }

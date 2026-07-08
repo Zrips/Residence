@@ -45,12 +45,13 @@ public class create implements cmd {
         }
 
         Residence.getInstance().getPlayerManager().getResidencePlayer(player).forceUpdateGroup();
-        
+
         ResidencePlayer rp = ResidencePlayer.get(player);
 
         boolean deductmoney = !plugin.getConfigManager().isNewPlayerCommandFree() || rp.getData().ownedResidence();
-        
+
         plugin.getResidenceManager().addResidence(player, args[0], resadmin, deductmoney);
+
         return true;
     }
 

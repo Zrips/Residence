@@ -2016,9 +2016,20 @@ public class ClaimedResidence {
 
     public ArrayList<Player> getPlayersInResidence() {
         ArrayList<Player> within = new ArrayList<>();
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            if (this.containsLoc(player.getLocation())) {
-                within.add(player);
+
+        World world = this.getPermissions().getBukkitWorld();
+
+        if (world != null) {
+            for (Player player : world.getPlayers()) {
+                if (this.containsLoc(player.getLocation())) {
+                    within.add(player);
+                }
+            }
+        } else {
+            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+                if (this.containsLoc(player.getLocation())) {
+                    within.add(player);
+                }
             }
         }
         return within;
@@ -2210,13 +2221,13 @@ public class ClaimedResidence {
         }
         return trusted;
     }
-    
+
     public List<ChunkRef> getChunks() {
         List<ChunkRef> chunks = new ArrayList<>();
         getAreaMap().values().forEach(area -> chunks.addAll(area.getChunks()));
         return chunks;
     }
-    
+
     public static ClaimedResidence getByName(String landName) {
         return Residence.getInstance().getResidenceManager().getByName(landName);
     }
