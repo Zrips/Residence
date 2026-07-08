@@ -335,10 +335,11 @@ public class ResidenceManager implements ResidenceInterface {
         calculateChunks(newRes);
         plugin.getLeaseManager().removeExpireTime(newRes);
         plugin.getPlayerManager().addResidence(newRes.getOwnerUUID(), newRes);
-        
-        for (Player one : newRes.getPlayersInResidence()) {
-	        ResidencePlayer.get(one).updateResidenceLocation();
-        }
+
+        if (plugin.isFullyLoaded())
+            for (Player one : newRes.getPlayersInResidence()) {
+                ResidencePlayer.get(one).updateResidenceLocation();
+            }
 
         if (player != null) {
             Visualizer v = new Visualizer(player);
@@ -720,10 +721,11 @@ public class ResidenceManager implements ResidenceInterface {
         for (ClaimedResidence sub : res.getSubzones()) {
             removeResidence(rPlayer, sub, resadmin, false);
         }
-        
-        for (Player one : res.getPlayersInResidence()) {
-            ResidencePlayer.get(one).updateResidenceLocation();
-        }        
+
+        if (plugin.isFullyLoaded())
+            for (Player one : res.getPlayersInResidence()) {
+                ResidencePlayer.get(one).updateResidenceLocation();
+            }
     }
 
     public void giveBackOwnerMoneyForResidence(ClaimedResidence res) {
