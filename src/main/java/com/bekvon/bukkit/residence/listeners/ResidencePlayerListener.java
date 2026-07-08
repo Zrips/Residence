@@ -1282,6 +1282,7 @@ public class ResidencePlayerListener implements Listener {
         case BELL:
         case BREWING_STAND:
         case CAMPFIRE:
+        case CARTOGRAPHY_TABLE:
         case CHAIN_COMMAND_BLOCK:
         case CHIPPED_ANVIL:
         case COMMAND_BLOCK:
@@ -1291,8 +1292,10 @@ public class ResidencePlayerListener implements Listener {
         case DAMAGED_ANVIL:
         case DAYLIGHT_DETECTOR:
         case ENCHANTING_TABLE:
+        case FLETCHING_TABLE:
         case FLOWER_POT:
         case GLOW_ITEM_FRAME:
+        case GRINDSTONE:
         case ITEM_FRAME:
         case LECTERN:
         case LEGACY_DIODE_BLOCK_OFF:
@@ -1300,9 +1303,12 @@ public class ResidencePlayerListener implements Listener {
         case LEGACY_REDSTONE_COMPARATOR_OFF:
         case LEGACY_REDSTONE_COMPARATOR_ON:
         case LEVER:
+        case LOOM:
         case REPEATER:
         case REPEATING_COMMAND_BLOCK:
+        case SMITHING_TABLE:
         case SOUL_CAMPFIRE:
+        case STONECUTTER:
             return true;
         default:
             break;

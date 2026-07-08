@@ -520,8 +520,14 @@ public class ConfigManager {
                     Flags.diode.toString()));
             conf.set("Global.GroupedFlags.crafting", Arrays.asList(
                     Flags.brew.toString(),
-                    Flags.table.toString(),
-                    Flags.enchant.toString()));
+                    Flags.cartography.toString(),
+                    Flags.enchant.toString(),
+                    Flags.fletching.toString(),
+                    Flags.grindstone.toString(),
+                    Flags.loom.toString(),
+                    Flags.smithing.toString(),
+                    Flags.stonecutter.toString(),
+                    Flags.table.toString()));
             conf.set("Global.GroupedFlags.trusted", Arrays.asList(
                     Flags.use.toString(),
                     Flags.tp.toString(),

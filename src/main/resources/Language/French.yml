@@ -1281,6 +1281,30 @@ CommandHelp:
               Description: allows or denys players to use workbenches
               Info:
               - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            cartography:
+              Description: Autorise ou non l utilisation d une table de cartographie.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            fletching:
+              Description: Autorise ou non l utilisation d un établi de fléchier.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            grindstone:
+              Description: Autorise ou non l utilisation d une meule.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            loom:
+              Description: Autorise ou non l utilisation d un métier à tisser.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            smithing:
+              Description: Autorise ou non l utilisation d une table de forge.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            stonecutter:
+              Description: Autorise ou non l utilisation d un tailleur de pierre.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
             tnt:
               Description: allow or deny tnt explosions
               Info:
