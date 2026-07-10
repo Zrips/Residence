@@ -722,6 +722,12 @@ public class Residence extends JavaPlugin {
         try {
             Plugin plugin = server.getPluginManager().getPlugin("WorldEdit");
             if (plugin != null) {
+                if (plugin.getDescription().getVersion().startsWith("6.")) {
+                    smanager = new SelectionManager(server, this);
+                    lm.consoleMessage("Found WorldEdit " + plugin.getDescription().getVersion() + " but version 6.x is not supported!");
+                    return;
+                }
+                
                 this.wep = (com.sk89q.worldedit.bukkit.WorldEditPlugin) plugin;
 
                 if (getConfigManager().isWorldEditIntegration())
