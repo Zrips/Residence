@@ -1162,11 +1162,6 @@ CommandHelp:
               Description: Скрывает координаты резиденции
               Info:
               - '&eПишите: &6/res set <резиденция> coords true/false/remove'
-            craft:
-              Translated: craft
-              Description: Разрешает table, enchant, brew флаги
-              Info:
-              - '&eПишите: &6/res set <резиденция> craft true/false/remove'
             creeper:
               Translated: creeper
               Description: Разрешить или запретить взрывы крипера
@@ -1554,6 +1549,36 @@ CommandHelp:
               Description: Позволяет или запрещает игрокам использовать верстак
               Info:
               - '&eПишите: &6/res set/pset <резиденция> table true/false/remove'
+            cartography:
+              Translated: cartography
+              Description: Позволяет или запрещает игрокам использовать стол картографа
+              Info:
+              - '&eПишите: &6/res set/pset <резиденция> cartography true/false/remove'
+            fletching:
+              Translated: fletching
+              Description: Позволяет или запрещает игрокам использовать стол оперения
+              Info:
+              - '&eПишите: &6/res set/pset <резиденция> fletching true/false/remove'
+            grindstone:
+              Translated: grindstone
+              Description: Позволяет или запрещает игрокам использовать точильный камень
+              Info:
+              - '&eПишите: &6/res set/pset <резиденция> grindstone true/false/remove'
+            loom:
+              Translated: loom
+              Description: Позволяет или запрещает игрокам использовать ткацкий станок
+              Info:
+              - '&eПишите: &6/res set/pset <резиденция> loom true/false/remove'
+            smithing:
+              Translated: smithing
+              Description: Позволяет или запрещает игрокам использовать кузнечный стол
+              Info:
+              - '&eПишите: &6/res set/pset <резиденция> smithing true/false/remove'
+            stonecutter:
+              Translated: stonecutter
+              Description: Позволяет или запрещает игрокам использовать камнерез
+              Info:
+              - '&eПишите: &6/res set/pset <резиденция> stonecutter true/false/remove'
             tnt:
               Translated: tnt
               Description: Разрешить или запретить взрывы TNT

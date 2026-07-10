@@ -819,11 +819,6 @@ CommandHelp:
               Description: 允許或禁止珊瑚乾涸
               Info:
               - '&e用法：&6/res set <領地名稱> coraldryup true/false/remove'
-            craft:
-              Translated: 合成 (craft)
-              Description: 給予工作台、附魔台、釀造台等的權限
-              Info:
-              - '&e用法：&6/res set <領地名稱> craft true/false/remove'
             creeper:
               Translated: 苦力怕爆炸 (creeper)
               Description: 允許或禁止苦力怕爆炸
@@ -1224,6 +1219,36 @@ CommandHelp:
               Description: 允許或禁止玩家使用工作台
               Info:
               - '&e用法：&6/res set/pset <領地名稱> table true/false/remove'
+            cartography:
+              Translated: 使用製圖台 (cartography)
+              Description: 允許或禁止玩家使用製圖台
+              Info:
+              - '&e用法：&6/res set/pset <領地名稱> cartography true/false/remove'
+            fletching:
+              Translated: 使用製箭台 (fletching)
+              Description: 允許或禁止玩家使用製箭台
+              Info:
+              - '&e用法：&6/res set/pset <領地名稱> fletching true/false/remove'
+            grindstone:
+              Translated: 使用砂輪 (grindstone)
+              Description: 允許或禁止玩家使用砂輪
+              Info:
+              - '&e用法：&6/res set/pset <領地名稱> grindstone true/false/remove'
+            loom:
+              Translated: 使用織布機 (loom)
+              Description: 允許或禁止玩家使用織布機
+              Info:
+              - '&e用法：&6/res set/pset <領地名稱> loom true/false/remove'
+            smithing:
+              Translated: 使用鍛造台 (smithing)
+              Description: 允許或禁止玩家使用鍛造台
+              Info:
+              - '&e用法：&6/res set/pset <領地名稱> smithing true/false/remove'
+            stonecutter:
+              Translated: 使用切石機 (stonecutter)
+              Description: 允許或禁止玩家使用切石機
+              Info:
+              - '&e用法：&6/res set/pset <領地名稱> stonecutter true/false/remove'
             tnt:
               Translated: TNT 爆炸 (tnt)
               Description: 允許或禁止 TNT 爆炸

@@ -333,15 +333,15 @@ public class FlagPermissions {
         if (Version.isCurrentEqualOrHigher(Version.v1_14_R1)) {
             addMaterialToUseFlag(CMIMaterial.BARREL.getMaterial(), Flags.container);
             addMaterialToUseFlag(CMIMaterial.BLAST_FURNACE.getMaterial(), Flags.container);
-            addMaterialToUseFlag(CMIMaterial.CARTOGRAPHY_TABLE.getMaterial(), Flags.container);
+            addMaterialToUseFlag(CMIMaterial.CARTOGRAPHY_TABLE.getMaterial(), Flags.cartography);
             addMaterialToUseFlag(CMIMaterial.COMPOSTER.getMaterial(), Flags.container);
-            addMaterialToUseFlag(CMIMaterial.FLETCHING_TABLE.getMaterial(), Flags.container);
+            addMaterialToUseFlag(CMIMaterial.FLETCHING_TABLE.getMaterial(), Flags.fletching);
 
-            addMaterialToUseFlag(CMIMaterial.GRINDSTONE.getMaterial(), Flags.container);
-            addMaterialToUseFlag(CMIMaterial.LOOM.getMaterial(), Flags.container);
-            addMaterialToUseFlag(CMIMaterial.SMITHING_TABLE.getMaterial(), Flags.container);
+            addMaterialToUseFlag(CMIMaterial.GRINDSTONE.getMaterial(), Flags.grindstone);
+            addMaterialToUseFlag(CMIMaterial.LOOM.getMaterial(), Flags.loom);
+            addMaterialToUseFlag(CMIMaterial.SMITHING_TABLE.getMaterial(), Flags.smithing);
             addMaterialToUseFlag(CMIMaterial.SMOKER.getMaterial(), Flags.container);
-            addMaterialToUseFlag(CMIMaterial.STONECUTTER.getMaterial(), Flags.container);
+            addMaterialToUseFlag(CMIMaterial.STONECUTTER.getMaterial(), Flags.stonecutter);
 
             addMaterialToUseFlag(CMIMaterial.BELL.getMaterial(), Flags.use);
             addMaterialToUseFlag(CMIMaterial.CAMPFIRE.getMaterial(), Flags.use);

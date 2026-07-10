@@ -910,7 +910,6 @@ CommandHelp:
           - '&apressure - &7Autorise ou non l utilisation de plaques de pressions.'
           - '&anote - &7Autorise ou non l utilisation de blocs de musique.'
           - '&aredstone - &7Donne les permissions d utilisation des leviers, diodes, bouttons, plaques et blocs de musiques.'
-          - '&acraft - &7Donne les permissions d utilisation des tables de craft, enchant et alambic.'
           - '&aburn - &7allows or denys Mob combustion in residences'
           SubCommands:
             anvil:
@@ -997,10 +996,6 @@ CommandHelp:
               Description: Hides residence coordinates
               Info:
               - '&eUsage: &6/res set <residence> [flag] true/false/remove'
-            craft:
-              Description: Donne les permissions d utilisation des tables de craft, enchant et alambic.
-              Info:
-              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
             creeper:
               Description: Autorise ou non les explosions de creeper.
               Info:
@@ -1279,6 +1274,30 @@ CommandHelp:
               - '&eUsage: &6/res pset <residence> [flag] true/false/remove'
             table:
               Description: allows or denys players to use workbenches
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            cartography:
+              Description: Autorise ou non l utilisation d une table de cartographie.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            fletching:
+              Description: Autorise ou non l utilisation d un établi de fléchier.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            grindstone:
+              Description: Autorise ou non l utilisation d une meule.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            loom:
+              Description: Autorise ou non l utilisation d un métier à tisser.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            smithing:
+              Description: Autorise ou non l utilisation d une table de forge.
+              Info:
+              - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
+            stonecutter:
+              Description: Autorise ou non l utilisation d un tailleur de pierre.
               Info:
               - '&eUsage: &6/res set/pset <residence> [flag] true/false/remove'
             tnt:

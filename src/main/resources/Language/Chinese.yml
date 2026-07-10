@@ -1153,11 +1153,6 @@ CommandHelp:
               Description: 允许或禁止改变铜块状态
               Info:
               - '&e用法: &6/res set/pset <领地名称> copper true/false/remove'
-            craft:
-              Translated: craft - 给予 table, enchant and brew 权限
-              Description: 给予 table, enchant and brew 权限
-              Info:
-              - '&e用法: &6/res set <领地名称> craft true/false/remove'
             creeper:
               Translated: creeper - 苦力怕爆炸
               Description: 允许或禁止苦力怕爆炸
@@ -1548,6 +1543,36 @@ CommandHelp:
               Description: 允许或禁止使用工作台
               Info:
               - '&e用法: &6/res set/pset <领地名称> table true/false/remove'
+            cartography:
+              Translated: cartography - 使用制图台
+              Description: 允许或禁止使用制图台
+              Info:
+              - '&e用法: &6/res set/pset <领地名称> cartography true/false/remove'
+            fletching:
+              Translated: fletching - 使用制箭台
+              Description: 允许或禁止使用制箭台
+              Info:
+              - '&e用法: &6/res set/pset <领地名称> fletching true/false/remove'
+            grindstone:
+              Translated: grindstone - 使用砂轮
+              Description: 允许或禁止使用砂轮
+              Info:
+              - '&e用法: &6/res set/pset <领地名称> grindstone true/false/remove'
+            loom:
+              Translated: loom - 使用织布机
+              Description: 允许或禁止使用织布机
+              Info:
+              - '&e用法: &6/res set/pset <领地名称> loom true/false/remove'
+            smithing:
+              Translated: smithing - 使用锻造台
+              Description: 允许或禁止使用锻造台
+              Info:
+              - '&e用法: &6/res set/pset <领地名称> smithing true/false/remove'
+            stonecutter:
+              Translated: stonecutter - 使用切石机
+              Description: 允许或禁止使用切石机
+              Info:
+              - '&e用法: &6/res set/pset <领地名称> stonecutter true/false/remove'
             tnt:
               Translated: tnt - TNT爆炸
               Description: 允许或禁止TNT爆炸

@@ -1172,11 +1172,6 @@ CommandHelp:
               Description: Дозволяє модифікувати мідні блоки
               Info:
               - '&eВикористання: &6/res set/pset <резиденція> copper true/false/remove'
-            craft:
-              Translated: крафт
-              Description: Дає стіл, зачаровує, варить прапори
-              Info:
-              - '&eВикористання: &6/res set <резиденція> craft true/false/remove'
             creeper:
               Translated: кріпер
               Description: Дозволити або заборонити вибухи криперів
@@ -1571,6 +1566,36 @@ CommandHelp:
               Description: Дозволяє або забороняє гравцям використовувати робочі столи
               Info:
               - '&eВикористання: &6/res set/pset <резиденція> table true/false/remove'
+            cartography:
+              Translated: картографічнийстіл
+              Description: Дозволяє або забороняє гравцям використовувати картографічні столи
+              Info:
+              - '&eВикористання: &6/res set/pset <резиденція> cartography true/false/remove'
+            fletching:
+              Translated: верстакоперення
+              Description: Дозволяє або забороняє гравцям використовувати верстаки оперення
+              Info:
+              - '&eВикористання: &6/res set/pset <резиденція> fletching true/false/remove'
+            grindstone:
+              Translated: точило
+              Description: Дозволяє або забороняє гравцям використовувати точила
+              Info:
+              - '&eВикористання: &6/res set/pset <резиденція> grindstone true/false/remove'
+            loom:
+              Translated: ткацькийверстат
+              Description: Дозволяє або забороняє гравцям використовувати ткацькі верстати
+              Info:
+              - '&eВикористання: &6/res set/pset <резиденція> loom true/false/remove'
+            smithing:
+              Translated: кувальнийстіл
+              Description: Дозволяє або забороняє гравцям використовувати кувальні столи
+              Info:
+              - '&eВикористання: &6/res set/pset <резиденція> smithing true/false/remove'
+            stonecutter:
+              Translated: каменеріз
+              Description: Дозволяє або забороняє гравцям використовувати каменерізи
+              Info:
+              - '&eВикористання: &6/res set/pset <резиденція> stonecutter true/false/remove'
             tnt:
               Translated: tnt
               Description: Дозволити або заборонити вибухи ТНТ

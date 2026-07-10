@@ -1036,11 +1036,6 @@ CommandHelp:
               Description: Ukázat/skrýt koordináty residence
               Info:
               - '&ePoužití: &6/res set <název residence> coords true/false/remove'
-            craft:
-              Translated: craft
-              Description: 'Dát vlajky: table, enchant, brew'
-              Info:
-              - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
             creeper:
               Translated: creeper
               Description: Povolit/zakázat výbuch creeperu v residenci
@@ -1425,6 +1420,36 @@ CommandHelp:
               Description: Povolit/zakázat použití pracovního stolu v residenci
               Info:
               - '&ePoužití: &6/res set/pset <název residence> [vlajka] true/false/remove'
+            cartography:
+              Translated: cartography
+              Description: Povolit/zakázat použití kartografického stolu v residenci
+              Info:
+              - '&ePoužití: &6/res set/pset <název residence> cartography true/false/remove'
+            fletching:
+              Translated: fletching
+              Description: Povolit/zakázat použití lučištnického stolu v residenci
+              Info:
+              - '&ePoužití: &6/res set/pset <název residence> fletching true/false/remove'
+            grindstone:
+              Translated: grindstone
+              Description: Povolit/zakázat použití brousku v residenci
+              Info:
+              - '&ePoužití: &6/res set/pset <název residence> grindstone true/false/remove'
+            loom:
+              Translated: loom
+              Description: Povolit/zakázat použití tkalcovského stavu v residenci
+              Info:
+              - '&ePoužití: &6/res set/pset <název residence> loom true/false/remove'
+            smithing:
+              Translated: smithing
+              Description: Povolit/zakázat použití kovářského stolu v residenci
+              Info:
+              - '&ePoužití: &6/res set/pset <název residence> smithing true/false/remove'
+            stonecutter:
+              Translated: stonecutter
+              Description: Povolit/zakázat použití řezače kamene v residenci
+              Info:
+              - '&ePoužití: &6/res set/pset <název residence> stonecutter true/false/remove'
             tnt:
               Translated: tnt
               Description: Povolit/zakázat tnt v residenci

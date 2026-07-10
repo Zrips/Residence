@@ -470,7 +470,12 @@ CommandHelp: #this is just a holder node, that holds the entire help
                         - 'pressure - allows or denys players to use pressure plates'
                         - 'note - allows or denys players to use note blocks'
                         - 'redstone - Gives lever, diode, button, pressure, note flags'
-                        - 'craft - Gives table, enchant, brew flags'
+                        - 'cartography - autoriza o denega a los jugadores usar mesas de cartografía'
+                        - 'fletching - autoriza o denega a los jugadores usar mesas de flechero'
+                        - 'grindstone - autoriza o denega a los jugadores usar la piedra de afilar'
+                        - 'loom - autoriza o denega a los jugadores usar el telar'
+                        - 'smithing - autoriza o denega a los jugadores usar la mesa de herrería'
+                        - 'stonecutter - autoriza o denega a los jugadores usar la cortadora de piedra'
                 list:
                     Description: Listear residencias
                     Info:
