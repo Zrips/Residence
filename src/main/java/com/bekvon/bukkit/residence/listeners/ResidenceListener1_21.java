@@ -214,9 +214,7 @@ public class ResidenceListener1_21 implements Listener {
         }
         // Copper_golem has no item in hand
 
-        Material held = (event.getHand() == EquipmentSlot.OFF_HAND)
-                ? player.getInventory().getItemInOffHand().getType()
-                : player.getInventory().getItemInMainHand().getType();
+        Material held = ResidenceListener1_09.getHeldMaterial(event);
 
         // Avoid overwriting Leash Flag, Lead Shears
         if (held != Material.HONEYCOMB && !isItemTag(held, "axes"))
@@ -277,15 +275,12 @@ public class ResidenceListener1_21 implements Listener {
         if (!(entity instanceof Mob))
             return;
 
-        Player player = event.getPlayer();
-
-        Material held = event.getHand() == EquipmentSlot.OFF_HAND
-                ? player.getInventory().getItemInOffHand().getType()
-                : player.getInventory().getItemInMainHand().getType();
+        Material held = ResidenceListener1_09.getHeldMaterial(event);
 
         if (!isFeedingAnimal((Mob) entity, held))
             return;
 
+        Player player = event.getPlayer();
         if (ResAdmin.isResAdmin(player))
             return;
 
@@ -393,17 +388,14 @@ public class ResidenceListener1_21 implements Listener {
         if (!(entity instanceof Animals))
             return;
 
-        Player player = event.getPlayer();
-
-        Material held = event.getHand() == EquipmentSlot.OFF_HAND
-                ? player.getInventory().getItemInOffHand().getType()
-                : player.getInventory().getItemInMainHand().getType();
+        Material held = ResidenceListener1_09.getHeldMaterial(event);
 
         // check if held item and interacted entity match
         // if conditions match, also check if the target entity slot is Air
         if (!isEquipFitAnimal((Animals) entity, CMIMaterial.get(held)))
             return;
 
+        Player player = event.getPlayer();
         if (ResAdmin.isResAdmin(player))
             return;
 

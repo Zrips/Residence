@@ -1030,7 +1030,7 @@ public class ResidencePlayerListener implements Listener {
         case ROOTED_DIRT:
             // check Hoe interact Rooted_Dirt, Fix upstream dupe
             // bug(https://github.com/PaperMC/Paper/issues/13536)
-            return held.name().contains("_HOE");
+            return held.name().endsWith("_HOE");
         case SPAWNER:
         case TRIAL_SPAWNER:
             return held.containsCriteria(CMIMC.SPAWNEGG);
@@ -1129,24 +1129,27 @@ public class ResidencePlayerListener implements Listener {
         if (player.hasMetadata("NPC") || (flag != Flags.trample && ResAdmin.isResAdmin(player))) {
             return;
         }
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+        FlagPermissions perms;
 
         switch (flag) {
         case destroy:
             // Turtle Egg
-            if (perms.playerHas(player, Flags.destroy, true)) {
+            perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, flag, true)) {
                 return;
             }
             break;
         case pressure:
             // Pressure Plate
-            if (perms.playerHas(player, Flags.pressure, (perms.playerHas(player, Flags.use, true)))) {
+            perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, flag, (perms.playerHas(player, Flags.use, true)))) {
                 return;
             }
             break;
         case trample:
             // Farmland
-            if (perms.playerHas(player, Flags.trample, (perms.playerHas(player, Flags.build, true)))) {
+            perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, flag, (perms.playerHas(player, Flags.build, true)))) {
                 return;
             }
             break;

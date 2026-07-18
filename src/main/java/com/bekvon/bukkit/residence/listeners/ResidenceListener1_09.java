@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -19,7 +20,9 @@ import org.bukkit.event.entity.AreaEffectCloudApplyEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.entity.LingeringPotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.potion.PotionEffect;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -316,5 +319,12 @@ public class ResidenceListener1_09 implements Listener {
         }
         lm.Flag_Deny.sendMessage(player, Flags.build);
         event.setCancelled(true);
+    }
+
+    // Supported 1.9+
+    public static Material getHeldMaterial(PlayerInteractEntityEvent event) {
+        return event.getHand() == EquipmentSlot.OFF_HAND
+                ? event.getPlayer().getInventory().getItemInOffHand().getType()
+                : event.getPlayer().getInventory().getItemInMainHand().getType();
     }
 }

@@ -146,9 +146,7 @@ public class ResidenceListener1_13 implements Listener {
 
         Player player = event.getPlayer();
 
-        Material held = (event.getHand() == EquipmentSlot.OFF_HAND)
-                ? player.getInventory().getItemInOffHand().getType()
-                : player.getInventory().getItemInMainHand().getType();
+        Material held = ResidenceListener1_09.getHeldMaterial(event);
 
         if (held != Material.WATER_BUCKET)
             return;

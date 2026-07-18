@@ -250,8 +250,11 @@ public class ResidenceListener1_14 implements Listener {
 		if (plugin.isDisabledWorldListener(raidLoc.getWorld())) {
 			return;
 		}
-		if (FlagPermissions.has(raidLoc, Flags.raid, FlagCombo.OnlyFalse)) {
-			event.setCancelled(true);
-		}
+        if (FlagPermissions.has(raidLoc, Flags.raid, true)) {
+            return;
+        }
+        lm.Flag_Deny.sendMessage(event.getPlayer(), Flags.raid);
+        event.setCancelled(true);
+
 	}
 }

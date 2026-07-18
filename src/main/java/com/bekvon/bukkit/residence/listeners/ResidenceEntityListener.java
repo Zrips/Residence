@@ -124,24 +124,19 @@ public class ResidenceEntityListener implements Listener {
             if (FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
                 event.setCancelled(true);
 
-        } else if (entity instanceof Boat) {
-            if (!CMIMaterial.get(block.getType()).equals(CMIMaterial.LILY_PAD))
-                return;
+        } else if (entity instanceof Boat && CMIMaterial.get(block.getType()) == CMIMaterial.LILY_PAD) {
+            Entity rider = null;
 
-            Player riderPlayer = null;
-
-            if (Version.isCurrentEqualOrLower(Version.v1_11_R1)) {
-                Entity rider = entity.getPassenger();
-                riderPlayer = rider instanceof Player ? (Player) rider : null;
-
+            if (Version.isCurrentLower(Version.v1_11_2)) {
+                rider = entity.getPassenger();
             } else {
                 List<Entity> passengers = entity.getPassengers();
                 if (!passengers.isEmpty()) {
                     // first passenger
-                    Entity rider = passengers.get(0);
-                    riderPlayer = rider instanceof Player ? (Player) rider : null;
+                    rider = passengers.get(0);
                 }
             }
+            Player riderPlayer = rider instanceof Player ? (Player) rider : null;
 
             if (riderPlayer != null) {
                 if (ResAdmin.isResAdmin(riderPlayer))

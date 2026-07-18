@@ -73,6 +73,7 @@ import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_8_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_8_Spigot;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_9_Paper;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener26_2;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener;
 import com.bekvon.bukkit.residence.permissions.PermissionManager;
 import com.bekvon.bukkit.residence.persistance.YMLSaveHelper;
@@ -581,49 +582,58 @@ public class Residence extends JavaPlugin {
 
                 PluginManager pm = getServer().getPluginManager();
 
-                if (Version.isCurrentEqualOrHigher(Version.v1_8_R1))
-                    pm.registerEvents(new ResidenceListener1_08(), this);
-                if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
+                if (Version.isCurrentEqualOrHigher(Version.v1_8_0)) {
+                    pm.registerEvents(new ResidenceListener1_08(this), this);
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v1_9_0)) {
                     pm.registerEvents(new ResidenceListener1_09(this), this);
-                if (Version.isCurrentEqualOrHigher(Version.v1_10_R1))
-                    pm.registerEvents(new ResidenceListener1_10(), this);
-                if (Version.isCurrentEqualOrHigher(Version.v1_12_R1))
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v1_10_0)) {
+                    pm.registerEvents(new ResidenceListener1_10(this), this);
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v1_12_0)) {
                     pm.registerEvents(new ResidenceListener1_12(this), this);
-                if (Version.isCurrentEqualOrHigher(Version.v1_13_R1))
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v1_13_0)) {
                     pm.registerEvents(new ResidenceListener1_13(this), this);
-                if (Version.isCurrentEqualOrHigher(Version.v1_14_R1))
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v1_14_0)) {
                     pm.registerEvents(new ResidenceListener1_14(this), this);
-                if (Version.isCurrentEqualOrHigher(Version.v1_15_R1))
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v1_15_0)) {
                     pm.registerEvents(new ResidenceListener1_15(this), this);
-                if (Version.isCurrentEqualOrHigher(Version.v1_16_R1))
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v1_16_0)) {
                     pm.registerEvents(new ResidenceListener1_16(this), this);
-
-                if ((Version.isCurrentEqualOrHigher(Version.v1_16_R3) && Version.isCurrentSubEqualOrHigher(5)) || Version.isCurrentEqualOrHigher(Version.v1_17_R1)) {
-                    if (Version.isPaperBranch())
-                        pm.registerEvents(new ResidenceListener1_16_5_Paper(this), this);
                 }
-
-                if (Version.isCurrentEqualOrHigher(Version.v1_17_R1))
+                if (Version.isCurrentEqualOrHigher(Version.v1_16_5) && Version.isPaperBranch()) {
+                    pm.registerEvents(new ResidenceListener1_16_5_Paper(this), this);
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v1_17_0)) {
                     pm.registerEvents(new ResidenceListener1_17(this), this);
-                if (Version.isCurrentEqualOrHigher(Version.v1_19_R1))
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v1_19_0)) {
                     pm.registerEvents(new ResidenceListener1_19(this), this);
-                if (Version.isCurrentEqualOrHigher(Version.v1_20_R1))
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v1_20_0)) {
                     pm.registerEvents(new ResidenceListener1_20(this), this);
-                if (Version.isCurrentEqualOrHigher(Version.v1_21_R1))
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v1_21_0)) {
                     pm.registerEvents(new ResidenceListener1_21(this), this);
-
-                if ((Version.isCurrentEqualOrHigher(Version.v1_21_R5) && Version.isCurrentSubEqualOrHigher(8)) || Version.isCurrentEqualOrHigher(Version.v1_21_R6)) {
-                    if (Version.isPaperBranch())
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v1_21_8)) {
+                    if (Version.isPaperBranch()) {
                         pm.registerEvents(new ResidenceListener1_21_8_Paper(this), this);
-                    else
+                    } else {
                         pm.registerEvents(new ResidenceListener1_21_8_Spigot(this), this);
+                    }
                 }
-
-                if (Version.isCurrentEqualOrHigher(Version.v1_21_R6)) {
-                    if (Version.isPaperBranch())
-                        pm.registerEvents(new ResidenceListener1_21_9_Paper(this), this);
+                if (Version.isCurrentEqualOrHigher(Version.v1_21_9) && Version.isPaperBranch()) {
+                    pm.registerEvents(new ResidenceListener1_21_9_Paper(this), this);
                 }
-
+                if (Version.isCurrentEqualOrHigher(Version.v26_2_0)) {
+                    pm.registerEvents(new ResidenceListener26_2(this), this);
+                }
                 pm.registerEvents(new ResidenceBlockListener(this), this);
                 pm.registerEvents(getPlayerListener(), this);
                 pm.registerEvents(new ResidenceEntityListener(this), this);
