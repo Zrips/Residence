@@ -190,6 +190,8 @@ Language:
     resetOwnerFlags: '&e已重設領地 &6%1 &e的擁有者權限'
     resetAll: '&e已重設領地 &6%1 &e的權限'
     resetAllOwnerFlags: '&e已重設領地 &6%1 &e的擁有者權限'
+    MirrorNoFlags: '&c&6%1 &c在領地 &6%2 &c內沒有任何權限。'
+    MirrorApply: '&e已將 &6%2 &e的 &6%1 &e個權限套用到 &6%3&e。'
   Bank:
     NoAccess: '&c你沒有存取銀行的權限。'
     Name: ' &e銀行：&6%1'
@@ -1538,6 +1540,13 @@ CommandHelp:
           - '&e用法：&6/res mirror [來源領地名稱] [目標領地名稱]'
           - 將權限從一個領地鏡像到另一個，你必須是兩者的擁有者或管理員才能執行此操作。
           Description: 鏡像權限
+        pmirror:
+          Info:
+          - '&e用法：&6/res pmirror [領地名稱] [來源玩家] [目標玩家]'
+          - 將某位玩家的權限鏡像到同一領地內的另一位玩家。
+          - 站在領地內時可省略領地名稱。
+          - 你必須是領地擁有者或管理員才能執行此操作。
+          Description: 鏡像玩家權限
         padd:
           Info:
           - '&e用法：&6/res padd <領地名稱> [玩家名稱]'
