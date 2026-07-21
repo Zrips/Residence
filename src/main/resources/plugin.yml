@@ -213,6 +213,9 @@ permissions:
   residence.command.mirror:
     description: Allows to access particular command
     default: true
+  residence.command.pmirror:
+    description: Allows to access particular command
+    default: true
   residence.command.padd:
     description: Allows to access particular command
     default: true

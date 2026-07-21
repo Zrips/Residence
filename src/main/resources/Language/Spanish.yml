@@ -519,6 +519,11 @@ CommandHelp: #this is just a holder node, that holds the entire help
                     Info:
                         - 'Uso: /res mirror [residencia fuente] [residencia objetiva]'
                         - 'Copia los flags de una residencia a otra. Tienes que ser el propietario de las dos residencias o admin para esto.'
+                pmirror:
+                    Description: Copiar los flags de un jugador.
+                    Info:
+                        - 'Uso: /res pmirror [residencia] [jugador fuente] [jugador objetivo]'
+                        - 'Copia los flags de un jugador a otro jugador en la misma residencia. Puedes omitir el nombre de la residencia si estás dentro. Tienes que ser el propietario de la residencia o admin para esto.'
                 market:
                     Description: Comprar, vender o alquilar residencias
                     Info:

@@ -197,6 +197,8 @@ Language:
     PRemoved: '&e已从领地 &6%2 &e中移除玩家 &6%3 &e的权限标识（&6%1&e）'
     resetOwnerFlags: '&e已重置领地 &6%1 &e的所有者权限'
     resetAllOwnerFlags: '&e已重置所有 &6%1 &e领地的所有者权限'
+    MirrorNoFlags: '&c&6%1 &c在领地 &6%2 &c内没有任何权限标识。'
+    MirrorApply: '&e已将 &6%2 &e的 &6%1 &e个权限标识克隆给 &6%3&e。'
   Bank:
     NoAccess: '&c你没有权限使用银行。'
     Name: ' &e银行: &6%1'
@@ -953,6 +955,13 @@ CommandHelp:
           Info:
           - '&e用法: &6/res mirror [来源领地] [目标领地]'
           - 将 [来源领地] 的权限设置克隆到到 [目标领地]。你必须是两个领地的所有者或管理员才能这样做
+        pmirror:
+          Description: 玩家权限克隆
+          Info:
+          - '&e用法: &6/res pmirror [领地] [来源玩家] [目标玩家]'
+          - 将某个玩家的权限设置克隆到同一领地内的另一个玩家。
+          - 站在领地内时可省略领地名称。
+          - 你必须是领地所有者或管理员才能这样做
         shop:
           Description: 管理领地商店
           Info:
