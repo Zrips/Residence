@@ -27,6 +27,7 @@ import xyz.jpenilla.squaremap.api.Registry;
 import xyz.jpenilla.squaremap.api.SimpleLayerProvider;
 import xyz.jpenilla.squaremap.api.Squaremap;
 import xyz.jpenilla.squaremap.api.SquaremapProvider;
+import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.api.marker.Marker;
 import xyz.jpenilla.squaremap.api.marker.MarkerOptions;
 import xyz.jpenilla.squaremap.api.marker.Rectangle;
@@ -36,7 +37,7 @@ public class SquareWebMap extends WebMap {
     private static final Key LAYER_KEY = Key.of("residence.residences");
     private static final String LAYER_LABEL = "Residence";
 
-    private final Map<MapWorld, SimpleLayerProvider> providers = new HashMap<MapWorld, SimpleLayerProvider>();
+    private final Map<WorldIdentifier, ProviderRegistration> providers = new HashMap<WorldIdentifier, ProviderRegistration>();
     private Squaremap api;
 
     @Override
@@ -129,20 +130,32 @@ public class SquareWebMap extends WebMap {
         if (mapWorld == null)
             return null;
 
-        SimpleLayerProvider provider = providers.get(mapWorld);
-        if (provider != null)
-            return provider;
-
+        WorldIdentifier identifier = mapWorld.identifier();
         Registry<LayerProvider> registry = mapWorld.layerRegistry();
+        ProviderRegistration registration = providers.get(identifier);
+
+        if (registration != null) {
+            if (registration.registry == registry
+                    && registry.hasEntry(LAYER_KEY)
+                    && registry.get(LAYER_KEY) == registration.provider)
+                return registration.provider;
+
+            if (registration.registry.hasEntry(LAYER_KEY)
+                    && registration.registry.get(LAYER_KEY) == registration.provider)
+                registration.registry.unregister(LAYER_KEY);
+
+            providers.remove(identifier);
+        }
+
         if (registry.hasEntry(LAYER_KEY))
             registry.unregister(LAYER_KEY);
 
-        provider = SimpleLayerProvider.builder(LAYER_LABEL)
+        SimpleLayerProvider provider = SimpleLayerProvider.builder(LAYER_LABEL)
                 .defaultHidden(getSettings().isHideByDefault())
                 .build();
         registry.register(LAYER_KEY, provider);
 
-        providers.put(mapWorld, provider);
+        providers.put(identifier, new ProviderRegistration(registry, provider));
         return provider;
     }
 
@@ -190,11 +203,22 @@ public class SquareWebMap extends WebMap {
         if (api == null)
             return;
 
-        for (Entry<MapWorld, SimpleLayerProvider> entry : providers.entrySet()) {
-            Registry<LayerProvider> registry = entry.getKey().layerRegistry();
-            if (registry.hasEntry(LAYER_KEY) && registry.get(LAYER_KEY) == entry.getValue())
-                registry.unregister(LAYER_KEY);
+        for (ProviderRegistration registration : providers.values()) {
+            if (registration.registry.hasEntry(LAYER_KEY)
+                    && registration.registry.get(LAYER_KEY) == registration.provider)
+                registration.registry.unregister(LAYER_KEY);
         }
         providers.clear();
+        api = null;
+    }
+
+    private static final class ProviderRegistration {
+        private final Registry<LayerProvider> registry;
+        private final SimpleLayerProvider provider;
+
+        private ProviderRegistration(Registry<LayerProvider> registry, SimpleLayerProvider provider) {
+            this.registry = registry;
+            this.provider = provider;
+        }
     }
 }
