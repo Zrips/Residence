@@ -41,6 +41,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -56,6 +57,8 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
@@ -115,6 +118,8 @@ public class ResidencePlayerListener implements Listener {
     private Residence plugin;
 
     private PlayerLocationChecker locationChecker = new PlayerLocationChecker();
+
+    private final static String ResidenceFlyState = "ResidenceFlyState";
 
     public ResidencePlayerListener(Residence plugin) {
         this.plugin = plugin;
@@ -2026,7 +2031,13 @@ public class ResidencePlayerListener implements Listener {
     }
 
     private void fly(Player player, boolean state, ClaimedResidence oldRes) {
-        if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE)
+        fly(player, state, oldRes, true);
+    }
+
+    private void fly(Player player, boolean state, ClaimedResidence oldRes, boolean checkGameMode) {
+        List<?> flyState = Arrays.asList(state, oldRes);
+        player.setMetadata(ResidenceFlyState, new FixedMetadataValue(plugin, flyState));
+        if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE && checkGameMode)
             return;
         if (ResPerm.bypass_fly.hasPermission(player, 10000L))
             return;
@@ -2749,6 +2760,22 @@ public class ResidencePlayerListener implements Listener {
             if (!res.containsLoc(ent.getLocation()))
                 continue;
             ent.remove();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onGameModeChange(PlayerGameModeChangeEvent event) {
+        Player player = event.getPlayer();
+        GameMode newGameMode = event.getNewGameMode();
+        if (newGameMode == GameMode.SURVIVAL || newGameMode == GameMode.ADVENTURE) {
+            List<MetadataValue> metaList = player.getMetadata(ResidenceFlyState);
+            for (MetadataValue meta : metaList) {
+                if (meta.getOwningPlugin().equals(plugin)) {
+                    List<?> flyState = (List) meta.value();
+                    fly(player, (boolean) flyState.get(0), (ClaimedResidence) flyState.get(1), false);
+                    return;
+                }
+            }
         }
     }
 
