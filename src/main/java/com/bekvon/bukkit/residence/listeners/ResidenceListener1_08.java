@@ -22,6 +22,13 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 public class ResidenceListener1_08 implements Listener {
+
+    private Residence plugin;
+
+    public ResidenceListener1_08(Residence plugin) {
+        this.plugin = plugin;
+    }
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractAtArmoStand(PlayerInteractAtEntityEvent event) {
         // Disabling listener if flag disabled globally
@@ -30,7 +37,7 @@ public class ResidenceListener1_08 implements Listener {
 
         Player player = event.getPlayer();
         // disabling event on world
-        if (Residence.getInstance().isDisabledWorldListener(player.getWorld()))
+        if (plugin.isDisabledWorldListener(player.getWorld()))
             return;
 
         Entity ent = event.getRightClicked();
@@ -56,7 +63,7 @@ public class ResidenceListener1_08 implements Listener {
 
         Entity entity = event.getEntity();
         // disabling event on world
-        if (Residence.getInstance().isDisabledWorldListener(entity.getWorld()))
+        if (plugin.isDisabledWorldListener(entity.getWorld()))
             return;
 
         Player player = event.getPlayer();
@@ -81,7 +88,7 @@ public class ResidenceListener1_08 implements Listener {
 
         Location loc = event.getBlock().getLocation();
         // disabling event on world
-        if (Residence.getInstance().isDisabledWorldListener(loc.getWorld()))
+        if (plugin.isDisabledWorldListener(loc.getWorld()))
             return;
 
         FlagPermissions world = FlagPermissions.getPerms(loc.getWorld());

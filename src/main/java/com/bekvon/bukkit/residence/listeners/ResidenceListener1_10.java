@@ -12,14 +12,20 @@ import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 
 public class ResidenceListener1_10 implements Listener {
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 
+    private Residence plugin;
+
+    public ResidenceListener1_10(Residence plugin) {
+        this.plugin = plugin;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityHotFloorDamage(EntityDamageEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.hotfloor.isGlobalyEnabled())
             return;
         // disabling event on world
-        if (Residence.getInstance().isDisabledWorldListener(event.getEntity().getWorld()))
+        if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
             return;
 
         if (event.getCause() != DamageCause.HOT_FLOOR)
