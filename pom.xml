@@ -82,6 +82,13 @@
 		    <version>RC-37</version>
 		    <scope>provided</scope>
 		</dependency>		
+		<!-- squaremap -->
+		<dependency>
+		  <groupId>xyz.jpenilla</groupId>
+		  <artifactId>squaremap-api</artifactId>
+		  <version>1.3.14</version>
+		  <scope>provided</scope>
+		</dependency>
 		<!-- Pl3xMap -->
 		<dependency>
 		  <groupId>maven.modrinth</groupId>
