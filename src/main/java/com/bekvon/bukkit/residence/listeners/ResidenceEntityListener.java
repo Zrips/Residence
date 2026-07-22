@@ -18,7 +18,6 @@ import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
-import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
@@ -26,7 +25,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Slime;
 import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.ThrownPotion;
@@ -251,15 +249,31 @@ public class ResidenceEntityListener implements Listener {
 
     }
 
-    public static boolean isMonster(Entity ent) {
-        if (ent == null) {
+    public static boolean isMonster(Entity entity) {
+        if (entity == null) {
             return false;
         }
-        CMIEntityType type = CMIEntityType.get(ent);
-        return (ent instanceof Monster ||
-                ent instanceof Slime ||
-                ent instanceof Ghast ||
-                type == CMIEntityType.SHULKER);
+        if (Version.isCurrentEqualOrHigher(Version.v1_19_3)) {
+            return entity instanceof org.bukkit.entity.Enemy;
+        }
+        if (entity instanceof Monster) {
+            return true;
+        }
+        CMIEntityType type = CMIEntityType.get(entity);
+        if (type != null) {
+            switch (type) {
+            case ENDER_DRAGON:
+            case GHAST:
+            case HOGLIN:
+            case PHANTOM:
+            case SHULKER:
+            case SLIME:
+                return true;
+            default:
+                return false;
+            }
+        }
+        return false;
     }
 
     private static boolean isTamed(Entity ent) {
