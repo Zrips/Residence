@@ -1,6 +1,10 @@
 package com.bekvon.bukkit.residence.Placeholders;
 
+import java.util.UUID;
+
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.Placeholders.Placeholder.CMIPlaceHolders;
@@ -41,12 +45,20 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, String identifier) {
+    public String onPlaceholderRequest(Player player, @NotNull String identifier) {
+        return process(player == null ? null : player.getUniqueId(), identifier);
+    }
 
+    @Override
+    public String onRequest(OfflinePlayer player, @NotNull String identifier) {
+        return process(player == null ? null : player.getUniqueId(), identifier);
+    }
+
+    private String process(UUID uuid, String identifier) {
         CMIPlaceHolders placeHolder = CMIPlaceHolders.getByName("residence_" + identifier);
         if (placeHolder == null) {
             return null;
         }
-        return plugin.getPlaceholderAPIManager().getValue(player, placeHolder, "residence_" + identifier);
+        return plugin.getPlaceholderAPIManager().getValue(uuid, placeHolder, "residence_" + identifier);
     }
 }

@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -69,7 +70,7 @@ public class Placeholder {
         residence_user_current_rentdays,
         residence_user_current_rentends,
         residence_user_current_flag_$1("Get flags from current residence by flag name", "flagName"),
-        
+
         ;
 
         static {
@@ -364,16 +365,23 @@ public class Placeholder {
     }
 
     public String getValue(Player player, CMIPlaceHolders placeHolder, String value) {
+        return getValue(player != null ? player.getUniqueId() : null, placeHolder, value);
+    }
 
-        if (placeHolder == null)
+    public String getValue(UUID uuid, CMIPlaceHolders placeHolder, String value) {
+
+        if (placeHolder == null || uuid == null)
             return null;
 
-        Object cached = placeHolder.getCachedValue(player != null ? player.getUniqueId() : null);
+        Player player = Bukkit.getPlayer(uuid);
+
+        Object cached = placeHolder.getCachedValue(uuid);
+
         if (cached != null) {
             return (String) cached;
         }
 
-        ResidencePlayer user = ResidencePlayer.get(player);
+        ResidencePlayer user = ResidencePlayer.get(uuid);
 
         String result = null;
 
@@ -514,7 +522,7 @@ public class Placeholder {
                         values = placeHolder.getComplexValues(value);
                         if (values.isEmpty())
                             return "";
-                         res = plugin.getResidenceManager().getByName(values.get(0));                         
+                        res = plugin.getResidenceManager().getByName(values.get(0));
                         if (res == null)
                             return "";
                         return res == null ? "" : res.getName();
