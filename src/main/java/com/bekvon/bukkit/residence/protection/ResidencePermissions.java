@@ -92,6 +92,8 @@ public class ResidencePermissions extends FlagPermissions {
 
     @Override
     public boolean playerHas(Player player, Flags flag, FlagCombo f) {
+        if (player == null)
+            return false;
         return playerHas(player.getUniqueId(), flag, f);
     }
 
