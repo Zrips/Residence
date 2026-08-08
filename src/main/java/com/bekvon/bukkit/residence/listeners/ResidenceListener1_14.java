@@ -35,6 +35,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
+import org.jetbrains.annotations.NotNull;
 
 public class ResidenceListener1_14 implements Listener {
 
@@ -139,23 +140,27 @@ public class ResidenceListener1_14 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onProjectileHitBell(ProjectileHitEvent event) {
-
-        Block block = event.getHitBlock();
-        if (block == null || block.getType() != Material.BELL) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.use.isGlobalyEnabled()) {
             return;
         }
-        if (shouldBlockProjectileHit(block, event.getEntity())) {
+        Block block = event.getHitBlock();
+        if (block == null) {
+            return;
+        }
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld())) {
+            return;
+        }
+        if (block.getType() != Material.BELL) {
+            return;
+        }
+        if (shouldDenyProjectileHit(block, event.getEntity(), Flags.use)) {
             event.setCancelled(true);
         }
-
     }
 
-    public static boolean shouldBlockProjectileHit(Block block, Projectile projectile) {
-
-        Flags flag = FlagPermissions.checkBlockPhysicalFlag(block);
-        if (flag == null) {
-            return false;
-        }
+    public static boolean shouldDenyProjectileHit(@NotNull Block block, @NotNull Projectile projectile, @NotNull Flags flag) {
         Player player = Utils.potentialProjectileToPlayer(projectile);
         if (player != null) {
 

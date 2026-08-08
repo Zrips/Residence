@@ -1,23 +1,23 @@
 package com.bekvon.bukkit.residence.listeners;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.LightningStrike;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.weather.LightningStrikeEvent;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
-import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
+import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Version.Version;
 
@@ -30,38 +30,32 @@ public class ResidenceListener1_16 implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onLightningStrikeEvent(LightningStrikeEvent event) {
-
-        if (event.getCause() != LightningStrikeEvent.Cause.TRIDENT) {
+    public void onLightningTransformAnimal(EntityTransformEvent event) {
+        // Paper 1.16.5+ uses EntityZapEvent for more detailed handling
+        if (Version.isPaperBranch() && Version.isCurrentEqualOrHigher(Version.v1_16_5)) {
             return;
         }
-        if (shouldBlockLightning(event.getLightning(), event.getLightning().getLocation())) {
-            event.setCancelled(true);
-        }
-
-    }
-
-    public static boolean shouldBlockLightning(LightningStrike lightning, Location entLoc) {
         // Disabling listener if flag disabled globally
         if (!Flags.animalkilling.isGlobalyEnabled()) {
-            return false;
+            return;
         }
+        Entity entity = event.getEntity();
         // disabling event on world
-        if (Residence.getInstance().isDisabledWorldListener(lightning.getWorld())) {
-            return false;
+        if (plugin.isDisabledWorldListener(entity.getWorld())) {
+            return;
         }
-        Player player = Version.isCurrentEqualOrHigher(Version.v1_20_R2)
-                ? lightning.getCausingPlayer()
-                : null;
+        if (event.getTransformReason() != EntityTransformEvent.TransformReason.LIGHTNING) {
+            return;
+        }
+        if (!(entity instanceof LivingEntity) || !Utils.isAnimal(entity)) {
+            return;
+        }
+        if (FlagPermissions.has(entity.getLocation(), Flags.animalkilling, true)) {
+            return;
+        }
 
-        if (player != null) {
-            if (ResAdmin.isResAdmin(player)) {
-                return false;
-            }
-            return FlagPermissions.has(entLoc, player, Flags.animalkilling, FlagCombo.OnlyFalse);
-        } else {
-            return FlagPermissions.has(entLoc, Flags.animalkilling, FlagCombo.OnlyFalse);
-        }
+        event.setCancelled(true);
+
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

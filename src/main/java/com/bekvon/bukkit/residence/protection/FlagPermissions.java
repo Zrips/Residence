@@ -373,17 +373,9 @@ public class FlagPermissions {
         CMIMaterial mat = CMIMaterial.get(block.getType());
         Flags flag = null;
         switch (mat) {
-        case BELL:
-        case TARGET:
-            flag = Flags.use;
-            break;
         case FARMLAND:
             flag = Flags.trample;
             break;
-        case CHORUS_FLOWER:
-        case DECORATED_POT:
-        case POINTED_DRIPSTONE:
-        case TNT:
         case TURTLE_EGG:
             flag = Flags.destroy;
             break;

@@ -59,18 +59,30 @@ public class ResidenceListener1_20 implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onProjectileChangeBlock(EntityChangeBlockEvent event) {
+        // Disabling listener if flag disabled globally
+        if (!Flags.destroy.isGlobalyEnabled()) {
+            return;
+        }
+        Block block = event.getBlock();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld())) {
+            return;
+        }
         // Only valid for versions 1.20+
+        // Projectile-triggered EntityChangeBlockEvent always means breaking a block.
         Entity entity = event.getEntity();
         if (!(entity instanceof Projectile)) {
             return;
         }
         // Projectile hit chorus_flower/decorated_pot
-        // Trident hit pointed_dripstone
+        // Trident hit pointed_dripstone/sulfur_spike
         // Flame_Arrow hit tnt
-        if (ResidenceListener1_14.shouldBlockProjectileHit(event.getBlock(), (Projectile) entity)) {
+
+        // Now uses Flags.destroy to decide the result (not block type).
+        // Future blocks are auto-compatible — no manual fix required.
+        if (ResidenceListener1_14.shouldDenyProjectileHit(block, (Projectile) entity, Flags.destroy)) {
             event.setCancelled(true);
         }
-
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
