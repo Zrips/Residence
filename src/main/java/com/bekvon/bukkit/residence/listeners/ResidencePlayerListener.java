@@ -26,6 +26,7 @@ import org.bukkit.entity.Hanging;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -1233,7 +1234,7 @@ public class ResidencePlayerListener implements Listener {
         if (heldItem != plugin.getConfigManager().getInfoTool())
             return;
 
-        if (this.isContainer(block.getType(), block))
+        if (this.isContainer(block.getType()))
             return;
         if (player.hasMetadata("NPC"))
             return;
@@ -1259,12 +1260,12 @@ public class ResidencePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
-    private boolean isContainer(Material mat, Block block) {
+    private boolean isContainer(Material mat) {
         return FlagPermissions.getMaterialUseFlagList().containsKey(mat) && FlagPermissions.getMaterialUseFlagList().get(mat).equals(Flags.container)
-                || plugin.getConfigManager().getCustomContainers().contains(block.getType());
+                || plugin.getConfigManager().getCustomContainers().contains(mat);
     }
 
-    public static boolean isCanUseEntity_BothClick(Material mat, Block block) {
+    public static boolean isCanUseEntity_BothClick(Material mat) {
         CMIMaterial cmat = CMIMaterial.get(mat);
 
         switch (cmat) {
@@ -1272,11 +1273,11 @@ public class ResidencePlayerListener implements Listener {
         case DRAGON_EGG:
             return true;
         default:
-            return Residence.getInstance().getConfigManager().getCustomBothClick().contains(block.getType());
+            return Residence.getInstance().getConfigManager().getCustomBothClick().contains(mat);
         }
     }
 
-    private boolean isCanUseEntity_RClickOnly(Material mat, Block block) {
+    private boolean isCanUseEntity_RClickOnly(Material mat) {
         CMIMaterial cmat = CMIMaterial.get(mat);
 
         switch (cmat) {
@@ -1331,14 +1332,14 @@ public class ResidencePlayerListener implements Listener {
         if (mat.name().equals("DAYLIGHT_DETECTOR_INVERTED"))
             return true;
 
-        return plugin.getConfigManager().getCustomRightClick().contains(block.getType());
+        return plugin.getConfigManager().getCustomRightClick().contains(mat);
     }
 
-    private boolean isCanUseEntity(Material mat, Block block) {
-        return isCanUseEntity_BothClick(mat, block) || isCanUseEntity_RClickOnly(mat, block);
+    private boolean isCanUseEntity(Material mat) {
+        return isCanUseEntity_BothClick(mat) || isCanUseEntity_RClickOnly(mat);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST)// Do not use (ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
 
         Block block = event.getClickedBlock();
@@ -1355,19 +1356,24 @@ public class ResidencePlayerListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
 
-        CMIMaterial heldItem = CMIMaterial.get(event.getItem());
-        // Check held Material Blacklist
-        if (!heldItem.isNone() && heldItem.isValidItem()
-                && !plugin.getItemManager().isAllowed(heldItem.getMaterial(), plugin.getPlayerManager().getResidencePlayer(player).getGroup(), player.getWorld()
-                        .getName())) {
-            lm.General_ItemBlacklisted.sendMessage(player);
-            event.setCancelled(true);
+        if (event.useItemInHand() != Result.DENY ) {
+            CMIMaterial heldItem = CMIMaterial.get(event.getItem());
+            // Check held Material Blacklist
+            if (!heldItem.isNone() && heldItem.isValidItem() && !plugin.getItemManager().isAllowed(
+                    heldItem.getMaterial(),
+                    plugin.getPlayerManager().getResidencePlayer(player).getGroup(),
+                    player.getWorld().getName())) {
+                lm.General_ItemBlacklisted.sendMessage(player);
+                event.setCancelled(true);
+                return;
+            }
+        }
+        if (event.useInteractedBlock() == Result.DENY) {
             return;
         }
-
         Material mat = block.getType();
 
-        if (!isContainer(mat, block) && !isCanUseEntity(mat, block))
+        if (!isContainer(mat) && !isCanUseEntity(mat))
             return;
 
         FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
@@ -1417,7 +1423,7 @@ public class ResidencePlayerListener implements Listener {
                         return;
                     }
 
-                    if (isCanUseEntity_BothClick(mat, block)) {
+                    if (isCanUseEntity_BothClick(mat)) {
 
                         if (res != null && res.getRaid().isUnderRaid() && res.getRaid().isAttacker(player)) {
                             break main;
@@ -1440,13 +1446,14 @@ public class ResidencePlayerListener implements Listener {
             }
         }
         // Restrict custom both-click block
-        if (plugin.getConfigManager().getCustomBothClick().contains(mat) && !hasUse) {
+        if (!hasUse && plugin.getConfigManager().getCustomBothClick().contains(mat)) {
             event.setCancelled(true);
             lm.Flag_Deny.sendMessage(player, Flags.use);
             return;
         }
         // Restrict custom right-click block
-        if (plugin.getConfigManager().getCustomRightClick().contains(mat) && event.getAction() == Action.RIGHT_CLICK_BLOCK && !hasUse) {
+        if (!hasUse && event.getAction() == Action.RIGHT_CLICK_BLOCK
+                && plugin.getConfigManager().getCustomRightClick().contains(mat)) {
             event.setCancelled(true);
             lm.Flag_Deny.sendMessage(player, Flags.use);
         }
