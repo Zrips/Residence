@@ -51,7 +51,7 @@ public class setallfor implements cmd {
         int count = 0;
 
         for (ClaimedResidence one : resPlayer.getResList()) {
-            if (one.getPermissions().setFlag(sender, flag, state, true, false))
+            if (one.getPermissions().setFlag(sender, flag, state, resadmin, false))
                 count++;
         }
 

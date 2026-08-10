@@ -49,7 +49,7 @@ public class setall implements cmd {
         for (World oneW : Bukkit.getWorlds()) {
             for (ClaimedResidence one : plugin.getResidenceManager().getFromAllResidences(true, false, oneW)) {
                 count2++;
-                if (one.getPermissions().setFlag(sender, flag, state, true, false))
+                if (one.getPermissions().setFlag(sender, flag, state, resadmin, false))
                     count++;
             }
         }
