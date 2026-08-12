@@ -32,8 +32,11 @@ public class ResidenceListener1_16 implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLightningTransformAnimal(EntityTransformEvent event) {
         // Paper 1.16.5+ uses EntityZapEvent for more detailed handling
-        if (Version.isPaperBranch() && Version.isCurrentEqualOrHigher(Version.v1_16_5)) {
-            return;
+        if (Version.isCurrentEqualOrHigher(Version.v1_17_0)
+                || (Version.isCurrentEqualOrHigher(Version.v1_16_R3) && Version.isCurrentSubEqualOrHigher(5))) {
+            if (Version.isPaperBranch()) {
+                return;
+            }
         }
         // Disabling listener if flag disabled globally
         if (!Flags.animalkilling.isGlobalyEnabled()) {

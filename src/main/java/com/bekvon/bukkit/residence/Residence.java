@@ -607,8 +607,10 @@ public class Residence extends JavaPlugin {
                 if (Version.isCurrentEqualOrHigher(Version.v1_16_0)) {
                     pm.registerEvents(new ResidenceListener1_16(this), this);
                 }
-                if (Version.isCurrentEqualOrHigher(Version.v1_16_5) && Version.isPaperBranch()) {
-                    pm.registerEvents(new ResidenceListener1_16_5_Paper(this), this);
+                if ((Version.isCurrentEqualOrHigher(Version.v1_16_R3) && Version.isCurrentSubEqualOrHigher(5)) || Version.isCurrentEqualOrHigher(Version.v1_17_0)) {
+                    if (Version.isPaperBranch()) {
+                        pm.registerEvents(new ResidenceListener1_16_5_Paper(this), this);
+                    }
                 }
                 if (Version.isCurrentEqualOrHigher(Version.v1_17_0)) {
                     pm.registerEvents(new ResidenceListener1_17(this), this);
@@ -622,14 +624,14 @@ public class Residence extends JavaPlugin {
                 if (Version.isCurrentEqualOrHigher(Version.v1_21_0)) {
                     pm.registerEvents(new ResidenceListener1_21(this), this);
                 }
-                if (Version.isCurrentEqualOrHigher(Version.v1_21_8)) {
+                if ((Version.isCurrentEqualOrHigher(Version.v1_21_R5) && Version.isCurrentSubEqualOrHigher(8)) || Version.isCurrentEqualOrHigher(Version.v1_21_R6)) {
                     if (Version.isPaperBranch()) {
                         pm.registerEvents(new ResidenceListener1_21_8_Paper(this), this);
                     } else {
                         pm.registerEvents(new ResidenceListener1_21_8_Spigot(this), this);
                     }
                 }
-                if (Version.isCurrentEqualOrHigher(Version.v1_21_9) && Version.isPaperBranch()) {
+                if (Version.isCurrentEqualOrHigher(Version.v1_21_R6) && Version.isPaperBranch()) {
                     pm.registerEvents(new ResidenceListener1_21_9_Paper(this), this);
                 }
                 if (Version.isCurrentEqualOrHigher(Version.v26_2_0)) {
