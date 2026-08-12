@@ -310,6 +310,9 @@ Global:
     # Allows or denys only placement of blocks, overrides the build flag
     place: true
     # Applies to: Both
+    # Allow or deny players pushing entities
+    push: true
+    # Applies to: Both
     # Allows or denys players to use pressure plates
     pressure: true
     # Applies to: Residence
@@ -518,6 +521,7 @@ Global:
     piston: PISTON
     pistonprotection: STICKY_PISTON
     place: SEA_LANTERN
+    push: COBWEB
     pressure: LIGHT_WEIGHTED_PRESSURE_PLATE
     pvp: WOODEN_SWORD
     raid: CROSSBOW
