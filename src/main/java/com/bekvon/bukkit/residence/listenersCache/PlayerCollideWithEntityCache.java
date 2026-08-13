@@ -33,12 +33,12 @@ public class PlayerCollideWithEntityCache {
 
     public static final class PlayerCollideWithEntityKey {
 
-        private final UUID playerUuid;
         private final UUID entityUuid;
+        private final UUID playerUuid;
 
-        public PlayerCollideWithEntityKey(@NotNull Player player, @NotNull Entity entity) {
-            this.playerUuid = player.getUniqueId();
+        public PlayerCollideWithEntityKey(@NotNull Entity entity, @NotNull Player player) {
             this.entityUuid = entity.getUniqueId();
+            this.playerUuid = player.getUniqueId();
         }
 
         @Override
@@ -50,13 +50,13 @@ public class PlayerCollideWithEntityCache {
                 return false;
             }
             PlayerCollideWithEntityKey other = (PlayerCollideWithEntityKey) obj;
-            return playerUuid.equals(other.playerUuid) && entityUuid.equals(other.entityUuid);
+            return entityUuid.equals(other.entityUuid) && playerUuid.equals(other.playerUuid);
         }
 
         @Override
         public int hashCode() {
-            int result =playerUuid.hashCode();
-            result = 31 * result + entityUuid.hashCode();
+            int result = entityUuid.hashCode();
+            result = 31 * result + playerUuid.hashCode();
             return result;
         }
     }
