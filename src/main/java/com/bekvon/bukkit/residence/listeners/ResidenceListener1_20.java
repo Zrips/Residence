@@ -2,9 +2,7 @@ package com.bekvon.bukkit.residence.listeners;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -55,34 +53,6 @@ public class ResidenceListener1_20 implements Listener {
         else
             lm.Flag_Deny.sendMessage(player, Flags.build);
 
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onProjectileChangeBlock(EntityChangeBlockEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.destroy.isGlobalyEnabled()) {
-            return;
-        }
-        Block block = event.getBlock();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld())) {
-            return;
-        }
-        // Only valid for versions 1.20+
-        // Projectile-triggered EntityChangeBlockEvent always means breaking a block.
-        Entity entity = event.getEntity();
-        if (!(entity instanceof Projectile)) {
-            return;
-        }
-        // Projectile hit chorus_flower/decorated_pot
-        // Trident hit pointed_dripstone/sulfur_spike
-        // Flame_Arrow hit tnt
-
-        // Now uses Flags.destroy to decide the result (not block type).
-        // Future blocks are auto-compatible — no manual fix required.
-        if (ResidenceListener1_14.shouldDenyProjectileHit(block, (Projectile) entity, Flags.destroy)) {
-            event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

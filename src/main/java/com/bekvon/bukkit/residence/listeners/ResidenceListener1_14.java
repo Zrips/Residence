@@ -10,7 +10,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -18,7 +17,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFadeEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTakeLecternBookEvent;
@@ -85,26 +83,6 @@ public class ResidenceListener1_14 implements Listener {
             return;
 
         lm.Flag_Deny.sendMessage(player, Flags.container);
-
-        event.setCancelled(true);
-
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onRavager(EntityChangeBlockEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.destroy.isGlobalyEnabled())
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
-            return;
-
-        if (event.getEntity().getType() != EntityType.RAVAGER)
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
-        if (perms.has(Flags.destroy, true))
-            return;
 
         event.setCancelled(true);
 

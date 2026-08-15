@@ -14,7 +14,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Creeper;
-import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -25,7 +24,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.Vehicle;
@@ -106,47 +104,86 @@ public class ResidenceEntityListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onEntityChangeBlockEvent(EntityChangeBlockEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.destroy.isGlobalyEnabled())
-            return;
-
+    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
         Block block = event.getBlock();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld()))
+        if (plugin.isDisabledWorldListener(block.getWorld())) {
             return;
-
-        Entity entity = event.getEntity();
-
-        if (entity instanceof Enderman || entity instanceof Silverfish) {
-            if (FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
-                event.setCancelled(true);
-
-        } else if (entity instanceof Boat && CMIMaterial.get(block.getType()) == CMIMaterial.LILY_PAD) {
-            Entity rider = null;
-
-            if (Version.isCurrentLower(Version.v1_11_2)) {
-                rider = entity.getPassenger();
-            } else {
-                List<Entity> passengers = entity.getPassengers();
-                if (!passengers.isEmpty()) {
-                    // first passenger
-                    rider = passengers.get(0);
+        }
+        CMIEntityType type = CMIEntityType.get(event.getEntityType());
+        if (type == null) {
+            return;
+        }
+        Flags flag;
+        switch (type) {
+        case ENDERMAN:
+        case RAVAGER:
+        case SILVERFISH:
+            flag = Flags.destroy;
+            break;
+        case WITHER:
+            flag = Flags.witherdestruction;
+            break;
+        default:
+            if (Flags.destroy.isGlobalyEnabled()) {
+                Entity entity = event.getEntity();
+                if (entity instanceof Boat) {
+                    if(shouldDenyBoatBreakLiyiPad(entity, block)) {
+                        event.setCancelled(true);
+                    }
+                } else if (entity instanceof Projectile) {
+                    // Projectile hit chorus_flower/decorated_pot, Trident hit pointed_dripstone/sulfur_spike, Flame_Arrow hit tnt
+                    // uses Flags.destroy to decide the result(not block type), Future blocks are auto-compatible
+                    if (ResidenceListener1_14.shouldDenyProjectileHit(block, (Projectile) entity, Flags.destroy)) {
+                        event.setCancelled(true);
+                    }
                 }
             }
-            Player riderPlayer = rider instanceof Player ? (Player) rider : null;
-
-            if (riderPlayer != null) {
-                if (ResAdmin.isResAdmin(riderPlayer))
-                    return;
-
-                if (FlagPermissions.has(block.getLocation(), riderPlayer, Flags.destroy, FlagCombo.OnlyFalse))
-                    event.setCancelled(true);
-
-            } else {
-                if (FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse))
-                    event.setCancelled(true);
+            return;
+        }
+        // Disabling listener if flag disabled globally
+        if (!flag.isGlobalyEnabled()) {
+            return;
+        }
+        switch (flag) {
+        case destroy:
+            if (FlagPermissions.has(block.getLocation(), flag, FlagCombo.OnlyFalse)) {
+                event.setCancelled(true);
             }
+            return;
+        case witherdestruction:
+            FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
+            if (!perms.has(flag, perms.has(Flags.destroy, true))) {
+                event.setCancelled(true);
+            }
+            return;
+        default:
+            return;
+        }
+    }
+
+    private boolean shouldDenyBoatBreakLiyiPad(Entity entity, Block block) {
+        if (CMIMaterial.get(block.getType()) != CMIMaterial.LILY_PAD) {
+            return false;
+        }
+        Entity rider = null;
+        if (Version.isCurrentLower(Version.v1_11_2)) {
+            rider = entity.getPassenger();
+        } else {
+            List<Entity> passengers = entity.getPassengers();
+            if (!passengers.isEmpty()) {
+                // first passenger
+                rider = passengers.get(0);
+            }
+        }
+        Player riderPlayer = rider instanceof Player ? (Player) rider : null;
+        if (riderPlayer != null) {
+            if (riderPlayer.hasMetadata("NPC") || ResAdmin.isResAdmin(riderPlayer)) {
+                return false;
+            }
+            return FlagPermissions.has(block.getLocation(), riderPlayer, Flags.destroy, FlagCombo.OnlyFalse);
+        } else {
+            return FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse);
         }
     }
 
@@ -1252,25 +1289,6 @@ public class ResidenceEntityListener implements Listener {
             return;
 
         event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onWitherBreakBlock(EntityChangeBlockEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.witherdestruction.isGlobalyEnabled())
-            return;
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
-            return;
-
-        if (event.getEntityType() != EntityType.WITHER)
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
-
-        if (!perms.has(Flags.witherdestruction, perms.has(Flags.destroy, true))) {
-            event.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
