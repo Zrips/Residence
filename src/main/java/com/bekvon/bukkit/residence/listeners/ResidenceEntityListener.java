@@ -923,13 +923,13 @@ public class ResidenceEntityListener implements Listener {
             return;
         if (plugin.isDisabledWorldListener(ent.getWorld()))
             return;
-        EntityType entity = event.getEntityType();
-        FlagPermissions perms = FlagPermissions.getPerms(ent.getLocation());
 
-        CMIEntityType type = CMIEntityType.get(entity);
+        CMIEntityType type = CMIEntityType.get(event.getEntityType());
 
         if (type == null)
             return;
+
+        FlagPermissions perms = FlagPermissions.getPerms(ent.getLocation());
 
         switch (type) {
         case CREEPER:
@@ -953,6 +953,15 @@ public class ResidenceEntityListener implements Listener {
                     event.setCancelled(true);
                     ent.remove();
                 }
+            }
+            break;
+        case ENDER_CRYSTAL:
+            // Disabling listener if flag disabled globally
+            if (!Flags.explode.isGlobalyEnabled())
+                break;
+            if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
+                event.setCancelled(true);
+                ent.remove();
             }
             break;
         case TNT:
@@ -982,10 +991,8 @@ public class ResidenceEntityListener implements Listener {
             break;
         case SMALL_FIREBALL:
         case FIREBALL:
-            // Disabling listener if flag disabled globally
-            if (!Flags.explode.isGlobalyEnabled())
-                break;
-            if (perms.has(Flags.explode, FlagCombo.OnlyFalse) || perms.has(Flags.fireball, FlagCombo.OnlyFalse)) {
+            if ((Flags.explode.isGlobalyEnabled() && perms.has(Flags.explode, FlagCombo.OnlyFalse)) ||
+                    (Flags.fireball.isGlobalyEnabled() && perms.has(Flags.fireball, FlagCombo.OnlyFalse))) {
                 event.setCancelled(true);
                 ent.remove();
             }
@@ -994,7 +1001,7 @@ public class ResidenceEntityListener implements Listener {
             // Disabling listener if flag disabled globally
             if (!Flags.explode.isGlobalyEnabled())
                 break;
-            if (perms.has(Flags.explode, FlagCombo.OnlyFalse) || perms.has(Flags.witherdestruction, FlagCombo.OnlyFalse)) {
+            if (!perms.has(Flags.explode, perms.has(Flags.witherdestruction, true))) {
                 event.setCancelled(true);
                 ent.remove();
             }
@@ -1019,7 +1026,11 @@ public class ResidenceEntityListener implements Listener {
         case WITHER:
             break;
         default:
-            if (perms.has(Flags.destroy, FlagCombo.OnlyFalse)) {
+            // Disabling listener if flag disabled globally
+            if (!Flags.explode.isGlobalyEnabled()) {
+                break;
+            }
+            if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
                 event.setCancelled(true);
                 ent.remove();
             }
@@ -1040,10 +1051,9 @@ public class ResidenceEntityListener implements Listener {
         Boolean cancel = false;
         Boolean remove = true;
         FlagPermissions perms = FlagPermissions.getPerms(loc);
-        FlagPermissions world = plugin.getWorldFlags().getPerms(loc.getWorld().getName());
 
         CMIEntityType ctype = CMIEntityType.get(event.getEntityType());
-
+        // Explosion is prohibited at the source location; cancel the event directly
         if (ent != null && ctype != null) {
 
             switch (ctype) {
@@ -1081,21 +1091,29 @@ public class ResidenceEntityListener implements Listener {
                         cancel = true;
                 }
                 break;
-            case SMALL_FIREBALL:
-            case FIREBALL:
+            case ENDER_CRYSTAL:
                 // Disabling listener if flag disabled globally
                 if (!Flags.explode.isGlobalyEnabled())
-                    return;
-                if (perms.has(Flags.explode, FlagCombo.OnlyFalse) || perms.has(Flags.fireball, FlagCombo.OnlyFalse))
+                    break;
+                if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
                     cancel = true;
+                }
+                break;
+            case SMALL_FIREBALL:
+            case FIREBALL:
+                if ((Flags.explode.isGlobalyEnabled() && perms.has(Flags.explode, FlagCombo.OnlyFalse)) ||
+                        (Flags.fireball.isGlobalyEnabled() && perms.has(Flags.fireball, FlagCombo.OnlyFalse))) {
+                    cancel = true;
+                }
                 break;
             case WITHER:
             case WITHER_SKULL:
                 // Disabling listener if flag disabled globally
                 if (!Flags.explode.isGlobalyEnabled())
                     break;
-                if (perms.has(Flags.explode, FlagCombo.OnlyFalse) || perms.has(Flags.witherdestruction, FlagCombo.OnlyFalse))
+                if (!perms.has(Flags.explode, perms.has(Flags.witherdestruction, true))) {
                     cancel = true;
+                }
                 break;
             case WIND_CHARGE:
                 // Disabling listener if flag disabled globally
@@ -1110,13 +1128,17 @@ public class ResidenceEntityListener implements Listener {
                 remove = false;
                 break;
             default:
-                if (!perms.has(Flags.destroy, world.has(Flags.destroy, true))) {
+                // Disabling listener if flag disabled globally
+                if (!Flags.explode.isGlobalyEnabled()) {
+                    break;
+                }
+                if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
                     cancel = true;
                     remove = false;
                 }
                 break;
             }
-        } else if (!perms.has(Flags.destroy, world.has(Flags.destroy, true))) {
+        } else if (Flags.explode.isGlobalyEnabled() && !perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
             cancel = true;
         }
 
@@ -1128,7 +1150,7 @@ public class ResidenceEntityListener implements Listener {
             }
             return;
         }
-
+        // Source allows explosion, so check each affected block for destruction
         List<Block> preserve = new ArrayList<Block>();
         for (Block block : event.blockList()) {
             FlagPermissions blockperms = FlagPermissions.getPerms(block.getLocation());
@@ -1170,42 +1192,40 @@ public class ResidenceEntityListener implements Listener {
                     }
                     continue;
                 case ENDER_DRAGON:
-                    // Disabling listener if flag disabled globally
-                    if (!Flags.dragongrief.isGlobalyEnabled())
-                        break;
-                    if (blockperms.has(Flags.dragongrief, FlagCombo.OnlyFalse))
+                    if (Flags.dragongrief.isGlobalyEnabled() && blockperms.has(Flags.dragongrief, FlagCombo.OnlyFalse)) {
                         preserve.add(block);
-                    break;
+                    }
+                    continue;
                 case ENDER_CRYSTAL:
-                    // Disabling listener if flag disabled globally
-                    if (!Flags.explode.isGlobalyEnabled())
-                        continue;
-                    if (blockperms.has(Flags.explode, FlagCombo.OnlyFalse))
+                    if ((Flags.explode.isGlobalyEnabled() && blockperms.has(Flags.explode, FlagCombo.OnlyFalse)) ||
+                            (Flags.destroy.isGlobalyEnabled() && blockperms.has(Flags.destroy, FlagCombo.OnlyFalse))) {
                         preserve.add(block);
+                    }
                     continue;
                 case SMALL_FIREBALL:
                 case FIREBALL:
-                    // Disabling listener if flag disabled globally
-                    if (!Flags.explode.isGlobalyEnabled())
-                        continue;
-                    if (blockperms.has(Flags.explode, FlagCombo.OnlyFalse) || perms.has(Flags.fireball, FlagCombo.OnlyFalse))
+                    if ((Flags.explode.isGlobalyEnabled() && blockperms.has(Flags.explode, FlagCombo.OnlyFalse)) ||
+                            (Flags.fireball.isGlobalyEnabled() && blockperms.has(Flags.fireball, FlagCombo.OnlyFalse))) {
                         preserve.add(block);
+                    }
                     continue;
                 case WITHER:
                 case WITHER_SKULL:
-                    // Disabling listener if flag disabled globally
-                    if (!Flags.explode.isGlobalyEnabled())
-                        break;
-                    if (blockperms.has(Flags.explode, FlagCombo.OnlyFalse) || blockperms.has(Flags.witherdestruction, FlagCombo.OnlyFalse))
+                    if ((Flags.witherdestruction.isGlobalyEnabled() && !blockperms.has(Flags.witherdestruction, blockperms.has(Flags.destroy, true)))
+                            || (Flags.explode.isGlobalyEnabled() && blockperms.has(Flags.explode, FlagCombo.OnlyFalse))) {
                         preserve.add(block);
-                    break;
+                    }
+                    continue;
                 default:
-                    if (blockperms.has(Flags.destroy, FlagCombo.OnlyFalse) || blockperms.has(Flags.explode, FlagCombo.OnlyFalse))
+                    if ((Flags.destroy.isGlobalyEnabled() && blockperms.has(Flags.destroy, FlagCombo.OnlyFalse)) ||
+                            (Flags.explode.isGlobalyEnabled() && blockperms.has(Flags.explode, FlagCombo.OnlyFalse))) {
                         preserve.add(block);
+                    }
                     continue;
                 }
             } else {
-                if (!blockperms.has(Flags.destroy, world.has(Flags.destroy, true))) {
+                if ((Flags.destroy.isGlobalyEnabled() && blockperms.has(Flags.destroy, FlagCombo.OnlyFalse)) ||
+                        (Flags.explode.isGlobalyEnabled() && blockperms.has(Flags.explode, FlagCombo.OnlyFalse))) {
                     preserve.add(block);
                 }
             }
@@ -1239,19 +1259,18 @@ public class ResidenceEntityListener implements Listener {
         // Disabling listener if flag disabled globally
         if (!Flags.witherdestruction.isGlobalyEnabled())
             return;
-
-        Entity ent = event.getEntity();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(ent.getWorld()))
+        if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
             return;
 
-        if (ent.getType() != EntityType.WITHER)
+        if (event.getEntityType() != EntityType.WITHER)
             return;
 
-        if (FlagPermissions.has(event.getBlock().getLocation(), Flags.witherdestruction, true))
-            return;
+        FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
 
-        event.setCancelled(true);
+        if (!perms.has(Flags.witherdestruction, perms.has(Flags.destroy, true))) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

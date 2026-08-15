@@ -3,7 +3,6 @@ package com.bekvon.bukkit.residence.listeners;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -19,6 +18,7 @@ import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 public class ResidenceListener1_08 implements Listener {
@@ -82,20 +82,26 @@ public class ResidenceListener1_08 implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockExplodeEvent(BlockExplodeEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.explode.isGlobalyEnabled())
-            return;
 
-        Location loc = event.getBlock().getLocation();
+        Block sourceBlock = event.getBlock();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(loc.getWorld()))
+        if (plugin.isDisabledWorldListener(sourceBlock.getWorld())) {
             return;
-
-        FlagPermissions world = FlagPermissions.getPerms(loc.getWorld());
+        }
+        if (Flags.explode.isGlobalyEnabled()) {
+            FlagPermissions sourceBlockPerms = FlagPermissions.getPerms(sourceBlock.getLocation());
+            // Explosion is prohibited at the source location; cancel the event directly
+            if (!sourceBlockPerms.has(Flags.explode, sourceBlockPerms.has(Flags.destroy, true))) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+        // Source allows explosion, so check each affected block for destruction
         List<Block> preserve = new ArrayList<Block>();
         for (Block block : event.blockList()) {
-            FlagPermissions blockperms = FlagPermissions.getPerms(block.getLocation());
-            if (!blockperms.has(Flags.explode, world.has(Flags.explode, true))) {
+            FlagPermissions blockPerms = FlagPermissions.getPerms(block.getLocation());
+            if ((Flags.explode.isGlobalyEnabled() && blockPerms.has(Flags.explode, FlagCombo.OnlyFalse)) ||
+                    (Flags.destroy.isGlobalyEnabled() && blockPerms.has(Flags.destroy, FlagCombo.OnlyFalse))) {
                 preserve.add(block);
             }
         }
