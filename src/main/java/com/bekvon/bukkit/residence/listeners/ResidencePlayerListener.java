@@ -1310,6 +1310,7 @@ public class ResidencePlayerListener implements Listener {
         case LOOM:
         case REPEATER:
         case REPEATING_COMMAND_BLOCK:
+        case RESPAWN_ANCHOR:
         case SMITHING_TABLE:
         case SOUL_CAMPFIRE:
         case STONECUTTER:

@@ -349,6 +349,7 @@ public class FlagPermissions {
         }
 
         if (Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
+            addMaterialToUseFlag(CMIMaterial.RESPAWN_ANCHOR.getMaterial(), Flags.anchor);
             addMaterialToUseFlag(CMIMaterial.SOUL_CAMPFIRE.getMaterial(), Flags.use);
         }
 
