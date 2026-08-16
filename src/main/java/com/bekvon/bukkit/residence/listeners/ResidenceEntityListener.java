@@ -127,7 +127,7 @@ public class ResidenceEntityListener implements Listener {
             if (Flags.destroy.isGlobalyEnabled()) {
                 Entity entity = event.getEntity();
                 if (entity instanceof Boat) {
-                    if(shouldDenyBoatBreakLiyiPad(entity, block)) {
+                    if(shouldDenyBoatBreakLilyPad(entity, block)) {
                         event.setCancelled(true);
                     }
                 } else if (entity instanceof Projectile) {
@@ -161,7 +161,7 @@ public class ResidenceEntityListener implements Listener {
         }
     }
 
-    private boolean shouldDenyBoatBreakLiyiPad(Entity entity, Block block) {
+    private boolean shouldDenyBoatBreakLilyPad(Entity entity, Block block) {
         if (CMIMaterial.get(block.getType()) != CMIMaterial.LILY_PAD) {
             return false;
         }
