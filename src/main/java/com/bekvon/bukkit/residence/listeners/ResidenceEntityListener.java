@@ -809,27 +809,47 @@ public class ResidenceEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
-
-        // Disabling listener if flag disabled globally
-        if (!Flags.shoot.isGlobalyEnabled())
-            return;
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
+        if (plugin.isDisabledWorldListener(event.getEntity().getWorld())) {
             return;
-
-        if (CMIEntityType.get(event.getEntity()) == CMIEntityType.EXPERIENCE_BOTTLE)
-            return;
-
-        if (event.getEntity().getShooter() instanceof Player) {
-            if (ResAdmin.isResAdmin((Player) event.getEntity().getShooter()))
-                return;
         }
+        Flags flag = Flags.shoot;
+        CMIEntityType type = CMIEntityType.get(event.getEntityType());
+        if (type != null) {
+            switch (type) {
+            case EXPERIENCE_BOTTLE:
+            case FIREWORK_ROCKET:
+                return;
+            case ENDER_PEARL:
+                flag = Flags.enderpearl;
+                break;
+            case WIND_CHARGE:
+                flag = Flags.windexplode;
+                break;
+            default:
+                break;
+            }
+        }
+        // Disabling listener if flag disabled globally
+        if (!flag.isGlobalyEnabled()) {
+            return;
+        }
+        ProjectileSource shooter = event.getEntity().getShooter();
 
+        Player player = null;
+        boolean isPlayer = shooter instanceof Player;
+        if (isPlayer) {
+            player = (Player) shooter;
+            if (ResAdmin.isResAdmin(player)) {
+                return;
+            }
+        }
         FlagPermissions perms = FlagPermissions.getPerms(event.getEntity().getLocation());
-        if (perms.has(Flags.shoot, FlagCombo.OnlyFalse)) {
+        if (perms.has(flag, FlagCombo.OnlyFalse)) {
+            if (isPlayer) {
+                lm.Flag_Deny.sendMessage(player, flag);
+            }
             event.setCancelled(true);
-            if (event.getEntity().getShooter() instanceof Player)
-                lm.Flag_Deny.sendMessage((Player) event.getEntity().getShooter(), Flags.shoot);
         }
     }
 
