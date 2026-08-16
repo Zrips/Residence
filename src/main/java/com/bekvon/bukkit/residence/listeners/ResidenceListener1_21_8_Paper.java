@@ -54,7 +54,8 @@ public class ResidenceListener1_21_8_Paper implements Listener {
         }
         if (target instanceof Player) {
             // Monster-on-player knockback doesn't need to check Flags.pvp
-            return player != null && FlagPermissions.has(target.getLocation(), Flags.pvp, FlagCombo.OnlyFalse);
+            // Allow players to knock themselves back (e.g., by Wind Charges)
+            return player != null && !target.equals(player) && FlagPermissions.has(target.getLocation(), Flags.pvp, FlagCombo.OnlyFalse);
         }
         if (Utils.isAnimal(target)) {
             // SulfurCube containing blocks doesn't take damage

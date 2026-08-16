@@ -137,6 +137,7 @@ public enum Flags {
     vehicleplacing(CMIMaterial.MINECART, FlagMode.Both, "Allows or denys vehicle placing", true),
     witherspawn(CMIMaterial.WITHER_SKELETON_SKULL, FlagMode.Residence, "Allows or denys wither spawning", true),
     phantomspawn(CMIMaterial.BROWN_WOOL, FlagMode.Residence, "Allows or denys phantom spawning", true),
+    windexplode(CMIMaterial.WIND_CHARGE, FlagMode.Both, "Allow or deny wind_charge explosions", true),
     witherdamage(CMIMaterial.WITHER_SKELETON_SKULL, FlagMode.Residence, "Allows or denys wither damage", true),
     witherdestruction(CMIMaterial.WITHER_SKELETON_SKULL, FlagMode.Residence, "Allows or denys wither block damage", true),
     waterflow(CMIMaterial.WATER_BUCKET, FlagMode.Residence, "Allows or denys water flow, overrides flow", true),

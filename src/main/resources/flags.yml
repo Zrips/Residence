@@ -405,6 +405,9 @@ Global:
     # Applies to: Residence
     # Allows or denys water flow, overrides flow
     waterflow: true
+    # Applies to: Both
+    # Allow or deny wind_charge explosions
+    windexplode: true
     # Applies to: Residence
     # Allows or denys wither damage
     witherdamage: true
@@ -551,6 +554,7 @@ Global:
     vehicledestroy: MINECART
     vehicleplacing: MINECART
     waterflow: WATER_BUCKET
+    windexplode: WIND_CHARGE
     witherdamage: WITHER_SKELETON_SKULL
     witherdestruction: WITHER_SKELETON_SKULL
     witherspawn: WITHER_SKELETON_SKULL
