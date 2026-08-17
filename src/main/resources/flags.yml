@@ -393,7 +393,7 @@ Global:
     # Applies to: Both
     # Allows or denys villager trading in residence
     trade: true
-    # Applies to: Residence
+    # Applies to: Both
     # Allows or denys crop trampling in residence
     trample: true
     # Applies to: Both

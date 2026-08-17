@@ -132,7 +132,7 @@ public enum Flags {
     tnt(CMIMaterial.TNT, FlagMode.Residence, "Allow or deny tnt explosions", false),
     tp(CMIMaterial.END_PORTAL_FRAME, FlagMode.Both, "Allow or disallow teleporting to the residence", true),
     trade(CMIMaterial.EMERALD, FlagMode.Both, "Allows or denys villager trading in residence", true),
-    trample(CMIMaterial.DIRT, FlagMode.Residence, "Allows or denys crop trampling in residence", true),
+    trample(CMIMaterial.DIRT, FlagMode.Both, "Allows or denys crop trampling in residence", true),
     use(CMIMaterial.STONE_PRESSURE_PLATE, FlagMode.Both, "Allows or denys use of doors, lever, buttons, etc...", true),
     visualizer(CMIMaterial.GLOWSTONE_DUST, FlagMode.Residence, "Shows or hides particle visualizer when entering residence", true),
     vehicledestroy(CMIMaterial.MINECART, FlagMode.Both, "Allows or denys vehicle destroy", true),
