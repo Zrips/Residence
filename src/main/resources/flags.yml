@@ -24,6 +24,9 @@ Global:
     # Applies to: Both
     # Allows or denys animal feeding
     animalfeeding: true
+    # Applies to: Residence
+    # Allow or deny animal griefing (does not override block/entity-specific flags)
+    animalgriefing: true
     # Applies to: Both
     # Allows or denys animal killing
     animalkilling: true
@@ -262,6 +265,9 @@ Global:
     # Prevents mob droping exp on death
     mobexpdrop: true
     # Applies to: Residence
+    # Allow or deny monster griefing (does not override block/entity-specific flags)
+    mobgriefing: true
+    # Applies to: Residence
     # Prevents mob droping items on death
     mobitemdrop: true
     # Applies to: Both
@@ -428,6 +434,7 @@ Global:
     admin: BEDROCK
     anchor: RESPAWN_ANCHOR
     animalfeeding: CARROT
+    animalgriefing: WHEAT
     animalkilling: CHICKEN
     animals: PIG_SPAWN_EGG
     anvil: ANVIL
@@ -507,6 +514,7 @@ Global:
     lever: LEVER
     loom: LOOM
     mobexpdrop: MELON_SEEDS
+    mobgriefing: BONE
     mobitemdrop: COCOA_BEANS
     mobkilling: ROTTEN_FLESH
     monsters: SPAWNER

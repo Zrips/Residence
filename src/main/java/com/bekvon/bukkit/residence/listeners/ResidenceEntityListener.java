@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
@@ -26,6 +27,7 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.entity.Witch;
+import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -109,55 +111,57 @@ public class ResidenceEntityListener implements Listener {
         if (plugin.isDisabledWorldListener(block.getWorld())) {
             return;
         }
-        CMIEntityType type = CMIEntityType.get(event.getEntityType());
-        if (type == null) {
-            return;
-        }
-        Flags flag;
-        switch (type) {
-        case ENDERMAN:
-        case RAVAGER:
-        case SILVERFISH:
-            flag = Flags.destroy;
-            break;
-        case WITHER:
-            flag = Flags.witherdestruction;
-            break;
-        default:
-            if (Flags.destroy.isGlobalyEnabled()) {
-                Entity entity = event.getEntity();
-                if (entity instanceof Boat) {
-                    if(shouldDenyBoatBreakLilyPad(entity, block)) {
-                        event.setCancelled(true);
-                    }
-                } else if (entity instanceof Projectile) {
-                    // Projectile hit chorus_flower/decorated_pot, Trident hit pointed_dripstone/sulfur_spike, Flame_Arrow hit tnt
-                    // uses Flags.destroy to decide the result(not block type), Future blocks are auto-compatible
-                    if (ResidenceListener1_14.shouldDenyProjectileHit(block, (Projectile) entity, Flags.destroy)) {
-                        event.setCancelled(true);
-                    }
+        Entity entity = event.getEntity();
+        boolean shouldDeny = false;
+        // Use Bukkit's Animals and Monster interfaces
+        // should cover the entities that trigger EntityChangeBlockEvent
+        if (Flags.animalgriefing.isGlobalyEnabled() && entity instanceof Animals) {
+            // Animals are friendly (villagers farming/sheep grazing)
+            // When Flags.animalgriefing is None, do not fall back to Flags.destroy
+            shouldDeny = FlagPermissions.has(block.getLocation(), Flags.animalgriefing, FlagCombo.OnlyFalse);
+
+        } else if (entity instanceof Monster) {
+
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+            // Monster is relatively evil (break blocks)
+            // when the Main-Flag is None, Flags.destroy serves as a fallback
+            if (Flags.witherdestruction.isGlobalyEnabled() && entity instanceof Wither) {
+                shouldDeny = !perms.has(Flags.witherdestruction, perms.has(Flags.destroy, true));
+
+            } else if (Flags.mobgriefing.isGlobalyEnabled()) {
+                shouldDeny = !perms.has(Flags.mobgriefing, perms.has(Flags.destroy, true));
+
+            }
+
+        } else if (Flags.copper.isGlobalyEnabled() && entity instanceof Player) {
+
+            if (CMIMaterial.get(block.getType()).containsCriteria(CMIMC.COPPER)) {
+                Player player = (Player) entity;
+                if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player)) {
+                    return;
+                }
+                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+                if (!perms.playerHas(player, Flags.copper, perms.playerHas(player, Flags.build, true))) {
+                    lm.Flag_Deny.sendMessage(player, Flags.copper);
+                    shouldDeny = true;
                 }
             }
-            return;
-        }
-        // Disabling listener if flag disabled globally
-        if (!flag.isGlobalyEnabled()) {
-            return;
-        }
-        switch (flag) {
-        case destroy:
-            if (FlagPermissions.has(block.getLocation(), flag, FlagCombo.OnlyFalse)) {
-                event.setCancelled(true);
+
+        } else if (Flags.destroy.isGlobalyEnabled()) {
+
+            if (entity instanceof Boat) {
+                shouldDeny = shouldDenyBoatBreakLilyPad(entity, block);
+
+            } else if (entity instanceof Projectile) {
+                // Projectile-triggered EntityChangeBlockEvent always breaks blocks
+                shouldDeny = ResidenceListener1_14.shouldDenyProjectileHit(block, (Projectile) entity, Flags.destroy);
+
             }
-            return;
-        case witherdestruction:
-            FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
-            if (!perms.has(flag, perms.has(Flags.destroy, true))) {
-                event.setCancelled(true);
-            }
-            return;
-        default:
-            return;
+
+        }
+
+        if (shouldDeny) {
+            event.setCancelled(true);
         }
     }
 
@@ -1349,7 +1353,7 @@ public class ResidenceEntityListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityBreakDoor(EntityBreakDoorEvent event) {
         // Disabling listener if flag disabled globally
-        if (!Flags.destroy.isGlobalyEnabled())
+        if (!Flags.mobgriefing.isGlobalyEnabled())
             return;
 
         Block block = event.getBlock();
@@ -1357,8 +1361,10 @@ public class ResidenceEntityListener implements Listener {
         if (plugin.isDisabledWorldListener(block.getWorld()))
             return;
 
-        if (FlagPermissions.has(block.getLocation(), Flags.destroy, true))
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+        if (perms.has(Flags.mobgriefing, perms.has(Flags.destroy, true))) {
             return;
+        }
 
         event.setCancelled(true);
     }
