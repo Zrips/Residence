@@ -1,12 +1,9 @@
 package com.bekvon.bukkit.residence.listeners;
 
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerSignOpenEvent;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -52,38 +49,6 @@ public class ResidenceListener1_20 implements Listener {
             lm.Flag_Deny.sendMessage(player, Flags.use);
         else
             lm.Flag_Deny.sendMessage(player, Flags.build);
-
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerChangeSuspiciousBlock(EntityChangeBlockEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.brush.isGlobalyEnabled())
-            return;
-
-        Block block = event.getBlock();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld()))
-            return;
-
-        if (!(event.getEntity() instanceof Player))
-            return;
-
-        Material mat = block.getType();
-
-        if (mat != Material.SUSPICIOUS_GRAVEL && mat != Material.SUSPICIOUS_SAND)
-            return;
-
-        Player player = (Player) event.getEntity();
-        if (ResAdmin.isResAdmin(player))
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-        if (perms.playerHas(player, Flags.brush, perms.playerHas(player, Flags.build, true)))
-            return;
-
-        lm.Flag_Deny.sendMessage(player, Flags.brush);
-        event.setCancelled(true);
 
     }
 }

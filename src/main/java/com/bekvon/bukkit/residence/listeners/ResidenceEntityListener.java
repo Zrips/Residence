@@ -120,49 +120,52 @@ public class ResidenceEntityListener implements Listener {
             // When Flags.animalgriefing is None, do not fall back to Flags.destroy
             shouldDeny = FlagPermissions.has(block.getLocation(), Flags.animalgriefing, FlagCombo.OnlyFalse);
 
-        } else if (entity instanceof Monster) {
-
+        } else if (Flags.witherdestruction.isGlobalyEnabled() && entity instanceof Wither) {
             FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
-            // Monster is relatively evil (break blocks)
-            // when the Main-Flag is None, Flags.destroy serves as a fallback
-            if (Flags.witherdestruction.isGlobalyEnabled() && entity instanceof Wither) {
-                shouldDeny = !perms.has(Flags.witherdestruction, perms.has(Flags.destroy, true));
+            shouldDeny = !perms.has(Flags.witherdestruction, perms.has(Flags.destroy, true));
 
-            } else if (Flags.mobgriefing.isGlobalyEnabled()) {
-                shouldDeny = !perms.has(Flags.mobgriefing, perms.has(Flags.destroy, true));
+        } else if (Flags.mobgriefing.isGlobalyEnabled() && entity instanceof Monster) {
+            FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+            shouldDeny = !perms.has(Flags.mobgriefing, perms.has(Flags.destroy, true));
 
-            }
+        } else if (entity instanceof Player) {
+            shouldDeny = shouldDenyPlayerChangeBlock(block, (Player) entity);
 
-        } else if (Flags.copper.isGlobalyEnabled() && entity instanceof Player) {
+        } else if (Flags.destroy.isGlobalyEnabled() && entity instanceof Boat) {
+            shouldDeny = shouldDenyBoatBreakLilyPad(entity, block);
 
-            if (CMIMaterial.get(block.getType()).containsCriteria(CMIMC.COPPER)) {
-                Player player = (Player) entity;
-                if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player)) {
-                    return;
-                }
-                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-                if (!perms.playerHas(player, Flags.copper, perms.playerHas(player, Flags.build, true))) {
-                    lm.Flag_Deny.sendMessage(player, Flags.copper);
-                    shouldDeny = true;
-                }
-            }
-
-        } else if (Flags.destroy.isGlobalyEnabled()) {
-
-            if (entity instanceof Boat) {
-                shouldDeny = shouldDenyBoatBreakLilyPad(entity, block);
-
-            } else if (entity instanceof Projectile) {
-                // Projectile-triggered EntityChangeBlockEvent always breaks blocks
-                shouldDeny = ResidenceListener1_14.shouldDenyProjectileHit(block, (Projectile) entity, Flags.destroy);
-
-            }
+        } else if (Flags.destroy.isGlobalyEnabled() && entity instanceof Projectile) {
+            // Projectile-triggered EntityChangeBlockEvent always breaks blocks
+            shouldDeny = ResidenceListener1_14.shouldDenyProjectileHit(block, (Projectile) entity, Flags.destroy);
 
         }
 
         if (shouldDeny) {
             event.setCancelled(true);
         }
+    }
+
+    private boolean shouldDenyPlayerChangeBlock(Block block, Player player) {
+        CMIMaterial mat = CMIMaterial.get(block.getType());
+        Flags flag;
+        if (Flags.copper.isGlobalyEnabled() && mat.containsCriteria(CMIMC.COPPER)) {
+            flag = Flags.copper;
+
+        } else if (Flags.brush.isGlobalyEnabled() && (mat == CMIMaterial.SUSPICIOUS_GRAVEL || mat == CMIMaterial.SUSPICIOUS_SAND)) {
+            flag = Flags.brush;
+
+        } else {
+            return false;
+        }
+        if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player)) {
+            return false;
+        }
+        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
+        if (!perms.playerHas(player, flag, perms.playerHas(player, Flags.build, true))) {
+            lm.Flag_Deny.sendMessage(player, flag);
+            return true;
+        }
+        return false;
     }
 
     private boolean shouldDenyBoatBreakLilyPad(Entity entity, Block block) {
