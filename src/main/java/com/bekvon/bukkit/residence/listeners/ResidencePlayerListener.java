@@ -1116,14 +1116,39 @@ public class ResidencePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerStepOn(PlayerInteractEvent event) {
+    public void onPlayerPhysicalInteract(PlayerInteractEvent event) {
 
         if (event.getAction() != Action.PHYSICAL) {
             return;
         }
         Block block = event.getClickedBlock();
-        Flags flag = FlagPermissions.checkBlockPhysicalFlag(block);
-        if (flag == null) {
+        if (block == null) {
+            return;
+        }
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(block.getWorld())) {
+            return;
+        }
+        CMIMaterial mat = CMIMaterial.get(block.getType());
+        Flags flag = null;
+        // Start getting flags
+        switch (mat) {
+        case FARMLAND:
+            flag = Flags.trample;
+            break;
+
+        case TURTLE_EGG:
+            flag = Flags.destroy;
+            break;
+
+        default:
+            if (mat.containsCriteria(CMIMC.PRESSUREPLATE)) {
+                flag = Flags.pressure;
+            }
+            break;
+
+        }
+        if (flag == null || !flag.isGlobalyEnabled()) {
             return;
         }
         Player player = event.getPlayer();
@@ -1131,33 +1156,38 @@ public class ResidencePlayerListener implements Listener {
             return;
         }
         FlagPermissions perms;
-
+        // Start checking flags
         switch (flag) {
-        case destroy:
-            // Turtle Egg
-            perms = FlagPermissions.getPerms(block.getLocation(), player);
-            if (perms.playerHas(player, flag, true)) {
-                return;
-            }
-            break;
-        case pressure:
-            // Pressure Plate
-            perms = FlagPermissions.getPerms(block.getLocation(), player);
-            if (perms.playerHas(player, flag, (perms.playerHas(player, Flags.use, true)))) {
-                return;
-            }
-            break;
+        // Farmland
         case trample:
-            // Farmland
             perms = FlagPermissions.getPerms(block.getLocation(), player);
             if (perms.playerHas(player, flag, (perms.playerHas(player, Flags.build, true)))) {
                 return;
             }
             break;
+
+        // Turtle Egg
+        case destroy:
+            perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, flag, true)) {
+                return;
+            }
+            break;
+
+        // Pressure Plate
+        case pressure:
+            perms = FlagPermissions.getPerms(block.getLocation(), player);
+            if (perms.playerHas(player, flag, (perms.playerHas(player, Flags.use, true)))) {
+                return;
+            }
+            break;
+
         default:
             return;
         }
+
         event.setCancelled(true);
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

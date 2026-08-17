@@ -15,7 +15,6 @@ import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
@@ -29,6 +28,8 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
+import net.Zrips.CMILib.Items.CMIMC;
+import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
@@ -103,13 +104,22 @@ public class ResidenceListener1_13 implements Listener {
         if (hitBlock == null || event.getHitBlockFace() == null) {
             return;
         }
-        Block hitBlockFace = hitBlock.getLocation().clone().add(event.getHitBlockFace().getDirection()).getBlock();
-
-        Flags flag = FlagPermissions.checkBlockPhysicalFlag(hitBlockFace);
-        if (flag != Flags.button && flag != Flags.pressure) {
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(hitBlock.getWorld())) {
             return;
         }
+        Block hitBlockFace = hitBlock.getLocation().clone().add(event.getHitBlockFace().getDirection()).getBlock();
+        CMIMaterial mat = CMIMaterial.get(hitBlockFace.getType());
+        Flags flag = null;
 
+        if (mat.containsCriteria(CMIMC.BUTTON)) {
+            flag = Flags.button;
+        } else if (mat.containsCriteria(CMIMC.PRESSUREPLATE)) {
+            flag = Flags.pressure;
+        }
+        if (flag == null || !flag.isGlobalyEnabled()) {
+            return;
+        }
         Player player = Utils.potentialProjectileToPlayer(event.getEntity());
         if (player == null)
             return;

@@ -272,9 +272,6 @@ public class FlagPermissions {
             if (one.containsCriteria(CMIMC.POTTED))
                 addMaterialToUseFlag(one.getMaterial(), Flags.flowerpot);
 
-            if (one.containsCriteria(CMIMC.PRESSUREPLATE))
-                addMaterialToUseFlag(one.getMaterial(), Flags.pressure);
-
             if (Version.isCurrentEqualOrHigher(Version.v1_17_R1)) {
                 if (one.containsCriteria(CMIMC.CANDLE))
                     addMaterialToUseFlag(one.getMaterial(), Flags.use);
@@ -362,42 +359,6 @@ public class FlagPermissions {
             addMaterialToUseFlag(CMIMaterial.CRAFTER.getMaterial(), Flags.table);
         }
 
-    }
-
-    // Checks physical interaction flags (trample, projectile hit)
-    // not for right/left-clicking blocks
-    @Nullable
-    public static Flags checkBlockPhysicalFlag(Block block) {
-        if (block == null) {
-            return null;
-        }
-        CMIMaterial mat = CMIMaterial.get(block.getType());
-        Flags flag = null;
-        switch (mat) {
-        case FARMLAND:
-            flag = Flags.trample;
-            break;
-        case TURTLE_EGG:
-            flag = Flags.destroy;
-            break;
-        default:
-            if (mat.containsCriteria(CMIMC.BUTTON)) {
-                flag = Flags.button;
-            } else if (mat.containsCriteria(CMIMC.PRESSUREPLATE)) {
-                flag = Flags.pressure;
-            }
-            break;
-        }
-        if (flag == null) {
-            return null;
-        }
-        if (!flag.isGlobalyEnabled()) {
-            return null;
-        }
-        if (Residence.getInstance().isDisabledWorldListener(block.getWorld())) {
-            return null;
-        }
-        return flag;
     }
 
     public void parseCommandLimits(ConfigurationSection node) {
