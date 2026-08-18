@@ -5,12 +5,14 @@ import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -46,13 +48,26 @@ public class setall implements cmd {
 
         int count = 0;
         int count2 = 0;
-        for (World oneW : Bukkit.getWorlds()) {
-            for (ClaimedResidence one : plugin.getResidenceManager().getFromAllResidences(true, false, oneW)) {
+
+        if (resadmin) {
+            for (World oneW : Bukkit.getWorlds()) {
+                for (ClaimedResidence one : plugin.getResidenceManager().getFromAllResidences(true, false, oneW)) {
+                    count2++;
+                    if (one.getPermissions().setFlag(sender, flag, state, resadmin, false))
+                        count++;
+                }
+            }
+        } else {
+            if (!(sender instanceof Player))
+                return false;
+            ResidencePlayer resPlayer = plugin.getPlayerManager().getResidencePlayer((Player) sender);
+            for (ClaimedResidence one : resPlayer.getResList()) {
                 count2++;
-                if (one.getPermissions().setFlag(sender, flag, state, true, false))
+                if (one.getPermissions().setFlag(sender, flag, state, resadmin, false))
                     count++;
             }
         }
+
         lm.Flag_ChangedFor.sendMessage(sender, count, count2);
 
         return true;
