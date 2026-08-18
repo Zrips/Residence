@@ -160,6 +160,6 @@ public class ResidenceListener1_19 implements Listener {
         }
         return entity instanceof AbstractHorse
                 || entity instanceof ChestBoat
-                || (Version.isCurrentEqualOrHigher(Version.v1_21_11) && entity instanceof org.bukkit.entity.AbstractNautilus);
+                || (Version.isCurrentEqualOrHigher(Version.v1_21_R7) && entity instanceof org.bukkit.entity.AbstractNautilus);
     }
 }

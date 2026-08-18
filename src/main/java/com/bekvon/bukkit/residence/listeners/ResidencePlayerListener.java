@@ -22,10 +22,11 @@ import org.bukkit.entity.Boat;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Hanging;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -58,8 +59,7 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.util.BoundingBox;
-import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
@@ -100,7 +100,6 @@ import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.CMIWorld;
-import net.Zrips.CMILib.Entities.CMIEntity;
 import net.Zrips.CMILib.Entities.CMIEntityType;
 import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMC;
@@ -1491,34 +1490,6 @@ public class ResidencePlayerListener implements Listener {
 
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerTradeEntity(PlayerInteractEntityEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.trade.isGlobalyEnabled())
-            return;
-
-        Entity entity = event.getRightClicked();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(entity.getWorld()))
-            return;
-
-        CMIEntityType type = CMIEntityType.get(entity);
-        /* Trade */
-        if (type == CMIEntityType.VILLAGER || type == CMIEntityType.WANDERING_TRADER) {
-
-            Player player = event.getPlayer();
-            if (ResAdmin.isResAdmin(player))
-                return;
-
-            if (FlagPermissions.has(entity.getLocation(), player, Flags.trade, true))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.trade);
-            event.setCancelled(true);
-
-        }
-    }
-
     private boolean canHaveContainer(Entity entity, Player player) {
         CMIEntityType type = CMIEntityType.get(entity);
         if (type != null) {
@@ -1536,7 +1507,7 @@ public class ResidencePlayerListener implements Listener {
         // Click requires sneaking to open these entity containers
         // Avoid overriding Flags.riding
         if (player.isSneaking()) {
-            if (Version.isCurrentEqualOrHigher(Version.v1_19_R1)) {
+            if (Version.isCurrentEqualOrHigher(Version.v1_19_0)) {
                 return ResidenceListener1_19.canHaveContainer1_19(entity);
             }
             return entity instanceof AbstractHorse;
@@ -1544,74 +1515,10 @@ public class ResidencePlayerListener implements Listener {
         return false;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerInteractEntityInv(PlayerInteractEntityEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.container.isGlobalyEnabled())
-            return;
-
-        Player player = event.getPlayer();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(player.getWorld()))
-            return;
-
-        if (ResAdmin.isResAdmin(player))
-            return;
-
-        Entity entity = event.getRightClicked();
-
-        if (canHaveContainer(entity, player)) {
-
-            if (FlagPermissions.has(entity.getLocation(), player, Flags.container, true))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.container);
-            event.setCancelled(true);
-
-        } else if (CMIEntity.isItemFrame(entity) && (entity instanceof Hanging)) {
-
-            ItemStack item = CMIItemStack.getItemInMainHand(player);
-            try {
-                if (event.getHand() == EquipmentSlot.OFF_HAND)
-                    item = CMIItemStack.getItemInOffHand(player);
-            } catch (Throwable e) {
-            }
-
-            String world = player.getWorld().getName();
-
-            ResidencePlayer resPlayer = plugin.getPlayerManager().getResidencePlayer(player);
-            PermissionGroup group = resPlayer.getGroup();
-
-            if (item != null && !plugin.getItemManager().isAllowed(item.getType(), group, world)) {
-                lm.General_ItemBlacklisted.sendMessage(player);
-                event.setCancelled(true);
-                return;
-            }
-
-            FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
-            if (perms.playerHas(player, Flags.container, perms.playerHas(player, Flags.use, true)))
-                return;
-
-            lm.Flag_Deny.sendMessage(player, Flags.container);
-            event.setCancelled(true);
-
+    private boolean canRide(Entity entity) {
+        if (!(entity instanceof Vehicle)) {
+            return false;
         }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerRideVehicle(PlayerInteractEntityEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.riding.isGlobalyEnabled())
-            return;
-
-        Entity entity = event.getRightClicked();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(entity.getWorld()))
-            return;
-
-        if (!(entity instanceof Vehicle))
-            return;
-
         CMIEntityType type = CMIEntityType.get(entity);
         if (type != null) {
             // Non-rideable Vehicles
@@ -1622,48 +1529,113 @@ public class ResidencePlayerListener implements Listener {
             case HOPPER_MINECART:
             case SPAWNER_MINECART:
             case TNT_MINECART:
-                return;
+                return false;
             default:
-                break;
+                return true;
             }
         }
+        return false;
+    }
 
-        Player player = event.getPlayer();
-        if (ResAdmin.isResAdmin(player))
-            return;
-
-        if (FlagPermissions.has(entity.getLocation(), player, Flags.riding, true))
-            return;
-
-        lm.Flag_Deny.sendMessage(player, Flags.riding);
-        event.setCancelled(true);
-
+    private boolean isTrader(Entity entity) {
+        CMIEntityType type = CMIEntityType.get(entity);
+        return type == CMIEntityType.VILLAGER || type == CMIEntityType.WANDERING_TRADER;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerInteractCommandBlockMinecart(PlayerInteractEntityEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.commandblock.isGlobalyEnabled())
-            return;
-
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Entity entity = event.getRightClicked();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(entity.getWorld()))
+        if (plugin.isDisabledWorldListener(entity.getWorld())) {
             return;
-
-        if (CMIEntityType.get(entity) != CMIEntityType.COMMAND_BLOCK_MINECART)
-            return;
-
+        }
         Player player = event.getPlayer();
-        if (ResAdmin.isResAdmin(player))
+        Flags mainFlag = null;
+        Flags subFlag = null;
+
+        if (Flags.commandblock.isGlobalyEnabled() && entity instanceof CommandMinecart) {
+            mainFlag = Flags.commandblock;
+            // ItemFrame covers item_frame/glow_item_frame
+        } else if (Flags.container.isGlobalyEnabled() && entity instanceof ItemFrame) {
+            mainFlag = Flags.container;
+            subFlag = Flags.use;
+            // canHaveContainer must come before canRide
+        } else if (Flags.container.isGlobalyEnabled() && canHaveContainer(entity, player)) {
+            mainFlag = Flags.container;
+
+        } else if (Flags.riding.isGlobalyEnabled() && canRide(entity)) {
+            mainFlag = Flags.riding;
+
+        } else if (Flags.trade.isGlobalyEnabled() && isTrader(entity)) {
+            mainFlag = Flags.trade;
+
+        }
+        if (shouldDenyPlayerInteractEntity(player, entity, mainFlag, subFlag)) {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean shouldDenyPlayerInteractEntity(@NotNull Player player, @NotNull Entity entity, Flags mainFlag, Flags subFlag) {
+        if (mainFlag == null) {
+            return false;
+        }
+        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
+        boolean result = (subFlag == null || perms.playerHas(player, subFlag, true));
+        // if mainFlag is in None state -> use subFlag result
+        if (perms.playerHas(player, mainFlag, result) || ResAdmin.isResAdmin(player)) {
+            return false;
+        }
+        lm.Flag_Deny.sendMessage(player, mainFlag);
+        return true;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerInteractEntityWithItem(PlayerInteractEntityEvent event) {
+        Entity entity = event.getRightClicked();
+        World world = entity.getWorld();
+        if (plugin.isDisabledWorldListener(world)) {
             return;
-
-        if (FlagPermissions.has(entity.getLocation(), player, Flags.commandblock, true))
+        }
+        Player player = event.getPlayer();
+        ItemStack item = CMIItemStack.getItemInMainHand(player);
+        try {
+            if (event.getHand() == EquipmentSlot.OFF_HAND) {
+                item = CMIItemStack.getItemInOffHand(player);
+            }
+        } catch (Throwable ignored) {
+        }
+        if (item == null) {
             return;
+        }
+        CMIMaterial held = CMIMaterial.get(item);
+        Flags mainFlag = null;
+        Flags subFlag = null;
 
-        lm.Flag_Deny.sendMessage(player, Flags.commandblock);
-        event.setCancelled(true);
+        if (entity instanceof ItemFrame) {
+            // Check held Material Blacklist
+            PermissionGroup group = plugin.getPlayerManager().getResidencePlayer(player).getGroup();
+            if (!plugin.getItemManager().isAllowed(item.getType(), group, world.getName()) && !ResAdmin.isResAdmin(player)) {
+                lm.General_ItemBlacklisted.sendMessage(player);
+                event.setCancelled(true);
+                return;
+            }
 
+        } else if (Flags.dye.isGlobalyEnabled() && entity.getType() == EntityType.SHEEP && held.containsCriteria(CMIMC.DYE)) {
+            mainFlag = Flags.dye;
+            subFlag = Flags.animalkilling;
+
+        } else if (Flags.nametag.isGlobalyEnabled() && held == CMIMaterial.NAME_TAG) {
+            mainFlag = Flags.nametag;
+            if (Utils.isAnimal(entity)) {
+                subFlag = Flags.animalkilling;
+            } else if (ResidenceEntityListener.isMonster(entity)) {
+                subFlag = Flags.mobkilling;
+            }
+
+        }
+        if (shouldDenyPlayerInteractEntity(player, entity, mainFlag, subFlag)) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1707,44 +1679,6 @@ public class ResidencePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerDyeSheep(PlayerInteractEntityEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.dye.isGlobalyEnabled())
-            return;
-
-        Entity entity = event.getRightClicked();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(entity.getWorld()))
-            return;
-        /* Dye */
-        if (entity.getType() != EntityType.SHEEP)
-            return;
-
-        Player player = event.getPlayer();
-
-        ItemStack item = CMIItemStack.getItemInMainHand(player);
-        try {
-            if (event.getHand() == EquipmentSlot.OFF_HAND)
-                item = CMIItemStack.getItemInOffHand(player);
-        } catch (Throwable e) {
-        }
-
-        if (item == null || !CMIMaterial.isDye(item.getType()))
-            return;
-
-        if (ResAdmin.isResAdmin(player))
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
-        if (perms.playerHas(player, Flags.dye, perms.playerHas(player, Flags.animalkilling, true)))
-            return;
-
-        lm.Flag_Deny.sendMessage(player, Flags.dye);
-        event.setCancelled(true);
-
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerShearEntity(PlayerShearEntityEvent event) {
         // Disabling listener if flag disabled globally
         if (!Flags.shear.isGlobalyEnabled())
@@ -1764,52 +1698,6 @@ public class ResidencePlayerListener implements Listener {
         lm.Flag_Deny.sendMessage(player, Flags.shear);
         event.setCancelled(true);
 
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerUseNameTag(PlayerInteractEntityEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.nametag.isGlobalyEnabled())
-            return;
-
-        Player player = event.getPlayer();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(player.getWorld()))
-            return;
-
-        ItemStack item = CMIItemStack.getItemInMainHand(player);
-
-        try {
-            if (event.getHand() == EquipmentSlot.OFF_HAND)
-                item = CMIItemStack.getItemInOffHand(player);
-        } catch (Throwable e) {
-        }
-
-        if (!CMIMaterial.get(item).equals(CMIMaterial.NAME_TAG))
-            return;
-
-        if (ResAdmin.isResAdmin(player))
-            return;
-
-        Entity entity = event.getRightClicked();
-        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
-
-        if (Utils.isAnimal(entity)) {
-            boolean animal = perms.playerHas(player, Flags.animalkilling, true);
-            if (perms.playerHas(player, Flags.nametag, animal))
-                return;
-
-        } else if (ResidenceEntityListener.isMonster(entity)) {
-            boolean monster = perms.playerHas(player, Flags.mobkilling, true);
-            if (perms.playerHas(player, Flags.nametag, monster))
-                return;
-
-        } else if (perms.playerHas(player, Flags.nametag, true)) {
-            return;
-
-        }
-        lm.Flag_Deny.sendMessage(player, Flags.nametag);
-        event.setCancelled(true);
     }
 
     private boolean isCauldron(Block block) {
