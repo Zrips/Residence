@@ -108,6 +108,8 @@ Language:
     Default: '&eFlags mis par defaut.'
     Deny: '&cVous n''avez pas la &6%1 &cpermission<s> ici.'
     SetDeny: '&cLe proprietaire n''a pas acces au flag &6%1'
+    MirrorNoFlags: '&c&6%1 &cn''a aucun flag dans la residence &6%2&c.'
+    MirrorApply: '&eFlags copies en miroir &6%1 &ede &6%2 &evers &6%3&e.'
     ChangeDeny: '&cVous ne pouvez pas changer le flag &6%1 tant que le joueur &6%2 &cplayer(s)
       est dedans'
   Bank:
@@ -810,6 +812,13 @@ CommandHelp:
           Info:
           - 'Usage: /res mirror [Source Residence] [Target Residence]'
           - Mirrors flags from one residence to another.  You must be owner of both or a admin to do this.
+        pmirror:
+          Description: Copie les flags d'un joueur
+          Info:
+          - 'Usage: /res pmirror [Residence] [Joueur source] [Joueur cible]'
+          - Copie les flags d'un joueur vers un autre joueur dans la meme residence.
+          - Le nom de la residence peut etre omis si vous etes a l'interieur.
+          - Vous devez etre proprietaire de la residence ou admin pour faire cela.
         shop:
           Description: Manage residence shop
           Info:

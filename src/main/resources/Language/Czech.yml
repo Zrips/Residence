@@ -137,6 +137,8 @@ Language:
     ChangedFor: '&eZměněny &6%1 &evlajky z &6%2 &eresidence checked'
     reset: '&eReset vlajek pro &6%1 &eresidenci'
     resetAll: '&eReset vlajek pro &6%1 &eresidence'
+    MirrorNoFlags: '&c&6%1 &cnemá žádné vlajky v residenci &6%2&c.'
+    MirrorApply: '&eZrcadleno &6%1 &evlajek z &6%2 &ena &6%3&e.'
   Bank:
     NoAccess: '&cNemáš přístup k bance.'
     Name: ' &eBanka: &6%1'
@@ -855,6 +857,13 @@ CommandHelp:
           Description: Zrcadlit vlajky
           Info:
           - '&ePoužití: &6/res mirror ?'
+        pmirror:
+          Description: Zrcadlit vlajky hráče
+          Info:
+          - '&ePoužití: &6/res pmirror [Residence] [Zdrojový hráč] [Cílový hráč]'
+          - Zrcadlí vlajky jednoho hráče na jiného hráče ve stejné residenci.
+          - Název residence lze vynechat, pokud stojíš uvnitř.
+          - Musíš být vlastníkem residence nebo admin.
         shop:
           Description: Spravovat obchod s residencemi
           Info:

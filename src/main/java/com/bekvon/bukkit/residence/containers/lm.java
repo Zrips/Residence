@@ -207,6 +207,8 @@ public enum lm {
     Flag_resetOwnerFlags("&eReset ownerFlags for &6%1 &eresidence"),
     Flag_resetAll("&eReset flags for &6%1 &eresidences"),
     Flag_resetAllOwnerFlags("&eReset ownerFlags for &6%1 &eresidences"),
+    Flag_MirrorNoFlags("&c&6%1 &cdoesn't have any flags in &6%2 &cresidence."),
+    Flag_MirrorApply("&eMirrored &6%1 &eflags from &6%2 &eto &6%3&e."),
 
     Bank_NoAccess("&cYou don't have bank access."),
     Bank_Name(" &eBank: &6%1"),
