@@ -1327,9 +1327,7 @@ public class ResidencePlayerListener implements Listener {
         case ENCHANTING_TABLE:
         case FLETCHING_TABLE:
         case FLOWER_POT:
-        case GLOW_ITEM_FRAME:
         case GRINDSTONE:
-        case ITEM_FRAME:
         case LECTERN:
         case LEGACY_DIODE_BLOCK_OFF:
         case LEGACY_DIODE_BLOCK_ON:
@@ -1515,7 +1513,11 @@ public class ResidencePlayerListener implements Listener {
         return false;
     }
 
-    private boolean canRide(Entity entity) {
+    private boolean canRide(Entity entity, Player player) {
+        // Cannot ride while sneaking
+        if (player.isSneaking()) {
+            return false;
+        }
         if (!(entity instanceof Vehicle)) {
             return false;
         }
@@ -1559,11 +1561,11 @@ public class ResidencePlayerListener implements Listener {
         } else if (Flags.container.isGlobalyEnabled() && entity instanceof ItemFrame) {
             mainFlag = Flags.container;
             subFlag = Flags.use;
-            // canHaveContainer must come before canRide
+
         } else if (Flags.container.isGlobalyEnabled() && canHaveContainer(entity, player)) {
             mainFlag = Flags.container;
 
-        } else if (Flags.riding.isGlobalyEnabled() && canRide(entity)) {
+        } else if (Flags.riding.isGlobalyEnabled() && canRide(entity, player)) {
             mainFlag = Flags.riding;
 
         } else if (Flags.trade.isGlobalyEnabled() && isTrader(entity)) {

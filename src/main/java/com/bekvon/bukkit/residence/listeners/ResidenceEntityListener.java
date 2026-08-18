@@ -13,6 +13,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -955,12 +956,10 @@ public class ResidenceEntityListener implements Listener {
             return;
         if (plugin.isDisabledWorldListener(ent.getWorld()))
             return;
-
-        CMIEntityType type = CMIEntityType.get(event.getEntity().getType());
-
-        if (!type.equals(CMIEntityType.ITEM_FRAME) && !type.equals(CMIEntityType.GLOW_ITEM_FRAME))
+        // ItemFrame covers item_frame/glow_item_frame
+        if (!(ent instanceof ItemFrame)) {
             return;
-
+        }
         if (!event.getCause().equals(RemoveCause.PHYSICS))
             return;
 
@@ -1666,56 +1665,59 @@ public class ResidenceEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-
+        Entity entity = event.getEntity();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getEntity().getWorld()))
+        if (plugin.isDisabledWorldListener(entity.getWorld()))
             return;
 
-        if (CMIEntityType.get(event.getEntityType()) != CMIEntityType.ENDER_CRYSTAL && !CMIEntity.isItemFrame(event.getEntity()) && !Utils.isArmorStandEntity(event.getEntityType()))
+        if (!(entity instanceof EnderCrystal) && !(entity instanceof ItemFrame)
+                && CMIEntityType.get(entity) != CMIEntityType.ARMOR_STAND) {
             return;
+        }
 
         Entity dmgr = event.getDamager();
 
         Player player = Utils.potentialProjectileToPlayer(dmgr);
 
-        CMIEntityType type = CMIEntityType.get(event.getEntityType());
+        CMIEntityType damageBy = CMIEntityType.get(dmgr.getType());
 
-        if ((dmgr instanceof Projectile) && (!(((Projectile) dmgr).getShooter() instanceof Player))) {
+        if (dmgr instanceof Projectile && player == null) {
 
-            if (Utils.isSourceBlockInsideSameResidence(dmgr, ClaimedResidence.getByLoc(event.getEntity().getLocation())))
+            if (Utils.isSourceBlockInsideSameResidence(dmgr, ClaimedResidence.getByLoc(entity.getLocation())))
                 return;
 
-            Location loc = event.getEntity().getLocation();
-            FlagPermissions perm = FlagPermissions.getPerms(loc);
-            if (perm.has(Flags.destroy, FlagCombo.OnlyFalse))
+            FlagPermissions perm = FlagPermissions.getPerms(entity.getLocation());
+            if (perm.has(Flags.destroy, FlagCombo.OnlyFalse)) {
                 event.setCancelled(true);
-
+            }
             return;
-        } else if (type == CMIEntityType.TNT || type == CMIEntityType.TNT_MINECART) {
+
+        } else if (damageBy == CMIEntityType.TNT || damageBy == CMIEntityType.TNT_MINECART) {
 
             // Disabling listener if flag disabled globally
             if (Flags.explode.isGlobalyEnabled()) {
-                FlagPermissions perms = FlagPermissions.getPerms(event.getEntity().getLocation());
-                if (perms.has(Flags.explode, FlagCombo.OnlyFalse)) {
+                FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation());
+                if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
                     event.setCancelled(true);
                     return;
                 }
             }
-        } else if (type == CMIEntityType.WITHER_SKULL || type == CMIEntityType.WITHER) {
+            return;
+
+        } else if (damageBy == CMIEntityType.WITHER_SKULL || damageBy == CMIEntityType.WITHER) {
 
             // Disabling listener if flag disabled globally
-            if (Flags.witherdamage.isGlobalyEnabled()) {
-                FlagPermissions perms = FlagPermissions.getPerms(event.getEntity().getLocation());
-                if (perms.has(Flags.witherdamage, FlagCombo.OnlyFalse)) {
+            if (Flags.witherdestruction.isGlobalyEnabled()) {
+                FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation());
+                if (!perms.has(Flags.witherdestruction, perms.has(Flags.destroy, true))) {
                     event.setCancelled(true);
                     return;
                 }
             }
+            return;
         }
 
-        Location loc = event.getEntity().getLocation();
-
-        FlagPermissions perms = FlagPermissions.getPerms(loc, player);
+        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation(), player);
 
         if (isMonster(dmgr) && !perms.has(Flags.destroy, false)) {
             event.setCancelled(true);
@@ -1728,15 +1730,9 @@ public class ResidenceEntityListener implements Listener {
         if (ResAdmin.isResAdmin(player))
             return;
 
-        if (CMIEntity.isItemFrame(event.getEntity())) {
-            ItemStack stack = null;
-            if (event.getEntityType() == EntityType.ITEM_FRAME) {
-                ItemFrame it = (ItemFrame) event.getEntity();
-                stack = it.getItem();
-            } else {
-                org.bukkit.entity.GlowItemFrame it = (org.bukkit.entity.GlowItemFrame) event.getEntity();
-                stack = it.getItem();
-            }
+        // ItemFrame covers item_frame/glow_item_frame
+        if (entity instanceof ItemFrame) {
+            ItemStack stack = ((ItemFrame) entity).getItem();
 
             if (stack != null) {
                 if (!ResPerm.bypass_container.hasPermission(player, 10000L) && !perms.playerHas(player, Flags.container, true)) {
