@@ -28,7 +28,7 @@ public class WebMapManager {
 
         settings = webmap != null ? webmap.getSettings() : new MapSettings();
 
-        c.addComment("WebMap.Use", "Enables or disable DynMap, Pl3exMap or BlueMap support");
+        c.addComment("WebMap.Use", "Enables or disables DynMap, Pl3xMap, squaremap, or BlueMap support");
         use = c.get("WebMap.Use", true);
         c.addComment("WebMap.HideByDefault", "When set to true we will hide residence areas by default on WebMap window",
                 "Residences can still be enabled throw provided WebMap option on left top side");
@@ -63,7 +63,7 @@ public class WebMapManager {
         c.addComment("WebMap.HiddenRegions", "Hides region on map even if its not hidden in game");
         settings.setHiddenRegions(c.get("WebMap.HiddenRegions", new ArrayList<String>()));
 
-        c.addComment("WebMap.HiddenPlayerResidences", "List of player names whose residences should be hidden in DynMap, Pl3exMap or BlueMap independent of their settings");
+        c.addComment("WebMap.HiddenPlayerResidences", "List of player names whose residences should be hidden in DynMap, Pl3xMap, squaremap, or BlueMap independent of their settings");
         settings.setHiddenPlayerResidences(c.get("WebMap.HiddenPlayerResidences", new ArrayList<String>()));
     }
 
@@ -92,6 +92,19 @@ public class WebMapManager {
                 p.settings = settings;
                 p.activate();
                 webmaps.add(p);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+
+// Try squaremap
+        Plugin squaremap = Bukkit.getPluginManager().getPlugin("squaremap");
+        if (squaremap != null) {
+            try {
+                SquareWebMap s = new SquareWebMap();
+                s.settings = settings;
+                s.activate();
+                webmaps.add(s);
             } catch (Throwable e) {
                 e.printStackTrace();
             }
