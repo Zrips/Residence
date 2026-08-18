@@ -1182,8 +1182,8 @@ public class ResidenceEntityListener implements Listener {
 
         Entity ent = event.getEntity();
 
-        Boolean cancel = false;
-        Boolean remove = true;
+        boolean cancel = false;
+        boolean remove = true;
         FlagPermissions perms = FlagPermissions.getPerms(loc);
 
         CMIEntityType ctype = CMIEntityType.get(event.getEntityType());
