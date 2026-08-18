@@ -15,7 +15,6 @@ import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerBucketEntityEvent;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -80,38 +79,6 @@ public class ResidenceListener1_17 implements Listener {
             lm.Flag_Deny.sendMessage(player, Flags.animalkilling);
             event.setCancelled(true);
         }
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerChangeCopper(EntityChangeBlockEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.copper.isGlobalyEnabled())
-            return;
-
-        Block block = event.getBlock();
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(block.getWorld()))
-            return;
-
-        if (!(event.getEntity() instanceof Player))
-            return;
-
-        if (!CMIMaterial.isCopperBlock(block.getType()))
-            return;
-
-        Player player = (Player) event.getEntity();
-
-        if (ResAdmin.isResAdmin(player))
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(block.getLocation(), player);
-        if (perms.playerHas(player, Flags.copper, perms.playerHas(player, Flags.build, true)))
-            return;
-
-        lm.Flag_Deny.sendMessage(player, Flags.copper);
-
-        event.setCancelled(true);
-
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

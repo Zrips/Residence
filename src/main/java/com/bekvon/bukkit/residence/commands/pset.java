@@ -149,6 +149,7 @@ public class pset implements cmd {
 
             if (!residence.isOwner(player) && !resadmin && !residence.getPermissions().playerHas(player, Flags.admin, false)) {
                 lm.General_NoPermission.sendMessage(player);
+                return;
             }
 
             Residence.getInstance().getFlagUtilManager().openPsetFlagGui(player, target, residence, resadmin, 1);

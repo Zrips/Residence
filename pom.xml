@@ -22,7 +22,7 @@
         <dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>26.2.build.34-alpha</version>
+			<version>26.2.build.112-stable</version>
 			<scope>provided</scope>
 		</dependency>
         <dependency>
@@ -37,6 +37,12 @@
             <version>7.0.61</version>
             <scope>provided</scope>
         </dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>33.5.0-jre</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- LWCX -->
         <dependency>
 		    <groupId>com.griefcraft</groupId>

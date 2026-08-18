@@ -24,6 +24,9 @@ Global:
     # Applies to: Both
     # Allows or denys animal feeding
     animalfeeding: true
+    # Applies to: Residence
+    # Allow or deny animal griefing (does not override block/entity-specific flags)
+    animalgriefing: true
     # Applies to: Both
     # Allows or denys animal killing
     animalkilling: true
@@ -262,6 +265,9 @@ Global:
     # Prevents mob droping exp on death
     mobexpdrop: true
     # Applies to: Residence
+    # Allow or deny monster griefing (does not override block/entity-specific flags)
+    mobgriefing: true
+    # Applies to: Residence
     # Prevents mob droping items on death
     mobitemdrop: true
     # Applies to: Both
@@ -309,6 +315,9 @@ Global:
     # Applies to: Both
     # Allows or denys only placement of blocks, overrides the build flag
     place: true
+    # Applies to: Both
+    # Allow or deny players pushing entities(not for player-player)
+    push: true
     # Applies to: Both
     # Allows or denys players to use pressure plates
     pressure: true
@@ -384,7 +393,7 @@ Global:
     # Applies to: Both
     # Allows or denys villager trading in residence
     trade: true
-    # Applies to: Residence
+    # Applies to: Both
     # Allows or denys crop trampling in residence
     trample: true
     # Applies to: Both
@@ -402,6 +411,9 @@ Global:
     # Applies to: Residence
     # Allows or denys water flow, overrides flow
     waterflow: true
+    # Applies to: Both
+    # Allow or deny wind_charge explosions
+    windexplode: true
     # Applies to: Residence
     # Allows or denys wither damage
     witherdamage: true
@@ -422,6 +434,7 @@ Global:
     admin: BEDROCK
     anchor: RESPAWN_ANCHOR
     animalfeeding: CARROT
+    animalgriefing: WHEAT
     animalkilling: CHICKEN
     animals: PIG_SPAWN_EGG
     anvil: ANVIL
@@ -501,6 +514,7 @@ Global:
     lever: LEVER
     loom: LOOM
     mobexpdrop: MELON_SEEDS
+    mobgriefing: BONE
     mobitemdrop: COCOA_BEANS
     mobkilling: ROTTEN_FLESH
     monsters: SPAWNER
@@ -518,6 +532,7 @@ Global:
     piston: PISTON
     pistonprotection: STICKY_PISTON
     place: SEA_LANTERN
+    push: COBWEB
     pressure: LIGHT_WEIGHTED_PRESSURE_PLATE
     pvp: WOODEN_SWORD
     raid: CROSSBOW
@@ -547,6 +562,7 @@ Global:
     vehicledestroy: MINECART
     vehicleplacing: MINECART
     waterflow: WATER_BUCKET
+    windexplode: WIND_CHARGE
     witherdamage: WITHER_SKELETON_SKULL
     witherdestruction: WITHER_SKELETON_SKULL
     witherspawn: WITHER_SKELETON_SKULL

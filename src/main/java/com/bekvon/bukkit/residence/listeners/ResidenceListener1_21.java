@@ -1,8 +1,5 @@
 package com.bekvon.bukkit.residence.listeners;
 
-import java.util.HashMap;
-import java.util.UUID;
-
 import org.bukkit.Material;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Ageable;
@@ -21,7 +18,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
@@ -32,6 +28,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.listenersCache.DenyMessageCache;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
@@ -48,13 +45,6 @@ public class ResidenceListener1_21 implements Listener {
 
     public ResidenceListener1_21(Residence plugin) {
         this.plugin = plugin;
-    }
-
-    HashMap<UUID, Long> boats = new HashMap<UUID, Long>();
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerQuitEvent(PlayerQuitEvent event) {
-        boats.remove(event.getPlayer().getUniqueId());
     }
 
     // Prevent player from taking away animals in Residence by pulling boat
@@ -113,14 +103,13 @@ public class ResidenceListener1_21 implements Listener {
         if (closest == null)
             return;
 
+        if (closest.hasMetadata("NPC") || ResAdmin.isResAdmin(closest)) {
+            return;
+        }
         if (res.getPermissions().playerHas(closest, Flags.leash, FlagCombo.OnlyFalse)) {
-            Long time = boats.computeIfAbsent(closest.getUniqueId(), k -> 0L);
-
-            if (time + 1000L < System.currentTimeMillis()) {
-                boats.put(closest.getUniqueId(), System.currentTimeMillis());
+            if (DenyMessageCache.shouldSendDenyMessage(closest, Flags.leash)) {
                 lm.Residence_FlagDeny.sendMessage(closest, Flags.leash, res.getName());
             }
-
             event.setCancelled(true);
         }
     }
@@ -214,9 +203,7 @@ public class ResidenceListener1_21 implements Listener {
         }
         // Copper_golem has no item in hand
 
-        Material held = (event.getHand() == EquipmentSlot.OFF_HAND)
-                ? player.getInventory().getItemInOffHand().getType()
-                : player.getInventory().getItemInMainHand().getType();
+        Material held = ResidenceListener1_09.getHeldMaterial(event);
 
         // Avoid overwriting Leash Flag, Lead Shears
         if (held != Material.HONEYCOMB && !isItemTag(held, "axes"))
@@ -277,15 +264,12 @@ public class ResidenceListener1_21 implements Listener {
         if (!(entity instanceof Mob))
             return;
 
-        Player player = event.getPlayer();
-
-        Material held = event.getHand() == EquipmentSlot.OFF_HAND
-                ? player.getInventory().getItemInOffHand().getType()
-                : player.getInventory().getItemInMainHand().getType();
+        Material held = ResidenceListener1_09.getHeldMaterial(event);
 
         if (!isFeedingAnimal((Mob) entity, held))
             return;
 
+        Player player = event.getPlayer();
         if (ResAdmin.isResAdmin(player))
             return;
 
@@ -393,17 +377,14 @@ public class ResidenceListener1_21 implements Listener {
         if (!(entity instanceof Animals))
             return;
 
-        Player player = event.getPlayer();
-
-        Material held = event.getHand() == EquipmentSlot.OFF_HAND
-                ? player.getInventory().getItemInOffHand().getType()
-                : player.getInventory().getItemInMainHand().getType();
+        Material held = ResidenceListener1_09.getHeldMaterial(event);
 
         // check if held item and interacted entity match
         // if conditions match, also check if the target entity slot is Air
         if (!isEquipFitAnimal((Animals) entity, CMIMaterial.get(held)))
             return;
 
+        Player player = event.getPlayer();
         if (ResAdmin.isResAdmin(player))
             return;
 
