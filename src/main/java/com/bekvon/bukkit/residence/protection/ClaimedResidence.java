@@ -1867,14 +1867,20 @@ public class ClaimedResidence {
     }
 
     public CuboidArea getArea(String name) {
+        if (name == null)
+            return null;
         return getAreaMap().get(name.toLowerCase());
     }
 
     private void addAreaByName(String newName, CuboidArea area) {
+        if (newName == null)
+            return;
         getAreaMap().put(newName.toLowerCase(), area);
     }
 
     private CuboidArea removeAreaByName(String name) {
+        if (name == null)
+            return null;
         return getAreaMap().remove(name.toLowerCase());
     }
 

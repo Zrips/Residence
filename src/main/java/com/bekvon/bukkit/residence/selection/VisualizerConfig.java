@@ -36,6 +36,7 @@ public class VisualizerConfig {
 
     private static boolean useModernVersion = true;
     private static int gridSize = 8;
+    private static int updateRateByTravel = 4;
     private static double lineThickness = 0.05;
 
     public static void loadConfig(ConfigReader c) {
@@ -149,6 +150,11 @@ public class VisualizerConfig {
 
             c.addComment("Global.Visualizer.Modern.GridSize", "Defines spacing between side lines of the grid", "Recommended to use power of 2. Default value: 8");
             setGridSize(c.get("Global.Visualizer.Modern.GridSize", 8));
+
+            c.addComment("Global.Visualizer.Modern.UpdateRateByTravel", "How many blocks does player need to travel before visual update is triggered",
+                    "This can be set as low as 1, but its not recommended to use lower value. Default value: 4");
+            setUpdateRateByTravel(c.get("Global.Visualizer.Modern.UpdateRateByTravel", 4));
+            CuboidDisplayManager.updateVariables();
 
             c.addComment("Global.Visualizer.Modern.LineThickness", "Thickness of the lines", "Block is 100, which is 100cm, while default value for line is 5cm");
             setLineThickness(c.get("Global.Visualizer.Modern.LineThickness", 5) / 100D);
@@ -304,5 +310,13 @@ public class VisualizerConfig {
 
     public static void setLineThickness(double lineThickness) {
         VisualizerConfig.lineThickness = lineThickness;
+    }
+
+    public static int getUpdateRateByTravel() {
+        return updateRateByTravel;
+    }
+
+    public static void setUpdateRateByTravel(int updateRateByBlock) {
+        VisualizerConfig.updateRateByTravel = updateRateByBlock;
     }
 }

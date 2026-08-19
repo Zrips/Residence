@@ -182,9 +182,11 @@ public class select implements cmd {
                 area = res.getArea(areaName);
             }
 
-            if (area == null)
+            if (area == null) {
                 area = res.getMainArea();
-            
+                areaName = res.getMainAreaName();
+            }
+
             if (area != null) {
                 plugin.getSelectionManager().placeLoc1(player, area.getHighLocation(), false);
                 plugin.getSelectionManager().placeLoc2(player, area.getLowLocation(), true);

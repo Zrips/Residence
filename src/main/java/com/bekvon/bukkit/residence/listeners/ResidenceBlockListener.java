@@ -46,7 +46,9 @@ import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
@@ -353,24 +355,33 @@ public class ResidenceBlockListener implements Listener {
             ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
             String resName = res == null ? "NULL" : res.getName();
             ent.setMetadata(SourceResidenceName, new FixedMetadataValue(plugin, resName));
-        } else {
-
-            ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
-
-            if (res != null && res.getPermissions().has(Flags.fallinprotection, FlagCombo.OnlyFalse))
-                return;
-
-            String resName = res == null ? "NULL" : res.getName();
-
-            String saved = "NULL";
-            if (ent.hasMetadata(SourceResidenceName))
-                saved = ent.getMetadata(SourceResidenceName).get(0).asString();
-
-            if (res != null && !saved.equalsIgnoreCase(resName)) {
-                event.setCancelled(true);
-                ent.remove();
-            }
+            return;
         }
+
+        ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
+
+        if (res != null && res.getPermissions().has(Flags.fallinprotection, FlagCombo.OnlyFalse))
+            return;
+
+        String resName = res == null ? "NULL" : res.getName();
+
+        String saved = "NULL";
+        if (!ent.hasMetadata(SourceResidenceName))
+            return;
+
+        @NotNull
+        List<MetadataValue> meta = ent.getMetadata(SourceResidenceName);
+
+        if (meta.isEmpty())
+            return;
+
+        saved = ent.getMetadata(SourceResidenceName).get(0).asString();
+
+        if (res == null || saved.equalsIgnoreCase(resName))
+            return;
+
+        event.setCancelled(true);
+        ent.remove();
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -833,7 +844,7 @@ public class ResidenceBlockListener implements Listener {
         // target location
         Location targetLoc = Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? ResidenceBlockData.getRelative(block)
                 : block.getRelative((((org.bukkit.material.Dispenser) ((org.bukkit.block.Dispenser) block).getData()).getFacing())).getLocation();
- 
+
         ClaimedResidence targetRes = ClaimedResidence.getByLoc(targetLoc);
 
         CMIMaterial cmat = CMIMaterial.get(event.getItem());

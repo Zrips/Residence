@@ -30,8 +30,8 @@ public class CuboidDisplayManager implements Listener {
 
     private static final double REMOVE_DISTANCE = 64.0;
     private static final double REMOVE_DISTANCE_SQUARED = REMOVE_DISTANCE * REMOVE_DISTANCE;
-    private static final double RECALCULATE_DISTANCE = 1.0;
-    private static final double RECALCULATE_DISTANCE_SQUARED = RECALCULATE_DISTANCE * RECALCULATE_DISTANCE;
+    private static double RECALCULATE_DISTANCE = VisualizerConfig.getUpdateRateByTravel();
+    private static double RECALCULATE_DISTANCE_SQUARED = RECALCULATE_DISTANCE * RECALCULATE_DISTANCE;
 
     private static final Map<UUID, PlayerData> players = new HashMap<>();
 
@@ -41,6 +41,11 @@ public class CuboidDisplayManager implements Listener {
             return;
 
         Bukkit.getPluginManager().registerEvents(new CuboidDisplayManager(), Residence.getInstance());
+    }
+
+    public static void updateVariables() {
+        RECALCULATE_DISTANCE = VisualizerConfig.getUpdateRateByTravel();
+        RECALCULATE_DISTANCE_SQUARED = RECALCULATE_DISTANCE * RECALCULATE_DISTANCE;
     }
 
     public static void add(Player player, List<CuboidArea> areas, CuboidDisplayType type, double hideInSeconds, int range, int gridSize) {
