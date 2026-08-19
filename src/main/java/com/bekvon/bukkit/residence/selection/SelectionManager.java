@@ -28,6 +28,8 @@ import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
+import com.bekvon.bukkit.residence.selectionVisuals.CuboidDisplayManager;
+import com.bekvon.bukkit.residence.selectionVisuals.CuboidDisplayType;
 
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Colors.CMIChatColor;
@@ -544,6 +546,14 @@ public class SelectionManager {
 
                 if (ev.isCancelled())
                     return;
+            }
+
+            if (VisualizerConfig.isUseModernVersion()) {
+                CuboidDisplayManager.add(player,
+                        v.getAreas().isEmpty() ? v.getErrorAreas() : v.getAreas(),
+                        v.getAreas().isEmpty() ? CuboidDisplayType.BOUNCE : CuboidDisplayType.ENTER_EXIT,
+                        1, 3, 1);
+                return;
             }
 
             Visualizer tv = vMap.get(player.getUniqueId());

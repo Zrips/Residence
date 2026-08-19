@@ -3,10 +3,16 @@ package com.bekvon.bukkit.residence.selection;
 import org.bukkit.Effect;
 
 import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.selectionVisuals.CuboidDisplayManager;
+import com.bekvon.bukkit.residence.selectionVisuals.CuboidDisplayType;
 
+import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Effects.CMIEffect;
 import net.Zrips.CMILib.Effects.CMIEffectManager.CMIParticle;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Messages.CMIMessages;
+import net.Zrips.CMILib.Version.Version;
 
 public class VisualizerConfig {
 
@@ -28,10 +34,21 @@ public class VisualizerConfig {
     private static boolean bounceAnimation;
     private static boolean enterAnimation;
 
+    private static boolean useModernVersion = true;
+    private static int gridSize = 8;
+    private static double lineThickness = 0.05;
+
     public static void loadConfig(ConfigReader c) {
 
         c.addComment("Global.Visualizer.Use", "With this enabled player will see particle effects to mark selection boundaries");
         setShow(c.get("Global.Visualizer.Use", true));
+
+        if (Version.isCurrentEqualOrHigher(Version.v1_19_4)) {
+            c.addComment("Global.Visualizer.Type", "Which type of visualization we should use. Particle or Modern.");
+            setUseModernVersion(c.get("Global.Visualizer.Type", "Modern").equalsIgnoreCase("Modern"));
+        } else {
+            setUseModernVersion(false);
+        }
 
         c.addComment("Global.Visualizer.Range", "Range in blocks to draw particle effects for player", "Keep it no more as 30, as player cant see more than 16 blocks");
         setRange(c.get("Global.Visualizer.Range", 16));
@@ -127,6 +144,38 @@ public class VisualizerConfig {
 
         c.addComment("Global.Visualizer.BounceAnimation", "Shows particle effect when player are being pushed back");
         setBounceAnimation(c.get("Global.Visualizer.BounceAnimation", true));
+
+        if (Version.isCurrentEqualOrHigher(Version.v1_19_4)) {
+
+            c.addComment("Global.Visualizer.Modern.GridSize", "Defines spacing between side lines of the grid", "Recommended to use power of 2. Default value: 8");
+            setGridSize(c.get("Global.Visualizer.Modern.GridSize", 8));
+
+            c.addComment("Global.Visualizer.Modern.LineThickness", "Thickness of the lines", "Block is 100, which is 100cm, while default value for line is 5cm");
+            setLineThickness(c.get("Global.Visualizer.Modern.LineThickness", 5) / 100D);
+
+            c.addComment("Global.Visualizer.Modern.Materials", "Only block type materials are accepted here.");
+            for (CuboidDisplayType one : CuboidDisplayType.values()) {
+                String name = c.get("Global.Visualizer.Modern.Materials." + one.name() + ".Edges", one.getEdgeMaterial().toString());
+                CMIMaterial mat = CMIMaterial.get(name);
+
+                if (mat.isBlock())
+                    one.setEdgeMaterial(mat);
+                else
+                    CMIMessages.consoleMessage("Selection " + one.name() + " edges material not found(" + name + "), defaulting to " + one.getEdgeMaterial().toString());
+
+                name = c.get("Global.Visualizer.Modern.Materials." + one.name() + ".Sides", one.getSideMaterial().toString());
+                mat = CMIMaterial.get(name);
+
+                if (mat.isBlock())
+                    one.setSideMaterial(mat);
+                else
+                    CMIMessages.consoleMessage("Selection " + one.name() + " side material not found(" + name + "), defaulting to " + one.getSideMaterial().toString());
+            }
+
+        }
+
+        if (Version.isTestServer())
+            CuboidDisplayManager.register();
     }
 
     public static boolean isShow() {
@@ -231,5 +280,29 @@ public class VisualizerConfig {
 
     public static void setEnterAnimation(boolean enterAnimation) {
         VisualizerConfig.enterAnimation = enterAnimation;
+    }
+
+    public static boolean isUseModernVersion() {
+        return useModernVersion;
+    }
+
+    public static void setUseModernVersion(boolean useModernVersion) {
+        VisualizerConfig.useModernVersion = useModernVersion;
+    }
+
+    public static int getGridSize() {
+        return gridSize;
+    }
+
+    public static void setGridSize(int gridSize) {
+        VisualizerConfig.gridSize = CMINumber.clamp(gridSize, 1);
+    }
+
+    public static double getLineThickness() {
+        return lineThickness;
+    }
+
+    public static void setLineThickness(double lineThickness) {
+        VisualizerConfig.lineThickness = lineThickness;
     }
 }

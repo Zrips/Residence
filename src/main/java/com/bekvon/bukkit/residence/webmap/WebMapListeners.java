@@ -31,7 +31,6 @@ public class WebMapListeners implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onResidenceAreaDelete(ResidenceAreaDeleteEvent event) {
         plugin.getWebMapManager().fireUpdateRemove(event.getResidence());
-        plugin.getWebMapManager().fireUpdateAdd(event.getResidence());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
