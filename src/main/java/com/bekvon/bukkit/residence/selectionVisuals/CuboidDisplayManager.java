@@ -126,17 +126,6 @@ public class CuboidDisplayManager implements Listener {
         data.displays.clear();
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onVisualize(ResidenceSelectionVisualizationEvent event) {
-
-        if (!VisualizerConfig.isUseModernVersion())
-            return;
-
-        show(event.getPlayer(), event.getAreas(), event.getErrorAreas());
-
-        event.setCancelled(true);
-    }
-
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Location from = event.getFrom();

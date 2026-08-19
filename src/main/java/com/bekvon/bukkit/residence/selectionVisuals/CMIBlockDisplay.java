@@ -37,6 +37,13 @@ public class CMIBlockDisplay {
                     entity.setVisibleByDefault(false);
                     entity.setPersistent(false);
                     entity.setBrightness(new Brightness(15, 15));
+                    
+                    entity.setTransformation(new Transformation(
+                            new Vector3f(0, 0, 0),
+                            new Quaternionf(),
+                            new Vector3f(0.05f, 0.05f, 0.05f), 
+                            new Quaternionf()            
+                    ));                    
                 });
     }
 

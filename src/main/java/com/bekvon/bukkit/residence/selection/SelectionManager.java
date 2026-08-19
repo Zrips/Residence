@@ -549,13 +549,17 @@ public class SelectionManager {
             }
 
             if (VisualizerConfig.isUseModernVersion()) {
-                CuboidDisplayManager.add(player,
-                        v.getAreas().isEmpty() ? v.getErrorAreas() : v.getAreas(),
-                        v.getAreas().isEmpty() ? CuboidDisplayType.BOUNCE : CuboidDisplayType.ENTER_EXIT,
-                        1, 3, 1);
+                if (v.isOnce()) {
+                    CuboidDisplayManager.add(player,
+                            v.getAreas().isEmpty() ? v.getErrorAreas() : v.getAreas(),
+                            v.getAreas().isEmpty() ? CuboidDisplayType.BOUNCE : CuboidDisplayType.ENTER_EXIT,
+                            1, 3, 1);
+                } else {
+                    CuboidDisplayManager.show(player, v.getAreas(), v.getErrorAreas());
+                }
                 return;
             }
-
+            
             Visualizer tv = vMap.get(player.getUniqueId());
             if (tv != null) {
                 tv.cancelAll();
