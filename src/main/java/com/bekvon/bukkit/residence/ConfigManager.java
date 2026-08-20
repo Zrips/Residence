@@ -727,7 +727,7 @@ public class ConfigManager {
         // residence kick location
         c.addComment("Global.Optimizations.KickLocation.Use",
                 "By setting this to true, when player kicks another player from residence, he will be teleported to this location instead of getting outside residence");
-        Boolean UseKick = c.get("Global.Optimizations.KickLocation.Use", false);
+        boolean useKick = c.get("Global.Optimizations.KickLocation.Use", false);
         String KickLocationWorld = c.get("Global.Optimizations.KickLocation.World", defaultWorldName);
         Double KickLocationX = c.get("Global.Optimizations.KickLocation.X", 0.5);
         Double KickLocationY = c.get("Global.Optimizations.KickLocation.Y", 63.0);
@@ -736,7 +736,7 @@ public class ConfigManager {
         Double KickPitch = c.get("Global.Optimizations.KickLocation.Pitch", 0.0);
         c.addComment("Global.Optimizations.KickLocation.Yaw", "Head position to left and right. Range from -180 to 180");
         Double KickYaw = c.get("Global.Optimizations.KickLocation.Yaw", 0.0);
-        if (UseKick) {
+        if (useKick) {
             World world = Bukkit.getWorld(KickLocationWorld);
             if (world != null) {
                 KickLocation = new Location(world, KickLocationX, KickLocationY, KickLocationZ);

@@ -544,8 +544,9 @@ public class SelectionManager {
                 ResidenceSelectionVisualizationEvent ev = new ResidenceSelectionVisualizationEvent(player, v.getAreas(), v.getErrorAreas(), v.isOnce());
                 Bukkit.getPluginManager().callEvent(ev);
 
-                if (ev.isCancelled())
+                if (ev.isCancelled()) {
                     return;
+                }
             }
 
             if (VisualizerConfig.isUseModernVersion()) {
@@ -559,7 +560,7 @@ public class SelectionManager {
                 }
                 return;
             }
-            
+
             Visualizer tv = vMap.get(player.getUniqueId());
             if (tv != null) {
                 tv.cancelAll();
