@@ -7,11 +7,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.selection.VisualizerConfig;
 
 import net.Zrips.CMILib.Container.CMINumber;
+import net.Zrips.CMILib.Container.CMIVector3D;
+import net.Zrips.CMILib.Cuboids.CMIBlockArea;
 import net.Zrips.CMILib.Cuboids.CMIBlockWorldArea;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -28,9 +31,18 @@ public class CuboidDisplay {
 
     private CMITask scheduler = null;
 
-    int range = VisualizerConfig.getRange();
-    int gridSize = VisualizerConfig.getGridSize();
-    double lineThickness = VisualizerConfig.getLineThickness();
+    private int range = VisualizerConfig.getRange();
+    private int gridSize = VisualizerConfig.getGridSize();
+    private double lineThickness = VisualizerConfig.getLineThickness();
+
+    private static final double CALCULATION_BUFFER = 32.0;
+    private static final double CALCULATION_REBUILD_DISTANCE = 16.0;
+
+    private CMIBlockArea calculation;
+
+    private CMIVector3D calculationCenter;
+
+    private boolean calculationBoundsInitialized = false;
 
     /*
      * 0-3 = bottom horizontal edges 4-7 = top horizontal edges 8-11 = vertical
@@ -103,8 +115,8 @@ public class CuboidDisplay {
         return area.getWorld().getWorld();
     }
 
+    @SuppressWarnings("unchecked")
     private void init() {
-
         edgeDisplays = new List[12];
 
         for (int i = 0; i < edgeDisplays.length; i++)
@@ -116,14 +128,66 @@ public class CuboidDisplay {
             faceDisplays[i] = new ArrayList<>();
     }
 
-    public void recalculate() {
+    private void updateCalculationBounds(boolean force) {
+        if (!force && !needsCalculationBoundsUpdate())
+            return;
 
-        if (scheduler == null || player == null || !player.isOnline())
+        Location location = player.getLocation();
+
+        double radius = getRange() + CALCULATION_BUFFER;
+
+        double areaMinX = area.getLowPoint().getX();
+        double areaMinY = area.getLowPoint().getY();
+        double areaMinZ = area.getLowPoint().getZ();
+
+        double areaMaxX = area.getHighPoint().getX() + 1;
+        double areaMaxY = area.getHighPoint().getY() + 1;
+        double areaMaxZ = area.getHighPoint().getZ() + 1;
+
+        double calculationMinX = Math.max(areaMinX, location.getX() - radius);
+        double calculationMaxX = Math.min(areaMaxX, location.getX() + radius);
+
+        double calculationMinY = Math.max(areaMinY, location.getY() - radius);
+        double calculationMaxY = Math.min(areaMaxY, location.getY() + radius);
+
+        double calculationMinZ = Math.max(areaMinZ, location.getZ() - radius);
+        double calculationMaxZ = Math.min(areaMaxZ, location.getZ() + radius);
+
+        calculation = new CMIBlockArea(new Vector(calculationMinX, calculationMinY, calculationMinZ), new Vector(calculationMaxX, calculationMaxY, calculationMaxZ));
+
+        calculationCenter = new CMIVector3D(location.toVector());
+
+        calculationBoundsInitialized = true;
+    }
+
+    private boolean needsCalculationBoundsUpdate() {
+        if (!calculationBoundsInitialized)
+            return true;
+
+        Location location = player.getLocation();
+
+        double dx = location.getX() - calculationCenter.getX();
+        double dy = location.getY() - calculationCenter.getY();
+        double dz = location.getZ() - calculationCenter.getZ();
+
+        return dx * dx + dy * dy + dz * dz >= CALCULATION_REBUILD_DISTANCE * CALCULATION_REBUILD_DISTANCE;
+    }
+
+    public void recalculate() {
+        if (player == null || !player.isOnline())
             return;
 
         if (edgeDisplays == null)
             init();
 
+        updateCalculationBounds(false);
+
+        /*
+         * Actual selection boundaries.
+         *
+         * These must remain the real selection boundaries because the edges and the
+         * actual length of every grid line belong to the selection.
+         */
         double minX = area.getLowPoint().getX();
         double minY = area.getLowPoint().getY();
         double minZ = area.getLowPoint().getZ();
@@ -132,34 +196,44 @@ public class CuboidDisplay {
         double maxY = area.getHighPoint().getY() + 1;
         double maxZ = area.getHighPoint().getZ() + 1;
 
-        // Bottom
+        /*
+         * Bottom
+         */
         updateHorizontalEdge(0, minX, maxX, minZ, minY, true);
         updateHorizontalEdge(1, minX, maxX, maxZ, minY, true);
         updateHorizontalEdge(2, minZ, maxZ, minX, minY, false);
         updateHorizontalEdge(3, minZ, maxZ, maxX, minY, false);
 
-        // Top
+        /*
+         * Top
+         */
         updateHorizontalEdge(4, minX, maxX, minZ, maxY, true);
         updateHorizontalEdge(5, minX, maxX, maxZ, maxY, true);
         updateHorizontalEdge(6, minZ, maxZ, minX, maxY, false);
         updateHorizontalEdge(7, minZ, maxZ, maxX, maxY, false);
 
-        // Vertical
+        /*
+         * Vertical
+         */
         updateVerticalEdge(8, minX, minZ, minY, maxY);
         updateVerticalEdge(9, minX, maxZ, minY, maxY);
         updateVerticalEdge(10, maxX, minZ, minY, maxY);
         updateVerticalEdge(11, maxX, maxZ, minY, maxY);
 
+        /*
+         * Grid calculations are restricted to the local calculation area.
+         */
         updateBottomGrid(minX, maxX, minY, minZ, maxZ);
         updateTopGrid(minX, maxX, maxY, minZ, maxZ);
+
         updateXFaceGrid(2, minX, minY, maxY, minZ, maxZ);
         updateXFaceGrid(3, maxX, minY, maxY, minZ, maxZ);
+
         updateZFaceGrid(4, minZ, minX, maxX, minY, maxY);
         updateZFaceGrid(5, maxZ, minX, maxX, minY, maxY);
     }
 
     private void updateHorizontalEdge(int edgeIndex, double start, double end, double fixed, double y, boolean alongX) {
-
         Location playerLocation = player.getEyeLocation();
 
         double[] visible = getVisibleInterval(start, end, fixed, y, alongX);
@@ -182,16 +256,16 @@ public class CuboidDisplay {
         double thickness = getLineThickness();
 
         if (displays.isEmpty()) {
-            if (alongX)
-                display = createDisplay(new Location(playerLocation.getWorld(), visibleStart, y - thickness / 2.0, fixed - thickness / 2.0), edgeMaterial.getMaterial());
-            else
-                display = createDisplay(new Location(playerLocation.getWorld(), fixed - thickness / 2.0, y - thickness / 2.0, visibleStart), edgeMaterial.getMaterial());
+            if (alongX) {
+                display = createDisplay(player, new Location(playerLocation.getWorld(), visibleStart, y - thickness / 2.0, fixed - thickness / 2.0), edgeMaterial.getMaterial());
+            } else {
+                display = createDisplay(player, new Location(playerLocation.getWorld(), fixed - thickness / 2.0, y - thickness / 2.0, visibleStart), edgeMaterial.getMaterial());
+            }
 
             displays.add(display);
         }
 
         display = displays.get(0);
-        display.show(player);
 
         if (alongX) {
             display.setVisual(visibleStart, y - thickness / 2.0, fixed - thickness / 2.0, (float) length, (float) thickness, (float) thickness);
@@ -201,7 +275,6 @@ public class CuboidDisplay {
     }
 
     private void updateVerticalEdge(int edgeIndex, double x, double z, double minY, double maxY) {
-
         Location playerLocation = player.getEyeLocation();
 
         double[] visible = getVisibleVerticalInterval(x, z, minY, maxY);
@@ -224,28 +297,27 @@ public class CuboidDisplay {
         double thickness = getLineThickness();
 
         if (displays.isEmpty()) {
-            display = createDisplay(new Location(playerLocation.getWorld(), x - thickness / 2.0, visibleStart, z - thickness / 2.0), edgeMaterial.getMaterial());
+            display = createDisplay(player, new Location(playerLocation.getWorld(), x - thickness / 2.0, visibleStart, z - thickness / 2.0), edgeMaterial.getMaterial());
             displays.add(display);
         }
 
         display = displays.get(0);
-        display.show(player);
 
         display.setVisual(x - thickness / 2.0, visibleStart, z - thickness / 2.0, (float) thickness, (float) length, (float) thickness);
     }
 
     private void updateBottomGrid(double minX, double maxX, double y, double minZ, double maxZ) {
-
         List<CMIBlockDisplay> displays = faceDisplays[0];
 
         List<GridLine> lines = new ArrayList<>();
 
         int gridSize = getGridSize();
 
-        /*
-         * Lines running along X.
-         */
-        for (double z = firstGridLine(minZ, maxZ); z <= maxZ; z += gridSize) {
+        double firstZ = firstGridLine(minZ, calculation.getLowPoint().getZ(), calculation.getHighPoint().getZ());
+
+        for (double z = firstZ; z <= calculation.getHighPoint().getZ() && z <= maxZ; z += gridSize) {
+            if (z < minZ)
+                continue;
 
             double[] visible = getVisibleInterval(minX, maxX, z, y, true);
 
@@ -253,10 +325,11 @@ public class CuboidDisplay {
                 lines.add(new GridLine(visible[0], visible[1], z, true));
         }
 
-        /*
-         * Lines running along Z.
-         */
-        for (double x = firstGridLine(minX, maxX); x <= maxX; x += gridSize) {
+        double firstX = firstGridLine(minX, calculation.getLowPoint().getX(), calculation.getHighPoint().getX());
+
+        for (double x = firstX; x <= calculation.getHighPoint().getX() && x <= maxX; x += gridSize) {
+            if (x < minX)
+                continue;
 
             double[] visible = getVisibleInterval(minZ, maxZ, x, y, false);
 
@@ -268,14 +341,18 @@ public class CuboidDisplay {
     }
 
     private void updateTopGrid(double minX, double maxX, double y, double minZ, double maxZ) {
-
         List<CMIBlockDisplay> displays = faceDisplays[1];
 
         List<GridLine> lines = new ArrayList<>();
 
         int gridSize = getGridSize();
+
         if (maxZ - minZ > gridSize) {
-            for (double z = firstGridLine(minZ, maxZ); z < maxZ; z += gridSize) {
+            double firstZ = firstGridLine(minZ, calculation.getLowPoint().getZ(), calculation.getHighPoint().getZ());
+
+            for (double z = firstZ; z < calculation.getHighPoint().getZ() && z < maxZ; z += gridSize) {
+                if (z < minZ)
+                    continue;
 
                 double[] visible = getVisibleInterval(minX, maxX, z, y, true);
 
@@ -285,7 +362,11 @@ public class CuboidDisplay {
         }
 
         if (maxX - minX > gridSize) {
-            for (double x = firstGridLine(minX, maxX); x < maxX; x += gridSize) {
+            double firstX = firstGridLine(minX, calculation.getLowPoint().getX(), calculation.getHighPoint().getX());
+
+            for (double x = firstX; x < calculation.getHighPoint().getX() && x < maxX; x += gridSize) {
+                if (x < minX)
+                    continue;
 
                 double[] visible = getVisibleInterval(minZ, maxZ, x, y, false);
 
@@ -298,17 +379,18 @@ public class CuboidDisplay {
     }
 
     private void updateXFaceGrid(int faceIndex, double x, double minY, double maxY, double minZ, double maxZ) {
-
         List<CMIBlockDisplay> displays = faceDisplays[faceIndex];
 
         List<GridLine> lines = new ArrayList<>();
 
         int gridSize = getGridSize();
-        /*
-         * Vertical lines along Y.
-         */
+
         if (maxZ - minZ > gridSize) {
-            for (double z = firstGridLine(minZ, maxZ); z < maxZ; z += gridSize) {
+            double firstZ = firstGridLine(minZ, calculation.getLowPoint().getZ(), calculation.getHighPoint().getZ());
+
+            for (double z = firstZ; z < calculation.getHighPoint().getZ() && z < maxZ; z += gridSize) {
+                if (z < minZ)
+                    continue;
 
                 double[] visible = getVisibleVerticalInterval(x, z, minY, maxY);
 
@@ -317,11 +399,12 @@ public class CuboidDisplay {
             }
         }
 
-        /*
-         * Horizontal lines along Z.
-         */
         if (maxY - minY > gridSize) {
-            for (double y = firstGridLine(minY, maxY); y < maxY; y += gridSize) {
+            double firstY = firstGridLine(minY, calculation.getLowPoint().getY(), calculation.getHighPoint().getY());
+
+            for (double y = firstY; y < calculation.getHighPoint().getY() && y < maxY; y += gridSize) {
+                if (y < minY)
+                    continue;
 
                 double[] visible = getVisibleInterval(minZ, maxZ, x, y, false);
 
@@ -334,17 +417,18 @@ public class CuboidDisplay {
     }
 
     private void updateZFaceGrid(int faceIndex, double z, double minX, double maxX, double minY, double maxY) {
-
         List<CMIBlockDisplay> displays = faceDisplays[faceIndex];
 
         List<GridLine> lines = new ArrayList<>();
 
         int gridSize = getGridSize();
-        /*
-         * Vertical lines along Y.
-         */
+
         if (maxX - minX > gridSize) {
-            for (double x = firstGridLine(minX, maxX); x < maxX; x += gridSize) {
+            double firstX = firstGridLine(minX, calculation.getLowPoint().getX(), calculation.getHighPoint().getX());
+
+            for (double x = firstX; x < calculation.getHighPoint().getX() && x < maxX; x += gridSize) {
+                if (x < minX)
+                    continue;
 
                 double[] visible = getVisibleVerticalInterval(x, z, minY, maxY);
 
@@ -353,11 +437,12 @@ public class CuboidDisplay {
             }
         }
 
-        /*
-         * Horizontal lines along X.
-         */
         if (maxY - minY > gridSize) {
-            for (double y = firstGridLine(minY, maxY); y < maxY; y += gridSize) {
+            double firstY = firstGridLine(minY, calculation.getLowPoint().getY(), calculation.getHighPoint().getY());
+
+            for (double y = firstY; y < calculation.getHighPoint().getY() && y < maxY; y += gridSize) {
+                if (y < minY)
+                    continue;
 
                 double[] visible = getVisibleInterval(minX, maxX, z, y, true);
 
@@ -370,19 +455,18 @@ public class CuboidDisplay {
     }
 
     private void updateGridDisplays(CMIBlockDisplay display, double scaleX, double scaleY, double scaleZ, double locationX, double locationY, double locationZ) {
-        CMIScheduler.runAtEntity(Residence.getInstance(), display.getEntity(), () -> {
-            display.setVisual(
-                    locationX - getLineThickness() / 2.0,
-                    locationY - getLineThickness() / 2.0,
-                    locationZ - getLineThickness() / 2.0,
-                    (float) scaleX,
-                    (float) scaleY,
-                    (float) scaleZ);
-        });
+        double thickness = getLineThickness();
+
+        display.setVisual(
+                locationX - thickness / 2.0,
+                locationY - thickness / 2.0,
+                locationZ - thickness / 2.0,
+                (float) scaleX,
+                (float) scaleY,
+                (float) scaleZ);
     }
 
     private void updateGridDisplays(List<CMIBlockDisplay> displays, List<GridLine> lines, double y) {
-
         Material material = sideMaterial.getMaterial();
 
         resizeHorizontalGridDisplays(displays, lines, y, material);
@@ -400,6 +484,7 @@ public class CuboidDisplay {
             GridLine line = lines.get(i);
 
             double thickness = getLineThickness();
+
             if (line.alongX) {
                 updateGridDisplays(display, line.end - line.start, thickness, thickness, line.start, y, line.fixed);
             } else {
@@ -409,7 +494,6 @@ public class CuboidDisplay {
     }
 
     private void updateXFaceDisplays(List<CMIBlockDisplay> displays, List<GridLine> lines, double x) {
-
         Material material = sideMaterial.getMaterial();
 
         resizeXFaceDisplays(displays, lines, x, material);
@@ -427,6 +511,7 @@ public class CuboidDisplay {
             GridLine line = lines.get(i);
 
             double thickness = getLineThickness();
+
             if (line.alongX) {
                 updateGridDisplays(display, thickness, line.end - line.start, thickness, x, line.start, line.fixed);
             } else {
@@ -436,7 +521,6 @@ public class CuboidDisplay {
     }
 
     private void updateZFaceDisplays(List<CMIBlockDisplay> displays, List<GridLine> lines, double z) {
-
         Material material = sideMaterial.getMaterial();
 
         resizeZFaceDisplays(displays, lines, z, material);
@@ -454,6 +538,7 @@ public class CuboidDisplay {
             GridLine line = lines.get(i);
 
             double thickness = getLineThickness();
+
             if (line.alongX) {
                 updateGridDisplays(display, thickness, line.end - line.start, thickness, line.fixed, line.start, z);
             } else {
@@ -463,7 +548,6 @@ public class CuboidDisplay {
     }
 
     private void resizeHorizontalGridDisplays(List<CMIBlockDisplay> displays, List<GridLine> lines, double y, Material material) {
-
         while (displays.size() < lines.size()) {
             GridLine line = lines.get(displays.size());
 
@@ -475,14 +559,12 @@ public class CuboidDisplay {
                 location = new Location(player.getWorld(), line.fixed, y, line.start);
             }
 
-            CMIBlockDisplay display = createDisplay(location, material);
-            display.show(player);
+            CMIBlockDisplay display = createDisplay(player, location, material);
             displays.add(display);
         }
     }
 
     private void resizeXFaceDisplays(List<CMIBlockDisplay> displays, List<GridLine> lines, double x, Material material) {
-
         while (displays.size() < lines.size()) {
             GridLine line = lines.get(displays.size());
 
@@ -494,18 +576,23 @@ public class CuboidDisplay {
                 location = new Location(player.getWorld(), x, line.fixed, line.start);
             }
 
-            CMIBlockDisplay display = createDisplay(location, material);
-            display.show(player);
+            CMIBlockDisplay display = createDisplay(player, location, material);
             displays.add(display);
         }
     }
 
-    private CMIBlockDisplay createDisplay(Location location, Material material) {
-        return new CMIBlockDisplay(location, material);
+    private CMIBlockDisplay createDisplay(Player player, Location location, Material material) {
+        CMIBlockDisplay display = new CMIBlockDisplay();
+
+        CMIScheduler.runAtLocation(Residence.getInstance(), location, () -> {
+            display.init(location, material);
+            display.show(player);
+        });
+
+        return display;
     }
 
     private void resizeZFaceDisplays(List<CMIBlockDisplay> displays, List<GridLine> lines, double z, Material material) {
-
         while (displays.size() < lines.size()) {
             GridLine line = lines.get(displays.size());
 
@@ -517,14 +604,12 @@ public class CuboidDisplay {
                 location = new Location(player.getWorld(), line.start, line.fixed, z);
             }
 
-            CMIBlockDisplay display = createDisplay(location, material);
-            display.show(player);
+            CMIBlockDisplay display = createDisplay(player, location, material);
             displays.add(display);
         }
     }
 
     private double[] getVisibleInterval(double start, double end, double fixed, double y, boolean alongX) {
-
         Location playerLocation = player.getEyeLocation();
 
         double playerAxis = alongX ? playerLocation.getX() : playerLocation.getZ();
@@ -542,7 +627,6 @@ public class CuboidDisplay {
         double alongDistance = Math.sqrt(radiusSquared - perpendicularSquared);
 
         double visibleStart = Math.max(start, playerAxis - alongDistance);
-
         double visibleEnd = Math.min(end, playerAxis + alongDistance);
 
         if (visibleStart >= visibleEnd)
@@ -555,14 +639,12 @@ public class CuboidDisplay {
     }
 
     private double[] getVisibleVerticalInterval(double x, double z, double minY, double maxY) {
-
         Location playerLocation = player.getEyeLocation();
 
         double dx = playerLocation.getX() - x;
         double dz = playerLocation.getZ() - z;
 
         double horizontalSquared = dx * dx + dz * dz;
-
         double radiusSquared = getRange() * getRange();
 
         if (horizontalSquared > radiusSquared)
@@ -571,7 +653,6 @@ public class CuboidDisplay {
         double verticalDistance = Math.sqrt(radiusSquared - horizontalSquared);
 
         double visibleStart = Math.max(minY, playerLocation.getY() - verticalDistance);
-
         double visibleEnd = Math.min(maxY, playerLocation.getY() + verticalDistance);
 
         if (visibleStart >= visibleEnd)
@@ -583,30 +664,36 @@ public class CuboidDisplay {
         };
     }
 
-    private double firstGridLine(double min, double max) {
-        return (Math.floor(min / getGridSize()) + 1) * getGridSize();
+    private double firstGridLine(double originalMin, double calculationMin, double calculationMax) {
+        double first = (Math.floor(originalMin / getGridSize()) + 1) * getGridSize();
+
+        if (first < calculationMin) {
+            double steps = Math.ceil((calculationMin - first) / getGridSize());
+            first += steps * getGridSize();
+        }
+
+        return first;
     }
 
     public void show() {
-
         if (edgeDisplays == null)
-            recalculate();
+            init();
+
+        if (!calculationBoundsInitialized)
+            updateCalculationBounds(true);
 
         for (List<CMIBlockDisplay> displays : edgeDisplays) {
-            for (CMIBlockDisplay display : displays) {
+            for (CMIBlockDisplay display : displays)
                 display.show(player);
-            }
         }
 
         for (List<CMIBlockDisplay> displays : faceDisplays) {
-            for (CMIBlockDisplay display : displays) {
+            for (CMIBlockDisplay display : displays)
                 display.show(player);
-            }
         }
     }
 
     public void hide(Player player) {
-
         if (edgeDisplays == null)
             return;
 
@@ -622,12 +709,10 @@ public class CuboidDisplay {
     }
 
     public void clear() {
-
         if (edgeDisplays == null)
             return;
 
         for (List<CMIBlockDisplay> displays : edgeDisplays) {
-
             for (CMIBlockDisplay display : displays)
                 display.remove();
 
@@ -635,7 +720,6 @@ public class CuboidDisplay {
         }
 
         for (List<CMIBlockDisplay> displays : faceDisplays) {
-
             for (CMIBlockDisplay display : displays)
                 display.remove();
 
@@ -646,6 +730,8 @@ public class CuboidDisplay {
             scheduler.cancel();
             scheduler = null;
         }
+
+        calculationBoundsInitialized = false;
     }
 
     public CMIMaterial getEdgeMaterial() {
@@ -670,12 +756,6 @@ public class CuboidDisplay {
 
         private final double start;
         private final double end;
-
-        /*
-         * For horizontal faces: true = X direction false = Z direction
-         *
-         * For vertical faces the interpretation depends on the face update method.
-         */
         private final double fixed;
         private final boolean alongX;
 

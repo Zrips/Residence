@@ -44,10 +44,8 @@ public class pmirror implements cmd {
     public void getLocale() {
         ConfigReader c = Residence.getInstance().getLocaleManager().getLocaleConfig();
         c.get("Description", "Mirrors player flags");
-        c.get("Info", Arrays.asList("&eUsage: &6/res pmirror [Residence] [Source player] [Target player]",
-                "Mirrors flags of one player onto another player in the same residence.",
-                "Residence name can be skipped while standing inside one.",
-                "You must be owner of the residence or a admin to do this."));
+        c.get("Info", Arrays.asList("&eUsage: &6/res pmirror (residence) [sourcePlayer] [targetPlayer]",
+                "Mirrors flags of one player onto another player in the same residence."));
         LocaleManager.addTabCompleteMain(this, "[residence]%%[playername]", "[playername]", "[playername]");
     }
 }
