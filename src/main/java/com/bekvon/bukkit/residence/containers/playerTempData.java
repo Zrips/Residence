@@ -6,18 +6,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
-import net.Zrips.CMILib.Logs.CMIDebug;
-
 public class playerTempData {
 
-    protected static ConcurrentHashMap<UUID, playerTempData> playersTempData = new ConcurrentHashMap<UUID, playerTempData>();
+    private static ConcurrentHashMap<UUID, playerTempData> playersTempData = new ConcurrentHashMap<UUID, playerTempData>();
 
     private ClaimedResidence currentRes = null;
     private Location lastInsideLoc = null;
@@ -139,7 +136,14 @@ public class playerTempData {
     }
 
     public static playerTempData get(UUID uuid) {
-        return playersTempData.computeIfAbsent(uuid, k -> new playerTempData());
+        playerTempData data = playersTempData.get(uuid);
+
+        if (data != null)
+            return data;
+
+        data = new playerTempData();
+        playerTempData existing = playersTempData.putIfAbsent(uuid, data);
+        return existing != null ? existing : data;
     }
 
     public static void clear() {
