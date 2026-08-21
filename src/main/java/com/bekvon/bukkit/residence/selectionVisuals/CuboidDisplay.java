@@ -32,15 +32,16 @@ public class CuboidDisplay {
     private CMITask scheduler = null;
 
     private int range = VisualizerConfig.getRange();
-    private int gridSize = VisualizerConfig.getGridSize();
+    private double gridSize = VisualizerConfig.getGridSize();
     private double lineThickness = VisualizerConfig.getLineThickness();
 
     private static final double CALCULATION_BUFFER = 32.0;
-    private static final double CALCULATION_REBUILD_DISTANCE = 16.0;
+    private static final double CALCULATION_REBUILD_DISTANCE = 4.0;
 
     private CMIBlockArea calculation;
 
     private CMIVector3D calculationCenter;
+    private World calculationWorld;
 
     private boolean calculationBoundsInitialized = false;
 
@@ -71,12 +72,12 @@ public class CuboidDisplay {
         return this;
     }
 
-    public int getGridSize() {
+    public double getGridSize() {
         return gridSize;
     }
 
-    public CuboidDisplay setGridSize(int size) {
-        gridSize = size;
+    public CuboidDisplay setGridSize(double size) {
+        gridSize = CMINumber.clamp(size, 0.1);
         return this;
     }
 
@@ -132,7 +133,7 @@ public class CuboidDisplay {
         if (!force && !needsCalculationBoundsUpdate())
             return;
 
-        Location location = player.getLocation();
+        Location location = player.getEyeLocation();
 
         double radius = getRange() + CALCULATION_BUFFER;
 
@@ -157,6 +158,8 @@ public class CuboidDisplay {
 
         calculationCenter = new CMIVector3D(location.toVector());
 
+        calculationWorld = location.getWorld();
+
         calculationBoundsInitialized = true;
     }
 
@@ -164,7 +167,7 @@ public class CuboidDisplay {
         if (!calculationBoundsInitialized)
             return true;
 
-        Location location = player.getLocation();
+        Location location = player.getEyeLocation();
 
         double dx = location.getX() - calculationCenter.getX();
         double dy = location.getY() - calculationCenter.getY();
@@ -234,7 +237,6 @@ public class CuboidDisplay {
     }
 
     private void updateHorizontalEdge(int edgeIndex, double start, double end, double fixed, double y, boolean alongX) {
-        Location playerLocation = player.getEyeLocation();
 
         double[] visible = getVisibleInterval(start, end, fixed, y, alongX);
 
@@ -257,9 +259,9 @@ public class CuboidDisplay {
 
         if (displays.isEmpty()) {
             if (alongX) {
-                display = createDisplay(player, new Location(playerLocation.getWorld(), visibleStart, y - thickness / 2.0, fixed - thickness / 2.0), edgeMaterial.getMaterial());
+                display = createDisplay(player, new Location(calculationWorld, visibleStart, y - thickness / 2.0, fixed - thickness / 2.0), edgeMaterial.getMaterial());
             } else {
-                display = createDisplay(player, new Location(playerLocation.getWorld(), fixed - thickness / 2.0, y - thickness / 2.0, visibleStart), edgeMaterial.getMaterial());
+                display = createDisplay(player, new Location(calculationWorld, fixed - thickness / 2.0, y - thickness / 2.0, visibleStart), edgeMaterial.getMaterial());
             }
 
             displays.add(display);
@@ -275,7 +277,6 @@ public class CuboidDisplay {
     }
 
     private void updateVerticalEdge(int edgeIndex, double x, double z, double minY, double maxY) {
-        Location playerLocation = player.getEyeLocation();
 
         double[] visible = getVisibleVerticalInterval(x, z, minY, maxY);
 
@@ -297,7 +298,7 @@ public class CuboidDisplay {
         double thickness = getLineThickness();
 
         if (displays.isEmpty()) {
-            display = createDisplay(player, new Location(playerLocation.getWorld(), x - thickness / 2.0, visibleStart, z - thickness / 2.0), edgeMaterial.getMaterial());
+            display = createDisplay(player, new Location(calculationWorld, x - thickness / 2.0, visibleStart, z - thickness / 2.0), edgeMaterial.getMaterial());
             displays.add(display);
         }
 
@@ -311,7 +312,7 @@ public class CuboidDisplay {
 
         List<GridLine> lines = new ArrayList<>();
 
-        int gridSize = getGridSize();
+        double gridSize = getGridSize();
 
         double firstZ = firstGridLine(minZ, calculation.getLowPoint().getZ(), calculation.getHighPoint().getZ());
 
@@ -345,7 +346,7 @@ public class CuboidDisplay {
 
         List<GridLine> lines = new ArrayList<>();
 
-        int gridSize = getGridSize();
+        double gridSize = getGridSize();
 
         if (maxZ - minZ > gridSize) {
             double firstZ = firstGridLine(minZ, calculation.getLowPoint().getZ(), calculation.getHighPoint().getZ());
@@ -383,7 +384,7 @@ public class CuboidDisplay {
 
         List<GridLine> lines = new ArrayList<>();
 
-        int gridSize = getGridSize();
+        double gridSize = getGridSize();
 
         if (maxZ - minZ > gridSize) {
             double firstZ = firstGridLine(minZ, calculation.getLowPoint().getZ(), calculation.getHighPoint().getZ());
@@ -421,7 +422,7 @@ public class CuboidDisplay {
 
         List<GridLine> lines = new ArrayList<>();
 
-        int gridSize = getGridSize();
+        double gridSize = getGridSize();
 
         if (maxX - minX > gridSize) {
             double firstX = firstGridLine(minX, calculation.getLowPoint().getX(), calculation.getHighPoint().getX());
@@ -610,12 +611,11 @@ public class CuboidDisplay {
     }
 
     private double[] getVisibleInterval(double start, double end, double fixed, double y, boolean alongX) {
-        Location playerLocation = player.getEyeLocation();
 
-        double playerAxis = alongX ? playerLocation.getX() : playerLocation.getZ();
-        double playerFixed = alongX ? playerLocation.getZ() : playerLocation.getX();
+        double playerAxis = alongX ? calculationCenter.getX() : calculationCenter.getZ();
+        double playerFixed = alongX ? calculationCenter.getZ() : calculationCenter.getX();
 
-        double dy = playerLocation.getY() - y;
+        double dy = calculationCenter.getY() - y;
         double df = playerFixed - fixed;
 
         double perpendicularSquared = dy * dy + df * df;
@@ -639,10 +639,9 @@ public class CuboidDisplay {
     }
 
     private double[] getVisibleVerticalInterval(double x, double z, double minY, double maxY) {
-        Location playerLocation = player.getEyeLocation();
 
-        double dx = playerLocation.getX() - x;
-        double dz = playerLocation.getZ() - z;
+        double dx = calculationCenter.getX() - x;
+        double dz = calculationCenter.getZ() - z;
 
         double horizontalSquared = dx * dx + dz * dz;
         double radiusSquared = getRange() * getRange();
@@ -652,8 +651,8 @@ public class CuboidDisplay {
 
         double verticalDistance = Math.sqrt(radiusSquared - horizontalSquared);
 
-        double visibleStart = Math.max(minY, playerLocation.getY() - verticalDistance);
-        double visibleEnd = Math.min(maxY, playerLocation.getY() + verticalDistance);
+        double visibleStart = Math.max(minY, calculationCenter.getY() - verticalDistance);
+        double visibleEnd = Math.min(maxY, calculationCenter.getY() + verticalDistance);
 
         if (visibleStart >= visibleEnd)
             return null;
@@ -683,13 +682,15 @@ public class CuboidDisplay {
             updateCalculationBounds(true);
 
         for (List<CMIBlockDisplay> displays : edgeDisplays) {
-            for (CMIBlockDisplay display : displays)
+            for (CMIBlockDisplay display : displays) {
                 display.show(player);
+            }
         }
 
         for (List<CMIBlockDisplay> displays : faceDisplays) {
-            for (CMIBlockDisplay display : displays)
+            for (CMIBlockDisplay display : displays) {
                 display.show(player);
+            }
         }
     }
 

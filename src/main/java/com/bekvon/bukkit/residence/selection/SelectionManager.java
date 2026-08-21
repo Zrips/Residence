@@ -35,6 +35,7 @@ import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Effects.CMIEffect;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class SelectionManager {
@@ -552,9 +553,8 @@ public class SelectionManager {
             if (VisualizerConfig.isUseModernVersion()) {
                 if (v.isOnce()) {
                     CuboidDisplayManager.add(player,
-                            v.getAreas().isEmpty() ? v.getErrorAreas() : v.getAreas(),
-                            v.getAreas().isEmpty() ? CuboidDisplayType.BOUNCE : CuboidDisplayType.ENTER_EXIT,
-                            1, 3, 1);
+                            new ArrayList<>(v.getAreas().isEmpty() ? v.getErrorAreas() : v.getAreas()),
+                            v.getAreas().isEmpty() ? CuboidDisplayType.BOUNCE : CuboidDisplayType.ENTER_EXIT);
                 } else {
                     CuboidDisplayManager.show(player, v.getAreas(), v.getErrorAreas());
                 }

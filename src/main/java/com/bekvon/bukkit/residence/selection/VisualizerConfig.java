@@ -103,8 +103,8 @@ public class VisualizerConfig {
                 "If using spigot based server different particles can be used:", effectsList.toString());
 
         // Frame
-        String efname = c.get("Global.Visualizer.Selected.Frame", "dust:125,150,150");
-        CMIEffect selectedFrame = CMIEffect.get(efname);
+        String efname = c.get("Global.Visualizer.Selected.Frame", "dust;125,150,150");
+        CMIEffect selectedFrame = CMIEffect.deserialize(efname);
         if (selectedFrame == null) {
             selectedFrame = new CMIEffect(CMIParticle.DUST);
             selectedFrame.setColorFrom(org.bukkit.Color.fromRGB(125, 150, 150));
@@ -113,8 +113,8 @@ public class VisualizerConfig {
         getBaseEffect().setFrame(selectedFrame);
 
         // Sides
-        efname = c.get("Global.Visualizer.Selected.Sides", "dust:150,255,200");
-        CMIEffect selectedSides = CMIEffect.get(efname);
+        efname = c.get("Global.Visualizer.Selected.Sides", "dust;150,255,200");
+        CMIEffect selectedSides = CMIEffect.deserialize(efname);
         if (selectedSides == null) {
             selectedSides = new CMIEffect(CMIParticle.DUST);
             selectedFrame.setColorFrom(org.bukkit.Color.fromRGB(150, 255, 200));
@@ -122,8 +122,8 @@ public class VisualizerConfig {
         }
         getBaseEffect().setSides(selectedSides);
 
-        efname = c.get("Global.Visualizer.Overlap.Frame", "dust:255,0,255");
-        CMIEffect overlapFrame = CMIEffect.get(efname);
+        efname = c.get("Global.Visualizer.Overlap.Frame", "dust;255,0,255");
+        CMIEffect overlapFrame = CMIEffect.deserialize(efname);
         if (overlapFrame == null) {
             overlapFrame = new CMIEffect(CMIParticle.DUST);
             selectedFrame.setColorFrom(org.bukkit.Color.fromRGB(250, 0, 255));
@@ -131,12 +131,12 @@ public class VisualizerConfig {
         }
         getErrorEffect().setFrame(overlapFrame);
 
-        efname = c.get("Global.Visualizer.Overlap.Sides", "dust:255,100,100");
-        CMIEffect overlapSides = CMIEffect.get(efname);
+        efname = c.get("Global.Visualizer.Overlap.Sides", "dust;255,100,100");
+        CMIEffect overlapSides = CMIEffect.deserialize(efname);
         if (overlapSides == null) {
             overlapSides = new CMIEffect(CMIParticle.DUST);
             selectedFrame.setColorFrom(org.bukkit.Color.fromRGB(255, 100, 100));
-            lm.consoleMessage("an't find effect for Selected Sides with this name, it was set to default");
+            lm.consoleMessage("Can't find effect for Selected Sides with this name, it was set to default");
         }
         getErrorEffect().setSides(overlapSides);
 
@@ -148,18 +148,21 @@ public class VisualizerConfig {
 
         if (Version.isCurrentEqualOrHigher(Version.v1_19_4)) {
 
-            c.addComment("Global.Visualizer.Modern.GridSize", "Defines spacing between side lines of the grid", "Recommended to use power of 2. Default value: 8");
-            setGridSize(c.get("Global.Visualizer.Modern.GridSize", 8));
-
             c.addComment("Global.Visualizer.Modern.UpdateRateByTravel", "How many blocks does player need to travel before visual update is triggered",
                     "This can be set as low as 1, but its not recommended to use lower value. Default value: 4");
             setUpdateRateByTravel(c.get("Global.Visualizer.Modern.UpdateRateByTravel", 4));
+
             CuboidDisplayManager.updateVariables();
 
-            c.addComment("Global.Visualizer.Modern.LineThickness", "Thickness of the lines", "Block is 100, which is 100cm, while default value for line is 5cm");
-            setLineThickness(c.get("Global.Visualizer.Modern.LineThickness", 5) / 100D);
+            c.addComment("Global.Visualizer.Modern.Materials." + CuboidDisplayType.values()[0].name() + ".Edges", "Only block type materials are accepted here.");
+            c.addComment("Global.Visualizer.Modern.Materials." + CuboidDisplayType.values()[0].name() + ".Sides", "Only block type materials are accepted here.");
+            c.addComment("Global.Visualizer.Modern.Materials." + CuboidDisplayType.values()[0].name() + ".Range", "Lowest value 1, highest 128", "Default: 32");
+            c.addComment("Global.Visualizer.Modern.Materials." + CuboidDisplayType.values()[0].name() + ".GridSize",
+                    "Lowest value 0.25, highest 64. ATENTION! Only use low values in combination with lower Range",
+                    "Default: 8");
+            c.addComment("Global.Visualizer.Modern.Materials." + CuboidDisplayType.values()[0].name() + ".LineThickness", "Lowest value 0.01, highest 1", "Default: 0.05");
+            c.addComment("Global.Visualizer.Modern.Materials." + CuboidDisplayType.values()[0].name() + ".HideInSeconds", "Lowest value 0.1, highest 300", "Default: 30");
 
-            c.addComment("Global.Visualizer.Modern.Materials", "Only block type materials are accepted here.");
             for (CuboidDisplayType one : CuboidDisplayType.values()) {
                 String name = c.get("Global.Visualizer.Modern.Materials." + one.name() + ".Edges", one.getEdgeMaterial().toString());
                 CMIMaterial mat = CMIMaterial.get(name);
@@ -176,6 +179,11 @@ public class VisualizerConfig {
                     one.setSideMaterial(mat);
                 else
                     CMIMessages.consoleMessage("Selection " + one.name() + " side material not found(" + name + "), defaulting to " + one.getSideMaterial().toString());
+
+                one.setLineThickness(c.get("Global.Visualizer.Modern.Materials." + one.name() + ".LineThickness", one.getLineThickness()));
+                one.setGridSize(c.get("Global.Visualizer.Modern.Materials." + one.name() + ".GridSize", one.getGridSize()));
+                one.setHideInSeconds(c.get("Global.Visualizer.Modern.Materials." + one.name() + ".HideInSeconds", one.getHideInSeconds()));
+                one.setRange(c.get("Global.Visualizer.Modern.Materials." + one.name() + ".Range", one.getRange()));
             }
 
         }
