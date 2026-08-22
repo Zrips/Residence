@@ -345,7 +345,7 @@ Global:
     # Applies to: Both
     # Allows or denys sheep shear
     shear: true
-    # Applies to: Residence
+    # Applies to: Both
     # Allows or denys shooting projectile in area
     shoot: true
     # Applies to: Residence

@@ -34,7 +34,7 @@ public class VisualizerConfig {
     private static boolean bounceAnimation;
     private static boolean enterAnimation;
 
-    private static boolean useModernVersion = true;
+    private static volatile boolean useModernVersion = true;
     private static int gridSize = 8;
     private static int updateRateByTravel = 4;
     private static double lineThickness = 0.05;
@@ -47,6 +47,9 @@ public class VisualizerConfig {
         if (Version.isCurrentEqualOrHigher(Version.v1_19_4)) {
             c.addComment("Global.Visualizer.Type", "Which type of visualization we should use. Particle or Modern.");
             setUseModernVersion(c.get("Global.Visualizer.Type", "Modern").equalsIgnoreCase("Modern"));
+            if (!isUseModernVersion()) {
+                CuboidDisplayManager.removeAllPlayerDisplays();
+            }
         } else {
             setUseModernVersion(false);
         }

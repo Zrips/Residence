@@ -130,8 +130,21 @@ public class CuboidDisplayManager implements Listener {
         data.displays.clear();
     }
 
+    public static void removeAllPlayerDisplays() {
+        for (PlayerData data : players.values()) {
+            for (CuboidDisplay display : data.displays) {
+                display.clear();
+            }
+            data.displays.clear();
+        }
+        players.clear();
+    }
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
+        if (!VisualizerConfig.isUseModernVersion()) {
+            return;
+        }
         Location from = event.getFrom();
         Location to = event.getTo();
 
@@ -165,6 +178,9 @@ public class CuboidDisplayManager implements Listener {
 
     @EventHandler
     public void onPlayerTeleport(PlayerTeleportEvent event) {
+        if (!VisualizerConfig.isUseModernVersion()) {
+            return;
+        }
         Player player = event.getPlayer();
         PlayerData data = players.get(player.getUniqueId());
 
@@ -188,6 +204,9 @@ public class CuboidDisplayManager implements Listener {
 
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+        if (!VisualizerConfig.isUseModernVersion()) {
+            return;
+        }
         Player player = event.getPlayer();
         PlayerData data = players.get(player.getUniqueId());
 
@@ -201,6 +220,9 @@ public class CuboidDisplayManager implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        if (!VisualizerConfig.isUseModernVersion()) {
+            return;
+        }
         removeAll(event.getPlayer());
     }
 

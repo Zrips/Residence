@@ -47,15 +47,21 @@ public class ResidenceListener1_21_8_Paper implements Listener {
         Player player = Utils.potentialProjectileToPlayer(pushedBy);
 
         if (target instanceof ArmorStand) {
-            return shouldDeny(target, player, Flags.destroy);
+            return shouldDeny(target, player, Flags.destroy, null);
         }
         if (target instanceof Boat || target instanceof Minecart) {
-            return shouldDeny(target, player, Flags.vehicledestroy);
+            return shouldDeny(target, player, Flags.vehicledestroy, null);
         }
         if (target instanceof Player) {
             // Monster-on-player knockback doesn't need to check Flags.pvp
             // Allow players to knock themselves back (e.g., by Wind Charges)
-            return player != null && !target.equals(player) && FlagPermissions.has(target.getLocation(), Flags.pvp, FlagCombo.OnlyFalse);
+            if (player != null && !target.equals(player) && FlagPermissions.has(target.getLocation(), Flags.pvp, FlagCombo.OnlyFalse)) {
+                if (DenyMessageCache.shouldSendDenyMessage(player, Flags.pvp)) {
+                    lm.Flag_Deny.sendMessage(player, Flags.pvp);
+                }
+                return true;
+            }
+            return false;
         }
         if (Utils.isAnimal(target)) {
             // SulfurCube containing blocks doesn't take damage
@@ -66,38 +72,32 @@ public class ResidenceListener1_21_8_Paper implements Listener {
                 EntityEquipment equipment = ((org.bukkit.entity.SulfurCube) target).getEquipment();
                 // Check if SulfurCube has a block inside
                 if (equipment != null && !equipment.getItem(EquipmentSlot.BODY).isEmpty()) {
-                    return shouldDenyPush(target, player);
+                    return shouldDeny(target, player, Flags.push, Flags.animalkilling);
                 }
                 // SulfurCube without blocks still checks Flags.animalkilling
             }
-            return shouldDeny(target, player, Flags.animalkilling);
+            return shouldDeny(target, player, Flags.animalkilling, null);
         }
         if (ResidenceEntityListener.isMonster(target)) {
-            return shouldDeny(target, player, Flags.mobkilling);
+            return shouldDeny(target, player, Flags.mobkilling, null);
         }
         return false;
     }
 
-    private static boolean shouldDeny(Entity target, Player pushedBy, Flags flag) {
-        if (pushedBy != null) {
-            if (pushedBy.hasMetadata("NPC") || ResAdmin.isResAdmin(pushedBy)) {
-                return false;
-            }
-            return FlagPermissions.has(target.getLocation(), pushedBy, flag, FlagCombo.OnlyFalse);
-        } else {
-            return FlagPermissions.has(target.getLocation(), flag, FlagCombo.OnlyFalse);
+    private static boolean shouldDeny(Entity target, Player pushedBy, Flags mainFlag, Flags subFlag) {
+        if (!mainFlag.isGlobalyEnabled()) {
+            return false;
         }
-    }
-
-    private static boolean shouldDenyPush(Entity target, Player pushedBy) {
         if (pushedBy != null) {
             if (pushedBy.hasMetadata("NPC") || ResAdmin.isResAdmin(pushedBy)) {
                 return false;
             }
             FlagPermissions perms = FlagPermissions.getPerms(target.getLocation(), pushedBy);
-            if (!perms.playerHas(pushedBy, Flags.push, perms.playerHas(pushedBy, Flags.animalkilling, true))) {
-                if (DenyMessageCache.shouldSendDenyMessage(pushedBy, Flags.push)) {
-                    lm.Flag_Deny.sendMessage(pushedBy, Flags.push);
+            boolean result = (subFlag == null || perms.playerHas(pushedBy, subFlag, true));
+
+            if (!perms.playerHas(pushedBy, mainFlag, result)) {
+                if (DenyMessageCache.shouldSendDenyMessage(pushedBy, mainFlag)) {
+                    lm.Flag_Deny.sendMessage(pushedBy, mainFlag);
                 }
                 return true;
             }
@@ -105,7 +105,9 @@ public class ResidenceListener1_21_8_Paper implements Listener {
 
         } else {
             FlagPermissions perms = FlagPermissions.getPerms(target.getLocation());
-            return !perms.has(Flags.push, perms.has(Flags.animalkilling, true));
+            boolean result = (subFlag == null || perms.has(subFlag, true));
+
+            return !perms.has(mainFlag, result);
         }
     }
 }
