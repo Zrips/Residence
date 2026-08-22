@@ -133,7 +133,7 @@ public class ResidenceEntityListener implements Listener {
             shouldDeny = shouldDenyPlayerChangeBlock(block, (Player) entity);
 
         } else if (Flags.destroy.isGlobalyEnabled() && entity instanceof Boat) {
-            shouldDeny = shouldDenyBoatBreakLilyPad(entity, block);
+            shouldDeny = shouldDenyBoatBreakLilyPad((Boat) entity, block);
 
         } else if (Flags.destroy.isGlobalyEnabled() && entity instanceof Projectile) {
             // Projectile-triggered EntityChangeBlockEvent always breaks blocks
@@ -169,15 +169,15 @@ public class ResidenceEntityListener implements Listener {
         return false;
     }
 
-    private boolean shouldDenyBoatBreakLilyPad(Entity entity, Block block) {
+    private boolean shouldDenyBoatBreakLilyPad(Boat boat, Block block) {
         if (CMIMaterial.get(block.getType()) != CMIMaterial.LILY_PAD) {
             return false;
         }
         Entity rider = null;
         if (Version.isCurrentLower(Version.v1_11_2)) {
-            rider = entity.getPassenger();
+            rider = boat.getPassenger();
         } else {
-            List<Entity> passengers = entity.getPassengers();
+            List<Entity> passengers = boat.getPassengers();
             if (!passengers.isEmpty()) {
                 // first passenger
                 rider = passengers.get(0);
@@ -331,7 +331,7 @@ public class ResidenceEntityListener implements Listener {
         if (entity == null) {
             return false;
         }
-        if (Version.isCurrentEqualOrHigher(Version.v1_19_3)) {
+        if (Version.isCurrentEqualOrHigher(Version.v1_19_R2)) {
             return entity instanceof org.bukkit.entity.Enemy;
         }
         if (entity instanceof Monster) {
@@ -355,11 +355,11 @@ public class ResidenceEntityListener implements Listener {
     }
 
     private static boolean isTamed(Entity ent) {
-        return (ent instanceof Tameable ? ((Tameable) ent).isTamed() : false);
+        return ent instanceof Tameable && ((Tameable) ent).isTamed();
     }
 
     private static boolean damageableProjectile(Entity ent) {
-        if (ent instanceof Projectile && ent.getType().toString().equalsIgnoreCase("Splash_potion")) {
+        if (ent instanceof Projectile && CMIEntityType.get(ent) == CMIEntityType.SPLASH_POTION) {
 
             if (((ThrownPotion) ent).getEffects().isEmpty())
                 return true;
@@ -370,7 +370,7 @@ public class ResidenceEntityListener implements Listener {
                 }
             }
         }
-        return ent instanceof Projectile || ent.getType().toString().equalsIgnoreCase("Trident") || ent.getType().toString().equalsIgnoreCase("Spectral_Arrow");
+        return ent instanceof Projectile;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -851,8 +851,9 @@ public class ResidenceEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
+        Projectile projectile = event.getEntity();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getEntity().getWorld())) {
+        if (plugin.isDisabledWorldListener(projectile.getWorld())) {
             return;
         }
         Flags flag = Flags.shoot;
@@ -876,22 +877,24 @@ public class ResidenceEntityListener implements Listener {
         if (!flag.isGlobalyEnabled()) {
             return;
         }
-        ProjectileSource shooter = event.getEntity().getShooter();
+        ProjectileSource shooter = projectile.getShooter();
+        if (shooter instanceof Player) {
 
-        Player player = null;
-        boolean isPlayer = shooter instanceof Player;
-        if (isPlayer) {
-            player = (Player) shooter;
-            if (ResAdmin.isResAdmin(player)) {
+            Player player = (Player) shooter;
+            if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player)) {
                 return;
             }
-        }
-        FlagPermissions perms = FlagPermissions.getPerms(event.getEntity().getLocation());
-        if (perms.has(flag, FlagCombo.OnlyFalse)) {
-            if (isPlayer) {
+            FlagPermissions perms = FlagPermissions.getPerms(projectile.getLocation(), player);
+            if (perms.playerHas(player, flag, FlagCombo.OnlyFalse)) {
                 lm.Flag_Deny.sendMessage(player, flag);
+                event.setCancelled(true);
             }
-            event.setCancelled(true);
+
+        } else {
+            FlagPermissions perms = FlagPermissions.getPerms(projectile.getLocation());
+            if (perms.has(flag, FlagCombo.OnlyFalse)) {
+                event.setCancelled(true);
+            }
         }
     }
 

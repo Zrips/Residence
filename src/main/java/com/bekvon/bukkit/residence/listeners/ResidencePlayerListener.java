@@ -1632,7 +1632,7 @@ public class ResidencePlayerListener implements Listener {
             mainFlag = Flags.dye;
             subFlag = Flags.animalkilling;
 
-        } else if (Flags.nametag.isGlobalyEnabled() && held == CMIMaterial.NAME_TAG) {
+        } else if (Flags.nametag.isGlobalyEnabled() && entity instanceof LivingEntity && held == CMIMaterial.NAME_TAG) {
             mainFlag = Flags.nametag;
             if (Utils.isAnimal(entity)) {
                 subFlag = Flags.animalkilling;

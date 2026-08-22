@@ -114,7 +114,7 @@ public enum Flags {
     rain(CMIMaterial.BLUE_ORCHID, FlagMode.Residence, "Sets weather to rainny in residence", true),
     respawn(CMIMaterial.SUNFLOWER, FlagMode.Residence, "Automaticaly respawns player", false),
     riding(CMIMaterial.SADDLE, FlagMode.Both, "Prevent riding a horse", true),
-    shoot(CMIMaterial.ARROW, FlagMode.Residence, "Allows or denys shooting projectile in area", true),
+    shoot(CMIMaterial.ARROW, FlagMode.Both, "Allows or denys shooting projectile in area", true),
     sun(CMIMaterial.SUNFLOWER, FlagMode.Residence, "Sets weather to sunny in residence", true),
     shop(CMIMaterial.ITEM_FRAME, FlagMode.Residence, "Adds residence to special residence shop list", true),
     snowtrail(CMIMaterial.SNOW, FlagMode.Residence, "Prevents snowman snow trails", true),
