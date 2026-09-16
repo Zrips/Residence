@@ -29,9 +29,9 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.bekvon.bukkit.residence.Residence;
@@ -790,46 +790,56 @@ public class ResidenceManager implements ResidenceInterface {
 
         Set<Location> locations = ConcurrentHashMap.newKeySet();
 
+        // Base coordinates of chunk, needed to get local coordinates of block inside chunk
+        final int baseX = chunkRef.getX() * 16;
+        final int baseZ = chunkRef.getZ() * 16;
+
         ChunkSnapshot chunkSnapshot = null;
-        for (int x = chunkRef.getX() * 16; x <= chunkRef.getX() * 16 + 15; x++) {
-            for (int z = chunkRef.getZ() * 16; z <= chunkRef.getZ() * 16 + 15; z++) {
+        for (int x = baseX; x <= baseX + 15; x++) {
+            for (int z = baseZ; z <= baseZ + 15; z++) {
 
                 // Limit to exact residence area
                 if (x < low.getBlockX() || x > high.getBlockX() || z < low.getBlockZ() || z > high.getBlockZ())
                     continue;
 
+                // Cant use x % 16 here as for negative coordinates it returns negative value and abs() of it
+                // points to a mirrored column of chunk snapshot, so we would read data of a different block
+                int cx = x - baseX;
+                int cz = z - baseZ;
+
                 int hy = world.getHighestBlockYAt(x, z);
                 if (high.getBlockY() < hy)
                     hy = high.getBlockY();
 
-                int cx = Math.abs(x % 16);
-                int cz = Math.abs(z % 16);
-
                 if (chunkSnapshot == null) {
-                    if (!world.getBlockAt(x, 0, z).getChunk().isLoaded()) {
-                        world.getBlockAt(x, 0, z).getChunk().load();
-                        chunkSnapshot = world.getBlockAt(x, 0, z).getChunk().getChunkSnapshot(false, false, false);
-                        world.getBlockAt(x, 0, z).getChunk().unload();
-                    } else {
-                        chunkSnapshot = world.getBlockAt(x, 0, z).getChunk().getChunkSnapshot();
-                    }
+                    Chunk chunk = world.getChunkAt(x >> 4, z >> 4);
+                    if (!chunk.isLoaded())
+                        chunk.load();
+                    chunkSnapshot = chunk.getChunkSnapshot(false, false, false);
                 }
 
-                if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
-                    for (int y = low.getBlockY(); y <= hy; y++) {
-                        @NotNull
-                        Material type = chunkSnapshot.getBlockType(cx, y, cz);
-                        if (!plugin.getConfigManager().getCleanBlocks().contains(type))
-                            continue;
-                        locations.add(new Location(world, x, y, z));
-                    }
+                for (int y = low.getBlockY(); y <= hy; y++) {
+                    Material type = chunkSnapshot.getBlockType(cx, y, cz);
+                    if (!plugin.getConfigManager().getCleanBlocks().contains(type))
+                        continue;
+                    locations.add(new Location(world, x, y, z));
                 }
             }
         }
 
         for (Location one : locations) {
-            if (plugin.isEnabled() && !Bukkit.getServer().isStopping())
-                one.getBlock().setType(Material.AIR);
+            if (!plugin.isEnabled() || Bukkit.getServer().isStopping())
+                continue;
+
+            Block block = one.getBlock();
+
+            // Validate current block type before removing it, as world state could have changed since
+            // snapshot was taken and we should never remove blocks which are not on our cleaning list
+            if (!plugin.getConfigManager().getCleanBlocks().contains(block.getType()))
+                continue;
+
+            // Skipping block updates to avoid chain reactions which could remove blocks outside of our cleaning list
+            block.setType(Material.AIR, false);
         }
     }
 
