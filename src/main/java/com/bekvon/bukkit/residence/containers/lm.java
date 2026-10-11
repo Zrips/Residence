@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.listenersCache.DenyMessageCache;
+import com.bekvon.bukkit.residence.listenersCache.DenyMessageCache_Legacy;
 
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Colors.CMIChatColor;
@@ -615,18 +616,21 @@ public enum lm {
         return Residence.getInstance().getLM().getMessageList(this);
     }
 
+    private boolean shouldSendDenyMessage(Player player, Flags flag) {
+        if (Version.isCurrentEqualOrHigher(Version.v1_16_0)) {
+            return DenyMessageCache.shouldSendDenyMessage(player, flag);
+        } else {
+            return DenyMessageCache_Legacy.shouldSendDenyMessage(player, flag);
+        }
+    }
+
     public void sendMessage(Player player, Flags flag) {
         if (player == null || flag == null) {
             return;
         }
-        if (Version.isCurrentLower(Version.v1_16_0)) {
+        int cooldownSeconds = Residence.getInstance().getConfigManager().getFlagDenyMessageCooldown();
+        if (cooldownSeconds <= 0 || shouldSendDenyMessage(player, flag)) {
             lm.Flag_Deny.sendMessage((CommandSender) player, flag);
-
-        } else {
-            int cooldownSeconds = Residence.getInstance().getConfigManager().getFlagDenyMessageCooldown();
-            if (cooldownSeconds <= 0 || DenyMessageCache.shouldSendDenyMessage(player, flag)) {
-                lm.Flag_Deny.sendMessage((CommandSender) player, flag);
-            }
         }
     }
 
@@ -634,14 +638,9 @@ public enum lm {
         if (player == null || flag == null) {
             return;
         }
-        if (Version.isCurrentLower(Version.v1_16_0)) {
+        int cooldownSeconds = Residence.getInstance().getConfigManager().getFlagDenyMessageCooldown();
+        if (cooldownSeconds <= 0 || shouldSendDenyMessage(player, flag)) {
             lm.Residence_FlagDeny.sendMessage((CommandSender) player, flag, string);
-
-        } else {
-            int cooldownSeconds = Residence.getInstance().getConfigManager().getFlagDenyMessageCooldown();
-            if (cooldownSeconds <= 0 || DenyMessageCache.shouldSendDenyMessage(player, flag)) {
-                lm.Residence_FlagDeny.sendMessage((CommandSender) player, flag, string);
-            }
         }
     }
 

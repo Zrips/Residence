@@ -78,6 +78,7 @@ import com.bekvon.bukkit.residence.listeners.ResidenceListener26_2;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener26_2_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener26_3_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener;
+import com.bekvon.bukkit.residence.listenersCache.DenyMessageCache_Legacy;
 import com.bekvon.bukkit.residence.permissions.PermissionManager;
 import com.bekvon.bukkit.residence.persistance.YMLSaveHelper;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -646,6 +647,9 @@ public class Residence extends JavaPlugin {
                 pm.registerEvents(new ShopListener(this), this);
                 pm.registerEvents(new ResidenceRaidListener(), this);
 
+                if (Version.isCurrentLower(Version.v1_16_0)) {
+                    pm.registerEvents(new DenyMessageCache_Legacy(), this);
+                }
                 firstenable = false;
             } else {
                 getPlayerListener().reload();

@@ -35,6 +35,7 @@ import com.bekvon.bukkit.residence.containers.GenMessageType;
 import com.bekvon.bukkit.residence.containers.RandomTeleport;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.listenersCache.DenyMessageCache;
+import com.bekvon.bukkit.residence.listenersCache.DenyMessageCache_Legacy;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.selection.VisualizerConfig;
@@ -1202,11 +1203,15 @@ public class ConfigManager {
         MessageType = new ArrayList<>(c.get("Global.Messages.MessageType", Arrays.asList("Flag_Deny", "Residence_FlagDeny", "General_NoPVPZone")));
 
         c.addComment("Global.Messages.FlagDenyMessageCooldown", "Cooldown for sending duplicate Flag deny messages, in seconds(default: 1)",
-                "Only effective for 1.16+ versions; suppresses spam from repeated Flag deny messages");
+                "suppresses spam from repeated Flag deny messages");
         FlagDenyMessageCooldown = (c.get("Global.Messages.FlagDenyMessageCooldown", 1));
 
-        if (Version.isCurrentEqualOrHigher(Version.v1_16_0) && FlagDenyMessageCooldown > 0) {
-            DenyMessageCache.reloadDenyMessageCache(FlagDenyMessageCooldown);
+        if (FlagDenyMessageCooldown > 0) {
+            if (Version.isCurrentEqualOrHigher(Version.v1_16_0)) {
+                DenyMessageCache.reloadDenyMessageCache(FlagDenyMessageCooldown);
+            } else {
+                DenyMessageCache_Legacy.reloadDenyMessageCache(FlagDenyMessageCooldown);
+            }
         }
 
         ActionBarOnSelection = c.get("Global.ActionBar.ShowOnSelection", true);
