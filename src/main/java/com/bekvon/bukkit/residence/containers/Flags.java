@@ -88,6 +88,7 @@ public enum Flags {
     leash(CMIMaterial.LEAD, FlagMode.Both, "Allows or denys aninal leash", true),
     lever(CMIMaterial.LEVER, FlagMode.Both, "Allows or denys players to use levers", true),
     loom(CMIMaterial.LOOM, FlagMode.Both, "Allows or denys players to use looms", true),
+    lunge(CMIMaterial.IRON_SPEAR, FlagMode.Both, "Allows or denys players to use lunge enchant", true),
     minecartsuction(CMIMaterial.HOPPER_MINECART, FlagMode.Residence, "Allow or deny derailed hopper minecarts from sucking items from containers", true),
     mobexpdrop(CMIMaterial.MELON_SEEDS, FlagMode.Residence, "Prevents mob droping exp on death", true),
     mobgriefing(CMIMaterial.BONE, FlagMode.Residence, "Allow or deny monster griefing (does not override block/entity-specific flags)", true),

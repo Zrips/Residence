@@ -13,12 +13,15 @@ import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.listenersCache.PlayerCollideWithEntityCache;
 import com.bekvon.bukkit.residence.listenersCache.PlayerCollideWithEntityCache.PlayerCollideWithEntityKey;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import io.papermc.paper.event.entity.EntityCollideWithEntityEvent;
+import io.papermc.paper.event.entity.EntityLungeEvent;
 
 public class ResidenceListener26_2_Paper implements Listener {
 
@@ -26,6 +29,24 @@ public class ResidenceListener26_2_Paper implements Listener {
 
     public ResidenceListener26_2_Paper(Residence plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onEntityLungeEvent(EntityLungeEvent event) {
+
+        Entity entity = event.getEntity();
+
+        if (!(entity instanceof Player))
+            return;
+
+        Player player = (Player) entity;
+
+        FlagPermissions perms = FlagPermissions.getPerms(player.getLocation(), player);
+        if (!perms.playerHas(player, Flags.lunge, FlagCombo.OnlyFalse))
+            return;
+
+        lm.Flag_Deny.sendMessage(player, Flags.lunge);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
