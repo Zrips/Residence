@@ -74,6 +74,7 @@ import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_8_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_8_Spigot;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_9_Paper;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener26_1_2_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener26_2;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener26_2_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener26_3_Paper;
@@ -631,6 +632,9 @@ public class Residence extends JavaPlugin {
                 }
                 if (Version.isCurrentEqualOrHigher(Version.v1_21_9) && Version.isPaperBranch()) {
                     pm.registerEvents(new ResidenceListener1_21_9_Paper(this), this);
+                }
+                if (Version.isCurrentEqualOrHigher(Version.v26_1_2) && Version.isPaperBranch()) {
+                    pm.registerEvents(new ResidenceListener26_1_2_Paper(this), this);
                 }
                 if (Version.isCurrentEqualOrHigher(Version.v26_2_0)) {
                     if (Version.isPaperBranch()) {

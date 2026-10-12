@@ -16,6 +16,7 @@ import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Version.Version;
@@ -94,7 +95,7 @@ public class PotionUtils {
             }
         } else {
             if (Utils.isUndead(victim)) {
-                return FlagPermissions.has(victim.getLocation(), Flags.mobkilling, FlagPermissions.FlagCombo.OnlyFalse);
+                return FlagPermissions.has(victim.getLocation(), Flags.mobkilling, FlagCombo.OnlyFalse);
             }
         }
         return false;
@@ -120,7 +121,7 @@ public class PotionUtils {
                         ? attackerRes.getPermissions()
                         : Residence.getInstance().getWorldFlags().getPerms(player.getWorld());
                 // if PVP disabled at attacker location, deny the effect
-                if (attackerPerms.has(Flags.pvp, FlagPermissions.FlagCombo.OnlyFalse)) {
+                if (attackerPerms.has(Flags.pvp, FlagCombo.OnlyFalse)) {
                     lm.Flag_Deny.sendMessage(player, Flags.pvp);
                     return true;
                 }
@@ -129,13 +130,13 @@ public class PotionUtils {
                         ? victimRes.getPermissions()
                         : Residence.getInstance().getWorldFlags().getPerms(victim.getWorld());
                 // if PVP disabled at victim location, deny the effect
-                if (victimPerms.has(Flags.pvp, FlagPermissions.FlagCombo.OnlyFalse)) {
+                if (victimPerms.has(Flags.pvp, FlagCombo.OnlyFalse)) {
                     lm.Flag_Deny.sendMessage(player, Flags.pvp);
                     return true;
                 }
                 if (attackerRes != null && attackerRes == victimRes
-                        && attackerPerms.playerHas(player, Flags.friendlyfire, FlagPermissions.FlagCombo.OnlyFalse)
-                        && attackerPerms.playerHas((Player) victim, Flags.friendlyfire, FlagPermissions.FlagCombo.OnlyFalse)) {
+                        && attackerPerms.playerHas(player, Flags.friendlyfire, FlagCombo.OnlyFalse)
+                        && attackerPerms.playerHas((Player) victim, Flags.friendlyfire, FlagCombo.OnlyFalse)) {
                     CMIActionBar.send(player, Residence.getInstance().getLM().getMessage(lm.General_NoFriendlyFire));
                     return true;
                 }
@@ -151,13 +152,13 @@ public class PotionUtils {
                 if (attacker instanceof Witch || attacker instanceof DragonFireball) {
                     return false;
                 }
-                return FlagPermissions.has(victim.getLocation(), Flags.pvp, FlagPermissions.FlagCombo.OnlyFalse);
+                return FlagPermissions.has(victim.getLocation(), Flags.pvp, FlagCombo.OnlyFalse);
 
             } else if (Flags.animalkilling.isGlobalyEnabled() && Utils.isAnimal(victim)) {
-                return FlagPermissions.has(victim.getLocation(), Flags.animalkilling, FlagPermissions.FlagCombo.OnlyFalse);
+                return FlagPermissions.has(victim.getLocation(), Flags.animalkilling, FlagCombo.OnlyFalse);
 
             } else if (Flags.mobkilling.isGlobalyEnabled() && Utils.isMonster(victim)) {
-                return FlagPermissions.has(victim.getLocation(), Flags.mobkilling, FlagPermissions.FlagCombo.OnlyFalse);
+                return FlagPermissions.has(victim.getLocation(), Flags.mobkilling, FlagCombo.OnlyFalse);
 
             }
         }
