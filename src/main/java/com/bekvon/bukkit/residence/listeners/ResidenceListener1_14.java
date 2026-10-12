@@ -1,6 +1,7 @@
 package com.bekvon.bukkit.residence.listeners;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -9,28 +10,26 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTakeLecternBookEvent;
 import org.bukkit.event.raid.RaidTriggerEvent;
-import org.bukkit.event.vehicle.VehicleDamageEvent;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.lm;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
-import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Version.Version;
 import org.jetbrains.annotations.NotNull;
 
 public class ResidenceListener1_14 implements Listener {
@@ -41,25 +40,29 @@ public class ResidenceListener1_14 implements Listener {
         this.plugin = plugin;
     }
 
-    private static final Map<String, Tag<Material>> BLOCK_TAG_CACHE = new ConcurrentHashMap<>();
-    private static final Map<String, Tag<Material>> ITEM_TAG_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, Optional<Tag<Material>>> BLOCK_TAG_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, Optional<Tag<Material>>> ITEM_TAG_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, Optional<Tag<EntityType>>> ENTITY_TAG_CACHE = new ConcurrentHashMap<>();
 
     // https://minecraft.wiki/w/Block_tag_(Java_Edition)
-    public static boolean isBlockTag(Material block, String tagName) {
-        if (block == null || tagName == null) {
-            return false;
-        }
-        Tag<Material> tag = BLOCK_TAG_CACHE.computeIfAbsent(tagName, key -> Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.minecraft(key), Material.class));
+    public static boolean isBlockTag(@NotNull Material block, @NotNull String tagName) {
+        Optional<Tag<Material>> cached = BLOCK_TAG_CACHE.computeIfAbsent(tagName, key -> Optional.ofNullable(Bukkit.getTag(Tag.REGISTRY_BLOCKS, NamespacedKey.minecraft(key), Material.class)));
+        Tag<Material> tag = cached.orElse(null);
         return tag != null && tag.isTagged(block);
     }
 
     // https://minecraft.wiki/w/Item_tag_(Java_Edition)
-    public static boolean isItemTag(Material item, String tagName) {
-        if (item == null || tagName == null) {
-            return false;
-        }
-        Tag<Material> tag = ITEM_TAG_CACHE.computeIfAbsent(tagName, key -> Bukkit.getTag(Tag.REGISTRY_ITEMS, NamespacedKey.minecraft(key), Material.class));
+    public static boolean isItemTag(@NotNull Material item, @NotNull String tagName) {
+        Optional<Tag<Material>> cached = ITEM_TAG_CACHE.computeIfAbsent(tagName, key -> Optional.ofNullable(Bukkit.getTag(Tag.REGISTRY_ITEMS, NamespacedKey.minecraft(key), Material.class)));
+        Tag<Material> tag = cached.orElse(null);
         return tag != null && tag.isTagged(item);
+    }
+
+    // https://minecraft.wiki/w/Entity_type_tag_(Java_Edition)
+    public static boolean isEntityTag(@NotNull EntityType type, @NotNull String tagName) {
+        Optional<Tag<EntityType>> cached = ENTITY_TAG_CACHE.computeIfAbsent(tagName, key -> Optional.ofNullable(Bukkit.getTag(Tag.REGISTRY_ENTITY_TYPES, NamespacedKey.minecraft(key), EntityType.class)));
+        Tag<EntityType> tag = cached.orElse(null);
+        return tag != null && tag.isTagged(type);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -71,24 +74,6 @@ public class ResidenceListener1_14 implements Listener {
         Player player = event.getPlayer();
 
         if (FlagPermissions.shouldDenyAndNotify(player, event.getLectern().getLocation(), Flags.container, null)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onVehicleDamage(VehicleDamageEvent event) {
-
-        if (FlagPermissions.shouldIgnoreCheck(Flags.vehicledestroy, event.getVehicle())) {
-            return;
-        }
-        Entity attacker = event.getAttacker();
-
-        if (!(attacker instanceof Player)) {
-            return;
-        }
-        Player player = (Player) attacker;
-
-        if (FlagPermissions.shouldDenyAndNotify(player, event.getVehicle(), Flags.vehicledestroy, null)) {
             event.setCancelled(true);
         }
     }
@@ -106,56 +91,7 @@ public class ResidenceListener1_14 implements Listener {
         if (block.getType() != Material.BELL) {
             return;
         }
-        if (shouldDenyProjectileHit(block, event.getEntity(), Flags.use)) {
-            event.setCancelled(true);
-        }
-    }
-
-    public static boolean shouldDenyProjectileHit(@NotNull Block block, @NotNull Projectile projectile, @NotNull Flags flag) {
-        Player player = Utils.potentialProjectileToPlayer(projectile);
-        if (player != null) {
-
-            return FlagPermissions.shouldDenyAndNotify(player, block, flag, null);
-
-        } else {
-            // projectile not player source
-            // Check potential block as a shooter which should be allowed if its inside same
-            // residence
-            if (Utils.isSourceBlockInsideSameResidence(projectile, ClaimedResidence.getByLoc(block.getLocation()))) {
-                return false;
-            }
-            return FlagPermissions.has(block.getLocation(), flag, FlagCombo.OnlyFalse);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerInteractHarvest(PlayerInteractEvent event) {
-
-        Block block = event.getClickedBlock();
-        if (block == null)
-            return;
-
-        if (FlagPermissions.shouldIgnoreCheck(Flags.harvest, block)) {
-            return;
-        }
-
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
-            return;
-
-        CMIMaterial mat = CMIMaterial.get(block.getType());
-
-        switch (mat) {
-        case CAVE_VINES:
-        case CAVE_VINES_PLANT:
-        case SWEET_BERRY_BUSH:
-            break;
-        default:
-            return;
-        }
-
-        Player player = event.getPlayer();
-
-        if (FlagPermissions.shouldDenyAndNotify(player, block, Flags.harvest, null)) {
+        if (ResidenceEntityListener.shouldDenyEntityHit(event.getEntity(), block.getLocation(), Flags.use, null)) {
             event.setCancelled(true);
         }
     }
@@ -191,4 +127,27 @@ public class ResidenceListener1_14 implements Listener {
         event.setCancelled(true);
 
 	}
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onAnimalTransformByLightning(EntityTransformEvent event) {
+        // Paper 1.16.5+ uses EntityZapEvent for more detailed handling
+        if (Version.isCurrentEqualOrHigher(Version.v1_16_5) && Version.isPaperBranch()) {
+            return;
+        }
+        Entity entity = event.getEntity();
+
+        if (FlagPermissions.shouldIgnoreCheck(Flags.animalkilling, entity)) {
+            return;
+        }
+        if (event.getTransformReason() != EntityTransformEvent.TransformReason.LIGHTNING) {
+            return;
+        }
+        if (!(entity instanceof LivingEntity) || !Utils.isAnimal(entity)) {
+            return;
+        }
+        if (FlagPermissions.has(entity.getLocation(), Flags.animalkilling, true)) {
+            return;
+        }
+        event.setCancelled(true);
+    }
 }

@@ -1,5 +1,6 @@
 package com.bekvon.bukkit.residence.listeners;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -7,12 +8,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.AnvilInventory;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.utils.Utils;
+import com.destroystokyo.paper.event.block.AnvilDamagedEvent;
 import com.destroystokyo.paper.event.entity.EntityZapEvent;
 
 import net.Zrips.CMILib.Version.Version;
@@ -21,7 +24,7 @@ import io.papermc.paper.event.block.TargetHitEvent;
 
 public class ResidenceListener1_16_5_Paper implements Listener {
 
-    private Residence plugin;
+    private final Residence plugin;
 
     public ResidenceListener1_16_5_Paper(Residence plugin) {
         this.plugin = plugin;
@@ -37,7 +40,7 @@ public class ResidenceListener1_16_5_Paper implements Listener {
         if (FlagPermissions.shouldIgnoreCheck(Flags.use, block)) {
             return;
         }
-        if (ResidenceListener1_14.shouldDenyProjectileHit(block, event.getEntity(), Flags.use)) {
+        if (ResidenceEntityListener.shouldDenyEntityHit(event.getEntity(), block.getLocation(), Flags.use, null)) {
             event.setCancelled(true);
         }
     }
@@ -70,8 +73,24 @@ public class ResidenceListener1_16_5_Paper implements Listener {
                 return;
             }
         }
-
         event.setCancelled(true);
+    }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onAnvilDamaged(AnvilDamagedEvent event) {
+
+        AnvilInventory anvilInv = event.getInventory();
+
+        Location loc = anvilInv.getLocation();
+        if (loc == null) {
+            return;
+        }
+        if (FlagPermissions.shouldIgnoreCheck(Flags.anvilbreak, loc.getWorld())) {
+            return;
+        }
+        if (FlagPermissions.has(loc, Flags.anvilbreak, true)) {
+            return;
+        }
+        event.setCancelled(true);
     }
 }

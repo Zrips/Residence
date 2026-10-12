@@ -410,7 +410,7 @@ public class ResidencePlayer {
     }
 
     public boolean canBreakBlock(Block block, boolean inform) {
-        return ResidenceBlockListener.canBreakBlock(this.getPlayer(), block.getLocation(), inform);
+        return ResidenceBlockListener.canBreakBlock(this.getPlayer(), block, inform);
     }
 
     @Deprecated

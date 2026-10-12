@@ -1,8 +1,5 @@
 package com.bekvon.bukkit.residence.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,6 +9,7 @@ import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Pig;
@@ -52,7 +50,7 @@ import static com.bekvon.bukkit.residence.listeners.ResidenceListener1_14.isItem
 
 public class ResidenceListener1_21 implements Listener {
 
-    private Residence plugin;
+    private final Residence plugin;
 
     public ResidenceListener1_21(Residence plugin) {
         this.plugin = plugin;
@@ -82,7 +80,7 @@ public class ResidenceListener1_21 implements Listener {
                 return;
             }
 
-        } else if (Version.isCurrentEqualOrHigher(Version.v1_21_R7)) {
+        } else if (Version.isCurrentEqualOrHigher(Version.v1_21_11)) {
             // spigot
             if (vehicle instanceof org.bukkit.entity.Leashable
                     && !((org.bukkit.entity.Leashable) vehicle).isLeashed()) {
@@ -137,7 +135,7 @@ public class ResidenceListener1_21 implements Listener {
                 return;
             }
 
-        } else if (Flags.mobgriefing.isGlobalyEnabled() && ResidenceEntityListener.isMonster(ent)) {
+        } else if (Flags.mobgriefing.isGlobalyEnabled() && Utils.isMonster(ent)) {
             FlagPermissions perms = FlagPermissions.getPerms(ent.getLocation());
             if (perms.has(Flags.mobgriefing, perms.has(Flags.build, true))) {
                 return;
@@ -162,59 +160,45 @@ public class ResidenceListener1_21 implements Listener {
         ent.removePotionEffect(PotionEffectType.WEAVING);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onInteractCopperGolem(PlayerInteractEntityEvent event) {
+    public static boolean shouldDenyInteractCopperGolem(Player player, Entity entity, ItemStack itemStack) {
 
-        Entity entity = event.getRightClicked();
-
-        if (FlagPermissions.shouldIgnoreCheck(Flags.copper, entity)) {
-            return;
-        }
-        if (CMIEntityType.get(entity) != CMIEntityType.COPPER_GOLEM)
-            return;
-
-        Player player = event.getPlayer();
-
-        EntityEquipment gloemInv = ((LivingEntity) entity).getEquipment();
-        // Right-click to remove items from holding copper_golem
-        if (gloemInv != null && (gloemInv.getItemInMainHand().getType() != Material.AIR)) {
-
-            if (FlagPermissions.shouldDenyAndNotify(player, entity, Flags.container, null)) {
-                event.setCancelled(true);
+        if (Flags.container.isGlobalyEnabled()) {
+            EntityEquipment golemInv = ((LivingEntity) entity).getEquipment();
+            // Right-click to remove items from holding copper_golem
+            if (golemInv != null && golemInv.getItemInMainHand().getType() != Material.AIR) {
+                return FlagPermissions.shouldDenyAndNotify(player, entity, Flags.container, null);
             }
-            return;
         }
-        // Copper_golem has no item in hand
-
-        Material held = ResidenceListener1_09.getHeldMaterial(event);
-
-        // Avoid overwriting Leash Flag, Lead Shears
-        if (held != Material.HONEYCOMB && !isItemTag(held, "axes"))
-            return;
-
-        if (FlagPermissions.shouldDenyAndNotify(player, entity, Flags.copper, Flags.animalkilling)) {
-            event.setCancelled(true);
+        // Now Copper_golem has no item in hand
+        if (!Flags.copper.isGlobalyEnabled() || itemStack == null) {
+            return false;
         }
+        Material held = itemStack.getType();
+        // Honeycomb and Axes can change CopperGolem
+        if (held != Material.HONEYCOMB && !isItemTag(held, "axes")) {
+            return false;
+        }
+        return FlagPermissions.shouldDenyAndNotify(player, entity, Flags.copper, Flags.animalkilling);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onFishingBobberHit(ProjectileHitEvent event) {
+    public void onFishingBobberHitEntity(ProjectileHitEvent event) {
         // anti NPE
         Entity hitEntity = event.getHitEntity();
-        if (hitEntity == null)
+        if (hitEntity == null) {
             return;
-
+        }
         if (FlagPermissions.shouldIgnoreCheck(Flags.hook, hitEntity)) {
             return;
         }
+        if (event.getEntityType() != EntityType.FISHING_BOBBER) {
+            return;
+        }
         Projectile hook = event.getEntity();
-        // only fishing_bobber
-        if (CMIEntityType.get(hook) != CMIEntityType.FISHING_BOBBER)
-            return;
         // have player source
-        if (!(hook.getShooter() instanceof Player))
+        if (!(hook.getShooter() instanceof Player)) {
             return;
-
+        }
         Player player = (Player) hook.getShooter();
 
         if (FlagPermissions.shouldDenyAndNotify(player, hitEntity, Flags.hook, null)) {
@@ -411,13 +395,8 @@ public class ResidenceListener1_21 implements Listener {
 
     public static void onWindExplode(BlockExplodeEvent event) {
 
-        Block originBlock = event.getBlock();
-
-        if (Residence.getInstance().isDisabledWorldListener(originBlock)) {
-            return;
-        }
         if (Flags.windexplode.isGlobalyEnabled()) {
-            FlagPermissions originPerms = FlagPermissions.getPerms(originBlock.getLocation());
+            FlagPermissions originPerms = FlagPermissions.getPerms(event.getBlock().getLocation());
             // Wind-Explode is prohibited at the origin location; cancel the event directly
             if (!originPerms.has(Flags.windexplode, originPerms.has(Flags.explode, true))) {
                 event.setCancelled(true);
@@ -425,29 +404,19 @@ public class ResidenceListener1_21 implements Listener {
             }
         }
         // Origin allows Wind-Explode, so check each affected block for interaction
-        List<Block> denyInteraction = new ArrayList<>();
-        for (Block block : event.blockList()) {
+        event.blockList().removeIf(block -> {
             Flags flag = getWindExplodeInteractBlockFlag(block);
             if (flag == null || !flag.isGlobalyEnabled()) {
-                continue;
+                return false;
             }
             FlagPermissions blockPerms = FlagPermissions.getPerms(block.getLocation());
-            if (!blockPerms.has(flag, blockPerms.has(Flags.use, true))) {
-                denyInteraction.add(block);
-            }
-        }
-        if (!denyInteraction.isEmpty()) {
-            event.blockList().removeAll(denyInteraction);
-        }
+            return !blockPerms.has(flag, blockPerms.has(Flags.use, true));
+        });
     }
 
     public static void onWindExplode(EntityExplodeEvent event) {
 
         Entity originEntity = event.getEntity();
-
-        if (Residence.getInstance().isDisabledWorldListener(originEntity)) {
-            return;
-        }
         ProjectileSource cause;
 
         if (originEntity instanceof AbstractWindCharge) {
@@ -458,34 +427,23 @@ public class ResidenceListener1_21 implements Listener {
         }
         if (Flags.windexplode.isGlobalyEnabled()) {
             Location originLoc = event.getLocation();
-            FlagPermissions originPerms = FlagPermissions.getPerms(originLoc);
             // Wind-Explode is prohibited at the origin location; cancel the event directly
-            if (shouldDenyWindExplode(originLoc, cause, originPerms, Flags.windexplode, Flags.explode)) {
+            if (shouldDenyWindExplode(originLoc, cause, Flags.windexplode, Flags.explode)) {
                 event.setCancelled(true);
                 return;
             }
         }
         // Origin allows Wind-Explode, so check each affected block for interaction
-        List<Block> denyInteraction = new ArrayList<>();
-        for (Block block : event.blockList()) {
+        event.blockList().removeIf(block -> {
             Flags flag = getWindExplodeInteractBlockFlag(block);
             if (flag == null || !flag.isGlobalyEnabled()) {
-                continue;
+                return false;
             }
-            FlagPermissions blockPerms = FlagPermissions.getPerms(block.getLocation());
-
-            if (shouldDenyWindExplode(block.getLocation(), cause, blockPerms, flag, Flags.use)) {
-                denyInteraction.add(block);
-            }
-        }
-        if (!denyInteraction.isEmpty()) {
-            event.blockList().removeAll(denyInteraction);
-        }
+            return shouldDenyWindExplode(block.getLocation(), cause, flag, Flags.use);
+        });
     }
 
-    private static boolean shouldDenyWindExplode(Location triggerLoc, ProjectileSource cause, FlagPermissions perms,
-                                                 Flags mainFlag, Flags subFlag) {
-        boolean sholudDeny = false;
+    private static boolean shouldDenyWindExplode(Location triggerLoc, ProjectileSource cause, Flags mainFlag, Flags subFlag) {
         if (cause instanceof Player) {
             Player player = (Player) cause;
             if (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player)) {
@@ -494,18 +452,17 @@ public class ResidenceListener1_21 implements Listener {
             FlagPermissions playerPerms = FlagPermissions.getPerms(triggerLoc, player);
             // Because Flags.explode is not FlagMode.Both
             boolean result = (subFlag == Flags.explode)
-                    ? perms.has(subFlag, true)
+                    ? playerPerms.has(subFlag, true)
                     : playerPerms.playerHas(player, subFlag, true);
             if (!playerPerms.playerHas(player, mainFlag, result)) {
                 lm.Flag_Deny.sendMessage(player, mainFlag);
-                sholudDeny = true;
+                return true;
             }
         } else {
-            if (!perms.has(mainFlag, perms.has(subFlag, true))) {
-                sholudDeny = true;
-            }
+            FlagPermissions perms = FlagPermissions.getPerms(triggerLoc);
+            return !perms.has(mainFlag, perms.has(subFlag, true));
         }
-        return sholudDeny;
+        return false;
     }
 
     @Nullable

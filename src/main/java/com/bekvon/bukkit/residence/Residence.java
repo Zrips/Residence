@@ -66,7 +66,6 @@ import com.bekvon.bukkit.residence.listeners.ResidenceListener1_12;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_13;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_14;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_15;
-import com.bekvon.bukkit.residence.listeners.ResidenceListener1_16;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_16_5_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_17;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_19;
@@ -77,7 +76,9 @@ import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_8_Spigot;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener1_21_9_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener26_2;
 import com.bekvon.bukkit.residence.listeners.ResidenceListener26_2_Paper;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener26_3_Paper;
 import com.bekvon.bukkit.residence.listeners.ResidencePlayerListener;
+import com.bekvon.bukkit.residence.listenersCache.DenyMessageCache_Legacy;
 import com.bekvon.bukkit.residence.permissions.PermissionManager;
 import com.bekvon.bukkit.residence.persistance.YMLSaveHelper;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -606,13 +607,8 @@ public class Residence extends JavaPlugin {
                 if (Version.isCurrentEqualOrHigher(Version.v1_15_0)) {
                     pm.registerEvents(new ResidenceListener1_15(this), this);
                 }
-                if (Version.isCurrentEqualOrHigher(Version.v1_16_0)) {
-                    pm.registerEvents(new ResidenceListener1_16(this), this);
-                }
-                if ((Version.isCurrentEqualOrHigher(Version.v1_16_R3) && Version.isCurrentSubEqualOrHigher(5)) || Version.isCurrentEqualOrHigher(Version.v1_17_0)) {
-                    if (Version.isPaperBranch()) {
-                        pm.registerEvents(new ResidenceListener1_16_5_Paper(this), this);
-                    }
+                if (Version.isCurrentEqualOrHigher(Version.v1_16_5) && Version.isPaperBranch()) {
+                    pm.registerEvents(new ResidenceListener1_16_5_Paper(this), this);
                 }
                 if (Version.isCurrentEqualOrHigher(Version.v1_17_0)) {
                     pm.registerEvents(new ResidenceListener1_17(this), this);
@@ -626,14 +622,14 @@ public class Residence extends JavaPlugin {
                 if (Version.isCurrentEqualOrHigher(Version.v1_21_0)) {
                     pm.registerEvents(new ResidenceListener1_21(this), this);
                 }
-                if ((Version.isCurrentEqualOrHigher(Version.v1_21_R5) && Version.isCurrentSubEqualOrHigher(8)) || Version.isCurrentEqualOrHigher(Version.v1_21_R6)) {
+                if (Version.isCurrentEqualOrHigher(Version.v1_21_8)) {
                     if (Version.isPaperBranch()) {
                         pm.registerEvents(new ResidenceListener1_21_8_Paper(this), this);
                     } else {
                         pm.registerEvents(new ResidenceListener1_21_8_Spigot(this), this);
                     }
                 }
-                if (Version.isCurrentEqualOrHigher(Version.v1_21_R6) && Version.isPaperBranch()) {
+                if (Version.isCurrentEqualOrHigher(Version.v1_21_9) && Version.isPaperBranch()) {
                     pm.registerEvents(new ResidenceListener1_21_9_Paper(this), this);
                 }
                 if (Version.isCurrentEqualOrHigher(Version.v26_2_0)) {
@@ -642,12 +638,18 @@ public class Residence extends JavaPlugin {
                     }
                     pm.registerEvents(new ResidenceListener26_2(this), this);
                 }
+                if (Version.isCurrentEqualOrHigher(Version.v26_3_0) && Version.isPaperBranch()) {
+                    pm.registerEvents(new ResidenceListener26_3_Paper(this), this);
+                }
                 pm.registerEvents(new ResidenceBlockListener(this), this);
                 pm.registerEvents(getPlayerListener(), this);
                 pm.registerEvents(new ResidenceEntityListener(this), this);
                 pm.registerEvents(new ShopListener(this), this);
                 pm.registerEvents(new ResidenceRaidListener(), this);
 
+                if (Version.isCurrentLower(Version.v1_16_0)) {
+                    pm.registerEvents(new DenyMessageCache_Legacy(), this);
+                }
                 firstenable = false;
             } else {
                 getPlayerListener().reload();

@@ -11,8 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockFadeEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.util.BoundingBox;
@@ -57,31 +55,7 @@ public class ResidenceListener1_13 implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onLandDryFade(BlockFadeEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.dryup.isGlobalyEnabled())
-            return;
-
-        if (shouldCancelFarmLandChange(event.getBlock()))
-            event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onLandDryPhysics(BlockPhysicsEvent event) {
-        // Disabling listener if flag disabled globally
-        if (!Flags.dryup.isGlobalyEnabled())
-            return;
-
-        if (shouldCancelFarmLandChange(event.getBlock()))
-            event.setCancelled(true);
-    }
-
-    private boolean shouldCancelFarmLandChange(Block block) {
-
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(block))
-            return false;
+    public static boolean shouldCancelFarmLandChange(Block block) {
 
         if (block.getType() != Material.FARMLAND)
             return false;
@@ -140,9 +114,9 @@ public class ResidenceListener1_13 implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractAtFish(PlayerInteractEntityEvent event) {
         // 1.17+ has PlayerBucketEntityEvent
-        if (Version.isCurrentEqualOrHigher(Version.v1_17_R1))
+        if (Version.isCurrentEqualOrHigher(Version.v1_17_0)) {
             return;
-
+        }
         Entity ent = event.getRightClicked();
 
         if (FlagPermissions.shouldIgnoreCheck(Flags.animalkilling, ent)) {

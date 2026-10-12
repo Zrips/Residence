@@ -52,7 +52,7 @@ Global:
     # Allows or denys players to use beds
     bed: true
     # Applies to: Residence
-    # Allows or denys animal boarding in residences
+    # Allow or deny non-player entities from riding vehicles
     boarding: true
     # Applies to: Both
     # Allows or denys players to use brewing stands
@@ -319,6 +319,9 @@ Global:
     # Allows or denys only placement of blocks, overrides the build flag
     place: true
     # Applies to: Both
+    # Allow or deny player throwing potions
+    potionthrowing: true
+    # Applies to: Both
     # Allow or deny players pushing entities(not for player-player)
     push: true
     # Applies to: Both
@@ -536,6 +539,7 @@ Global:
     piston: PISTON
     pistonprotection: STICKY_PISTON
     place: SEA_LANTERN
+    potionthrowing: SPLASH_POTION
     push: COBWEB
     pressure: LIGHT_WEIGHTED_PRESSURE_PLATE
     pvp: WOODEN_SWORD

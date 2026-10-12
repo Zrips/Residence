@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -30,23 +31,27 @@ public class WorldItemManager {
         if (group == null) {
             return true;
         }
+        String worldName = player.getWorld().getName();
+        String groupName = group.getGroupName();
+
         for (WorldItemList list : lists) {
-            if (!list.isAllowed(mat, player.getWorld().getName(), group.getGroupName())) {
+            if (!list.isAllowed(mat, worldName, groupName)) {
                 return false;
             }
         }
         return true;
     }
 
-    public boolean isIgnored(Material mat, PermissionGroup group, String world) {
-        if (group == null)
+    public boolean isIgnored(Player player, Material mat, World world) {
+        PermissionGroup group = plugin.getPlayerManager().getResidencePlayer(player).getGroup();
+        if (group == null) {
             return false;
-        return isIgnored(mat, group.getGroupName(), world);
-    }
+        }
+        String worldName = world.getName();
+        String groupName = group.getGroupName();
 
-    public boolean isIgnored(Material mat, String group, String world) {
         for (WorldItemList list : lists) {
-            if (list.isIgnored(mat, world, group)) {
+            if (list.isIgnored(mat, worldName, groupName)) {
                 return true;
             }
         }

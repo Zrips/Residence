@@ -8,6 +8,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +35,7 @@ import com.bekvon.bukkit.residence.containers.GenMessageType;
 import com.bekvon.bukkit.residence.containers.RandomTeleport;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.listenersCache.DenyMessageCache;
+import com.bekvon.bukkit.residence.listenersCache.DenyMessageCache_Legacy;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.selection.VisualizerConfig;
@@ -71,7 +73,7 @@ public class ConfigManager {
     protected boolean LwcOnDelete = false;
     protected boolean LwcOnBuy = false;
     protected boolean LwcOnUnrent = false;
-    protected List<Material> LwcMatList = new ArrayList<Material>();
+    protected Set<Material> LwcMatList = EnumSet.noneOf(Material.class);
     protected boolean UseClean = false;
     protected boolean PvPFlagPrevent;
 
@@ -217,22 +219,22 @@ public class ConfigManager {
     protected boolean CreeperExplodeBelow;
     protected int CreeperExplodeBelowLevel;
 
-    protected List<Material> customContainers = new ArrayList<Material>();
-    protected List<Material> customBothClick = new ArrayList<Material>();
-    protected List<Material> customRightClick = new ArrayList<Material>();
-    protected List<Material> CleanBlocks = new ArrayList<Material>();
+    protected Set<Material> customContainers = EnumSet.noneOf(Material.class);
+    protected Set<Material> customBothClick = EnumSet.noneOf(Material.class);
+    protected Set<Material> customRightClick = EnumSet.noneOf(Material.class);
+    protected Set<Material> CleanBlocks = EnumSet.noneOf(Material.class);
 
     protected List<String> NoFlowWorlds;
     protected List<String> AutoCleanUpWorlds;
-    
+
     private boolean AutoCleanTrasnferToUser;
     private String AutoCleanUserName;
     protected List<String> NoPlaceWorlds;
     protected List<String> BlockFallWorlds;
     protected List<String> CleanWorlds;
     protected List<String> FlagsList;
-    protected List<String> NegativePotionEffects;
-    protected List<String> NegativeLingeringPotionEffects;
+    //protected List<String> NegativePotionEffects;
+    //protected List<String> NegativeLingeringPotionEffects;
     private double WalkSpeed1;
     private double WalkSpeed2;
     private int SignsMaxPerResidence;
@@ -805,13 +807,13 @@ public class ConfigManager {
         SafeZoneInterval = c.get("Global.Optimizations.Intervals.SafeZone", 3);
 
         // negative potion effect list
-        c.addComment("Global.Optimizations.NegativePotionEffects",
-                "Potions containing one of thos effects will be ignored if residence don't have pvp true flag set");
-        NegativePotionEffects = c.get("Global.Optimizations.NegativePotionEffects", Arrays.asList("blindness", "confusion", "harm", "hunger", "poison", "slow",
-                "slow_digging", "weakness", "wither"));
+        //c.addComment("Global.Optimizations.NegativePotionEffects",
+                //"Potions containing one of thos effects will be ignored if residence don't have pvp true flag set");
+        //NegativePotionEffects = c.get("Global.Optimizations.NegativePotionEffects", Arrays.asList("blindness", "confusion", "harm", "hunger", "poison", "slow",
+                //"slow_digging", "weakness", "wither"));
 
-        NegativeLingeringPotionEffects = c.get("Global.Optimizations.NegativeLingeringPotions", Arrays.asList("slowness", "instant_damage", "poison",
-                "slowness"));
+        //NegativeLingeringPotionEffects = c.get("Global.Optimizations.NegativeLingeringPotions", Arrays.asList("slowness", "instant_damage", "poison",
+                //"slowness"));
 
         c.addComment("Global.Optimizations.WalkSpeed",
                 "Defines speed for particular wspeed1 and wspeed2 flags. It can be from 0 up to 5");
@@ -1201,11 +1203,15 @@ public class ConfigManager {
         MessageType = new ArrayList<>(c.get("Global.Messages.MessageType", Arrays.asList("Flag_Deny", "Residence_FlagDeny", "General_NoPVPZone")));
 
         c.addComment("Global.Messages.FlagDenyMessageCooldown", "Cooldown for sending duplicate Flag deny messages, in seconds(default: 1)",
-                "Only effective for 1.16+ versions; suppresses spam from repeated Flag deny messages");
+                "suppresses spam from repeated Flag deny messages");
         FlagDenyMessageCooldown = (c.get("Global.Messages.FlagDenyMessageCooldown", 1));
 
-        if (Version.isCurrentEqualOrHigher(Version.v1_16_0) && FlagDenyMessageCooldown > 0) {
-            DenyMessageCache.reloadDenyMessageCache(FlagDenyMessageCooldown);
+        if (FlagDenyMessageCooldown > 0) {
+            if (Version.isCurrentEqualOrHigher(Version.v1_16_0)) {
+                DenyMessageCache.reloadDenyMessageCache(FlagDenyMessageCooldown);
+            } else {
+                DenyMessageCache_Legacy.reloadDenyMessageCache(FlagDenyMessageCooldown);
+            }
         }
 
         ActionBarOnSelection = c.get("Global.ActionBar.ShowOnSelection", true);
@@ -1658,7 +1664,7 @@ public class ConfigManager {
         return NoWaterPlace;
     }
 
-    public List<Material> getLwcMatList() {
+    public Set<Material> getLwcMatList() {
         return LwcMatList;
     }
 
@@ -1982,19 +1988,19 @@ public class ConfigManager {
 //        return OfflineMode;
 //    }
 
-    public List<Material> getCustomContainers() {
+    public Set<Material> getCustomContainers() {
         return customContainers;
     }
 
-    public List<Material> getCustomBothClick() {
+    public Set<Material> getCustomBothClick() {
         return customBothClick;
     }
 
-    public List<Material> getCustomRightClick() {
+    public Set<Material> getCustomRightClick() {
         return customRightClick;
     }
 
-    public List<Material> getCleanBlocks() {
+    public Set<Material> getCleanBlocks() {
         return CleanBlocks;
     }
 
@@ -2014,13 +2020,13 @@ public class ConfigManager {
         return BlockFallWorlds;
     }
 
-    public List<String> getNegativePotionEffects() {
-        return NegativePotionEffects;
-    }
+    //public List<String> getNegativePotionEffects() {
+        //return NegativePotionEffects;
+    //}
 
-    public List<String> getNegativeLingeringPotionEffects() {
-        return NegativeLingeringPotionEffects;
-    }
+    //public List<String> getNegativeLingeringPotionEffects() {
+        //return NegativeLingeringPotionEffects;
+    //}
 
     public List<String> getCleanWorlds() {
         return CleanWorlds;

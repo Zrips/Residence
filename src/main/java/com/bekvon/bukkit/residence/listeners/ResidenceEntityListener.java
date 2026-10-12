@@ -1,7 +1,5 @@
 package com.bekvon.bukkit.residence.listeners;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,14 +18,12 @@ import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.entity.Vehicle;
-import org.bukkit.entity.Witch;
 import org.bukkit.entity.Wither;
 import org.bukkit.entity.WitherSkull;
 import org.bukkit.entity.minecart.ExplosiveMinecart;
@@ -56,11 +52,15 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.projectiles.ProjectileSource;
 
 import com.bekvon.bukkit.residence.ConfigManager;
@@ -72,6 +72,7 @@ import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
+import com.bekvon.bukkit.residence.utils.PotionUtils;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
@@ -80,10 +81,12 @@ import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ResidenceEntityListener implements Listener {
 
-    Residence plugin;
+    private final Residence plugin;
 
     public ResidenceEntityListener(Residence plugin) {
         this.plugin = plugin;
@@ -92,17 +95,33 @@ public class ResidenceEntityListener implements Listener {
     private final static String CrossbowShooter = "CrossbowShooter";
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onEndermanTeleport(EntityTeleportEvent event) {
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getTo()))
-            return;
+    public void onEnderManTeleport(EntityTeleportEvent event) {
 
+        Location eventTo = event.getTo();
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(eventTo)) {
+            return;
+        }
         if (event.getEntityType() != EntityType.ENDERMAN)
             return;
 
-        FlagPermissions perms = FlagPermissions.getPerms(event.getTo());
-        if (perms.has(Flags.monsters, FlagCombo.OnlyFalse) || perms.has(Flags.nomobs, FlagCombo.OnlyTrue))
-            event.setCancelled(true);
+        FlagPermissions perms = null;
+        if (Flags.monsters.isGlobalyEnabled()) {
+            perms = FlagPermissions.getPerms(eventTo);
+            if (perms.has(Flags.monsters, FlagCombo.OnlyFalse)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+        if (Flags.nomobs.isGlobalyEnabled()) {
+            if (perms == null) {
+                perms = FlagPermissions.getPerms(eventTo);
+            }
+            if (perms.has(Flags.nomobs, FlagCombo.OnlyTrue)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -124,7 +143,7 @@ public class ResidenceEntityListener implements Listener {
             FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
             shouldDeny = !perms.has(Flags.witherdestruction, perms.has(Flags.destroy, true));
 
-        } else if (Flags.mobgriefing.isGlobalyEnabled() && isMonster(entity)) {
+        } else if (Flags.mobgriefing.isGlobalyEnabled() && Utils.isMonster(entity)) {
             FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
             shouldDeny = !perms.has(Flags.mobgriefing, perms.has(Flags.destroy, true));
 
@@ -136,7 +155,7 @@ public class ResidenceEntityListener implements Listener {
 
         } else if (Flags.destroy.isGlobalyEnabled() && entity instanceof Projectile) {
             // Projectile-triggered EntityChangeBlockEvent always breaks blocks
-            shouldDeny = ResidenceListener1_14.shouldDenyProjectileHit(block, (Projectile) entity, Flags.destroy);
+            shouldDeny = shouldDenyEntityHit(entity, block.getLocation(), Flags.destroy, null);
 
         }
 
@@ -147,20 +166,22 @@ public class ResidenceEntityListener implements Listener {
 
     private boolean shouldDenyPlayerChangeBlock(Block block, Player player) {
         CMIMaterial mat = CMIMaterial.get(block.getType());
-        Flags mainFlag;
-        Flags subFlag = Flags.build;
+        Flags mainFlag = null;
+        Flags subFlag = null;
         if (Flags.copper.isGlobalyEnabled() && mat.containsCriteria(CMIMC.COPPER)) {
             mainFlag = Flags.copper;
+            subFlag = Flags.build;
 
         } else if (Flags.brush.isGlobalyEnabled() && (mat == CMIMaterial.SUSPICIOUS_GRAVEL || mat == CMIMaterial.SUSPICIOUS_SAND)) {
             mainFlag = Flags.brush;
+            subFlag = Flags.build;
 
         } else if (Flags.build.isGlobalyEnabled()) {
             // by default, future player-triggered EntityChangeBlockEvent mechanisms check Flags.build
             mainFlag = Flags.build;
-            subFlag = null;
 
-        } else {
+        }
+        if (mainFlag == null) {
             return false;
         }
         return FlagPermissions.shouldDenyAndNotify(player, block, mainFlag, subFlag);
@@ -170,22 +191,15 @@ public class ResidenceEntityListener implements Listener {
         if (CMIMaterial.get(block.getType()) != CMIMaterial.LILY_PAD) {
             return false;
         }
+        List<Entity> passengers = Utils.getPassengers(boat);
         Entity rider = null;
-        if (Version.isCurrentLower(Version.v1_11_2)) {
-            rider = boat.getPassenger();
-        } else {
-            List<Entity> passengers = boat.getPassengers();
-            if (!passengers.isEmpty()) {
-                // first passenger
-                rider = passengers.get(0);
-            }
+        if (!passengers.isEmpty()) {
+            // first passenger
+            rider = passengers.get(0);
         }
-        Player riderPlayer = rider instanceof Player ? (Player) rider : null;
-        if (riderPlayer != null) {
-            if (riderPlayer.hasMetadata("NPC") || ResAdmin.isResAdmin(riderPlayer)) {
-                return false;
-            }
-            return FlagPermissions.has(block.getLocation(), riderPlayer, Flags.destroy, FlagCombo.OnlyFalse);
+        Player player = rider instanceof Player ? (Player) rider : null;
+        if (player != null) {
+            return FlagPermissions.shouldDenyAndNotify(player, block, Flags.destroy, null, false);
         } else {
             return FlagPermissions.has(block.getLocation(), Flags.destroy, FlagCombo.OnlyFalse);
         }
@@ -199,15 +213,13 @@ public class ResidenceEntityListener implements Listener {
             return;
 
         Entity entity = event.getEntity();
-        if (entity == null)
-            return;
 
         if (!(entity instanceof LivingEntity))
             return;
 
-        if (!isMonster(entity))
+        if (!Utils.isMonster(entity)) {
             return;
-
+        }
         // disabling event on world
         if (plugin.isDisabledWorldListener(entity))
             return;
@@ -235,18 +247,16 @@ public class ResidenceEntityListener implements Listener {
         case FARMLAND:
             flag = Flags.trample;
             break;
-
         case TURTLE_EGG:
             if (Utils.isAnimal(entity)) {
                 flag = Flags.animalgriefing;
-            } else if (isMonster(entity)) {
+            } else if (Utils.isMonster(entity)) {
                 flag = Flags.mobgriefing;
             } else {
                 // Other entities
                 flag = Flags.destroy;
             }
             break;
-
         default:
             if (mat.containsCriteria(CMIMC.BUTTON)) {
                 if (entity instanceof Projectile) {
@@ -272,7 +282,6 @@ public class ResidenceEntityListener implements Listener {
                 return;
             }
             break;
-
         // Turtle Egg: Mob StepOn
         case animalgriefing:
         case mobgriefing:
@@ -281,7 +290,6 @@ public class ResidenceEntityListener implements Listener {
                 return;
             }
             break;
-
         // Turtle Egg: Other-entities StepOn
         case destroy:
             perms = FlagPermissions.getPerms(block.getLocation());
@@ -289,89 +297,43 @@ public class ResidenceEntityListener implements Listener {
                 return;
             }
             break;
-
         // Projectile hits button
         case button:
         // Projectile and Item press pressure_plate
         case pressure:
             Player player = Utils.potentialProjectileToPlayer(entity);
             if (player != null) {
-                if (ResAdmin.isResAdmin(player)) {
-                    return;
-                }
-                perms = FlagPermissions.getPerms(block.getLocation(), player);
-                if (perms.playerHas(player, flag, perms.playerHas(player, Flags.use, true))) {
+                if (!FlagPermissions.shouldDenyAndNotify(player, block, flag, Flags.use, false)) {
                     return;
                 }
             } else {
-                // Check potential block as a shooter which should be allowed if its inside same
-                // residence
-                if (Utils.isSourceBlockInsideSameResidence(entity, ClaimedResidence.getByLoc(block.getLocation()))) {
+                ClaimedResidence res = ClaimedResidence.getByLoc(block.getLocation());
+                // skip check if shooter is a dispenser in the same Residence
+                if (Utils.isSourceBlockInsideSameResidence(entity, res)) {
                     return;
                 }
-                perms = FlagPermissions.getPerms(block.getLocation());
+                perms = (res != null)
+                        ? res.getPermissions()
+                        : plugin.getWorldFlags().getPerms(block.getWorld());
                 if (perms.has(flag, perms.has(Flags.use, true))) {
                     return;
                 }
             }
             break;
-
         default:
             return;
         }
-
         event.setCancelled(true);
-
-    }
-
-    public static boolean isMonster(Entity entity) {
-        if (entity == null) {
-            return false;
-        }
-        if (Version.isCurrentEqualOrHigher(Version.v1_19_R2)) {
-            return entity instanceof org.bukkit.entity.Enemy;
-        }
-        if (entity instanceof Monster) {
-            return true;
-        }
-        CMIEntityType type = CMIEntityType.get(entity);
-        if (type != null) {
-            switch (type) {
-            case ENDER_DRAGON:
-            case GHAST:
-            case HOGLIN:
-            case PHANTOM:
-            case SHULKER:
-            case SLIME:
-                return true;
-            default:
-                return false;
-            }
-        }
-        return false;
     }
 
     private static boolean damageableProjectile(Entity ent) {
-        if (ent instanceof Projectile && CMIEntityType.get(ent) == CMIEntityType.SPLASH_POTION) {
-
-            if (((ThrownPotion) ent).getEffects().isEmpty())
-                return true;
-            for (PotionEffect one : ((ThrownPotion) ent).getEffects()) {
-                for (String oneHarm : Residence.getInstance().getConfigManager().getNegativePotionEffects()) {
-                    if (oneHarm.equalsIgnoreCase(one.getType().getName()))
-                        return true;
-                }
-            }
-        }
         return ent instanceof Projectile;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void AnimalKilling(EntityDamageEvent event) {
 
         Entity entity = event.getEntity();
-        if (entity == null)
-            return;
 
         if (FlagPermissions.shouldIgnoreCheck(Flags.animalkilling, entity)) {
             return;
@@ -411,15 +373,10 @@ public class ResidenceEntityListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void AnimalKillingByFlame(EntityCombustByEntityEvent event) {
 
-        if (event.isCancelled())
-            return;
-
         Entity entity = event.getEntity();
-        if (entity == null)
-            return;
 
         if (FlagPermissions.shouldIgnoreCheck(Flags.animalkilling, entity)) {
             return;
@@ -454,15 +411,10 @@ public class ResidenceEntityListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void AnimalDamageByMobs(EntityDamageByEntityEvent event) {
 
-        if (event.isCancelled())
-            return;
-
         Entity entity = event.getEntity();
-        if (entity == null)
-            return;
 
         if (FlagPermissions.shouldIgnoreCheck(Flags.animalkilling, entity)) {
             return;
@@ -488,8 +440,7 @@ public class ResidenceEntityListener implements Listener {
             return;
         // disabling event on world
         LivingEntity ent = event.getEntity();
-        if (ent == null)
-            return;
+
         if (plugin.isDisabledWorldListener(ent))
             return;
         if (ent instanceof Player)
@@ -504,72 +455,90 @@ public class ResidenceEntityListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void VehicleDestroy(VehicleDestroyEvent event) {
+    // Fix player being able to knock back vehicle before Destroy
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerDamageVehicle(VehicleDamageEvent event) {
 
-        Entity damager = event.getAttacker();
-        if (damager == null)
-            return;
-
-        if (FlagPermissions.shouldIgnoreCheck(Flags.vehicledestroy, damager)) {
-            return;
-        }
         Vehicle vehicle = event.getVehicle();
 
-        if (shouldBlockVehicleDestroy(damager, vehicle))
-            event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void vehicleCombust(EntityCombustByEntityEvent event) {
-
-        Entity damager = event.getCombuster();
-        if (damager == null)
-            return;
-
-        if (FlagPermissions.shouldIgnoreCheck(Flags.vehicledestroy, damager)) {
+        if (FlagPermissions.shouldIgnoreCheck(Flags.vehicledestroy, vehicle)) {
             return;
         }
-        if (event.getEntity() instanceof LivingEntity) {
+        Entity attacker = event.getAttacker();
+
+        if (!(attacker instanceof Player)) {
             return;
         }
-        if (!(event.getEntity() instanceof Vehicle))
-            return;
-
-        Vehicle vehicle = (Vehicle) event.getEntity();
-
-        if (shouldBlockVehicleDestroy(damager, vehicle))
+        if (FlagPermissions.shouldDenyAndNotify((Player) attacker, vehicle, Flags.vehicledestroy, null)) {
             event.setCancelled(true);
+        }
     }
 
-    private boolean shouldBlockVehicleDestroy(Entity damager, Vehicle vehicle) {
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onVehicleDestroy(VehicleDestroyEvent event) {
 
-        if (vehicle == null)
-            return false;
+        Vehicle vehicle = event.getVehicle();
 
-        Player cause = Utils.potentialProjectileToPlayer(damager);
+        if (FlagPermissions.shouldIgnoreCheck(Flags.vehicledestroy, vehicle)) {
+            return;
+        }
+        Entity attacker = event.getAttacker();
+        // Entity destroys vehicle
+        if (attacker != null) {
+            if (shouldDenyEntityDestroyVehicle(attacker, vehicle)) {
+                event.setCancelled(true);
+            }
+            // Even if BlockExplodeEvent is canceled, vehicles can still be destroyed
+            // Fix bed and respawn anchor explosions destroying vehicles
+        } else if (Version.isCurrentEqualOrHigher(Version.v26_1_2) && Version.isPaperBranch()
+                && event.getDamageSource().getDamageType() == org.bukkit.damage.DamageType.BAD_RESPAWN_POINT) {
+            if (FlagPermissions.has(vehicle.getLocation(), Flags.vehicledestroy, FlagCombo.OnlyFalse)) {
+                event.setCancelled(true);
+            }
+        }
+    }
 
-        if (cause != null) {
-            return FlagPermissions.shouldDenyAndNotify(cause, vehicle, Flags.vehicledestroy, null);
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onNonLivingVehicleCombust(EntityCombustByEntityEvent event) {
 
+        Entity entity = event.getEntity();
+
+        if (FlagPermissions.shouldIgnoreCheck(Flags.vehicledestroy, entity)) {
+            return;
+        }
+        if (entity instanceof LivingEntity) {
+            return;
+        }
+        if (!(entity instanceof Vehicle)) {
+            return;
+        }
+        if (shouldDenyEntityDestroyVehicle(event.getCombuster(), (Vehicle) entity)) {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean shouldDenyEntityDestroyVehicle(Entity attacker, Vehicle vehicle) {
+
+        Player player = Utils.potentialProjectileToPlayer(attacker);
+
+        if (player != null) {
+            return FlagPermissions.shouldDenyAndNotify(player, vehicle, Flags.vehicledestroy, null);
         } else {
             return FlagPermissions.has(vehicle.getLocation(), Flags.vehicledestroy, FlagCombo.OnlyFalse);
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void MonsterKilling(EntityDamageByEntityEvent event) {
 
         Entity entity = event.getEntity();
-        if (entity == null)
-            return;
 
         if (FlagPermissions.shouldIgnoreCheck(Flags.mobkilling, entity)) {
             return;
         }
-        if (!isMonster(entity))
+        if (!Utils.isMonster(entity)) {
             return;
-
+        }
         Entity damager = event.getDamager();
 
         if (!damageableProjectile(damager) && !(damager instanceof Player))
@@ -631,8 +600,7 @@ public class ResidenceEntityListener implements Listener {
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         // disabling event on world
         Entity ent = event.getEntity();
-        if (ent == null)
-            return;
+
         if (plugin.isDisabledWorldListener(ent))
             return;
         FlagPermissions perms = FlagPermissions.getPerms(event.getLocation());
@@ -680,7 +648,7 @@ public class ResidenceEntityListener implements Listener {
             default:
                 break;
             }
-        } else if (isMonster(ent)) {
+        } else if (Utils.isMonster(ent)) {
             if (perms.has(Flags.monsters, FlagCombo.OnlyFalse)) {
                 event.setCancelled(true);
                 return;
@@ -759,6 +727,10 @@ public class ResidenceEntityListener implements Listener {
             case WIND_CHARGE:
                 flag = Flags.windexplode;
                 break;
+            case SPLASH_POTION:
+            case LINGERING_POTION:
+                flag = Flags.potionthrowing;
+                break;
             default:
                 break;
             }
@@ -776,6 +748,10 @@ public class ResidenceEntityListener implements Listener {
             }
 
         } else {
+            // Flags.potionthrowing only controls player-thrown potions
+            if (flag == Flags.potionthrowing) {
+                flag = Flags.shoot;
+            }
             FlagPermissions perms = FlagPermissions.getPerms(projectile.getLocation());
             if (perms.has(flag, FlagCombo.OnlyFalse)) {
                 event.setCancelled(true);
@@ -787,8 +763,6 @@ public class ResidenceEntityListener implements Listener {
     public void onHangingBreakEventByExplosion(HangingBreakEvent event) {
 
         Hanging ent = event.getEntity();
-        if (ent == null)
-            return;
 
         if (FlagPermissions.shouldIgnoreCheck(Flags.explode, ent)) {
             return;
@@ -806,8 +780,6 @@ public class ResidenceEntityListener implements Listener {
     public void onHangingBreakEvent(HangingBreakEvent event) {
 
         Hanging ent = event.getEntity();
-        if (ent == null)
-            return;
 
         if (FlagPermissions.shouldIgnoreCheck(Flags.destroy, ent)) {
             return;
@@ -828,30 +800,36 @@ public class ResidenceEntityListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
 
-        Hanging ent = event.getEntity();
-        if (ent == null)
-            return;
+        Entity entity = event.getEntity();
 
-        if (FlagPermissions.shouldIgnoreCheck(Flags.destroy, ent)) {
+        if (FlagPermissions.shouldIgnoreCheck(Flags.destroy, entity)) {
             return;
         }
-        if (event.getRemover() instanceof Player) {
-            Player player = (Player) event.getRemover();
+        if (shouldDenyEntityHit(event.getRemover(), entity.getLocation(), Flags.destroy, Flags.build)) {
+            event.setCancelled(true);
+        }
+    }
 
-            if (plugin.getResidenceManager().isOwnerOfLocation(player, ent.getLocation())) {
-                return;
-            }
-            if (FlagPermissions.shouldDenyAndNotify(player, ent, Flags.destroy, Flags.build)) {
-                event.setCancelled(true);
-            }
+    public static boolean shouldDenyEntityHit(@NotNull Entity source, @NotNull Location targetLoc, @NotNull Flags mainFlag, @Nullable Flags subFlag) {
+
+        Player player = Utils.potentialProjectileToPlayer(source);
+        if (player != null) {
+
+            return FlagPermissions.shouldDenyAndNotify(player, targetLoc, mainFlag, subFlag);
+
         } else {
-            if (Utils.isSourceBlockInsideSameResidence(event.getRemover(), ClaimedResidence.getByLoc(event.getEntity().getLocation()))) {
-                return;
+            ClaimedResidence res = ClaimedResidence.getByLoc(targetLoc);
+            // skip check if shooter is a dispenser in the same Residence
+            if (Utils.isSourceBlockInsideSameResidence(source, res)) {
+                return false;
             }
-            FlagPermissions perms = FlagPermissions.getPerms(ent.getLocation());
-            if (!perms.has(Flags.destroy, perms.has(Flags.build, true))) {
-                event.setCancelled(true);
-            }
+            FlagPermissions perms = (res != null)
+                    ? res.getPermissions()
+                    : Residence.getInstance().getWorldFlags().getPerms(targetLoc.getWorld());
+
+            boolean result = (subFlag == null) || perms.has(subFlag, true);
+
+            return !perms.has(mainFlag, result);
         }
     }
 
@@ -859,8 +837,6 @@ public class ResidenceEntityListener implements Listener {
     public void onEntityCombust(EntityCombustEvent event) {
 
         Entity ent = event.getEntity();
-        if (ent == null)
-            return;
 
         if (FlagPermissions.shouldIgnoreCheck(Flags.burn, ent)) {
             return;
@@ -873,114 +849,118 @@ public class ResidenceEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onExplosionPrime(ExplosionPrimeEvent event) {
-        // disabling event on world
-        Entity ent = event.getEntity();
-        if (ent == null)
-            return;
-        if (plugin.isDisabledWorldListener(ent))
-            return;
 
+        Entity entity = event.getEntity();
+
+        if (plugin.isDisabledWorldListener(entity)) {
+            return;
+        }
         CMIEntityType type = CMIEntityType.get(event.getEntityType());
+        FlagPermissions perms;
+        boolean shouldDeny = false;
+        boolean shouldRemove = false;
 
-        if (type == null)
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(ent.getLocation());
-
-        switch (type) {
-        case CREEPER:
-
-            // Disabling listener if flag disabled globally
-            if (!Flags.creeper.isGlobalyEnabled())
-                break;
-            if (!perms.has(Flags.creeper, perms.has(Flags.explode, true))) {
-                if (plugin.getConfigManager().isCreeperExplodeBelow()) {
-                    if (ent.getLocation().getBlockY() >= plugin.getConfigManager().getCreeperExplodeBelowLevel()) {
-                        event.setCancelled(true);
-                        ent.remove();
-                    } else {
-                        ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
-                        if (res != null) {
-                            event.setCancelled(true);
-                            ent.remove();
-                        }
-                    }
-                } else {
-                    event.setCancelled(true);
-                    ent.remove();
-                }
-            }
-            break;
-        case ENDER_CRYSTAL:
-            // Disabling listener if flag disabled globally
-            if (!Flags.explode.isGlobalyEnabled())
-                break;
-            if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
-                event.setCancelled(true);
-                ent.remove();
-            }
-            break;
-        case TNT:
-        case TNT_MINECART:
-
-            // Disabling listener if flag disabled globally
-            if (!Flags.tnt.isGlobalyEnabled())
-                break;
-
-            if (!perms.has(Flags.tnt, perms.has(Flags.explode, true))) {
-                if (plugin.getConfigManager().isTNTExplodeBelow()) {
-                    if (ent.getLocation().getBlockY() >= plugin.getConfigManager().getTNTExplodeBelowLevel()) {
-                        event.setCancelled(true);
-                        ent.remove();
-                    } else {
-                        ClaimedResidence res = plugin.getResidenceManager().getByLoc(ent.getLocation());
-                        if (res != null) {
-                            event.setCancelled(true);
-                            ent.remove();
-                        }
-                    }
-                } else {
-                    event.setCancelled(true);
-                    ent.remove();
-                }
-            }
-            break;
-        case SMALL_FIREBALL:
-        case FIREBALL:
-            if ((Flags.explode.isGlobalyEnabled() && perms.has(Flags.explode, FlagCombo.OnlyFalse)) ||
-                    (Flags.fireball.isGlobalyEnabled() && perms.has(Flags.fireball, FlagCombo.OnlyFalse))) {
-                event.setCancelled(true);
-                ent.remove();
-            }
-            break;
-        case WITHER_SKULL:
-            // Disabling listener if flag disabled globally
-            if (!Flags.explode.isGlobalyEnabled())
-                break;
-            if (!perms.has(Flags.explode, perms.has(Flags.witherdestruction, true))) {
-                event.setCancelled(true);
-                ent.remove();
-            }
-            break;
-        // These entity explosions are handled by EntityExplodeEvent
-        case BREEZE_WIND_CHARGE:
-        case WIND_CHARGE:
-        case WITHER:
-            break;
-        default:
-            // Disabling listener if flag disabled globally
+        if (type == null) {
+            // Unknown entity type fallback
             if (!Flags.explode.isGlobalyEnabled()) {
+                return;
+            }
+            perms = FlagPermissions.getPerms(entity.getLocation());
+            if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
+                shouldDeny = true;
+            }
+        } else {
+            switch (type) {
+            case BREEZE_WIND_CHARGE:
+            case WIND_CHARGE:
+                // Wind Charge explosion are handled by EntityExplodeEvent
+                return;
+            case CREEPER:
+                if (!Flags.creeper.isGlobalyEnabled()) {
+                    return;
+                }
+                perms = FlagPermissions.getPerms(entity.getLocation());
+                if (!perms.has(Flags.creeper, perms.has(Flags.explode, true))) {
+                    shouldDeny = !plugin.getConfigManager().isCreeperExplodeBelow()
+                            || entity.getLocation().getBlockY() >= plugin.getConfigManager().getCreeperExplodeBelowLevel()
+                            || ClaimedResidence.getByLoc(entity.getLocation()) != null;
+                    shouldRemove = shouldDeny;
+                }
+                break;
+            case TNT:
+            case TNT_MINECART:
+                if (!Flags.tnt.isGlobalyEnabled()) {
+                    return;
+                }
+                perms = FlagPermissions.getPerms(entity.getLocation());
+                if (!perms.has(Flags.tnt, perms.has(Flags.explode, true))) {
+                    shouldDeny = !plugin.getConfigManager().isTNTExplodeBelow()
+                            || entity.getLocation().getBlockY() >= plugin.getConfigManager().getTNTExplodeBelowLevel()
+                            || ClaimedResidence.getByLoc(entity.getLocation()) != null;
+                    shouldRemove = shouldDeny;
+                }
+                break;
+            case FIREBALL:
+            case SMALL_FIREBALL:
+                if (!Flags.explode.isGlobalyEnabled() && !Flags.fireball.isGlobalyEnabled()) {
+                    return;
+                }
+                perms = FlagPermissions.getPerms(entity.getLocation());
+                if ((Flags.explode.isGlobalyEnabled() && !perms.has(Flags.explode, true))
+                        || (Flags.fireball.isGlobalyEnabled() && !perms.has(Flags.fireball, true))) {
+                    shouldDeny = true;
+                    shouldRemove = true;
+                }
+                break;
+            case WITHER:
+            case WITHER_SKULL:
+                if (!Flags.explode.isGlobalyEnabled()) {
+                    return;
+                }
+                perms = FlagPermissions.getPerms(entity.getLocation());
+                if (!perms.has(Flags.explode, perms.has(Flags.witherdestruction, true))) {
+                    shouldDeny = true;
+                    shouldRemove = entity instanceof WitherSkull;
+                }
+                break;
+            case ENDER_CRYSTAL:
+                if (!Flags.explode.isGlobalyEnabled()) {
+                    return;
+                }
+                perms = FlagPermissions.getPerms(entity.getLocation());
+                if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
+                    shouldDeny = true;
+                    shouldRemove = true;
+                }
+                break;
+            default:
+                // Other entity types
+                if (!Flags.explode.isGlobalyEnabled()) {
+                    return;
+                }
+                perms = FlagPermissions.getPerms(entity.getLocation());
+                if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
+                    shouldDeny = true;
+                }
                 break;
             }
-            if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
-                event.setCancelled(true);
+        }
+        if(shouldDeny) {
+            event.setCancelled(true);
+            // fix Creeper/End_Crystal not disappearing when ExplosionPrimeEvent is canceled
+            // projectiles disappear on their own, so this may not be needed
+            if (shouldRemove) {
+                entity.remove();
             }
-            break;
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
+        // disabling event on world
+        if (plugin.isDisabledWorldListener(event.getEntity())) {
+            return;
+        }
         // ExplosionResult.TRIGGER_BLOCK does not destroy blocks
         // it is triggered by (WindCharge and Wind Charged Effect)
         if (Version.isCurrentEqualOrHigher(Version.v1_21_0)
@@ -988,190 +968,178 @@ public class ResidenceEntityListener implements Listener {
             ResidenceListener1_21.onWindExplode(event);
             return;
         }
-        // disabling event on world
+        FlagPermissions perms;
         Location loc = event.getLocation();
-        if (plugin.isDisabledWorldListener(loc))
-            return;
+        boolean shouldDeny = false;
 
-        Entity ent = event.getEntity();
-
-        boolean cancel = false;
-        boolean remove = true;
-        FlagPermissions perms = FlagPermissions.getPerms(loc);
-
-        CMIEntityType ctype = CMIEntityType.get(event.getEntityType());
-        ProjectileSource shooter = null;
+        CMIEntityType type = CMIEntityType.get(event.getEntityType());
         // Explosion is prohibited at the source location; cancel the event directly
-        if (ent != null && ctype != null) {
-
-            switch (ctype) {
+        if (type == null) {
+            // Unknown entity type fallback
+            if (Flags.explode.isGlobalyEnabled()) {
+                perms = FlagPermissions.getPerms(loc);
+                if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
+                    shouldDeny = true;
+                }
+            }
+        } else {
+            switch (type) {
             case CREEPER:
-                // Disabling listener if flag disabled globally
-                if (!Flags.creeper.isGlobalyEnabled())
+                if (!Flags.creeper.isGlobalyEnabled()) {
                     break;
-                if (!perms.has(Flags.creeper, perms.has(Flags.explode, true)))
-                    if (plugin.getConfigManager().isCreeperExplodeBelow()) {
-                        if (loc.getBlockY() >= plugin.getConfigManager().getCreeperExplodeBelowLevel())
-                            cancel = true;
-                        else {
-                            ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
-                            if (res != null)
-                                cancel = true;
-                        }
-                    } else
-                        cancel = true;
+                }
+                perms = FlagPermissions.getPerms(loc);
+                if (!perms.has(Flags.creeper, perms.has(Flags.explode, true))) {
+                    shouldDeny = !plugin.getConfigManager().isCreeperExplodeBelow()
+                            || loc.getBlockY() >= plugin.getConfigManager().getCreeperExplodeBelowLevel()
+                            || ClaimedResidence.getByLoc(loc) != null;
+                }
                 break;
             case TNT:
             case TNT_MINECART:
-                // Disabling listener if flag disabled globally
-                if (!Flags.tnt.isGlobalyEnabled())
+                if (!Flags.tnt.isGlobalyEnabled()) {
                     break;
+                }
+                perms = FlagPermissions.getPerms(loc);
                 if (!perms.has(Flags.tnt, perms.has(Flags.explode, true))) {
-                    if (plugin.getConfigManager().isTNTExplodeBelow()) {
-                        if (loc.getBlockY() >= plugin.getConfigManager().getTNTExplodeBelowLevel())
-                            cancel = true;
-                        else {
-                            ClaimedResidence res = plugin.getResidenceManager().getByLoc(loc);
-                            if (res != null)
-                                cancel = true;
-                        }
-                    } else
-                        cancel = true;
+                    shouldDeny = !plugin.getConfigManager().isTNTExplodeBelow()
+                            || loc.getBlockY() >= plugin.getConfigManager().getTNTExplodeBelowLevel()
+                            || ClaimedResidence.getByLoc(loc) != null;
                 }
                 break;
-            case ENDER_CRYSTAL:
-                // Disabling listener if flag disabled globally
-                if (!Flags.explode.isGlobalyEnabled())
-                    break;
-                if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
-                    cancel = true;
-                }
-                break;
-            case SMALL_FIREBALL:
             case FIREBALL:
-                if ((Flags.explode.isGlobalyEnabled() && perms.has(Flags.explode, FlagCombo.OnlyFalse)) ||
-                        (Flags.fireball.isGlobalyEnabled() && perms.has(Flags.fireball, FlagCombo.OnlyFalse))) {
-                    cancel = true;
+            case SMALL_FIREBALL:
+                if (!Flags.explode.isGlobalyEnabled() && !Flags.fireball.isGlobalyEnabled()) {
+                    break;
+                }
+                perms = FlagPermissions.getPerms(loc);
+                if ((Flags.explode.isGlobalyEnabled() && !perms.has(Flags.explode, true))
+                        || (Flags.fireball.isGlobalyEnabled() && !perms.has(Flags.fireball, true))) {
+                    shouldDeny = true;
                 }
                 break;
             case WITHER:
             case WITHER_SKULL:
-                // Disabling listener if flag disabled globally
-                if (!Flags.explode.isGlobalyEnabled())
-                    break;
-                if (!perms.has(Flags.explode, perms.has(Flags.witherdestruction, true))) {
-                    cancel = true;
-                }
-                break;
-            case ENDER_DRAGON:
-                remove = false;
-                break;
-            default:
-                // Disabling listener if flag disabled globally
                 if (!Flags.explode.isGlobalyEnabled()) {
                     break;
                 }
+                perms = FlagPermissions.getPerms(loc);
+                if (!perms.has(Flags.explode, perms.has(Flags.witherdestruction, true))) {
+                    shouldDeny = true;
+                }
+                break;
+            case ENDER_DRAGON:
+                if (!Flags.dragongrief.isGlobalyEnabled()) {
+                    break;
+                }
+                perms = FlagPermissions.getPerms(loc);
+                if (!perms.has(Flags.dragongrief, true)) {
+                    shouldDeny = true;
+                }
+                break;
+            default:
+                // Other entity types
+                if (!Flags.explode.isGlobalyEnabled()) {
+                    break;
+                }
+                perms = FlagPermissions.getPerms(loc);
                 if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
-                    cancel = true;
-                    remove = false;
+                    shouldDeny = true;
                 }
                 break;
             }
-        } else if (Flags.explode.isGlobalyEnabled() && !perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
-            cancel = true;
         }
-
-        if (cancel) {
+        if (shouldDeny) {
             event.setCancelled(true);
-            if (ent != null && remove) {
-                if (!event.getEntityType().equals(EntityType.WITHER))
-                    ent.remove();
-            }
             return;
         }
         // Source allows explosion, so check each affected block for destruction
-        List<Block> preserve = new ArrayList<Block>();
-        for (Block block : event.blockList()) {
-            FlagPermissions blockperms = FlagPermissions.getPerms(block.getLocation());
+        handleEntityExplodeBreakBlock(event.blockList(), type);
+    }
 
-            if (ent != null && ctype != null) {
-                switch (ctype) {
-                case CREEPER:
-                    // Disabling listener if flag disabled globally
-                    if (!Flags.creeper.isGlobalyEnabled())
-                        continue;
-                    if (!blockperms.has(Flags.creeper, blockperms.has(Flags.explode, true)))
-                        if (plugin.getConfigManager().isCreeperExplodeBelow()) {
-                            if (block.getY() >= plugin.getConfigManager().getCreeperExplodeBelowLevel())
-                                preserve.add(block);
-                            else {
-                                ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-                                if (res != null)
-                                    preserve.add(block);
-                            }
-                        } else
-                            preserve.add(block);
-                    continue;
-                case TNT:
-                case TNT_MINECART:
-                    // Disabling listener if flag disabled globally
-                    if (!Flags.tnt.isGlobalyEnabled())
-                        continue;
-                    if (!blockperms.has(Flags.tnt, blockperms.has(Flags.explode, true))) {
-                        if (plugin.getConfigManager().isTNTExplodeBelow()) {
-                            if (block.getY() >= plugin.getConfigManager().getTNTExplodeBelowLevel())
-                                preserve.add(block);
-                            else {
-                                ClaimedResidence res = plugin.getResidenceManager().getByLoc(block.getLocation());
-                                if (res != null)
-                                    preserve.add(block);
-                            }
-                        } else
-                            preserve.add(block);
-                    }
-                    continue;
-                case ENDER_DRAGON:
-                    if (Flags.dragongrief.isGlobalyEnabled() && blockperms.has(Flags.dragongrief, FlagCombo.OnlyFalse)) {
-                        preserve.add(block);
-                    }
-                    continue;
-                case ENDER_CRYSTAL:
-                    if ((Flags.explode.isGlobalyEnabled() && blockperms.has(Flags.explode, FlagCombo.OnlyFalse)) ||
-                            (Flags.destroy.isGlobalyEnabled() && blockperms.has(Flags.destroy, FlagCombo.OnlyFalse))) {
-                        preserve.add(block);
-                    }
-                    continue;
-                case SMALL_FIREBALL:
-                case FIREBALL:
-                    if ((Flags.explode.isGlobalyEnabled() && blockperms.has(Flags.explode, FlagCombo.OnlyFalse)) ||
-                            (Flags.fireball.isGlobalyEnabled() && blockperms.has(Flags.fireball, FlagCombo.OnlyFalse))) {
-                        preserve.add(block);
-                    }
-                    continue;
-                case WITHER:
-                case WITHER_SKULL:
-                    if ((Flags.witherdestruction.isGlobalyEnabled() && !blockperms.has(Flags.witherdestruction, blockperms.has(Flags.destroy, true)))
-                            || (Flags.explode.isGlobalyEnabled() && blockperms.has(Flags.explode, FlagCombo.OnlyFalse))) {
-                        preserve.add(block);
-                    }
-                    continue;
-                default:
-                    if ((Flags.destroy.isGlobalyEnabled() && blockperms.has(Flags.destroy, FlagCombo.OnlyFalse)) ||
-                            (Flags.explode.isGlobalyEnabled() && blockperms.has(Flags.explode, FlagCombo.OnlyFalse))) {
-                        preserve.add(block);
-                    }
-                    continue;
-                }
-            } else {
-                if ((Flags.destroy.isGlobalyEnabled() && blockperms.has(Flags.destroy, FlagCombo.OnlyFalse)) ||
-                        (Flags.explode.isGlobalyEnabled() && blockperms.has(Flags.explode, FlagCombo.OnlyFalse))) {
-                    preserve.add(block);
-                }
+    private void handleEntityExplodeBreakBlock(List<Block> blocks, CMIEntityType type) {
+        // Unknown entity type fallback
+        if (type == null) {
+            if (!Flags.destroy.isGlobalyEnabled() && !Flags.explode.isGlobalyEnabled()) {
+                return;
             }
+            blocks.removeIf(block -> {
+                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+                return (Flags.destroy.isGlobalyEnabled() && !perms.has(Flags.destroy, true))
+                        || (Flags.explode.isGlobalyEnabled() && !perms.has(Flags.explode, true));
+            });
+            return;
         }
-
-        if (!preserve.isEmpty()) {
-            event.blockList().removeAll(preserve);
+        switch (type) {
+        case CREEPER:
+            if (!Flags.creeper.isGlobalyEnabled()) {
+                return;
+            }
+            blocks.removeIf(block -> {
+                Location blockLoc = block.getLocation();
+                FlagPermissions perms = FlagPermissions.getPerms(blockLoc);
+                return !perms.has(Flags.creeper, perms.has(Flags.explode, true))
+                        && (!plugin.getConfigManager().isCreeperExplodeBelow()
+                        || block.getY() >= plugin.getConfigManager().getCreeperExplodeBelowLevel()
+                        || ClaimedResidence.getByLoc(blockLoc) != null);
+            });
+            return;
+        case TNT:
+        case TNT_MINECART:
+            if (!Flags.tnt.isGlobalyEnabled()) {
+                return;
+            }
+            blocks.removeIf(block -> {
+                Location blockLoc = block.getLocation();
+                FlagPermissions perms = FlagPermissions.getPerms(blockLoc);
+                return !perms.has(Flags.tnt, perms.has(Flags.explode, true))
+                        && (!plugin.getConfigManager().isTNTExplodeBelow()
+                        || block.getY() >= plugin.getConfigManager().getTNTExplodeBelowLevel()
+                        || ClaimedResidence.getByLoc(blockLoc) != null);
+            });
+            return;
+        case FIREBALL:
+        case SMALL_FIREBALL:
+            if (!Flags.explode.isGlobalyEnabled() && !Flags.fireball.isGlobalyEnabled()) {
+                return;
+            }
+            blocks.removeIf(block -> {
+                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+                return (Flags.explode.isGlobalyEnabled() && !perms.has(Flags.explode, true))
+                        || (Flags.fireball.isGlobalyEnabled() && !perms.has(Flags.fireball, true));
+            });
+            return;
+        case WITHER:
+        case WITHER_SKULL:
+            if (!Flags.witherdestruction.isGlobalyEnabled() && !Flags.explode.isGlobalyEnabled()) {
+                return;
+            }
+            blocks.removeIf(block -> {
+                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+                return (Flags.witherdestruction.isGlobalyEnabled() && !perms.has(Flags.witherdestruction, perms.has(Flags.destroy, true)))
+                        || (Flags.explode.isGlobalyEnabled() && !perms.has(Flags.explode, true));
+            });
+            return;
+        case ENDER_DRAGON:
+            if (!Flags.dragongrief.isGlobalyEnabled()) {
+                return;
+            }
+            blocks.removeIf(block -> {
+                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+                return !perms.has(Flags.dragongrief, true);
+            });
+            return;
+        default:
+            // Other entity types
+            if (!Flags.destroy.isGlobalyEnabled() && !Flags.explode.isGlobalyEnabled()) {
+                return;
+            }
+            blocks.removeIf(block -> {
+                FlagPermissions perms = FlagPermissions.getPerms(block.getLocation());
+                return (Flags.destroy.isGlobalyEnabled() && !perms.has(Flags.destroy, true))
+                        || (Flags.explode.isGlobalyEnabled() && !perms.has(Flags.explode, true));
+            });
+            return;
         }
     }
 
@@ -1188,75 +1156,101 @@ public class ResidenceEntityListener implements Listener {
         if (perms.has(Flags.mobgriefing, perms.has(Flags.destroy, true))) {
             return;
         }
-
         event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onSplashPotion(PotionSplashEvent event) {
+    public void onPotionSplash(PotionSplashEvent event) {
 
-        if (FlagPermissions.shouldIgnoreCheck(Flags.pvp, event.getEntity())) {
+        ThrownPotion potion = event.getPotion();
+
+        if (plugin.isDisabledWorldListener(potion)) {
             return;
         }
-        ProjectileSource shooter = event.getPotion().getShooter();
+        ProjectileSource attacker = potion.getShooter();
+        boolean isPlayerAttacker = attacker instanceof Player;
+        ClaimedResidence attackerRes = null;
 
-        if (shooter instanceof Witch)
+        if (isPlayerAttacker) {
+            if (!Flags.potionthrowing.isGlobalyEnabled()) {
+                return;
+            }
+            Player player = (Player) attacker;
+            if (player.hasMetadata("NPC")) {
+                return;
+            }
+            attackerRes = ClaimedResidence.getByLoc(player.getLocation());
+            FlagPermissions attackerPerms = (attackerRes != null)
+                    ? attackerRes.getPermissions()
+                    : Residence.getInstance().getWorldFlags().getPerms(player.getWorld());
+            if (attackerPerms.playerHas(player, Flags.potionthrowing, FlagCombo.OnlyFalse) && !ResAdmin.isResAdmin(player)) {
+                lm.Flag_Deny.sendMessage(player, Flags.potionthrowing);
+                event.setCancelled(true);
+                return;
+            }
+            // Now handling Potion thrown by dispensers
+        } else if (attacker instanceof BlockProjectileSource) {
+            ClaimedResidence potionHitRes = ClaimedResidence.getByLoc(potion.getLocation());
+            if (potionHitRes == null) {
+                return;
+            }
+            Location shooterLoc = ((BlockProjectileSource) attacker).getBlock().getLocation();
+            ClaimedResidence shooterRes = ClaimedResidence.getByLoc(shooterLoc);
+            // Non-player shooter and hit location in same Residence or same owner; skip check
+            if (potionHitRes == shooterRes || (shooterRes != null && shooterRes.isOwner(potionHitRes.getOwner()))) {
+                return;
+            }
+            // Prevent Potion from being spawned into a Residence from outside
+            if (potionHitRes.getPermissions().has(Flags.build, FlagCombo.OnlyFalse)) {
+                event.setCancelled(true);
+            }
             return;
+        }
+        // Potion allows Splash; now handling potion effects on entities
+        boolean isHealingEffect = false;
+        boolean isDamageEffect = false;
+        boolean isHarmfulEffect = false;
 
-        boolean harmfull = false;
-
-        mein: for (PotionEffect one : event.getPotion().getEffects()) {
-            for (String oneHarm : plugin.getConfigManager().getNegativePotionEffects()) {
-                if (oneHarm.equalsIgnoreCase(one.getType().getName())) {
-                    harmfull = true;
-                    break mein;
-                }
+        ItemMeta itemMeta = potion.getItem().getItemMeta();
+        if (!(itemMeta instanceof PotionMeta)) {
+            return;
+        }
+        // Start - Get the potion effect type
+        for (PotionEffect effect : potion.getEffects()) {
+            PotionEffectType type = effect.getType();
+            if (PotionUtils.isHealingEffect(type)) {
+                isHealingEffect = true;
+                break;
+            } else if (PotionUtils.isDamageEffect(type)) {
+                isDamageEffect = true;
+                break;
+            } else if (PotionUtils.isHarmfulEffect(type)) {
+                isHarmfulEffect = true;
+                break;
             }
         }
-
-        if (!harmfull)
-            return;
-
-        Entity ent = event.getEntity();
-        boolean srcpvp = FlagPermissions.getPerms(ent.getLocation()).has(Flags.pvp, FlagCombo.TrueOrNone);
-        boolean animalKilling = FlagPermissions.getPerms(ent.getLocation()).has(Flags.animalkilling, FlagCombo.TrueOrNone);
-        Iterator<LivingEntity> it = event.getAffectedEntities().iterator();
-        boolean animalDamage = false;
-        while (it.hasNext()) {
-            LivingEntity target = it.next();
-
-            if (Utils.isAnimal(target)) {
-                if (!animalKilling) {
-                    event.setIntensity(target, 0);
-                    animalDamage = true;
-                }
-                continue;
-            }
-
-            if (target.getType() != EntityType.PLAYER)
-                continue;
-            Boolean tgtpvp = FlagPermissions.getPerms(target.getLocation()).has(Flags.pvp, FlagCombo.TrueOrNone);
-            if (!srcpvp || !tgtpvp) {
-                event.setIntensity(target, 0);
-                continue;
-            }
-
-            ClaimedResidence area = plugin.getResidenceManager().getByLoc(target.getLocation());
-
-            if (target instanceof Player && shooter instanceof Player) {
-                Player attacker = (Player) shooter;
-                ClaimedResidence srcarea = plugin.getResidenceManager().getByLoc(attacker.getLocation());
-                if (srcarea != null && area != null && srcarea.equals(area)
-                        && srcarea.getPermissions().playerHas((Player) target, Flags.friendlyfire, FlagCombo.OnlyFalse)
-                        && srcarea.getPermissions().playerHas(attacker, Flags.friendlyfire, FlagCombo.OnlyFalse)) {
-                    CMIActionBar.send(attacker, plugin.getLM().getMessage(lm.General_NoFriendlyFire));
-                    event.setIntensity(target, 0);
+        // End - Get the potion effect type
+        if (isHealingEffect && Flags.mobkilling.isGlobalyEnabled()) {
+            for (LivingEntity victim : event.getAffectedEntities()) {
+                if (PotionUtils.shouldDenyHealingEffect(victim, attacker, isPlayerAttacker)) {
+                    event.setIntensity(victim, 0);
                 }
             }
-        }
 
-        if (!animalKilling && animalDamage && shooter instanceof Player) {
-            lm.Flag_Deny.sendMessage((Player) shooter, Flags.animalkilling);
+        } else if (isDamageEffect) {
+            for (LivingEntity victim : event.getAffectedEntities()) {
+                if (PotionUtils.shouldDenyDamageEffect(victim, attacker, attackerRes, isPlayerAttacker)) {
+                    event.setIntensity(victim, 0);
+                }
+            }
+
+        } else if (isHarmfulEffect) {
+            for (LivingEntity victim : event.getAffectedEntities()) {
+                if (PotionUtils.shouldDenyHarmfulEffect(victim, attacker, attackerRes, isPlayerAttacker)) {
+                    event.setIntensity(victim, 0);
+                }
+            }
+
         }
     }
 
@@ -1303,7 +1297,7 @@ public class ResidenceEntityListener implements Listener {
         if (Version.isCurrentEqualOrHigher(Version.v1_21_0) && Version.isPaperBranch()) {
             return;
         }
-        if (Version.isCurrentEqualOrLower(Version.v1_14_R1))
+        if (Version.isCurrentEqualOrLower(Version.v1_14_0))
             return;
 
         if (event.getBow() == null)
@@ -1374,11 +1368,16 @@ public class ResidenceEntityListener implements Listener {
         if (attackerPlayer == null || attackerPlayer.hasMetadata("NPC")) {
             return;
         }
+        // Skip the PvP check when players attack themselves
+        // e.g. Players fire an arrow from above and deliberately step into it to hit themselves
+        if (attackerPlayer == victim) {
+            return;
+        }
         // Now both the attacker and the victim are guaranteed to be players
-        ClaimedResidence attackerRes = ClaimedResidence.getByLoc(attacker.getLocation());
+        ClaimedResidence attackerRes = ClaimedResidence.getByLoc(attackerPlayer.getLocation());
         ClaimedResidence victimRes = ClaimedResidence.getByLoc(victim.getLocation());
         // Attacker and victim are in the same Residence
-        if (attackerRes != null && victimRes != null && attackerRes.equals(victimRes)) {
+        if (attackerRes != null && attackerRes == victimRes) {
 
             if (ConfigManager.RaidEnabled && victimRes.getRaid().isUnderRaid()) {
                 boolean raidSameTeam = victimRes.getRaid().onSameTeam(attackerPlayer, (Player) victim);
@@ -1390,12 +1389,14 @@ public class ResidenceEntityListener implements Listener {
                     return;
                 }
             }
-            if (attackerRes.getPermissions().has(Flags.pvp, FlagCombo.OnlyFalse)) {
+            FlagPermissions attackerPerms = attackerRes.getPermissions();
+
+            if (attackerPerms.has(Flags.pvp, FlagCombo.OnlyFalse)) {
                 process(lm.General_NoPVPZone, attackerPlayer, isOnFire, victim, event);
                 return;
             }
-            if (attackerRes.getPermissions().playerHas((Player) victim, Flags.friendlyfire, FlagCombo.OnlyFalse)
-                    && attackerRes.getPermissions().playerHas(attackerPlayer, Flags.friendlyfire, FlagCombo.OnlyFalse)) {
+            if (attackerPerms.playerHas((Player) victim, Flags.friendlyfire, FlagCombo.OnlyFalse)
+                    && attackerPerms.playerHas(attackerPlayer, Flags.friendlyfire, FlagCombo.OnlyFalse)) {
                 CMIActionBar.send(attackerPlayer, plugin.getLM().getMessage(lm.General_NoFriendlyFire));
                 event.setCancelled(true);
                 if (isOnFire) {
@@ -1433,12 +1434,10 @@ public class ResidenceEntityListener implements Listener {
             return;
         }
         Entity attacker = event.getDamager();
-        // Check held Material Blacklist
+        // Check held item blacklist
         if (attacker instanceof Player) {
             Player player = (Player) attacker;
-            ItemStack item = CMIItemStack.getItemInMainHand(player);
-            if (item != null && !plugin.getItemManager().isAllowed(item.getType(), player) && !ResAdmin.isResAdmin(player)) {
-                lm.General_ItemBlacklisted.sendMessage(player);
+            if (Utils.isItemBlacklisted(CMIItemStack.getItemInMainHand(player), player)) {
                 event.setCancelled(true);
                 return;
             }
@@ -1473,14 +1472,15 @@ public class ResidenceEntityListener implements Listener {
             mainFlag = Flags.witherdamage;
 
         }
-        if (mainFlag != null) {
-            FlagPermissions perms = FlagPermissions.getPerms(victim.getLocation());
-            boolean result = (subFlag == null || perms.has(subFlag, true));
-            if (perms.has(mainFlag, result)) {
-                return;
-            }
-            event.setCancelled(true);
+        if (mainFlag == null) {
+            return;
         }
+        FlagPermissions perms = FlagPermissions.getPerms(victim.getLocation());
+        boolean result = (subFlag == null || perms.has(subFlag, true));
+        if (perms.has(mainFlag, result)) {
+            return;
+        }
+        event.setCancelled(true);
     }
 
     private void handleDecorativeEntityDamage(EntityDamageByEntityEvent event) {
@@ -1504,10 +1504,18 @@ public class ResidenceEntityListener implements Listener {
             }
             // damage from non-players or projectiles fired by non-players
         } else if (Flags.destroy.isGlobalyEnabled()) {
-            if (attacker instanceof Projectile && Utils.isSourceBlockInsideSameResidence(attacker, ClaimedResidence.getByLoc(victim.getLocation()))) {
-                return;
+            ClaimedResidence res = null;
+            if (attacker instanceof Projectile) {
+                res = ClaimedResidence.getByLoc(victim.getLocation());
+                // skip check if shooter is a dispenser in the same Residence
+                if (Utils.isSourceBlockInsideSameResidence(attacker, res)) {
+                    return;
+                }
             }
-            FlagPermissions perms = FlagPermissions.getPerms(victim.getLocation());
+            FlagPermissions perms = (res != null)
+                    ? res.getPermissions()
+                    : plugin.getWorldFlags().getPerms(victim.getWorld());
+
             if (!perms.has(Flags.destroy, perms.has(Flags.build, true))) {
                 event.setCancelled(true);
             }
@@ -1522,35 +1530,49 @@ public class ResidenceEntityListener implements Listener {
         if (plugin.isDisabledWorldListener(entity)) {
             return;
         }
-        if (Flags.damage.isGlobalyEnabled() && event.getCause() != DamageCause.VOID
+        DamageCause cause = event.getCause();
+        if (Flags.damage.isGlobalyEnabled() && cause != DamageCause.VOID
                 && (entity instanceof Player || Utils.isTamed(entity))
                 && FlagPermissions.has(entity.getLocation(), Flags.damage, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
             entity.setFireTicks(0);
-            return;
-        }
 
-        if (Flags.falldamage.isGlobalyEnabled() && event.getCause() == DamageCause.FALL && entity instanceof Player) {
+        } else if (Flags.falldamage.isGlobalyEnabled() && cause == DamageCause.FALL && entity instanceof Player) {
             if (FlagPermissions.has(entity.getLocation(), Flags.falldamage, FlagCombo.OnlyFalse)) {
                 event.setCancelled(true);
             }
-            return;
-        }
-        if (Flags.pvp.isGlobalyEnabled() && event.getCause() == DamageCause.LIGHTNING && entity instanceof Player) {
+        } else if (Flags.pvp.isGlobalyEnabled() && cause == DamageCause.LIGHTNING && entity instanceof Player) {
             if (FlagPermissions.has(entity.getLocation(), Flags.pvp, FlagCombo.OnlyFalse)) {
                 event.setCancelled(true);
             }
-            return;
-        }
-        if (Flags.destroy.isGlobalyEnabled()
-                && (event.getCause() == DamageCause.BLOCK_EXPLOSION || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.FIRE_TICK)
+        } else if (Flags.destroy.isGlobalyEnabled()
+                && (cause == DamageCause.BLOCK_EXPLOSION || cause == DamageCause.ENTITY_EXPLOSION || cause == DamageCause.FIRE_TICK)
                 && (entity instanceof Arrow || Utils.isArmorStand(entity))) {
             if (FlagPermissions.has(entity.getLocation(), Flags.destroy, FlagCombo.OnlyFalse)) {
                 event.setCancelled(true);
                 entity.setFireTicks(0);
             }
-            return;
+            // Even if BlockExplodeEvent is canceled, damage will still be dealt
+            // Fix bed and respawn anchor explosions damaging entities
+        } else if (cause == DamageCause.BLOCK_EXPLOSION) {
+            if (Flags.pvp.isGlobalyEnabled() && entity instanceof Player) {
+                if (FlagPermissions.has(entity.getLocation(), Flags.pvp, FlagCombo.OnlyFalse)) {
+                    event.setCancelled(true);
+                }
+            } else if (Flags.animalkilling.isGlobalyEnabled() && Utils.isAnimal(entity)) {
+                if (FlagPermissions.has(entity.getLocation(), Flags.animalkilling, FlagCombo.OnlyFalse)) {
+                    event.setCancelled(true);
+                }
+            } else if (Flags.mobkilling.isGlobalyEnabled() && Utils.isMonster(entity)) {
+                if (FlagPermissions.has(entity.getLocation(), Flags.mobkilling, FlagCombo.OnlyFalse)) {
+                    event.setCancelled(true);
+                }
+            } else if (Flags.explode.isGlobalyEnabled()) {
+                FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation());
+                if (!perms.has(Flags.explode, perms.has(Flags.destroy, true))) {
+                    event.setCancelled(true);
+                }
+            }
         }
-
     }
 }

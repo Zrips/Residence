@@ -76,7 +76,7 @@ public class ResidenceListener26_2_Paper implements Listener {
         } else if (Utils.isAnimal(target)) {
             subFlag = Flags.animalkilling;
 
-        } else if (ResidenceEntityListener.isMonster(target)) {
+        } else if (Utils.isMonster(target)) {
             subFlag = Flags.mobkilling;
 
         }

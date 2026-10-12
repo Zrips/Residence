@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_14;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,31 +17,44 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.WaterMob;
+import org.bukkit.entity.Wither;
 import org.bukkit.entity.minecart.PoweredMinecart;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.util.BlockIterator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.containers.Flags;
+import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import com.bekvon.bukkit.residence.protection.FlagPermissions;
 
 import net.Zrips.CMILib.Entities.CMIEntityType;
+import net.Zrips.CMILib.Items.CMIItemStack;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -79,13 +93,12 @@ public class Utils {
     }
 
     public static List<Entity> getPassengers(Vehicle vehicle) {
-        if (Version.isCurrentEqualOrHigher(Version.v1_9_R1))
+        // getPassengers was not added until Bukkit 1.11.2+
+        if (Version.isCurrentEqualOrHigher(Version.v1_11_2)) {
             return vehicle.getPassengers();
-        else {
-            List<Entity> passengers = new ArrayList<>();
-            if (vehicle.getPassenger() != null)
-                passengers.add(vehicle.getPassenger());
-            return passengers;
+        } else {
+            Entity passenger = vehicle.getPassenger();
+            return passenger != null ? Collections.singletonList(passenger) : Collections.emptyList();
         }
     }
 
@@ -274,31 +287,58 @@ public class Utils {
         return loc;
     }
 
-    public static boolean isAnimal(Entity ent) {
-        if (ent == null) {
+    public static boolean isAnimal(@Nullable Entity entity) {
+        if (entity == null) {
             return false;
         }
-        if (ent instanceof Animals
-                || ent instanceof WaterMob
-                || ent instanceof NPC
-                || ent instanceof Bat
-                || ent instanceof Snowman
-                || ent instanceof IronGolem
+        if (entity instanceof Animals
+                || entity instanceof WaterMob
+                || entity instanceof NPC
+                || entity instanceof Bat
+                || entity instanceof Snowman
+                || entity instanceof IronGolem
                 // Temporary code, replace with enum after CMILib new GitHub Releases release
-                || (Version.isCurrentEqualOrHigher(Version.v26_2_0) && ent instanceof org.bukkit.entity.SulfurCube)) {
+                || (Version.isCurrentEqualOrHigher(Version.v26_2_0) && entity instanceof org.bukkit.entity.SulfurCube)) {
             return true;
         }
-        CMIEntityType type = CMIEntityType.get(ent);
-        if (type != null) {
-            switch (type) {
-            case ALLAY:
-            case COPPER_GOLEM:
-                return true;
-            default:
-                return false;
-            }
+        CMIEntityType type = CMIEntityType.get(entity);
+        if (type == null) {
+            return false;
         }
-        return false;
+        switch (type) {
+        case ALLAY:
+        case COPPER_GOLEM:
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    public static boolean isMonster(@Nullable Entity entity) {
+        if (entity == null) {
+            return false;
+        }
+        if (Version.isCurrentEqualOrHigher(Version.v1_19_3)) {
+            return entity instanceof org.bukkit.entity.Enemy;
+        }
+        if (entity instanceof Monster) {
+            return true;
+        }
+        CMIEntityType type = CMIEntityType.get(entity);
+        if (type == null) {
+            return false;
+        }
+        switch (type) {
+        case ENDER_DRAGON:
+        case GHAST:
+        case HOGLIN:
+        case PHANTOM:
+        case SHULKER:
+        case SLIME:
+            return true;
+        default:
+            return false;
+        }
     }
 
     public static boolean isTamed(Entity entity) {
@@ -318,6 +358,10 @@ public class Utils {
 
     public static boolean isArmorStand(Entity entity) {
         return Version.isCurrentEqualOrHigher(Version.v1_8_0) && entity instanceof org.bukkit.entity.ArmorStand;
+    }
+
+    public static boolean isCopperGolem(Entity entity) {
+        return Version.isCurrentEqualOrHigher(Version.v1_21_9) && entity instanceof org.bukkit.entity.CopperGolem;
     }
 
     public static boolean isSpectator(org.bukkit.GameMode mode) {
@@ -346,5 +390,67 @@ public class Utils {
             return event.getBlocks();
         }
         return Collections.singletonList(event.getBlock());
+    }
+
+    public static InventoryHolder getHolderNoSnapshot(Inventory inventory) {
+        if (Version.isCurrentEqualOrHigher(Version.v1_16_0) && Version.isPaperBranch()) {
+            // Skipping snapshot creation is faster
+            return inventory.getHolder(false);
+        }
+        return inventory.getHolder();
+    }
+
+    // This blacklist is configured in flags.yml
+    public static boolean isItemBlacklisted(@Nullable ItemStack item, @NotNull Player player) {
+        if (item == null || ResAdmin.isResAdmin(player)) {
+            return false;
+        }
+        if (!Residence.getInstance().getItemManager().isAllowed(item.getType(), player)) {
+            lm.General_ItemBlacklisted.sendMessage(player);
+            return true;
+        }
+        return false;
+    }
+
+    // Supports 1.7.10+
+    public static @Nullable ItemStack getItemInUseHand(PlayerInteractEntityEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = CMIItemStack.getItemInMainHand(player);
+        try {
+            if (event.getHand() == EquipmentSlot.OFF_HAND) {
+                item = CMIItemStack.getItemInOffHand(player);
+            }
+        } catch (Throwable ignored) {
+        }
+        return item;
+    }
+
+    public static boolean isContainer(Material mat) {
+        return FlagPermissions.getMaterialUseFlagList().get(mat) == Flags.container
+                || Residence.getInstance().getConfigManager().getCustomContainers().contains(mat);
+    }
+
+    public static boolean isUndead(Entity entity) {
+        if (entity == null) {
+            return false;
+        }
+        EntityType type = entity.getType();
+        if (Version.isCurrentEqualOrHigher(Version.v1_14_0)) {
+            return ResidenceListener1_14.isEntityTag(type, "undead");
+        }
+        if (entity instanceof Zombie || entity instanceof Skeleton || entity instanceof Wither) {
+            return true;
+        }
+        CMIEntityType cType = CMIEntityType.get(type);
+        if (cType == null) {
+            return false;
+        }
+        switch (cType) {
+            case SKELETON_HORSE:
+            case ZOMBIE_HORSE:
+                return true;
+            default:
+                return false;
+        }
     }
 }
