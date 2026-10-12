@@ -448,6 +448,10 @@ public class PlayerManager implements ResidencePlayerInterface {
         if (resPlayer != null) {
             resPlayer.addResidence(residence);
         }
+        addTrustedPlayers(residence);
+    }
+
+    public void addTrustedPlayers(ClaimedResidence residence) {
         try {
             for (Entry<UUID, Map<String, Boolean>> one : residence.getPermissions().getPlayerFlags().entrySet()) {
                 if (!residence.isTrusted(one.getKey()))
@@ -471,8 +475,6 @@ public class PlayerManager implements ResidencePlayerInterface {
         } catch (Throwable e) {
             e.printStackTrace();
         }
-
-        return;
     }
 
     public void removeResFromPlayer(ClaimedResidence residence) {

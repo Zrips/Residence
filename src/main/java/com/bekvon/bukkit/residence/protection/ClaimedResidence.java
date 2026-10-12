@@ -1686,6 +1686,8 @@ public class ClaimedResidence {
                 // person
                 if (subres.getParent() != null && !subres.getOwnerUUID().equals(subres.getParent().getOwnerUUID()))
                     Residence.getInstance().getPlayerManager().addResidence(subres.getOwnerUUID(), subres);
+                else
+                    Residence.getInstance().getPlayerManager().addTrustedPlayers(subres);
 
                 res.subzones.put(map.getKey().toLowerCase(), subres);
             }
