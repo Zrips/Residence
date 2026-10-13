@@ -1731,7 +1731,7 @@ public class FlagPermissions {
         ClaimedResidence res = Residence.getInstance().getResidenceManager().getByLoc(loc);
         if (res != null)
             return res.getPermissions();
-        return Residence.getInstance().getWorldFlags().getPerms(loc.getWorld().getName());
+        return Residence.getInstance().getWorldFlags().getPerms(loc.getWorld());
     }
 
     public static FlagPermissions getPerms(Player player) {
@@ -1739,12 +1739,12 @@ public class FlagPermissions {
     }
 
     public static FlagPermissions getPerms(Location loc, Player player) {
-        ClaimedResidence res = Residence.getInstance().getResidenceManager().getByLoc(loc);
+        ClaimedResidence res = ClaimedResidence.getByLoc(loc);
         if (res != null)
             return res.getPermissions();
         if (player != null)
             return Residence.getInstance().getWorldFlags().getPerms(player);
-        return Residence.getInstance().getWorldFlags().getPerms(loc.getWorld().getName());
+        return Residence.getInstance().getWorldFlags().getPerms(loc.getWorld());
     }
 
     public static FlagPermissions getPerms(World world) {
@@ -1807,5 +1807,13 @@ public class FlagPermissions {
 
     public static boolean shouldDenyAndNotify(@NotNull Player player, @NotNull Entity target, @NotNull Flags mainFlag, @Nullable Flags subFlag) {
         return shouldDenyAndNotify(player, target.getLocation(), mainFlag, subFlag, true);
+    }
+
+    public static boolean shouldDenyAndNotify(@NotNull Player player, @NotNull Entity target, @NotNull Flags mainFlag) {
+        return shouldDenyAndNotify(player, target.getLocation(), mainFlag, null, true);
+    }
+
+    public static boolean shouldDenyAndNotify(@NotNull Player player, @NotNull Flags mainFlag) {
+        return shouldDenyAndNotify(player, player.getLocation(), mainFlag, null, true);
     }
 }

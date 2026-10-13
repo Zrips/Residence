@@ -233,8 +233,8 @@ public class ConfigManager {
     protected List<String> BlockFallWorlds;
     protected List<String> CleanWorlds;
     protected List<String> FlagsList;
-    //protected List<String> NegativePotionEffects;
-    //protected List<String> NegativeLingeringPotionEffects;
+    protected List<String> NegativePotionEffects = new ArrayList<String>();
+    protected List<String> NegativeLingeringPotionEffects = new ArrayList<String>();
     private double WalkSpeed1;
     private double WalkSpeed2;
     private int SignsMaxPerResidence;
@@ -806,15 +806,6 @@ public class ConfigManager {
         FeedInterval = c.get("Global.Optimizations.Intervals.Feed", 5);
         SafeZoneInterval = c.get("Global.Optimizations.Intervals.SafeZone", 3);
 
-        // negative potion effect list
-        //c.addComment("Global.Optimizations.NegativePotionEffects",
-                //"Potions containing one of thos effects will be ignored if residence don't have pvp true flag set");
-        //NegativePotionEffects = c.get("Global.Optimizations.NegativePotionEffects", Arrays.asList("blindness", "confusion", "harm", "hunger", "poison", "slow",
-                //"slow_digging", "weakness", "wither"));
-
-        //NegativeLingeringPotionEffects = c.get("Global.Optimizations.NegativeLingeringPotions", Arrays.asList("slowness", "instant_damage", "poison",
-                //"slowness"));
-
         c.addComment("Global.Optimizations.WalkSpeed",
                 "Defines speed for particular wspeed1 and wspeed2 flags. It can be from 0 up to 5");
         WalkSpeed1 = c.get("Global.Optimizations.WalkSpeed.1", 0.5D);
@@ -1254,7 +1245,8 @@ public class ConfigManager {
         flagsInherit = c.get("Global.ResidenceFlagsInherit", true);
 
         c.addComment("Global.PreventRentModify", "Setting this to false will allow rented residences to be modified by the renting player.");
-        // Keep it at false, so that rented areas permissions can be modified with flags by default
+        // Keep it at false, so that rented areas permissions can be modified with flags
+        // by default
         preventBuildInRent = c.get("Global.PreventRentModify", false);
 
         c.addComment("Global.PreventSubZoneRemoval", "Setting this to true will prevent subzone deletion when subzone owner is not same as parent zone owner.");
@@ -2020,13 +2012,15 @@ public class ConfigManager {
         return BlockFallWorlds;
     }
 
-    //public List<String> getNegativePotionEffects() {
-        //return NegativePotionEffects;
-    //}
+    @Deprecated
+    public List<String> getNegativePotionEffects() {
+        return NegativePotionEffects;
+    }
 
-    //public List<String> getNegativeLingeringPotionEffects() {
-        //return NegativeLingeringPotionEffects;
-    //}
+    @Deprecated
+    public List<String> getNegativeLingeringPotionEffects() {
+        return NegativeLingeringPotionEffects;
+    }
 
     public List<String> getCleanWorlds() {
         return CleanWorlds;

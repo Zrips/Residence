@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Material;
+import org.bukkit.WeatherType;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -20,6 +21,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
+import org.jspecify.annotations.Nullable;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -33,6 +35,7 @@ import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
@@ -137,39 +140,46 @@ public class ResidenceListener1_13 implements Listener {
         if (held != Material.WATER_BUCKET)
             return;
 
-        if (FlagPermissions.shouldDenyAndNotify(player, ent, Flags.animalkilling, null)) {
+        if (FlagPermissions.shouldDenyAndNotify(player, ent, Flags.animalkilling)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerUseRiptide(PlayerInteractEvent event) {
-
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
+
         if (event.useItemInHand() == Result.DENY) {
             return;
         }
+
         Player player = event.getPlayer();
 
         if (FlagPermissions.shouldIgnoreCheck(Flags.riptide, player)) {
             return;
         }
+
         ItemStack item = event.getItem();
 
         if (item == null || item.getType() != Material.TRIDENT) {
             return;
         }
+
         if (!item.containsEnchantment(Enchantment.RIPTIDE)) {
             return;
         }
-        if (Version.isCurrentEqualOrHigher(Version.v1_16_0) && Version.isPaperBranch()) {
-            if (!player.isInWater() && !player.isInRain()) {
-                return;
-            }
+
+        @Nullable
+        WeatherType pweather = player.getPlayerWeather();
+
+        if (Version.isCurrentEqualOrHigher(Version.v1_16_0) && Version.isPaperBranch() && !player.isInWater() && !player.isInRain()
+                && pweather != null && !pweather.equals(WeatherType.DOWNFALL)) {
+            return;
         }
-        if (FlagPermissions.shouldDenyAndNotify(player, player, Flags.riptide, null)) {
+
+        if (FlagPermissions.shouldDenyAndNotify(player, Flags.riptide)) {
             event.setCancelled(true);
         }
     }
