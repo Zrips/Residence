@@ -261,6 +261,9 @@ Global:
     # Applies to: Both
     # Allows or denys players to use looms
     loom: true
+    # Applies to: Both
+    # Allows or denys players to use lunge enchant
+    lunge: true
     # Applies to: Residence
     # Allow or deny derailed hopper minecarts from sucking items from containers
     minecartsuction: true
@@ -342,6 +345,9 @@ Global:
     # Applies to: Both
     # Prevent riding a horse
     riding: true
+    # Applies to: Both
+    # Allow or deny players to use riptide enchant
+    riptide: true
     # Applies to: Residence
     # Setting to true makes the residence clean bad effects from its occupants
     safezone: false
@@ -519,6 +525,7 @@ Global:
     leash: LEAD
     lever: LEVER
     loom: LOOM
+    lunge: IRON_SPEAR
     minecartsuction: HOPPER_MINECART
     mobexpdrop: MELON_SEEDS
     mobgriefing: BONE
@@ -547,6 +554,7 @@ Global:
     rain: BLUE_ORCHID
     respawn: SUNFLOWER
     riding: SADDLE
+    riptide: TRIDENT
     sanimals: RABBIT_SPAWN_EGG
     shear: SHEARS
     shoot: ARROW
