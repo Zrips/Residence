@@ -22,6 +22,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
+import com.bekvon.bukkit.residence.selection.SelectionManager;
 import com.bekvon.bukkit.residence.selection.SelectionManager.Selection;
 
 import net.Zrips.CMILib.Container.CMINumber;
@@ -72,7 +73,7 @@ public class auto implements cmd {
         int minY = loc.getBlockY();
         int maxY = loc.getBlockY();
 
-        if (plugin.getConfigManager().isSelectionIgnoreY()) {
+        if (plugin.getSelectionManager().isIgnoreY()) {
             minY = plugin.getSelectionManager().getSelection(player).getMinYAllowed();
             maxY = plugin.getSelectionManager().getSelection(player).getMaxYAllowed();
         }
@@ -144,7 +145,7 @@ public class auto implements cmd {
         String minSide = "";
         double maxRatio = 0;
 
-        if (plugin.getConfigManager().isSelectionIgnoreY()) {
+        if (plugin.getSelectionManager().isIgnoreY()) {
 
             double ratioX = getRatio(selection.getBaseArea().getXSize(), selection.getBaseArea().getXSize(), selection.getBaseArea().getZSize());
             double ratioZ = getRatio(selection.getBaseArea().getZSize(), selection.getBaseArea().getXSize(), selection.getBaseArea().getXSize());
@@ -265,7 +266,7 @@ public class auto implements cmd {
         int minY = CMIWorld.getMinHeight(cuboid.getWorld());
 
         while (true) {
-            if (Residence.getInstance().getConfigManager().isSelectionIgnoreY() && (dir.equals(direction.Top) || dir.equals(direction.Bottom))) {
+            if (SelectionManager.isIgnoreY() && (dir.equals(direction.Top) || dir.equals(direction.Bottom))) {
                 dir = dir.getNext();
                 continue;
             }
@@ -294,7 +295,7 @@ public class auto implements cmd {
                 c.getLowVector().setY(minY);
                 locked.add(dir);
                 dir = dir.getNext();
-                if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY()) {
+                if (!SelectionManager.isIgnoreY()) {
                     skipped++;
                 }
                 continue;
@@ -304,7 +305,7 @@ public class auto implements cmd {
                 c.getHighVector().setY(c.getWorld().getMaxHeight() - 1);
                 locked.add(dir);
                 dir = dir.getNext();
-                if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY()) {
+                if (!SelectionManager.isIgnoreY()) {
                     skipped++;
                 }
                 continue;
@@ -324,7 +325,7 @@ public class auto implements cmd {
                 continue;
             }
 
-            if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && (maxY > 0 && maxY < c.getYSize() || c.getYSize() > group.getMaxYSize() + (-group.getMinYSize()))) {
+            if (!SelectionManager.isIgnoreY() && (maxY > 0 && maxY < c.getYSize() || c.getYSize() > group.getMaxYSize() + (-group.getMinYSize()))) {
                 locked.add(dir);
                 dir = dir.getNext();
                 skipped++;
@@ -420,9 +421,9 @@ public class auto implements cmd {
         if (maxX > max.getX() && max.getX() > 0)
             maxX = max.getX();
 
-        if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && maxY > max.getY() && max.getY() > 0) {
+        if (!SelectionManager.isIgnoreY() && maxY > max.getY() && max.getY() > 0) {
             maxY = max.getY();
-        } else if (Residence.getInstance().getConfigManager().isSelectionIgnoreY()) {
+        } else if (SelectionManager.isIgnoreY()) {
             maxY = Math.min(CMINumber.abs(CMIWorld.getMinHeight(cuboid.getWorld()) - CMIWorld.getMaxHeight(cuboid.getWorld())), maxY);
         }
 
@@ -519,7 +520,7 @@ public class auto implements cmd {
                 break;
             }
 
-            if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() && (maxY > 0 && maxY < c.getYSize() || c.getYSize() > group.getMaxYSize() + (-group.getMinYSize()))) {
+            if (!SelectionManager.isIgnoreY() && (maxY > 0 && maxY < c.getYSize() || c.getYSize() > group.getMaxYSize() + (-group.getMinYSize()))) {
                 break;
             }
 
@@ -561,7 +562,7 @@ public class auto implements cmd {
         fillMaps(directionMap, maxMap, direction.Bottom, maxY + 1, cuboid.getYSize());
 
         while (true) {
-            if (Residence.getInstance().getConfigManager().isSelectionIgnoreY() && (dir.equals(direction.Top) || dir.equals(direction.Bottom))) {
+            if (SelectionManager.isIgnoreY() && (dir.equals(direction.Top) || dir.equals(direction.Bottom))) {
                 dir = dir.getNext();
                 continue;
             }
@@ -696,7 +697,7 @@ public class auto implements cmd {
                 continue;
             }
 
-            if (!Residence.getInstance().getConfigManager().isSelectionIgnoreY() &&
+            if (!SelectionManager.isIgnoreY() &&
                     (maxY > 0 && maxY < c.getYSize() || c.getYSize() > maxY)) {
                 if (Math.abs(offset) < 1) {
                     locked.add(dir);

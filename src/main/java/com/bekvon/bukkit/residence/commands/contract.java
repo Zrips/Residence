@@ -14,6 +14,7 @@ import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
+import com.bekvon.bukkit.residence.selection.SelectionManager;
 
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
@@ -93,7 +94,7 @@ public class contract implements cmd {
             return true;
 
         if (plugin.getSelectionManager().hasPlacedBoth(player)) {
-            if (plugin.getWorldEdit() != null && plugin.getWorldEditTool().equals(plugin.getConfigManager().getSelectionTool())) {
+            if (plugin.getWorldEdit() != null && plugin.getWorldEditTool().equals(SelectionManager.getTool())) {
                 plugin.getSelectionManager().worldEdit(player);
             }
 

@@ -9,9 +9,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 
-import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.protection.ResidenceManager.ChunkRef;
+import com.bekvon.bukkit.residence.selection.SelectionManager;
 
 import net.Zrips.CMILib.Container.CMINumber;
 
@@ -151,7 +151,7 @@ public class CuboidArea {
     public long getSize() {
         long xsize = (highPoints.getBlockX() - lowPoints.getBlockX()) + 1;
         long zsize = (highPoints.getBlockZ() - lowPoints.getBlockZ()) + 1;
-        if (!Residence.getInstance().getConfigManager().isNoCostForYBlocks()) {
+        if (!SelectionManager.isNoCostForYBlocks()) {
             long ysize = (highPoints.getBlockY() - lowPoints.getBlockY()) + 1;
             return CMINumber.abs(xsize * ysize * zsize);
         }

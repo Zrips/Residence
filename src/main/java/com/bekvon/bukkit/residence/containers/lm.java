@@ -95,10 +95,19 @@ public enum lm {
     Select_Secondary("&eSecondary selection: &6%1"),
     Select_TooHigh("&cWarning, selection went above top of map, limiting."),
     Select_TooLow("&cWarning, selection went below bottom of map, limiting."),
-    Select_TotalSize("&eSelection total size: &6%1"),
-    Select_AutoEnabled("&eAuto selection mode turned &6ON&e. To disable it write &6/res select auto"),
-    Select_AutoDisabled("&eAuto selection mode turned &6OFF&e. To enable it again write &6/res select auto"),
+    Select_TotalSize("&eSelection total size: &6%1"),    
     Select_Disabled("&cYou don't have access to selections commands"),
+
+    Select_AutoMoveDisabled("&eAuto selection mode on move turned &6OFF"),
+    Select_MoveExpand("&6Expand on move: %1"),
+    Select_RangeInteract("&6Range interact: %1"),
+    Select_MouseScroll("&6Mouse scroll: %1"),
+    Select_SmartTool("&6Smart tool selection: %1"),
+    Select_GroupLimits("&6Consider group limits: %1"),
+    Select_ComboEnabled("&6Combo active: %1"),
+    Select_BossBar("%1Move &6| %2Interact &6| %3Mouse &6| %4Group &6| %5Smart"),
+    Select_Show("&6Show selection"),  
+    
 
     Schematic_NoSchematic("&6No Residence schematic found!"),
     Schematic_Saved("&6Residence schematic saved!"),

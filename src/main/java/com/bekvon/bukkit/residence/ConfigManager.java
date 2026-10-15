@@ -38,6 +38,7 @@ import com.bekvon.bukkit.residence.listenersCache.DenyMessageCache;
 import com.bekvon.bukkit.residence.listenersCache.DenyMessageCache_Legacy;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
+import com.bekvon.bukkit.residence.selection.SelectionManager;
 import com.bekvon.bukkit.residence.selection.VisualizerConfig;
 
 import net.Zrips.CMILib.CMILib;
@@ -78,14 +79,13 @@ public class ConfigManager {
     protected boolean PvPFlagPrevent;
 
     protected boolean BlockAnyTeleportation;
-    protected CMIMaterial infoTool;
+
     protected int AutoCleanUpDays;
     protected boolean AutoCleanDetailsOnUnknown;
     protected boolean AutoCleanUpRegenerate;
     protected boolean CanTeleportIncludeOwner;
     private boolean LoadEveryWorld;
     public boolean CleanerStartupLog;
-    protected CMIMaterial selectionTool;
     protected boolean adminOps;
     protected boolean AdminFullAccess;
     protected String multiworldPlugin;
@@ -194,11 +194,6 @@ public class ConfigManager {
     protected boolean enableDebug = false;
     protected boolean versionCheck = true;
 
-    protected boolean SelectionIgnoreY = false;
-    protected boolean SelectionIgnoreYInSubzone = false;
-    private int SelectionNetherHeight = 128;
-    protected boolean NoCostForYBlocks = false;
-    protected boolean WorldEditIntegration = false;
     protected boolean DisabledWorld;
     protected boolean DisableListeners;
     protected boolean DisableCommands;
@@ -599,33 +594,9 @@ public class ConfigManager {
                 "All Residence text comes from this file. (NOT DONE YET)");
         language = c.get("Global.Language", "English");
 
-        c.addComment("Global.SelectionToolId", "Wooden Hoe is the default selection tool for Residence.");
-        selectionTool = CMIMaterial.get(c.get("Global.SelectionToolId", CMIMaterial.WOODEN_HOE.name()));
+        SelectionManager.loadConfig(c);
+        VisualizerConfig.loadConfig(c);
 
-        c.addComment("Global.Selection.IgnoreY", "By setting this to true, all selections will be made from bedrock to sky ignoring Y coordinates");
-        SelectionIgnoreY = c.get("Global.Selection.IgnoreY", false);
-
-        c.addComment("Global.Selection.IgnoreYInSubzone",
-                "When this set to true, selections inside existing residence will be from bottom to top of that residence",
-                "When this set to false, selections inside existing residence will be exactly as they are");
-        SelectionIgnoreYInSubzone = c.get("Global.Selection.IgnoreYInSubzone", false);
-
-        c.addComment("Global.Selection.netherHeight",
-                "Defines height of nether when creating residences. This mostly applies when performing commands like /res select vert or /res auto which will expand residence to defined height",
-                "This cant be higher than 319 or lower than 1");
-        SelectionNetherHeight = c.get("Global.Selection.netherHeight", 128);
-        SelectionNetherHeight = SelectionNetherHeight > 319 ? 319 : SelectionNetherHeight < 1 ? 1 : SelectionNetherHeight;
-
-        c.addComment("Global.Selection.NoCostForYBlocks", "By setting this to true, player will only pay for x*z blocks ignoring height",
-                "This will lower residence price by up to 319 times, so adjust block price BEFORE enabling this");
-        NoCostForYBlocks = c.get("Global.Selection.NoCostForYBlocks", false);
-
-        c.addComment("Global.Selection.WorldEditIntegration", "Enable or disable world edit integration into Residence plugin");
-        WorldEditIntegration = c.get("Global.Selection.WorldEditIntegration", true);
-
-        c.addComment("Global.InfoToolId", "This determins which tool you can use to see info on residences, default is String.",
-                "Simply equip this tool and hit a location inside the residence and it will display the info for it.");
-        infoTool = CMIMaterial.get(c.get("Global.InfoToolId", Material.STRING.toString()));
 
         c.addComment("Global.Optimizations.LoadEveryWorld", "When enabled we will load data from every single world file even if world doesn't exist but might be loaded later on",
                 "Usually only useful when you have multiverse plugin which loads worlds durring server work time");
@@ -1305,8 +1276,6 @@ public class ConfigManager {
                 customRightClick.add(mat);
         }
 
-        VisualizerConfig.loadConfig(c);
-
         c.addComment("Global.GUI.Enabled", "Enable or disable flag GUI");
         useFlagGUI = c.get("Global.GUI.Enabled", true);
 
@@ -1702,20 +1671,22 @@ public class ConfigManager {
 
     @Deprecated
     public int getInfoToolID() {
-        return infoTool.getId();
+        return -1;
     }
 
+    @Deprecated
     public CMIMaterial getInfoTool() {
-        return infoTool;
+        return SelectionManager.getInfoTool();
     }
 
+    @Deprecated
     public CMIMaterial getSelectionTool() {
-        return selectionTool;
+        return SelectionManager.getTool();
     }
 
     @Deprecated
     public int getSelectionTooldID() {
-        return selectionTool.getId();
+        return -1;
     }
 
     public boolean getOpsAreAdmins() {
@@ -1956,16 +1927,19 @@ public class ConfigManager {
         return enableDebug;
     }
 
+    @Deprecated
     public boolean isSelectionIgnoreY() {
-        return SelectionIgnoreY;
+        return SelectionManager.isIgnoreY();
     }
 
+    @Deprecated
     public boolean isSelectionIgnoreYInSubzone() {
-        return SelectionIgnoreYInSubzone;
+        return SelectionManager.isIgnoreYInSubzone();
     }
 
+    @Deprecated
     public boolean isNoCostForYBlocks() {
-        return NoCostForYBlocks;
+        return SelectionManager.isNoCostForYBlocks();
     }
 
     public boolean versionCheck() {
@@ -2126,8 +2100,9 @@ public class ConfigManager {
         return guiBottonStates.get(state);
     }
 
+    @Deprecated
     public int getSelectionNetherHeight() {
-        return SelectionNetherHeight;
+        return SelectionManager.getNetherHeight();
     }
 
     public boolean isInfoExcludeDFlags() {
@@ -2206,8 +2181,9 @@ public class ConfigManager {
         return ARCRatioConfirmation;
     }
 
+    @Deprecated
     public boolean isWorldEditIntegration() {
-        return WorldEditIntegration;
+        return SelectionManager.isWorldEditIntegration();
     }
 
     public int getSignsMaxPerResidence() {

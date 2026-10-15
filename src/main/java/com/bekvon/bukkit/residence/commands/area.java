@@ -11,6 +11,7 @@ import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import com.bekvon.bukkit.residence.selection.SelectionManager;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 
@@ -49,7 +50,7 @@ public class area implements cmd {
             if (args.length != 3)
                 return false;
 
-            if (plugin.getWorldEdit() != null && plugin.getWorldEditTool().equals(plugin.getConfigManager().getSelectionTool())) {
+            if (plugin.getWorldEdit() != null && plugin.getWorldEditTool().equals(SelectionManager.getTool())) {
                 plugin.getSelectionManager().worldEdit(player);
             }
 
@@ -74,7 +75,7 @@ public class area implements cmd {
             if (args.length != 3)
                 return false;
 
-            if (plugin.getWorldEdit() != null && plugin.getWorldEditTool().equals(plugin.getConfigManager().getSelectionTool())) {
+            if (plugin.getWorldEdit() != null && plugin.getWorldEditTool().equals(SelectionManager.getTool())) {
                 plugin.getSelectionManager().worldEdit(player);
             }
 

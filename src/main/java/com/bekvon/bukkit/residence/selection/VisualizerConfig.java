@@ -35,9 +35,7 @@ public class VisualizerConfig {
     private static boolean enterAnimation;
 
     private static boolean useModernVersion = true;
-    private static int gridSize = 8;
     private static int updateRateByTravel = 4;
-    private static double lineThickness = 0.05;
 
     public static void loadConfig(ConfigReader c) {
 
@@ -157,17 +155,18 @@ public class VisualizerConfig {
 
             CuboidDisplayManager.updateVariables();
 
-            c.addComment("Global.Visualizer.Modern.Materials." + CuboidDisplayType.values()[0].name() + ".Edges", "Only block type materials are accepted here.");
-            c.addComment("Global.Visualizer.Modern.Materials." + CuboidDisplayType.values()[0].name() + ".Sides", "Only block type materials are accepted here.");
-            c.addComment("Global.Visualizer.Modern.Materials." + CuboidDisplayType.values()[0].name() + ".Range", "Lowest value 1, highest 128", "Default: 32");
-            c.addComment("Global.Visualizer.Modern.Materials." + CuboidDisplayType.values()[0].name() + ".GridSize",
+            c.addComment("Global.Visualizer.Modern.Types." + CuboidDisplayType.values()[0].name() + ".Edges", "Only block type materials are accepted here.");
+            c.addComment("Global.Visualizer.Modern.Types." + CuboidDisplayType.values()[0].name() + ".Sides", "Only block type materials are accepted here.");
+            c.addComment("Global.Visualizer.Modern.Types." + CuboidDisplayType.values()[0].name() + ".Range", "Lowest value 1, highest 128", "Default: 32");
+            c.addComment("Global.Visualizer.Modern.Types." + CuboidDisplayType.values()[0].name() + ".GridSize",
                     "Lowest value 0.25, highest 64. ATENTION! Only use low values in combination with lower Range",
                     "Default: 8");
-            c.addComment("Global.Visualizer.Modern.Materials." + CuboidDisplayType.values()[0].name() + ".LineThickness", "Lowest value 0.01, highest 1", "Default: 0.05");
-            c.addComment("Global.Visualizer.Modern.Materials." + CuboidDisplayType.values()[0].name() + ".HideInSeconds", "Lowest value 0.1, highest 300", "Default: 30");
+            c.addComment("Global.Visualizer.Modern.Types." + CuboidDisplayType.values()[0].name() + ".LineThickness", "Lowest value 0.01, highest 1", "Default: 0.05");
+            c.addComment("Global.Visualizer.Modern.Types." + CuboidDisplayType.values()[0].name() + ".EdgeThickness", "Lowest value 0.01, highest 1", "Default: 0.05");
+            c.addComment("Global.Visualizer.Modern.Types." + CuboidDisplayType.values()[0].name() + ".HideInSeconds", "Lowest value 0.1, highest 300", "Default: 30");
 
             for (CuboidDisplayType one : CuboidDisplayType.values()) {
-                String name = c.get("Global.Visualizer.Modern.Materials." + one.name() + ".Edges", one.getEdgeMaterial().toString());
+                String name = c.get("Global.Visualizer.Modern.Types." + one.name() + ".Edges", one.getEdgeMaterial().toString());
                 CMIMaterial mat = CMIMaterial.get(name);
 
                 if (mat.isBlock())
@@ -175,7 +174,7 @@ public class VisualizerConfig {
                 else
                     CMIMessages.consoleMessage("Selection " + one.name() + " edges material not found(" + name + "), defaulting to " + one.getEdgeMaterial().toString());
 
-                name = c.get("Global.Visualizer.Modern.Materials." + one.name() + ".Sides", one.getSideMaterial().toString());
+                name = c.get("Global.Visualizer.Modern.Types." + one.name() + ".Sides", one.getSideMaterial().toString());
                 mat = CMIMaterial.get(name);
 
                 if (mat.isBlock())
@@ -183,10 +182,11 @@ public class VisualizerConfig {
                 else
                     CMIMessages.consoleMessage("Selection " + one.name() + " side material not found(" + name + "), defaulting to " + one.getSideMaterial().toString());
 
-                one.setLineThickness(c.get("Global.Visualizer.Modern.Materials." + one.name() + ".LineThickness", one.getLineThickness()));
-                one.setGridSize(c.get("Global.Visualizer.Modern.Materials." + one.name() + ".GridSize", one.getGridSize()));
-                one.setHideInSeconds(c.get("Global.Visualizer.Modern.Materials." + one.name() + ".HideInSeconds", one.getHideInSeconds()));
-                one.setRange(c.get("Global.Visualizer.Modern.Materials." + one.name() + ".Range", one.getRange()));
+                one.setLineThickness(c.get("Global.Visualizer.Modern.Types." + one.name() + ".LineThickness", one.getLineThickness()));
+                one.setEdgeThickness(c.get("Global.Visualizer.Modern.Types." + one.name() + ".EdgeThickness", one.getEdgeThickness()));
+                one.setGridSize(c.get("Global.Visualizer.Modern.Types." + one.name() + ".GridSize", one.getGridSize()));
+                one.setHideInSeconds(c.get("Global.Visualizer.Modern.Types." + one.name() + ".HideInSeconds", one.getHideInSeconds()));
+                one.setRange(c.get("Global.Visualizer.Modern.Types." + one.name() + ".Range", one.getRange()));
             }
 
         }
@@ -307,21 +307,21 @@ public class VisualizerConfig {
         VisualizerConfig.useModernVersion = useModernVersion;
     }
 
-    public static int getGridSize() {
-        return gridSize;
-    }
-
-    public static void setGridSize(int gridSize) {
-        VisualizerConfig.gridSize = CMINumber.clamp(gridSize, 1);
-    }
-
-    public static double getLineThickness() {
-        return lineThickness;
-    }
-
-    public static void setLineThickness(double lineThickness) {
-        VisualizerConfig.lineThickness = lineThickness;
-    }
+//    public static int getGridSize() {
+//        return gridSize;
+//    }
+//
+//    public static void setGridSize(int gridSize) {
+//        VisualizerConfig.gridSize = CMINumber.clamp(gridSize, 1);
+//    }
+//
+//    public static double getLineThickness() {
+//        return lineThickness;
+//    }
+//
+//    public static void setLineThickness(double lineThickness) {
+//        VisualizerConfig.lineThickness = lineThickness;
+//    }
 
     public static int getUpdateRateByTravel() {
         return updateRateByTravel;

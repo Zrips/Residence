@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.LocaleManager;
 import com.bekvon.bukkit.residence.Residence;
@@ -19,10 +20,33 @@ import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
+import com.bekvon.bukkit.residence.selection.SelectionManager;
+import com.bekvon.bukkit.residence.selection.selectorOptions;
 
+import net.Zrips.CMILib.Container.CMIVectorInt3D;
+import net.Zrips.CMILib.Cuboids.CMIBlockWorldArea;
 import net.Zrips.CMILib.FileHandler.ConfigReader;
+import net.Zrips.CMILib.GUI.CMIGui;
+import net.Zrips.CMILib.GUI.CMIGuiButton;
+import net.Zrips.CMILib.GUI.GUIManager.GUIClickType;
+import net.Zrips.CMILib.Items.CMIMaterial;
+import net.Zrips.CMILib.Locale.LC;
+import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class select implements cmd {
+
+    private enum Action {
+        coords, size, cost, vert, sky, bedrock, expand, contract, shift, chunk, move, aim, quickbar, considerlimits, togglecombo, residence, worldedit, clear, options, outward;
+
+        public static Action get(String name) {
+            for (Action a : Action.values()) {
+                if (a.name().equalsIgnoreCase(name)) {
+                    return a;
+                }
+            }
+            return null;
+        }
+    }
 
     @Override
     @CommandAnnotation(simple = true, priority = 1300)
@@ -36,6 +60,23 @@ public class select implements cmd {
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
 
         PermissionGroup group = rPlayer.getGroup();
+
+        Action action = null;
+        String value = null;
+        String subvalue = null;
+        for (String one : args) {
+            if (action == null) {
+                action = Action.get(one);
+                if (action != null) {
+                    continue;
+                }
+            }
+            if (value == null) {
+                value = one;
+                continue;
+            }
+            subvalue = one;
+        }
 
         if (!group.selectCommandAccess() && !resadmin) {
             lm.Select_Disabled.sendMessage(sender);
@@ -51,84 +92,95 @@ public class select implements cmd {
             lm.Select_Disabled.sendMessage(sender);
             return true;
         }
-        if (args.length == 1) {
-            switch (args[0].toLowerCase()) {
-            case "size":
-            case "cost":
-                if (plugin.getSelectionManager().hasPlacedBoth(player) || plugin.getSelectionManager().worldEdit(player)) {
-                    try {
-                        plugin.getSelectionManager().showSelectionInfo(player);
-                        return true;
-                    } catch (Exception ex) {
-                        Logger.getLogger(Residence.class.getName()).log(Level.SEVERE, null, ex);
-                        return true;
-                    }
-                }
+
+        if (action == null) {
+            try {
+                plugin.getSelectionManager().selectBySize(player, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+                return true;
+            } catch (Exception ex) {
+            }
+            action = Action.size;
+        }
+
+        switch (action) {
+        case size:
+        case cost:
+            if (!plugin.getSelectionManager().hasPlacedBoth(player) && !plugin.getSelectionManager().worldEdit(player))
                 return false;
-            case "vert":
-                plugin.getSelectionManager().vert(player, resadmin);
-                plugin.getSelectionManager().afterSelectionUpdate(player, true);
-                return true;
-            case "sky":
-                plugin.getSelectionManager().sky(player, resadmin);
-                plugin.getSelectionManager().afterSelectionUpdate(player, true);
-                return true;
-            case "bedrock":
-                plugin.getSelectionManager().bedrock(player, resadmin);
-                plugin.getSelectionManager().afterSelectionUpdate(player, true);
-                return true;
-            case "coords":
-                lm.General_Separator.sendMessage(sender);
 
-                if (!plugin.getSelectionManager().hasPlacedBoth(player)) {
-                    lm.Select_Points.sendMessage(sender);
-                    return true;
-                }
+            try {
+                plugin.getSelectionManager().showSelectionInfo(player);
+            } catch (Exception ex) {
+                Logger.getLogger(Residence.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
 
-                Location playerLoc1 = plugin.getSelectionManager().getPlayerLoc1(player);
-                if (playerLoc1 != null) {
-                    lm.Select_Primary.sendMessage(sender, lm.General_CoordsTop.getMessage(playerLoc1.getBlockX(), playerLoc1.getBlockY(), playerLoc1.getBlockZ()));
-                }
-                Location playerLoc2 = plugin.getSelectionManager().getPlayerLoc2(player);
-                if (playerLoc2 != null) {
-                    lm.Select_Secondary.sendMessage(sender, lm.General_CoordsBottom.getMessage(playerLoc2.getBlockX(), playerLoc2.getBlockY(), playerLoc2.getBlockZ()));
-                }
-                lm.General_Separator.sendMessage(sender);
+            return true;
+        case vert:
+            plugin.getSelectionManager().vert(player, resadmin);
+            plugin.getSelectionManager().afterSelectionUpdate(player, true);
+            return true;
+        case clear:
+            plugin.getSelectionManager().clearSelection(player);
+            return true;
+        case sky:
+            plugin.getSelectionManager().sky(player, resadmin);
+            plugin.getSelectionManager().afterSelectionUpdate(player, true);
+            return true;
+        case bedrock:
+            plugin.getSelectionManager().bedrock(player, resadmin);
+            plugin.getSelectionManager().afterSelectionUpdate(player, true);
+            return true;
+        case coords:
+            lm.General_Separator.sendMessage(sender);
+
+            if (!plugin.getSelectionManager().hasPlacedBoth(player)) {
+                lm.Select_Points.sendMessage(sender);
+                return true;
+            }
+
+            Location playerLoc1 = plugin.getSelectionManager().getPlayerLoc1(player);
+            if (playerLoc1 != null) {
+                lm.Select_Primary.sendMessage(sender, lm.General_CoordsTop.getMessage(playerLoc1.getBlockX(), playerLoc1.getBlockY(), playerLoc1.getBlockZ()));
+            }
+            Location playerLoc2 = plugin.getSelectionManager().getPlayerLoc2(player);
+            if (playerLoc2 != null) {
+                lm.Select_Secondary.sendMessage(sender, lm.General_CoordsBottom.getMessage(playerLoc2.getBlockX(), playerLoc2.getBlockY(), playerLoc2.getBlockZ()));
+            }
+            lm.General_Separator.sendMessage(sender);
+            plugin.getSelectionManager().afterSelectionUpdate(player, false);
+            return true;
+
+        case chunk:
+            plugin.getSelectionManager().getSelection(player).selectChunk();
+            plugin.getSelectionManager().afterSelectionUpdate(player, true);
+            return true;
+        case worldedit:
+            if (plugin.getSelectionManager().worldEdit(player)) {
+                lm.Select_Success.sendMessage(sender);
                 plugin.getSelectionManager().afterSelectionUpdate(player, false);
-                return true;
-            case "chunk":
-                plugin.getSelectionManager().getSelection(player).selectChunk();
-                plugin.getSelectionManager().afterSelectionUpdate(player, true);
-                return true;
-            case "worldedit":
-                if (plugin.getSelectionManager().worldEdit(player)) {
-                    lm.Select_Success.sendMessage(sender);
-                    plugin.getSelectionManager().afterSelectionUpdate(player, false);
-                }
-                return true;
             }
-        } else if (args.length == 2) {
+            return true;
+        case expand:
+        case contract:
+        case shift:
+
             int amount = 0;
-            switch (args[0].toLowerCase()) {
-            case "expand":
-            case "contract":
-            case "shift":
-                try {
-                    amount = Integer.parseInt(args[1]);
-                } catch (Exception ex) {
-                    lm.Invalid_Amount.sendMessage(sender);
-                    return true;
-                }
+            try {
+                amount = Integer.parseInt(value);
+            } catch (Exception ex) {
+                lm.Invalid_Amount.sendMessage(sender);
+                return true;
             }
 
-            switch (args[0].toLowerCase()) {
-            case "expand":
+            switch (action) {
+            case expand:
                 plugin.getSelectionManager().modify(player, false, amount);
                 return true;
-            case "contract":
+            case contract:
                 plugin.getSelectionManager().contract(player, amount);
                 return true;
-            case "shift":
+            case shift:
                 if (amount > 100)
                     amount = 100;
                 if (amount < -100)
@@ -136,36 +188,292 @@ public class select implements cmd {
                 plugin.getSelectionManager().modify(player, true, amount);
                 return true;
             }
-        }
-        if ((args.length == 1 || args.length == 2) && args[0].equals("auto")) {
+
+            break;
+
+        case outward:
+
+            amount = 0;
+
+            if (value != null) {
+                try {
+                    amount = Integer.parseInt(value);
+                    value = null;
+                } catch (Exception ex) {
+                }
+            }
+
+            if (amount == 0 && subvalue != null) {
+                try {
+                    amount = Integer.parseInt(subvalue);
+                    subvalue = null;
+                } catch (Exception ex) {
+                }
+            }
+
+            if (amount == 0) {
+                amount = 1;
+            }
+
             Player target = player;
-            if (args.length == 2) {
+            if (value != null) {
                 if (!ResPerm.select_auto_others.hasPermission(player, true)) {
                     return true;
                 }
-                target = Bukkit.getPlayer(args[1]);
+                target = Bukkit.getPlayer(value);
                 if (target == null) {
                     lm.General_NotOnline.sendMessage(sender);
                     return true;
                 }
             }
-            plugin.getSelectionManager().clearSelection(target);
 
-            plugin.getSelectionManager().placeLoc1(player, player.getLocation().clone(), false);
-            plugin.getSelectionManager().placeLoc2(player, player.getLocation().clone().add(0, 1, 0), true);
+            Location loc = player.getLocation();
 
-            plugin.getAutoSelectionManager().switchAutoSelection(target);
+            CMIBlockWorldArea selectedArea = plugin.getSelectionManager().getSelectionArea(player);
+
+            CMIVectorInt3D lowPoint = selectedArea != null ? selectedArea.getLowPoint().add(new CMIVectorInt3D(-amount, -amount, -amount))
+                    : new CMIVectorInt3D(loc.getBlockX() - amount, loc.getBlockY() - amount, loc.getBlockZ() - amount);
+            CMIVectorInt3D highPoint = selectedArea != null ? selectedArea.getHighPoint().add(new CMIVectorInt3D(amount, amount, amount))
+                    : new CMIVectorInt3D(loc.getBlockX() + amount, loc.getBlockY() + amount, loc.getBlockZ() + amount);
+
+            plugin.getSelectionManager().placeLoc(player, lowPoint.toLocation(player.getWorld()), highPoint.toLocation(player.getWorld()), true);
+
+            break;
+        case options:
+
+            target = player;
+            if (value != null) {
+                if (!ResPerm.select_auto_others.hasPermission(player, true)) {
+                    return true;
+                }
+                target = Bukkit.getPlayer(value);
+                if (target == null) {
+                    lm.General_NotOnline.sendMessage(sender);
+                    return true;
+                }
+            }
+
+            @NotNull
+            selectorOptions combo = plugin.getComboSelectionManager().getOrCreate(target);
+
+            CMIGui gui = new CMIGui(target);
+            gui.setInvSize(5);
+
+            CMIGuiButton button = new CMIGuiButton(10, combo.isEnabled() ? CMIMaterial.GREEN_WOOL : CMIMaterial.RED_WOOL) {
+                @Override
+                public void click(GUIClickType type) {
+                    Residence.getInstance().getComboSelectionManager().toggleAutoSelection(player, !combo.isEnabled());
+                    updateLooks();
+                    update();
+                }
+
+                @Override
+                public void updateLooks() {
+                    this.setItem(combo.isEnabled() ? CMIMaterial.GREEN_WOOL : CMIMaterial.RED_WOOL);
+                    this.setName(lm.Select_ComboEnabled.getMessage((combo.isEnabled() ? LC.modify_enabled.getLocale() : LC.modify_disabled.getLocale())));
+                }
+            };
+            button.hideItemFlags();
+            gui.addButton(button);
+
+            button = new CMIGuiButton(12, CMIMaterial.LEATHER_BOOTS) {
+                @Override
+                public void click(GUIClickType type) {
+                    combo.setMove(!combo.isMove());
+                    updateLooks();
+                    update();
+                }
+
+                @Override
+                public void updateLooks() {
+                    this.setName(lm.Select_MoveExpand.getMessage(combo.isMove() ? LC.modify_enabled.getLocale() : LC.modify_disabled.getLocale()));
+                }
+            };
+            button.hideItemFlags();
+            gui.addButton(button);
+
+            button = new CMIGuiButton(13, CMIMaterial.BOW) {
+                @Override
+                public void click(GUIClickType type) {
+                    combo.setAim(!combo.isAim());
+                    updateLooks();
+                    update();
+                }
+
+                @Override
+                public void updateLooks() {
+                    this.setName(lm.Select_RangeInteract.getMessage(combo.isAim() ? LC.modify_enabled.getLocale() : LC.modify_disabled.getLocale()));
+                }
+            };
+            button.hideItemFlags();
+            gui.addButton(button);
+
+            button = new CMIGuiButton(14, CMIMaterial.ACACIA_DOOR) {
+                @Override
+                public void click(GUIClickType type) {
+                    combo.setQuickBar(!combo.isQuickBar());
+                    updateLooks();
+                    update();
+                }
+
+                @Override
+                public void updateLooks() {
+                    this.setName(lm.Select_MouseScroll.getMessage(combo.isQuickBar() ? LC.modify_enabled.getLocale() : LC.modify_disabled.getLocale()));
+                }
+            };
+            button.hideItemFlags();
+            gui.addButton(button);
+
+            button = new CMIGuiButton(30, CMIMaterial.CHEST) {
+                @Override
+                public void click(GUIClickType type) {
+                    combo.setGroupLimit(!combo.isGroupLimit());
+                    updateLooks();
+                    update();
+                }
+
+                @Override
+                public void updateLooks() {
+                    this.setName(lm.Select_GroupLimits.getMessage(combo.isGroupLimit() ? LC.modify_enabled.getLocale() : LC.modify_disabled.getLocale()));
+                }
+            };
+            button.hideItemFlags();
+            gui.addButton(button);
+ 
+            button = new CMIGuiButton(31, SelectionManager.getTool()) {
+                @Override
+                public void click(GUIClickType type) {
+                    combo.setSmartToolSelection(!combo.isSmartToolSelection());
+                    updateLooks();
+                    update();
+                }
+
+                @Override
+                public void updateLooks() {
+                    this.setName(lm.Select_SmartTool.getMessage(combo.isSmartToolSelection() ? LC.modify_enabled.getLocale() : LC.modify_disabled.getLocale()));
+                }
+            };
+            button.hideItemFlags();
+            gui.addButton(button);
+
+            button = new CMIGuiButton(33, CMIMaterial.ACACIA_FENCE) {
+                @Override
+                public void click(GUIClickType type) {
+                    plugin.getSelectionManager().afterSelectionUpdate(player);
+                }
+
+                @Override
+                public void updateLooks() {
+                    this.setName(lm.Select_Show.getMessage());
+                }
+            };
+            button.hideItemFlags();
+            gui.addButton(button);
+
+            gui.fillEmptyButtons();
+            gui.open();
             return true;
-        }
-        if (args.length > 0 && args[0].equals("residence")) {
+        case togglecombo:
+        case move:
+        case aim:
+        case quickbar:
+        case considerlimits:
+            Boolean state = null;
+
+            if (value != null) {
+                if (value.equalsIgnoreCase("on") || value.equalsIgnoreCase("true")) {
+                    state = true;
+                    value = null;
+                } else if (value.equalsIgnoreCase("off") || value.equalsIgnoreCase("false")) {
+                    state = false;
+                    value = null;
+                }
+            }
+
+            if (state == null && subvalue != null) {
+                if (subvalue.equalsIgnoreCase("on") || subvalue.equalsIgnoreCase("true")) {
+                    state = true;
+                } else if (subvalue.equalsIgnoreCase("off") || subvalue.equalsIgnoreCase("false")) {
+                    state = false;
+                }
+            }
+
+            target = player;
+            if (value != null) {
+                if (!ResPerm.select_auto_others.hasPermission(player, true)) {
+                    return true;
+                }
+                target = Bukkit.getPlayer(value);
+                if (target == null) {
+                    lm.General_NotOnline.sendMessage(sender);
+                    return true;
+                }
+            }
+
+            boolean alreadyEnabled = plugin.getComboSelectionManager().has(target.getUniqueId());
+
+            combo = plugin.getComboSelectionManager().getOrCreate(target);
+
+            switch (action) {
+            case move:
+                if (state != null) {
+                    combo.setMove(state);
+                } else
+                    combo.setMove(!combo.isMove());
+                if (!combo.isEnabled())
+                    Residence.getInstance().getComboSelectionManager().toggleAutoSelection(target, true);
+                break;
+            case aim:
+                if (state != null) {
+                    combo.setAim(state);
+                } else
+                    combo.setAim(!combo.isAim());
+                if (!combo.isEnabled())
+                    Residence.getInstance().getComboSelectionManager().toggleAutoSelection(target, true);
+                break;
+            case considerlimits:
+                if (state != null) {
+                    combo.setGroupLimit(state);
+                } else
+                    combo.setGroupLimit(!combo.isGroupLimit());
+                if (!combo.isEnabled())
+                    Residence.getInstance().getComboSelectionManager().toggleAutoSelection(target, true);
+                break;
+            case quickbar:
+                if (state != null) {
+                    combo.setQuickBar(state);
+                } else
+                    combo.setQuickBar(!combo.isQuickBar());
+                if (!combo.isEnabled())
+                    Residence.getInstance().getComboSelectionManager().toggleAutoSelection(target, true);
+                break;
+            case togglecombo:
+                if (state != null) {
+                    Residence.getInstance().getComboSelectionManager().toggleAutoSelection(target, state);
+                } else
+                    Residence.getInstance().getComboSelectionManager().toggleAutoSelection(target, !combo.isEnabled());
+                return true;
+            }
+
+            if (!alreadyEnabled) {
+                // only reset on enable, not disable, to avoid clearing selection when disabling
+                // auto-selection
+                plugin.getSelectionManager().clearSelection(target);
+                plugin.getSelectionManager().placeLoc1(player, player.getLocation().clone(), false);
+                plugin.getSelectionManager().placeLoc2(player, player.getLocation().clone().add(0, 1, 0), true);
+            }
+
+            return true;
+        case residence:
             String resName;
             String areaName;
             ClaimedResidence res = null;
-            if (args.length > 1) {
-                res = plugin.getResidenceManager().getByName(args[1]);
+            if (value != null) {
+                res = plugin.getResidenceManager().getByName(value);
             } else {
                 res = plugin.getResidenceManager().getByLoc(player.getLocation());
             }
+
             if (res == null) {
                 lm.Invalid_Residence.sendMessage(sender);
                 return true;
@@ -173,9 +481,9 @@ public class select implements cmd {
             resName = res.getName();
             CuboidArea area = null;
 
-            if (args.length > 2) {
-                area = res.getArea(args[2]);
-                areaName = args[2];
+            if (subvalue != null) {
+                area = res.getArea(subvalue);
+                areaName = subvalue;
             } else {
                 areaName = res.getAreaNameByLoc(player.getLocation());
                 area = res.getArea(areaName);
@@ -195,13 +503,8 @@ public class select implements cmd {
             }
             return true;
         }
-        try {
-            plugin.getSelectionManager().selectBySize(player, Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-            return true;
-        } catch (Exception ex) {
-//	    lm.Select_Fail);
-            return false;
-        }
+
+        return false;
     }
 
     @Override
@@ -224,9 +527,37 @@ public class select implements cmd {
         c.get("size.Info", Arrays.asList("&eUsage: &6/res select size"));
         LocaleManager.addTabCompleteSub(this, "size");
 
-        c.get("auto.Description", "Turns on auto selection tool");
-        c.get("auto.Info", Arrays.asList("&eUsage: &6/res select auto [playername]"));
-        LocaleManager.addTabCompleteSub(this, "auto", "[playername]");
+        c.get("move.Description", "Turns on move selection tool");
+        c.get("move.Info", Arrays.asList("&eUsage: &6/res select move [playername]"));
+        LocaleManager.addTabCompleteSub(this, "move", "[playername]");
+
+        c.get("considerlimits.Description", "Toggles considerlimits selection");
+        c.get("considerlimits.Info", Arrays.asList("&eUsage: &6/res select considerlimits [playername]"));
+        LocaleManager.addTabCompleteSub(this, "considerlimits", "[playername]");
+
+        c.get("togglecombo.Description", "Toggles combo selection");
+        c.get("togglecombo.Info", Arrays.asList("&eUsage: &6/res select togglecombo [playername]"));
+        LocaleManager.addTabCompleteSub(this, "togglecombo", "[playername]");
+
+        c.get("options.Description", "Opens selection GUI");
+        c.get("options.Info", Arrays.asList("&eUsage: &6/res select options [playername]"));
+        LocaleManager.addTabCompleteSub(this, "options", "[playername]");
+
+        c.get("outward.Description", "Expands selection outward by a specified amount");
+        c.get("outward.Info", Arrays.asList("&eUsage: &6/res select outward [playername]"));
+        LocaleManager.addTabCompleteSub(this, "outward", "[playername]");
+
+        c.get("aim.Description", "Turns on aim selection tool");
+        c.get("aim.Info", Arrays.asList("&eUsage: &6/res select aim [playername]"));
+        LocaleManager.addTabCompleteSub(this, "aim", "[playername]");
+
+        c.get("clear.Description", "Clears selection");
+        c.get("clear.Info", Arrays.asList("&eUsage: &6/res select clear [playername]"));
+        LocaleManager.addTabCompleteSub(this, "clear", "[playername]");
+
+        c.get("quickbar.Description", "Turns on quickbar selection tool");
+        c.get("quickbar.Info", Arrays.asList("&eUsage: &6/res select quickbar [playername]"));
+        LocaleManager.addTabCompleteSub(this, "quickbar", "[playername]");
 
         c.get("cost.Description", "Display selection cost");
         c.get("cost.Info", Arrays.asList("&eUsage: &6/res select cost"));

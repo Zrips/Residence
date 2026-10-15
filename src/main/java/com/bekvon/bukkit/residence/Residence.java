@@ -90,8 +90,8 @@ import com.bekvon.bukkit.residence.protection.PlayerManager;
 import com.bekvon.bukkit.residence.protection.ResidenceManager;
 import com.bekvon.bukkit.residence.protection.WorldFlagManager;
 import com.bekvon.bukkit.residence.raid.ResidenceRaidListener;
-import com.bekvon.bukkit.residence.selection.AutoSelection;
 import com.bekvon.bukkit.residence.selection.KingdomsUtil;
+import com.bekvon.bukkit.residence.selection.ComboSelection;
 import com.bekvon.bukkit.residence.selection.Schematics7Manager;
 import com.bekvon.bukkit.residence.selection.SelectionManager;
 import com.bekvon.bukkit.residence.selection.WESchematicManager;
@@ -168,7 +168,7 @@ public class Residence extends JavaPlugin {
     private WebMapManager webMapManager;
 
     private Sorting SortingManager;
-    private AutoSelection AutoSelectionManager;
+    private ComboSelection ComboSelectionManager;
     private WESchematicManager SchematicManager;
     private InformationPager InformationPagerManager;
     private WorldGuardInterface worldGuardUtil;
@@ -751,10 +751,10 @@ public class Residence extends JavaPlugin {
                     lm.consoleMessage("Found WorldEdit " + plugin.getDescription().getVersion() + " but version 6.x is not supported!");
                     return;
                 }
-                
+
                 this.wep = (com.sk89q.worldedit.bukkit.WorldEditPlugin) plugin;
 
-                if (getConfigManager().isWorldEditIntegration())
+                if (SelectionManager.isWorldEditIntegration())
                     smanager = new WorldEdit7SelectionManager(server, this);
                 if (wep != null)
                     SchematicManager = new Schematics7Manager(this);
@@ -859,10 +859,12 @@ public class Residence extends JavaPlugin {
         return SchematicManager;
     }
 
-    public AutoSelection getAutoSelectionManager() {
-        if (AutoSelectionManager == null)
-            AutoSelectionManager = new AutoSelection(this);
-        return AutoSelectionManager;
+
+    public ComboSelection getComboSelectionManager() {
+        if (ComboSelectionManager == null) {
+            ComboSelectionManager = new ComboSelection(this);
+        }
+        return ComboSelectionManager;
     }
 
     public Sorting getSortingManager() {

@@ -59,6 +59,7 @@ import com.bekvon.bukkit.residence.utils.Utils;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.PageInfo;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
@@ -345,7 +346,7 @@ public class ResidenceManager implements ResidenceInterface {
             Visualizer v = new Visualizer(player);
             v.setAreas(newArea);
             plugin.getSelectionManager().showBounds(player, v);
-            plugin.getAutoSelectionManager().getList().remove(player.getUniqueId());
+            plugin.getComboSelectionManager().toggleAutoSelection(player, false);
             lm.Area_Create.sendMessage(player, "main");
             lm.Residence_Create.sendMessage(player, resName);
         }

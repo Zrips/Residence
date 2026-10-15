@@ -21,6 +21,7 @@ import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
+import com.bekvon.bukkit.residence.selection.SelectionManager;
 
 import net.Zrips.CMILib.Container.CMIWorld;
 
@@ -148,7 +149,7 @@ public class PermissionGroup {
             ymin = limits.getInt("Residence.MinUpDown", 0);
         ymin = Math.min(ymin, ymax);
 
-        if (Residence.getInstance().getConfigManager().isSelectionIgnoreY()) {
+        if (SelectionManager.isIgnoreY()) {
             // This needs to be 256 to include entire height where 255 and block 0
             ymax = CMIWorld.getMaxHeight(Bukkit.getWorlds().get(0)) + Math.abs(CMIWorld.getMinHeight(Bukkit.getWorlds().get(0)));
         }
@@ -199,7 +200,7 @@ public class PermissionGroup {
         else
             Subzonezmax = getMaxZ();
 
-        if (Residence.getInstance().getConfigManager().isSelectionIgnoreYInSubzone()) {
+        if (SelectionManager.isIgnoreYInSubzone()) {
             // This needs to be 256 to include entire height where 255 and block 0
             Subzonezmax = CMIWorld.getMaxHeight(Bukkit.getWorlds().get(0)) + Math.abs(CMIWorld.getMinHeight(Bukkit.getWorlds().get(0)));
         }
@@ -648,5 +649,9 @@ public class PermissionGroup {
             return player.getGroup();
 
         return player.getGroup(world);
+    }
+
+    public double getCost(long size) {
+        return (long) (size * getCostPerBlock() * 100L) / 100D;
     }
 }

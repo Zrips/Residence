@@ -9,6 +9,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.selection.SelectionManager;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 
@@ -18,8 +19,8 @@ public class tool implements cmd {
     @CommandAnnotation(simple = true, priority = 1600)
     public Boolean perform(Residence plugin, CommandSender sender, String[] args, boolean resadmin) {
         lm.General_Separator.sendMessage(sender);
-        lm.Select_Tool.sendMessage(sender, plugin.getConfigManager().getSelectionTool().getName());
-        lm.General_InfoTool.sendMessage(sender, plugin.getConfigManager().getInfoTool().getName());
+        lm.Select_Tool.sendMessage(sender, SelectionManager.getTool().getName());
+        lm.General_InfoTool.sendMessage(sender, SelectionManager.getInfoTool().getName());
         lm.General_Separator.sendMessage(sender);
         return true;
     }

@@ -11,6 +11,7 @@ import com.bekvon.bukkit.residence.containers.CommandAnnotation;
 import com.bekvon.bukkit.residence.containers.ResidencePlayer;
 import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.selection.SelectionManager;
 
 import net.Zrips.CMILib.FileHandler.ConfigReader;
 
@@ -28,7 +29,7 @@ public class create implements cmd {
         }
 
         if (plugin.getWorldEdit() != null) {
-            if (plugin.getWorldEditTool() == plugin.getConfigManager().getSelectionTool()) {
+            if (plugin.getWorldEditTool() == SelectionManager.getTool()) {
                 plugin.getSelectionManager().worldEdit(player);
             }
         }

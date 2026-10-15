@@ -1,7 +1,5 @@
 package com.bekvon.bukkit.residence.selectionVisuals;
 
-import java.util.Random;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.BlockDisplay;
@@ -12,20 +10,41 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import com.Zrips.CMI.CMI;
 import com.bekvon.bukkit.residence.Residence;
 
-import net.Zrips.CMILib.Version.PaperMethods.PaperLib;
+import net.Zrips.CMILib.Container.CMIVector3D;
+import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class CMIBlockDisplay {
 
-    private BlockDisplay display = null;
-    private boolean removed = false;
-    private VisualState pendingVisual;
+    private BlockDisplay display;
+    private volatile VisualState visualState;
+    private volatile boolean removed;
+    private volatile boolean visible = true;
 
-    private static Random rand = new Random();
+    private static class VisualState {
 
-    public CMIBlockDisplay() {
+        private final double x, y, z;
+        private final float scaleX, scaleY, scaleZ;
+
+        private VisualState(double x, double y, double z, float scaleX, float scaleY, float scaleZ) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.scaleX = scaleX;
+            this.scaleY = scaleY;
+            this.scaleZ = scaleZ;
+        }
+
+        private CMIVector3D getLocation() {
+            return (CMIVector3D) new CMIVector3D().setZ(z).setX(x).setY(y);
+        }
+
+        private CMIVector3D getScale() {
+            return (CMIVector3D) new CMIVector3D().setZ(scaleZ).setX(scaleX).setY(scaleY);
+        }
     }
 
     public void init(@NotNull Location location, @NotNull Material material) {
@@ -36,15 +55,13 @@ public class CMIBlockDisplay {
         if (removed)
             return;
 
-        this.display = location.getWorld().spawn(location, BlockDisplay.class, entity -> {
-
+        display = location.getWorld().spawn(location, BlockDisplay.class, entity -> {
             entity.setBlock(material.createBlockData());
             entity.setVisibleByDefault(false);
             entity.setPersistent(false);
             entity.setBrightness(new Brightness(15, 15));
-
             entity.setTransformation(new Transformation(
-                    new Vector3f(0, 0, 0),
+                    new Vector3f(),
                     new Quaternionf(),
                     new Vector3f(0.05f, 0.05f, 0.05f),
                     new Quaternionf()));
@@ -56,129 +73,134 @@ public class CMIBlockDisplay {
             return;
         }
 
-        if (pendingVisual != null) {
-            applyVisual(pendingVisual);
-            pendingVisual = null;
+        VisualState state = visualState;
+        if (state != null) {
+            CMIScheduler.runAtEntity(CMI.getInstance(), display, () -> {
+                if (display == null || display.isDead() || removed || visualState != state)
+                    return;
+
+                applyVisual(state);
+            });
         }
     }
 
-    private static class VisualState {
+    public boolean setVisual(double x, double y, double z, float scaleX, float scaleY, float scaleZ) {
 
-        private final double x;
-        private final double y;
-        private final double z;
+        VisualState state = new VisualState(x, y, z, scaleX, scaleY, scaleZ);
+        visualState = state;
 
-        private final float scaleX;
-        private final float scaleY;
-        private final float scaleZ;
+        BlockDisplay current = display;
 
-        private VisualState(double x, double y, double z, float scaleX, float scaleY, float scaleZ) {
+        if (current == null)
+            return false;
 
-            this.x = x;
-            this.y = y;
-            this.z = z;
-
-            this.scaleX = scaleX;
-            this.scaleY = scaleY;
-            this.scaleZ = scaleZ;
-        }
-    }
-
-    public void setVisual(double lX, double lY, double lZ, float scaleX, float scaleY, float scaleZ) {
-
-        VisualState visual = new VisualState(lX, lY, lZ, scaleX, scaleY, scaleZ);
-
-        pendingVisual = visual;
-
-        if (display == null)
-            return;
-
-        CMIScheduler.runAtLocation(Residence.getInstance(), display.getLocation(), () -> {
-
-            if (display == null || display.isDead())
+        CMIScheduler.runAtEntity(CMI.getInstance(), current, () -> {
+            if (display != current || current.isDead() || removed || visualState != state)
                 return;
 
-            if (pendingVisual != visual)
-                return;
-
-            applyVisual(visual);
+            applyVisual(state);
         });
+        return true;
     }
 
-    private void applyVisual(VisualState visual) {
+    private void applyVisual(VisualState state) {
 
-        if (display == null || display.isDead())
+        BlockDisplay current = display;
+        if (current == null || current.isDead() || removed)
             return;
 
-        double locationX = visual.x + visual.scaleX / 2.0 + rand.nextFloat() / 1000F;
-        double locationY = visual.y + visual.scaleY / 2.0 + rand.nextFloat() / 1000F;
-        double locationZ = visual.z + visual.scaleZ / 2.0 + rand.nextFloat() / 1000F;
+        Location location = new Location(current.getWorld(), state.x, state.y, state.z);
 
-        Location newLocation = display.getLocation();
-        newLocation.setX(locationX);
-        newLocation.setY(locationY);
-        newLocation.setZ(locationZ);
+        if (!Version.isFolia()) {
+            current.teleport(location);
+            updateTransformation(current, state);
+            return;
+        }
 
-        PaperLib.teleportAsync(display, newLocation);
+        CMIScheduler.runAtEntity(Residence.getInstance(), current, () -> {
+            if (display != current || current.isDead() || removed || visualState != state)
+                return;
+
+            updateTransformation(current, state);
+        });
+
+        current.teleportAsync(location);
+    }
+
+    private void updateTransformation(BlockDisplay display, VisualState state) {
 
         Transformation transformation = display.getTransformation();
 
         display.setTransformation(new Transformation(
-                new Vector3f(
-                        (float) (-visual.scaleX / 2.0),
-                        (float) (-visual.scaleY / 2.0),
-                        (float) (-visual.scaleZ / 2.0)),
+                new Vector3f(),
                 transformation.getLeftRotation(),
-                new Vector3f(
-                        visual.scaleX,
-                        visual.scaleY,
-                        visual.scaleZ),
+                new Vector3f(state.scaleX, state.scaleY, state.scaleZ),
                 transformation.getRightRotation()));
     }
 
     public Location getLocation() {
-        if (display == null)
-            return null;
-        return display.getLocation();
+        BlockDisplay current = display;
+        return current == null ? null : current.getLocation();
     }
 
     public void show(Player player) {
 
-        if (removed || display == null)
+        BlockDisplay current = display;
+        if (removed || current == null)
             return;
 
-        CMIScheduler.runAtLocation(Residence.getInstance(), display.getLocation(), () -> {
-            player.showEntity(Residence.getInstance(), display);
+        visible = true;
+
+        CMIScheduler.runAtLocation(Residence.getInstance(), current.getLocation(), () -> {
+            if (display != current || removed || !visible)
+                return;
+
+            player.showEntity(Residence.getInstance(), current);
         });
     }
 
     public void hide(Player player) {
-        if (display == null)
-            return;
-        CMIScheduler.runAtLocation(Residence.getInstance(), display.getLocation(), () -> {
 
-            if (display == null)
+        BlockDisplay current = display;
+        if (current == null)
+            return;
+
+        visible = false;
+
+        CMIScheduler.runAtLocation(Residence.getInstance(), current.getLocation(), () -> {
+            if (display != current || visible)
                 return;
 
-            player.hideEntity(Residence.getInstance(), display);
+            player.hideEntity(Residence.getInstance(), current);
         });
     }
 
     public void remove() {
 
         removed = true;
-        pendingVisual = null;
+        visualState = null;
+        visible = false;
 
-        if (display == null)
+        BlockDisplay current = display;
+        if (current == null)
             return;
 
-        CMIScheduler.runAtLocation(Residence.getInstance(), display.getLocation(), () -> {
-
-            if (display == null)
+        CMIScheduler.runAtEntity(CMI.getInstance(), current, () -> {
+            if (display != current)
                 return;
 
-            display.remove();
+            current.remove();
             display = null;
         });
+    }
+
+    public CMIVector3D getLastLocation() {
+        VisualState state = visualState;
+        return state == null ? new CMIVector3D() : state.getLocation();
+    }
+
+    public CMIVector3D getLastScale() {
+        VisualState state = visualState;
+        return state == null ? new CMIVector3D() : state.getScale();
     }
 }

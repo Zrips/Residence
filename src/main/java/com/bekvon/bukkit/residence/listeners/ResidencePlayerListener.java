@@ -45,6 +45,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -64,6 +65,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
@@ -93,7 +95,9 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.protection.ResidenceManager.ChunkRef;
+import com.bekvon.bukkit.residence.selection.SelectionManager;
 import com.bekvon.bukkit.residence.selection.VisualizerConfig;
+import com.bekvon.bukkit.residence.selection.selectorOptions;
 import com.bekvon.bukkit.residence.signsStuff.Signs;
 import com.bekvon.bukkit.residence.utils.GetTime;
 import com.bekvon.bukkit.residence.utils.PlayerLocationChecker;
@@ -190,7 +194,7 @@ public class ResidencePlayerListener implements Listener {
         Player player = event.getPlayer();
 
         ClaimedResidence res = ClaimedResidence.getByLoc(player.getLocation());
-        
+
         if (res == null)
             return;
 
@@ -835,7 +839,6 @@ public class ResidencePlayerListener implements Listener {
 
         plugin.getChatManager().removeFromChannel(uuid);
         ChatManager.removePlayerResidenceChat(uuid);
-        plugin.getAutoSelectionManager().remove(uuid);
 
         playerPersistentData.remove(uuid);
     }
@@ -1061,8 +1064,10 @@ public class ResidencePlayerListener implements Listener {
         return false;
     }
 
-    // Handle player placement or block modification when no specific event is available
-    // Even if dedicated events are added in the future, legacy version servers still exist
+    // Handle player placement or block modification when no specific event is
+    // available
+    // Even if dedicated events are added in the future, legacy version servers
+    // still exist
     private void handlePlayerInteractBuild(PlayerInteractEvent event, Player player, Block block) {
 
         if (!Flags.build.isGlobalyEnabled()) {
@@ -1159,7 +1164,7 @@ public class ResidencePlayerListener implements Listener {
 
     private void handlePlayerUseSelectionTool(PlayerInteractEvent event, Player player, Block block) {
 
-        if (plugin.getWorldEditTool() == plugin.getConfigManager().getSelectionTool())
+        if (plugin.getWorldEditTool() == SelectionManager.getTool())
             return;
 
         if (player.getGameMode() == GameMode.CREATIVE)
@@ -1172,17 +1177,25 @@ public class ResidencePlayerListener implements Listener {
         if (ResPerm.select.hasPermission(player) || ResPerm.create.hasPermission(player) && !ResPerm.select.hasSetPermission(player) || group
                 .canCreateResidences() && !ResPerm.create.hasSetPermission(player) && !ResPerm.select.hasSetPermission(player) || resadmin) {
 
-            if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                Location loc = block.getLocation();
-                plugin.getSelectionManager().placeLoc1(player, loc, true);
-                lm.Select_PrimaryPoint.sendMessage(player, lm.General_CoordsTop.getMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
-                event.setCancelled(true);
-            } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && Utils.isMainHand(event)) {
-                Location loc = block.getLocation();
-                plugin.getSelectionManager().placeLoc2(player, loc, true);
-                lm.Select_SecondaryPoint.sendMessage(player, lm.General_CoordsBottom.getMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
-                event.setCancelled(true);
+            Location loc = block.getLocation();
+
+            @NotNull
+            selectorOptions combo = plugin.getComboSelectionManager().getOrCreate(player);
+            
+            if (combo.isSmartToolSelection()) {
+//                if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK)
+                    plugin.getSelectionManager().updateSelection(player, loc, true);
+            } else {
+                if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+                    plugin.getSelectionManager().placeLoc1(player, loc, true);
+                    lm.Select_PrimaryPoint.sendMessage(player, lm.General_CoordsTop.getMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+                } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && Utils.isMainHand(event)) {
+                    plugin.getSelectionManager().placeLoc2(player, loc, true);
+                    lm.Select_SecondaryPoint.sendMessage(player, lm.General_CoordsBottom.getMessage(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+                }
             }
+
+            event.setCancelled(true);
 
             if (plugin.getSelectionManager().hasPlacedBoth(player)) {
                 plugin.getSelectionManager().showSelectionInfoInActionBar(player);
@@ -1236,10 +1249,10 @@ public class ResidencePlayerListener implements Listener {
             if (event.useItemInHand() != Result.DENY) {
                 CMIMaterial held = CMIMaterial.get(event.getItem());
 
-                if (held == plugin.getConfigManager().getSelectionTool()) {
+                if (held == SelectionManager.getTool()) {
                     handlePlayerUseSelectionTool(event, player, block);
 
-                } else if (held == plugin.getConfigManager().getInfoTool()) {
+                } else if (held == SelectionManager.getInfoTool()) {
                     handlePlayerUseInfoTool(event, player, block);
 
                 }
@@ -2139,9 +2152,6 @@ public class ResidencePlayerListener implements Listener {
 
         if (res == null)
             playerPersistentData.get(uuid).setLastOutsideLoc(loc);
-
-        if (!plugin.getAutoSelectionManager().getList().isEmpty())
-            CMIScheduler.runTaskAsynchronously(plugin, () -> plugin.getAutoSelectionManager().UpdateSelection(player));
 
         if (!changedResidence) {
             // In case we are inside same residence, we can assume we can move there

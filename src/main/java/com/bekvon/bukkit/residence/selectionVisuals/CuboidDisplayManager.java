@@ -2,9 +2,11 @@ package com.bekvon.bukkit.residence.selectionVisuals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -18,7 +20,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import com.bekvon.bukkit.residence.Residence;
-import com.bekvon.bukkit.residence.protection.CuboidArea;
 import com.bekvon.bukkit.residence.selection.VisualizerConfig;
 
 import net.Zrips.CMILib.Cuboids.CMIBlockWorldArea;
@@ -46,11 +47,11 @@ public class CuboidDisplayManager implements Listener {
         RECALCULATE_DISTANCE_SQUARED = RECALCULATE_DISTANCE * RECALCULATE_DISTANCE;
     }
 
-    public static void add(Player player, List<CuboidArea> areas, CuboidDisplayType type) {
+    public static void add(Player player, List<CMIBlockWorldArea> areas, CuboidDisplayType type) {
         add(player, areas, type, type.getHideInSeconds(), type.getRange(), type.getGridSize());
     }
 
-    public static void add(Player player, List<CuboidArea> areas, CuboidDisplayType type, double hideInSeconds, int range, double gridSize) {
+    public static void add(Player player, List<CMIBlockWorldArea> areas, CuboidDisplayType type, double hideInSeconds, int range, double gridSize) {
 
         List<CuboidDisplay> ls = getAreas(player, areas, type);
 
@@ -65,7 +66,7 @@ public class CuboidDisplayManager implements Listener {
 
             display.setRange(range);
             display.setGridSize(gridSize);
-            display.recalculate();
+            display.recalculate(false);
 
             display.show();
             data.displays.add(display);
@@ -79,12 +80,11 @@ public class CuboidDisplayManager implements Listener {
             if (display.getArea() == area)
                 return;
         }
-
         CuboidDisplay display = new CuboidDisplay(player, area);
         display.setEdgeMaterial(type.getEdgeMaterial());
         display.setSideMaterial(type.getSideMaterial());
         display.removeAfter(hideInSeconds);
-        display.recalculate();
+        display.recalculate(false);
         display.show();
 
         data.displays.add(display);
@@ -226,15 +226,15 @@ public class CuboidDisplayManager implements Listener {
         removeAll(event.getPlayer());
     }
 
-    public static void show(Player player, List<CuboidArea> areas, List<CuboidArea> errorAreas) {
+    public static void show(Player player, List<CMIBlockWorldArea> areas, List<CMIBlockWorldArea> errorAreas) {
         show(player, getAreas(player, areas, errorAreas));
     }
 
-    private static List<CuboidDisplay> getAreas(Player player, List<CuboidArea> areas, List<CuboidArea> errorAreas) {
+    private static List<CuboidDisplay> getAreas(Player player, List<CMIBlockWorldArea> areas, List<CMIBlockWorldArea> errorAreas) {
         return getAreas(player, areas, errorAreas, null);
     }
 
-    private static List<CuboidDisplay> getAreas(Player player, List<CuboidArea> areas, List<CuboidArea> errorAreas, CuboidDisplayType type) {
+    private static List<CuboidDisplay> getAreas(Player player, List<CMIBlockWorldArea> areas, List<CMIBlockWorldArea> errorAreas, CuboidDisplayType type) {
 
         List<CuboidDisplay> cd = new ArrayList<>();
 
@@ -244,15 +244,30 @@ public class CuboidDisplayManager implements Listener {
         return cd;
     }
 
-    private static List<CuboidDisplay> getAreas(Player player, List<CuboidArea> areas, CuboidDisplayType type) {
+    private static List<CuboidDisplay> getAreas(Player player, List<CMIBlockWorldArea> areas, CuboidDisplayType type) {
 
         List<CuboidDisplay> cd = new ArrayList<>();
 
-        if (areas == null)
+        if (areas == null || areas.isEmpty())
             return cd;
 
-        for (CuboidArea area : areas) {
-            CuboidDisplay display = new CuboidDisplay(player, new CMIBlockWorldArea(area.getLowLocation(), area.getHighLocation()));
+        PlayerData playerData = getPlayerData(player);
+        List<CuboidDisplay> existing = new ArrayList<>(playerData.displays);
+
+        for (CuboidDisplay one : existing) {
+            if (areas.contains(one.getArea())) {
+                areas.remove(one.getArea());
+                one.recalculate(true);
+                one.removeAfter(type == null ? 5 : type.getHideInSeconds());
+                cd.add(one);
+            } else {
+                one.clear();
+                playerData.displays.remove(one);
+            }
+        }
+
+        for (CMIBlockWorldArea area : areas) {
+            CuboidDisplay display = new CuboidDisplay(player, area);
             display.setEdgeMaterial(type == null ? CuboidDisplayType.SELECTION.getEdgeMaterial() : type.getEdgeMaterial());
             display.setSideMaterial(type == null ? CuboidDisplayType.SELECTION.getSideMaterial() : type.getSideMaterial());
             display.removeAfter(type == null ? 5 : type.getHideInSeconds());
@@ -268,8 +283,15 @@ public class CuboidDisplayManager implements Listener {
     public static void show(Player player, List<CuboidDisplay> cd) {
         PlayerData data = getPlayerData(player);
 
-        for (CuboidDisplay display : data.displays)
+        if (cd.isEmpty())
+            return;
+
+        for (CuboidDisplay display : data.displays) {
+            if (cd.contains(display))
+                continue;
+
             display.clear();
+        }
 
         data.displays.clear();
         data.lastUpdateLocation = player.getLocation().clone();
@@ -310,7 +332,7 @@ public class CuboidDisplayManager implements Listener {
                 continue;
             }
 
-            display.recalculate();
+            display.recalculate(false);
         }
 
         removeEmptyPlayer(player);
@@ -395,7 +417,7 @@ public class CuboidDisplayManager implements Listener {
 
         private Location lastUpdateLocation;
 
-        private final List<CuboidDisplay> displays = new ArrayList<>();
+        private final Set<CuboidDisplay> displays = new HashSet<>();
 
         public PlayerData(Location location) {
             this.lastUpdateLocation = location.clone();

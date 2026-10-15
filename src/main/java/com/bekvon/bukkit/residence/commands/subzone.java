@@ -13,6 +13,7 @@ import com.bekvon.bukkit.residence.containers.cmd;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import com.bekvon.bukkit.residence.selection.SelectionManager;
 
 public class subzone implements cmd {
 
@@ -46,7 +47,7 @@ public class subzone implements cmd {
         }
 
         if (plugin.getWorldEdit() != null) {
-            if (plugin.getWorldEditTool() == plugin.getConfigManager().getSelectionTool()) {
+            if (plugin.getWorldEditTool() == SelectionManager.getTool()) {
                 plugin.getSelectionManager().worldEdit(player);
             }
         }
