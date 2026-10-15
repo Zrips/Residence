@@ -8,6 +8,7 @@ public enum CuboidDisplayType {
             CMIMaterial.BLUE_WOOL,
             CMIMaterial.GREEN_WOOL,
             30.0,
+            0.025,
             0.05,
             32,
             8
@@ -16,6 +17,7 @@ public enum CuboidDisplayType {
             CMIMaterial.RED_WOOL,
             CMIMaterial.RED_WOOL,
             5.0,
+            0.025,
             0.05,
             32,
             8
@@ -25,6 +27,7 @@ public enum CuboidDisplayType {
             CMIMaterial.LIGHT_GRAY_WOOL,
             1,
             0.025,
+            0.05,
             4,
             0.5
     ),
@@ -33,15 +36,17 @@ public enum CuboidDisplayType {
             CMIMaterial.RED_WOOL,
             1,
             0.025,
+            0.05,
             4,
             0.5
     );
 
-    CuboidDisplayType(CMIMaterial edgeMaterial, CMIMaterial lineMaterial, double hideInSeconds, double lineThickness, int range, double gridSize) {
+    CuboidDisplayType(CMIMaterial edgeMaterial, CMIMaterial lineMaterial, double hideInSeconds, double lineThickness,double edgeThickness, int range, double gridSize) {
         this.edgeMaterial = edgeMaterial;
         this.sideMaterial = lineMaterial;
         this.hideInSeconds = hideInSeconds;
         this.lineThickness = lineThickness;
+        this.edgeThickness = edgeThickness;
         this.range = range;
         this.gridSize = gridSize;
     }
@@ -58,7 +63,7 @@ public enum CuboidDisplayType {
     private CMIMaterial edgeMaterial;
     private CMIMaterial sideMaterial;
     private double hideInSeconds = 5.0;
-    private double lineThickness = 0.05;
+    private double lineThickness = 0.025;
     private double edgeThickness = 0.05;
     private int range = 16;
     private double gridSize = 8;

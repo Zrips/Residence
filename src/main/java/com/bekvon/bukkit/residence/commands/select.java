@@ -31,7 +31,6 @@ import net.Zrips.CMILib.GUI.CMIGuiButton;
 import net.Zrips.CMILib.GUI.GUIManager.GUIClickType;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Locale.LC;
-import net.Zrips.CMILib.Logs.CMIDebug;
 
 public class select implements cmd {
 
@@ -339,7 +338,7 @@ public class select implements cmd {
             };
             button.hideItemFlags();
             gui.addButton(button);
- 
+
             button = new CMIGuiButton(31, SelectionManager.getTool()) {
                 @Override
                 public void click(GUIClickType type) {
