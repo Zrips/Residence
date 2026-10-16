@@ -73,8 +73,7 @@ public enum CuboidDisplayType {
     }
 
     public void setEdgeMaterial(CMIMaterial cornerMaterial) {
-        this.edgeMaterial = cornerMaterial == null ? this.edgeMaterial : cornerMaterial;
-        ;
+        this.edgeMaterial = cornerMaterial == null ? this.edgeMaterial : cornerMaterial;        
     }
 
     public CMIMaterial getSideMaterial() {

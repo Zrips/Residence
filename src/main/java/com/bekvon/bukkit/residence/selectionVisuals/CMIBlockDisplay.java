@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import com.Zrips.CMI.CMI;
 import com.bekvon.bukkit.residence.Residence;
 
 import net.Zrips.CMILib.Container.CMIVector3D;
@@ -75,7 +74,7 @@ public class CMIBlockDisplay {
 
         VisualState state = visualState;
         if (state != null) {
-            CMIScheduler.runAtEntity(CMI.getInstance(), display, () -> {
+            CMIScheduler.runAtEntity(Residence.getInstance(), display, () -> {
                 if (display == null || display.isDead() || removed || visualState != state)
                     return;
 
@@ -94,7 +93,7 @@ public class CMIBlockDisplay {
         if (current == null)
             return false;
 
-        CMIScheduler.runAtEntity(CMI.getInstance(), current, () -> {
+        CMIScheduler.runAtEntity(Residence.getInstance(), current, () -> {
             if (display != current || current.isDead() || removed || visualState != state)
                 return;
 
@@ -185,7 +184,7 @@ public class CMIBlockDisplay {
         if (current == null)
             return;
 
-        CMIScheduler.runAtEntity(CMI.getInstance(), current, () -> {
+        CMIScheduler.runAtEntity(Residence.getInstance(), current, () -> {
             if (display != current)
                 return;
 
