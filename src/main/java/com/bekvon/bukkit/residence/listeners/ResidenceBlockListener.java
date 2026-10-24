@@ -338,10 +338,10 @@ public class ResidenceBlockListener implements Listener {
         }
         Entity entity = event.getEntity();
 
-        if (Flags.build.isGlobalyEnabled() && entity instanceof Player) {
+        if (Flags.place.isGlobalyEnabled() && entity instanceof Player) {
             Player player = (Player) entity;
             // Prevent Frosted Ice generation from Frost Walker without notifying players
-            if (FlagPermissions.shouldDenyAndNotify(player, block, Flags.build, null, false)) {
+            if (FlagPermissions.shouldDenyAndNotify(player, block, Flags.place, Flags.build, false)) {
                 event.setCancelled(true);
             }
 

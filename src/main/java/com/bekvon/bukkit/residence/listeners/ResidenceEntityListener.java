@@ -164,18 +164,16 @@ public class ResidenceEntityListener implements Listener {
     private boolean shouldDenyPlayerChangeBlock(Block block, Player player) {
         CMIMaterial mat = CMIMaterial.get(block.getType());
         Flags mainFlag = null;
-        Flags subFlag = null;
+        Flags subFlag = Flags.build;
         if (Flags.copper.isGlobalyEnabled() && mat.containsCriteria(CMIMC.COPPER)) {
             mainFlag = Flags.copper;
-            subFlag = Flags.build;
 
         } else if (Flags.brush.isGlobalyEnabled() && (mat == CMIMaterial.SUSPICIOUS_GRAVEL || mat == CMIMaterial.SUSPICIOUS_SAND)) {
             mainFlag = Flags.brush;
-            subFlag = Flags.build;
 
-        } else if (Flags.build.isGlobalyEnabled()) {
-            // by default, future player-triggered EntityChangeBlockEvent mechanisms check Flags.build
-            mainFlag = Flags.build;
+        } else if (Flags.place.isGlobalyEnabled()) {
+            // by default, future player-triggered EntityChangeBlockEvent mechanisms check Flags.place
+            mainFlag = Flags.place;
 
         }
         if (mainFlag == null) {
