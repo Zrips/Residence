@@ -620,12 +620,11 @@ public class ResidenceBlockListener implements Listener {
         if (!Flags.place.isGlobalyEnabled()) {
             return;
         }
-        Material sourceType = event.getBlockPlaced().getType();
+        CMIMaterial mat = CMIMaterial.get(event.getBlockPlaced().getType());
         // Avoid upstream dupe bug(https://github.com/PaperMC/Paper/issues/13586)
-        if (sourceType == Material.BEDROCK || sourceType == Material.END_PORTAL_FRAME) {
+        if (mat == CMIMaterial.BEDROCK || mat == CMIMaterial.END_PORTAL_FRAME) {
             return;
         }
-        CMIMaterial mat = CMIMaterial.get(sourceType);
         // Multi-block placements: for safety, explicitly specify which types enter the check
         if (!mat.containsCriteria(CMIMC.BED) && !mat.containsCriteria(CMIMC.DOOR) && !mat.containsCriteria(CMIMC.DOUBLEPLANT)) {
             return;
