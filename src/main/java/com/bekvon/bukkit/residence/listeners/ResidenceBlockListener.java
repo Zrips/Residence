@@ -30,6 +30,7 @@ import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
+import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
@@ -66,7 +67,6 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
-import net.Zrips.CMILib.Container.CMIBlock;
 import net.Zrips.CMILib.Container.CMIVectorInt3D;
 import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Items.CMIMC;
@@ -616,9 +616,36 @@ public class ResidenceBlockListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onBlockPlace(BlockPlaceEvent event) {
-
+    public void onBlockMultiPlace(BlockMultiPlaceEvent event) {
         if (!Flags.place.isGlobalyEnabled()) {
+            return;
+        }
+        Material sourceType = event.getBlockPlaced().getType();
+        // Avoid upstream dupe bug(https://github.com/PaperMC/Paper/issues/13586)
+        if (sourceType == Material.BEDROCK || sourceType == Material.END_PORTAL_FRAME) {
+            return;
+        }
+        CMIMaterial mat = CMIMaterial.get(sourceType);
+        // Multi-block placements: for safety, explicitly specify which types enter the check
+        if (!mat.containsCriteria(CMIMC.BED) && !mat.containsCriteria(CMIMC.DOOR) && !mat.containsCriteria(CMIMC.DOUBLEPLANT)) {
+            return;
+        }
+        Player player = event.getPlayer();
+        for (BlockState one : event.getReplacedBlockStates()) {
+            if (!canPlaceBlock(player, one.getBlock(), true)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (!Flags.place.isGlobalyEnabled()) {
+            return;
+        }
+        // BlockMultiPlaceEvent uses separate check logic
+        if (event instanceof BlockMultiPlaceEvent) {
             return;
         }
         Block block = event.getBlock();
@@ -644,7 +671,6 @@ public class ResidenceBlockListener implements Listener {
             return true;
         }
         ClaimedResidence res = ClaimedResidence.getByLoc(block.getLocation());
-        CMIMaterial type = null;
         Material mat = block.getType();
         FlagPermissions perms;
 
@@ -657,9 +683,8 @@ public class ResidenceBlockListener implements Listener {
                 }
                 return false;
             }
-            type = CMIMaterial.get(mat);
             // Residence item blacklist
-            if (!type.isNone() && !res.getItemBlacklist().isAllowed(mat)) {
+            if (!CMIMaterial.get(mat).isNone() && !res.getItemBlacklist().isAllowed(mat)) {
                 if (informPlayer) {
                     lm.General_ItemBlacklisted.sendMessage(player);
                 }
@@ -680,12 +705,6 @@ public class ResidenceBlockListener implements Listener {
             }
         }
         if (canPlace) {
-            if (type == null) {
-                type = CMIMaterial.get(mat);
-            }
-            if (type.containsCriteria(CMIMC.BED) && !ResPerm.bypass_build.hasPermission(player, 10000L)) {
-                return canPlaceBedOtherHalf(block, player);
-            }
             return true;
         }
         if (Residence.getInstance().getItemManager().isIgnored(player, mat, block.getWorld())) {
@@ -698,15 +717,6 @@ public class ResidenceBlockListener implements Listener {
             lm.Flag_Deny.sendMessage(player, Flags.place);
         }
         return false;
-    }
-
-    private static boolean canPlaceBedOtherHalf(Block block, Player player) {
-        Block bed = new CMIBlock(block).getSecondaryBedBlock();
-        if (bed == null) {
-            return true;
-        }
-        FlagPermissions perms = FlagPermissions.getPerms(bed.getLocation(), player);
-        return perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true));
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
