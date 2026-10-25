@@ -1033,7 +1033,7 @@ public class ResidenceBlockListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onBlockBurn(PortalCreateEvent event) {
+    public void onNetherPortalCreate(PortalCreateEvent event) {
 
         World world = event.getWorld();
 
@@ -1051,24 +1051,35 @@ public class ResidenceBlockListener implements Listener {
                 player = (Player) event.getEntity();
         } catch (Throwable e) {
         }
-
+        if (player != null && (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player))) {
+            return;
+        }
         ArrayList<Vector> corners = getNetherPortalCorners(event);
+        FlagPermissions worldPerms = null;
 
         for (Vector one : corners) {
-            boolean hasBuild = true;
+            Location loc = new Location(world, one.getX(), one.getY(), one.getZ());
+            ClaimedResidence res = ClaimedResidence.getByLoc(loc);
+            // Avoid repeatedly fetching world permissions
+            if (res == null && worldPerms == null) {
+                worldPerms = (player != null)
+                        ? Residence.getInstance().getWorldFlags().getPerms(player)
+                        : Residence.getInstance().getWorldFlags().getPerms(world);
+            }
+            FlagPermissions perms = (res != null)
+                    ? res.getPermissions()
+                    : worldPerms;
+
+            boolean canBuild;
             if (player != null) {
-                ClaimedResidence res = plugin.getResidenceManager().getByLoc(new Location(world, one.getX(), one.getY(), one.getZ()));
-                if (res != null) {
-                    hasBuild = res.getPermissions().playerHas(player, Flags.build, FlagCombo.TrueOrNone);
-                    if (!hasBuild) {
-                        lm.Invalid_PortalDestination.sendMessage(player);
-                    }
+                canBuild = perms.playerHas(player, Flags.build, true);
+                if (!canBuild) {
+                    lm.Invalid_PortalDestination.sendMessage(player);
                 }
             } else {
-                FlagPermissions perms = FlagPermissions.getPerms(new Location(world, one.getX(), one.getY(), one.getZ()));
-                hasBuild = perms.has(Flags.build, true);
+                canBuild = perms.has(Flags.build, true);
             }
-            if (!hasBuild) {
+            if (!canBuild) {
                 event.setCancelled(true);
                 return;
             }
@@ -1079,50 +1090,50 @@ public class ResidenceBlockListener implements Listener {
     private static ArrayList<Vector> getNetherPortalCorners(PortalCreateEvent e) {
         ArrayList<Vector> locs = new ArrayList<Vector>();
 
-        List<?> ls = new ArrayList<>();
+        List<?> list = new ArrayList<>();
+        boolean isModern = Version.isCurrentEqualOrHigher(Version.v1_14_0);
         try {
-            ls = Version.isCurrentEqualOrHigher(Version.v1_14_0)
+            list = isModern
                     ? (ArrayList<BlockState>) e.getClass().getMethod("getBlocks").invoke(e)
                     : (ArrayList<Block>) e.getClass().getMethod("getBlocks").invoke(e);
         } catch (Exception e1) {
             e1.printStackTrace();
         }
-
-        int lowestY = CMIWorld.getMaxHeight(e.getWorld());
-        int bigestY = -lowestY;
-        int lowestX = Integer.MAX_VALUE;
-        int lowestZ = Integer.MAX_VALUE;
-        int bigestX = -Integer.MAX_VALUE;
-        int bigestZ = -Integer.MAX_VALUE;
-
-        for (Object ob : ls) {
-            Location one = Version.isCurrentEqualOrHigher(Version.v1_14_0)
-                    ? ((BlockState) ob).getLocation()
-                    : ((Block) ob).getLocation();
-
-            if (one.getBlockY() < lowestY)
-                lowestY = one.getBlockY();
-            if (one.getBlockX() < lowestX)
-                lowestX = one.getBlockX();
-            if (one.getBlockZ() < lowestZ)
-                lowestZ = one.getBlockZ();
-
-            if (one.getBlockY() > bigestY)
-                bigestY = one.getBlockY();
-            if (one.getBlockX() > bigestX)
-                bigestX = one.getBlockX();
-            if (one.getBlockZ() > bigestZ)
-                bigestZ = one.getBlockZ();
+        if (list.isEmpty()) {
+            return locs;
         }
 
-        int height = Math.abs(bigestY - lowestY);
+        int minX = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        int minZ = Integer.MAX_VALUE;
+        int maxZ = Integer.MIN_VALUE;
+
+        for (Object target : list) {
+            Location one = isModern
+                    ? ((BlockState) target).getLocation()
+                    : ((Block) target).getLocation();
+
+            int targetX = one.getBlockX();
+            int targetY = one.getBlockY();
+            int targetZ = one.getBlockZ();
+            minX = Math.min(minX, targetX);
+            maxX = Math.max(maxX, targetX);
+            minY = Math.min(minY, targetY);
+            maxY = Math.max(maxY, targetY);
+            minZ = Math.min(minZ, targetZ);
+            maxZ = Math.max(maxZ, targetZ);
+        }
+
+        int height = Math.abs(maxY - minY);
 
         // If height is 1 then its not a nether portal
         if (height < 2)
             return locs;
 
-        locs.add(new Vector(lowestX, lowestY, lowestZ));
-        locs.add(new Vector(bigestX, bigestY, bigestZ));
+        locs.add(new Vector(minX, minY, minZ));
+        locs.add(new Vector(maxX, maxY, maxZ));
 
         return locs;
     }
