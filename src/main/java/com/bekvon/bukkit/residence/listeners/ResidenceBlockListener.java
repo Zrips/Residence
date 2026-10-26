@@ -68,7 +68,6 @@ import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Container.CMIVectorInt3D;
-import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
@@ -971,7 +970,6 @@ public class ResidenceBlockListener implements Listener {
         }
     }
 
-    @SuppressWarnings("removal")
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onDispense(BlockDispenseEvent event) {
 
@@ -983,41 +981,41 @@ public class ResidenceBlockListener implements Listener {
         if (CMIMaterial.get(block.getType()) != CMIMaterial.DISPENSER)
             return;
 
-        // target location
-        Location targetLoc = Version.isCurrentEqualOrHigher(Version.v1_13_0)
-                ? ResidenceBlockData.getRelative(block)
-                : block.getRelative((((org.bukkit.material.Dispenser) ((org.bukkit.block.Dispenser) block).getData()).getFacing())).getLocation();
+        @SuppressWarnings("removal")
+        BlockFace blockFace = Version.isCurrentEqualOrHigher(Version.v1_13_0)
+                ? ResidenceBlockData.getDispenserFace(block)
+                : (((org.bukkit.material.Dispenser) block.getState().getData()).getFacing());
 
-        ClaimedResidence targetRes = ClaimedResidence.getByLoc(targetLoc);
+        Block target = block.getRelative(blockFace);
+        ClaimedResidence targetRes = ClaimedResidence.getByLoc(target.getLocation());
 
-        CMIMaterial cmat = CMIMaterial.get(event.getItem());
-        if (targetRes == null && targetLoc.getBlockY() >= plugin.getConfigManager().getPlaceLevel() && plugin.getConfigManager().getNoPlaceWorlds().contains(targetLoc
-                .getWorld().getName())) {
-            if (plugin.getConfigManager().isNoLavaPlace() && cmat == CMIMaterial.LAVA_BUCKET) {
-                event.setCancelled(true);
+        if (targetRes == null) {
+            ConfigManager cfg = plugin.getConfigManager();
+            CMIMaterial mat = CMIMaterial.get(event.getItem());
+
+            boolean shouldDeny = (cfg.isNoLavaPlace() && mat == CMIMaterial.LAVA_BUCKET)
+                    || (cfg.isNoWaterPlace() && (mat == CMIMaterial.WATER_BUCKET || mat.containsCriteria(CMIMC.BUCKETANIMAL)));
+
+            if (!shouldDeny) {
                 return;
             }
-
-            if (plugin.getConfigManager().isNoWaterPlace() &&
-                    (cmat == CMIMaterial.WATER_BUCKET || cmat.containsCriteria(CMIMC.BUCKETANIMAL))) {
-                event.setCancelled(true);
+            if (target.getY() < cfg.getPlaceLevel()) {
                 return;
             }
+            if (!cfg.getNoPlaceWorlds().contains(target.getWorld().getName())) {
+                return;
+            }
+            event.setCancelled(true);
+            return;
         }
-
-        if (targetRes == null)
-            return;
-
         ClaimedResidence sourceRes = ClaimedResidence.getByLoc(block.getLocation());
-
         // source & target in Same Res, or have Same Res owner
-        if (sourceRes != null && (sourceRes.equals(targetRes) || sourceRes.isOwner(targetRes.getOwner())))
+        if (sourceRes != null && (sourceRes == targetRes || sourceRes.isOwner(targetRes.getOwner()))) {
             return;
-
-        // check targetRes Flag_build
-        if (targetRes.getPermissions().has(Flags.build, true))
+        }
+        if (targetRes.getPermissions().has(Flags.build, true)) {
             return;
-
+        }
         event.setCancelled(true);
     }
 
