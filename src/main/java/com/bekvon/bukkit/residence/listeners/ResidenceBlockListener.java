@@ -639,11 +639,11 @@ public class ResidenceBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (!Flags.place.isGlobalyEnabled()) {
-            return;
-        }
         // BlockMultiPlaceEvent uses separate check logic
         if (event instanceof BlockMultiPlaceEvent) {
+            return;
+        }
+        if (!Flags.place.isGlobalyEnabled()) {
             return;
         }
         Block block = event.getBlock();
@@ -796,11 +796,14 @@ public class ResidenceBlockListener implements Listener {
         int maxZ = Integer.MIN_VALUE;
 
         BlockFace dir = event.getDirection();
+        int dirX = dir.getModX();
+        int dirY = dir.getModY();
+        int dirZ = dir.getModZ();
 
         for (Block block : blocks) {
-            int targetX = block.getX() + dir.getModX();
-            int targetY = block.getY() + dir.getModY();
-            int targetZ = block.getZ() + dir.getModZ();
+            int targetX = block.getX() + dirX;
+            int targetY = block.getY() + dirY;
+            int targetZ = block.getZ() + dirZ;
             minX = Math.min(minX, targetX);
             maxX = Math.max(maxX, targetX);
             minY = Math.min(minY, targetY);
@@ -810,19 +813,19 @@ public class ResidenceBlockListener implements Listener {
         }
 
         World world = piston.getWorld();
-
+        // Both ends (min/max corners) are inside pistonRes, skip checks
         if (pistonRes != null
                 && pistonRes.containsLoc(new Location(world, minX, minY, minZ))
                 && pistonRes.containsLoc(new Location(world, maxX, maxY, maxZ))) {
             return;
         }
-
+        // Farthest block first, matching the piston's push order
         for (int i = blocks.size() - 1; i >= 0; i--) {
             Block block = blocks.get(i);
             Location targetLoc = new Location(world,
-                    block.getX() + dir.getModX(),
-                    block.getY() + dir.getModY(),
-                    block.getZ() + dir.getModZ());
+                    block.getX() + dirX,
+                    block.getY() + dirY,
+                    block.getZ() + dirZ);
 
             ClaimedResidence targetRes = ClaimedResidence.getByLoc(targetLoc);
             if (targetRes == null) {
