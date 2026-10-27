@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -203,8 +204,8 @@ public class Visualizer {
         this.once = once;
     }
 
-    public List<Location> getPrimaryLocations(CuboidDisplayType type) {
-        return locationsPrimary.get(type);
+    public @NotNull List<Location> getPrimaryLocations(CuboidDisplayType type) {
+        return locationsPrimary.getOrDefault(type, new ArrayList<Location>());
     }
 
     @Deprecated
@@ -221,8 +222,8 @@ public class Visualizer {
         setPrimaryLocations(CuboidDisplayType.SELECTION, locations);
     }
 
-    public List<Location> getSecondaryLocations(CuboidDisplayType type) {
-        return locationsSecondary.get(type);
+    public @NotNull List<Location> getSecondaryLocations(CuboidDisplayType type) {
+        return locationsSecondary.getOrDefault(type, new ArrayList<Location>());
     }
 
     public void setSecondaryLocations(CuboidDisplayType type, List<Location> locations) {
