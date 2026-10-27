@@ -2488,10 +2488,25 @@ public class ResidencePlayerListener implements Listener {
 
     public static void processEntities(Set<Entity> entities, ClaimedResidence res) {
         for (Entity ent : entities) {
-            if (!Utils.isMonster(ent))
+            if (!Utils.isMonster(ent)) {
                 continue;
-            if (!res.containsLoc(ent.getLocation()))
+            }
+            if (Residence.getInstance().getConfigManager().getAutoMobRemovalIgnoreNamedMobs()) {
+                String entName = ent.getCustomName();
+                if (entName != null && !entName.isEmpty()) {
+                    continue;
+                }
+            }
+            Location loc = ent.getLocation();
+            if (!res.containsLoc(loc)) {
                 continue;
+            }
+            ClaimedResidence subRes = res.getSubzoneByLoc(loc);
+            // Skip only if the subzone explicitly sets noMobs: false;
+            // otherwise, follow the parent residence's setting
+            if (subRes != null && subRes.getPermissions().has(Flags.nomobs, FlagCombo.OnlyFalse)) {
+                continue;
+            }
             ent.remove();
         }
     }

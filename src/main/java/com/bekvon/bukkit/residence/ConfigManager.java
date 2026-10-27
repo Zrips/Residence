@@ -199,6 +199,7 @@ public class ConfigManager {
     protected boolean DisableCommands;
     private boolean DisableResidenceCreation;
     private boolean HopperCrossResidenceCheck;
+    private boolean AutoMobRemovalIgnoreNamedMobs;
 
     // Town
 //    private boolean TownEnabled = false;
@@ -1303,6 +1304,8 @@ public class ConfigManager {
         AutoMobRemoval = c.get("Global.AutoMobRemoval.Use", false);
         c.addComment("Global.AutoMobRemoval.Interval", "How often in seconds to check for monsters in residences. Keep it at reasonable amount");
         AutoMobRemovalInterval = c.get("Global.AutoMobRemoval.Interval", 5);
+        c.addComment("Global.AutoMobRemoval.IgnoreNamedMobs", "If this true, flag nomobs ignores removing name-tag-named mobs");
+        AutoMobRemovalIgnoreNamedMobs = c.get("Global.AutoMobRemoval.IgnoreNamedMobs", false);
 
         enforceAreaInsideArea = c.get("Global.EnforceAreaInsideArea", false);
         spoutEnable = c.get("Global.EnableSpout", false);
@@ -2212,6 +2215,10 @@ public class ConfigManager {
 
     public boolean getHopperCrossResidenceCheck() {
         return HopperCrossResidenceCheck;
+    }
+
+    public boolean getAutoMobRemovalIgnoreNamedMobs() {
+        return AutoMobRemovalIgnoreNamedMobs;
     }
 
 //    public int getTownMinRange() {
