@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -54,8 +53,10 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.protection.ResidenceManager.ChunkRef;
 import com.bekvon.bukkit.residence.raid.ResidenceRaid;
+import com.bekvon.bukkit.residence.raid.ResidenceRaidManager;
 import com.bekvon.bukkit.residence.selection.SelectionManager;
 import com.bekvon.bukkit.residence.shopStuff.ShopVote;
+import com.bekvon.bukkit.residence.signsStuff.SignUtil;
 import com.bekvon.bukkit.residence.signsStuff.Signs;
 import com.bekvon.bukkit.residence.utils.LocationCheck;
 import com.bekvon.bukkit.residence.utils.LocationUtil;
@@ -66,6 +67,7 @@ import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.PageInfo;
+import net.Zrips.CMILib.Cuboids.CMIBlockWorldArea;
 import net.Zrips.CMILib.Locale.LC;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.TitleMessages.CMITitleMessage;
@@ -75,39 +77,39 @@ import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 public class ClaimedResidence {
 
     private String resName = null;
+    private UUID uuid = null;
     protected ClaimedResidence parent;
     protected Map<String, CuboidArea> areas;
     protected Map<String, ClaimedResidence> subzones;
+    protected boolean mainRes = false;
+    protected long createTime = 0L;
     protected ResidencePermissions perms;
+
     protected ResidenceBank bank;
     protected double BlockSellPrice = 0.0;
     public Vector tpLoc;
     public Vector PitchYaw;
     protected String enterMessage = null;
     protected String leaveMessage = null;
-    protected String ShopDesc = null;
+
     protected String ChatPrefix = "";
     protected CMIChatColor ChannelColor = CMIChatColor.WHITE;
+
     protected ResidenceItemList ignorelist;
     protected ResidenceItemList blacklist;
-    protected boolean mainRes = false;
-    protected long createTime = 0L;
 
     private long leaseExpireTime = 0;
 
     protected List<String> cmdWhiteList = new ArrayList<String>();
     protected List<String> cmdBlackList = new ArrayList<String>();
 
+    protected String ShopDesc = null;
     List<ShopVote> ShopVoteList = new ArrayList<ShopVote>();
 
     protected RentableLand rentableland = null;
     protected RentedLand rentedland = null;
 
     protected int sellPrice = -1;
-
-    private ResidenceRaid raid;
-
-    private Set<Signs> signsInResidence = Collections.synchronizedSet(new HashSet<Signs>());
 
     public String getResidenceName() {
         return resName;
@@ -206,6 +208,14 @@ public class ClaimedResidence {
         return this.rentedland;
     }
 
+    public ClaimedResidence(@Nullable UUID uuid) {
+        if (uuid == null)
+            this.uuid = UUID.randomUUID();
+        else
+            this.uuid = uuid;
+        initialize();
+    }
+
     public ClaimedResidence() {
         initialize();
     }
@@ -231,6 +241,8 @@ public class ClaimedResidence {
     }
 
     private void initialize() {
+        if (this.getUniqueId() == null)
+            this.uuid = UUID.randomUUID();
         subzones = new HashMap<>();
         areas = new HashMap<>();
         bank = new ResidenceBank(this);
@@ -891,6 +903,15 @@ public class ClaimedResidence {
         return false;
     }
 
+    public boolean checkCollision(CMIBlockWorldArea area) {
+        for (CuboidArea checkarea : getAreaMap().values()) {
+            if (checkarea != null && checkarea.checkCollision(area)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean containsLoc(Location loc) {
         for (CuboidArea key : getAreaMap().values()) {
             if (key.containsLoc(loc)) {
@@ -1345,8 +1366,7 @@ public class ClaimedResidence {
 
     }
 
-    private void performInstantTp(final Location targloc, final Player targetPlayer, Player reqPlayer,
-            final boolean near) {
+    private void performInstantTp(final Location targloc, final Player targetPlayer, Player reqPlayer, final boolean near) {
         ResidenceTPEvent tpevent = new ResidenceTPEvent(this, targloc, targetPlayer, reqPlayer);
         Residence.getInstance().getServ().getPluginManager().callEvent(tpevent);
         if (tpevent.isCancelled())
@@ -1440,16 +1460,20 @@ public class ClaimedResidence {
         Map<String, Object> root = new HashMap<>();
         Map<String, Object> areamap = new HashMap<>();
 
+        if (this.getUniqueId() != null)
+            root.put("UUID", this.getUniqueId().toString());
+
         if (mainRes)
             root.put("MainResidence", mainRes);
+
         if (createTime != 0L)
             root.put("CreatedOn", createTime);
 
-        if (this.isTopArea() && raid != null && this.getRaid().isUnderRaidCooldown()) {
+        if (this.isTopArea() && ResidenceRaidManager.getResidenceRaidOrNull(this) != null && this.getRaid().isUnderRaidCooldown()) {
             root.put("LastRaid", this.getRaid().getEndsAt());
         }
 
-        if (this.isTopArea() && raid != null && this.getRaid().isImmune()) {
+        if (this.isTopArea() && ResidenceRaidManager.getResidenceRaidOrNull(this) != null && this.getRaid().isImmune()) {
             root.put("Immunity", this.getRaid().getImmunityUntil());
         }
 
@@ -1586,9 +1610,18 @@ public class ClaimedResidence {
 
     @SuppressWarnings("unchecked")
     public static ClaimedResidence load(String worldName, Map<String, Object> root, ClaimedResidence parent, Residence plugin) throws Exception {
-        ClaimedResidence res = new ClaimedResidence();
         if (root == null)
             throw new Exception("Null residence!");
+
+        UUID uuid = null;
+        if (root.containsKey("UUID")) {
+            try {
+                uuid = UUID.fromString((String) root.get("UUID"));
+            } catch (Throwable e) {
+            }
+        }
+
+        ClaimedResidence res = new ClaimedResidence(uuid);
 
         if (root.containsKey("CapitalizedName"))
             res.resName = ((String) root.get("CapitalizedName"));
@@ -2124,9 +2157,7 @@ public class ClaimedResidence {
 //    }
 
     public ResidenceRaid getRaid() {
-        if (raid == null)
-            raid = new ResidenceRaid(this);
-        return raid;
+        return ResidenceRaidManager.getResidenceRaid(this);
     }
 
     @Override
@@ -2137,11 +2168,11 @@ public class ClaimedResidence {
     }
 
     public Set<Signs> getSignsInResidence() {
-        return signsInResidence;
+        return SignUtil.getSignsForResidence(this);
     }
 
     public void setSignsInResidence(Set<Signs> signsInResidence) {
-        this.signsInResidence = signsInResidence;
+        SignUtil.setSignsForResidence(this, signsInResidence);
     }
 
     public double getWorthByOwner() {
@@ -2243,5 +2274,9 @@ public class ClaimedResidence {
 
     public static ClaimedResidence getByLoc(Location loc) {
         return Residence.getInstance().getResidenceManager().getByLoc(loc);
+    }
+
+    public UUID getUniqueId() {
+        return uuid;
     }
 }

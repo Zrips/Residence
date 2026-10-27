@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -315,7 +316,7 @@ public class PlayerManager implements ResidencePlayerInterface {
     }
 
     @Deprecated
-    public TreeMap<String, ClaimedResidence> getResidencesMap(String player, boolean showhidden, boolean onlyHidden, World world) {
+    public TreeMap<String, ClaimedResidence> getResidencesMap(String player, boolean showhidden, boolean onlyHidden, @Nullable World world) {
 
         ResidencePlayer resPlayer = this.getResidencePlayer(player);
         if (resPlayer == null)
@@ -324,14 +325,14 @@ public class PlayerManager implements ResidencePlayerInterface {
         return getResidencesMap(resPlayer, showhidden, onlyHidden, world);
     }
 
-    public TreeMap<String, ClaimedResidence> getResidencesMap(UUID uuid, boolean showhidden, boolean onlyHidden, World world) {
+    public TreeMap<String, ClaimedResidence> getResidencesMap(@NotNull UUID uuid, boolean showhidden, boolean onlyHidden, @Nullable World world) {
         ResidencePlayer resPlayer = this.getResidencePlayer(uuid);
         if (resPlayer == null)
             return new TreeMap<String, ClaimedResidence>();
         return getResidencesMap(resPlayer, showhidden, onlyHidden, world);
     }
 
-    public TreeMap<String, ClaimedResidence> getResidencesMap(ResidencePlayer resPlayer, boolean showhidden, boolean onlyHidden, World world) {
+    public TreeMap<String, ClaimedResidence> getResidencesMap(@NotNull ResidencePlayer resPlayer, boolean showhidden, boolean onlyHidden, @Nullable World world) {
         TreeMap<String, ClaimedResidence> temp = new TreeMap<String, ClaimedResidence>();
 
         if (resPlayer == null)

@@ -59,13 +59,14 @@ import com.bekvon.bukkit.residence.utils.Utils;
 import net.Zrips.CMILib.Colors.CMIChatColor;
 import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.PageInfo;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.RawMessages.RawMessage;
 import net.Zrips.CMILib.Version.Version;
 import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class ResidenceManager implements ResidenceInterface {
+
     protected ConcurrentHashMap<String, ClaimedResidence> residences;
+    protected ConcurrentHashMap<UUID, ClaimedResidence> residencesByUUID;
 
     protected Map<String, Map<ChunkRef, List<ClaimedResidence>>> chunkResidences;
 
@@ -74,6 +75,7 @@ public class ResidenceManager implements ResidenceInterface {
 
     public ResidenceManager(Residence plugin) {
         residences = new ConcurrentHashMap<String, ClaimedResidence>();
+        residencesByUUID = new ConcurrentHashMap<UUID, ClaimedResidence>();
         chunkResidences = new HashMap<String, Map<ChunkRef, List<ClaimedResidence>>>();
         shops = new ArrayList<ClaimedResidence>();
         this.plugin = plugin;
@@ -332,6 +334,7 @@ public class ResidenceManager implements ResidenceInterface {
             return false;
 
         residences.put(resName.toLowerCase(), newRes);
+        residencesByUUID.put(newRes.getUniqueId(), newRes);
 
         calculateChunks(newRes);
         plugin.getLeaseManager().removeExpireTime(newRes);
@@ -416,6 +419,7 @@ public class ResidenceManager implements ResidenceInterface {
             showhidden = true;
 
         boolean hidden = showhidden;
+
         TreeMap<String, ClaimedResidence> ownedResidences = plugin.getPlayerManager().getResidencesMap(targetUuid, hidden, onlyHidden, world);
         ownedResidences.putAll(plugin.getRentManager().getRentsMap(targetUuid, onlyHidden, world));
         ownedResidences.putAll(plugin.getPlayerManager().getTrustedResidencesMap(targetUuid, hidden, onlyHidden, world));
@@ -525,13 +529,11 @@ public class ResidenceManager implements ResidenceInterface {
     }
 
     @Deprecated
-    private ArrayList<String> getResidenceList(String targetplayer, boolean showhidden, boolean showsubzones, String parentzone, String resname, ClaimedResidence res, boolean formattedOutput,
-            boolean onlyHidden) {
+    private ArrayList<String> getResidenceList(String targetplayer, boolean showhidden, boolean showsubzones, String parentzone, String resname, ClaimedResidence res, boolean formattedOutput, boolean onlyHidden) {
         return getResidenceList(ResidencePlayer.getUUID(targetplayer), showhidden, showsubzones, parentzone, resname, res, formattedOutput, onlyHidden);
     }
 
-    private ArrayList<String> getResidenceList(UUID target, boolean showhidden, boolean showsubzones, String parentzone, String resname, ClaimedResidence res, boolean formattedOutput,
-            boolean onlyHidden) {
+    private ArrayList<String> getResidenceList(UUID target, boolean showhidden, boolean showsubzones, String parentzone, String resname, ClaimedResidence res, boolean formattedOutput, boolean onlyHidden) {
 
         ArrayList<String> list = new ArrayList<>();
 
@@ -696,6 +698,7 @@ public class ResidenceManager implements ResidenceInterface {
         if (parent == null) {
 
             residences.remove(name.toLowerCase());
+            residencesByUUID.remove(res.getUniqueId());
 
             regenerateArea(res);
 
@@ -791,7 +794,8 @@ public class ResidenceManager implements ResidenceInterface {
 
         Set<Location> locations = ConcurrentHashMap.newKeySet();
 
-        // Base coordinates of chunk, needed to get local coordinates of block inside chunk
+        // Base coordinates of chunk, needed to get local coordinates of block inside
+        // chunk
         final int baseX = chunkRef.getX() * 16;
         final int baseZ = chunkRef.getZ() * 16;
 
@@ -803,8 +807,10 @@ public class ResidenceManager implements ResidenceInterface {
                 if (x < low.getBlockX() || x > high.getBlockX() || z < low.getBlockZ() || z > high.getBlockZ())
                     continue;
 
-                // Cant use x % 16 here as for negative coordinates it returns negative value and abs() of it
-                // points to a mirrored column of chunk snapshot, so we would read data of a different block
+                // Cant use x % 16 here as for negative coordinates it returns negative value
+                // and abs() of it
+                // points to a mirrored column of chunk snapshot, so we would read data of a
+                // different block
                 int cx = x - baseX;
                 int cz = z - baseZ;
 
@@ -834,12 +840,15 @@ public class ResidenceManager implements ResidenceInterface {
 
             Block block = one.getBlock();
 
-            // Validate current block type before removing it, as world state could have changed since
-            // snapshot was taken and we should never remove blocks which are not on our cleaning list
+            // Validate current block type before removing it, as world state could have
+            // changed since
+            // snapshot was taken and we should never remove blocks which are not on our
+            // cleaning list
             if (!plugin.getConfigManager().getCleanBlocks().contains(block.getType()))
                 continue;
 
-            // Skipping block updates to avoid chain reactions which could remove blocks outside of our cleaning list
+            // Skipping block updates to avoid chain reactions which could remove blocks
+            // outside of our cleaning list
             block.setType(Material.AIR, false);
         }
     }
@@ -1090,22 +1099,28 @@ public class ResidenceManager implements ResidenceInterface {
     public Map<String, Object> save() {
         clearSaveChache();
         Map<String, Object> worldmap = new LinkedHashMap<>();
+
         for (String worldName : getWorldNames()) {
-            Map<String, Object> resmap = new LinkedHashMap<>();
-            for (Entry<String, ClaimedResidence> res : (new TreeMap<String, ClaimedResidence>(residences)).entrySet()) {
-                if (!res.getValue().getWorldName().equals(worldName))
-                    continue;
-
-                try {
-                    resmap.put(res.getValue().getResidenceName(), res.getValue().save());
-                } catch (Throwable ex) {
-                    lm.consoleMessage("Failed to save residence (" + res.getKey() + ")!");
-                    Logger.getLogger(ResidenceManager.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-            worldmap.put(worldName, resmap);
+            worldmap.put(worldName, new LinkedHashMap<String, Object>());
         }
+
+        for (Entry<String, ClaimedResidence> res : (new TreeMap<String, ClaimedResidence>(residences)).entrySet()) {
+
+            Object t = worldmap.get(res.getValue().getWorldName());
+
+            if (t == null)
+                continue;
+
+            Map<String, Object> resmap = (Map<String, Object>) t;
+
+            try {
+                resmap.put(res.getValue().getResidenceName(), res.getValue().save());
+            } catch (Throwable ex) {
+                lm.consoleMessage("Failed to save residence (" + res.getKey() + ")!");
+                Logger.getLogger(ResidenceManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
         return worldmap;
     }
 
@@ -1265,6 +1280,7 @@ public class ResidenceManager implements ResidenceInterface {
         if (root == null)
             return;
         residences.clear();
+        residencesByUUID.clear();
 
         int numCores = Runtime.getRuntime().availableProcessors();
 
@@ -1403,6 +1419,7 @@ public class ResidenceManager implements ResidenceInterface {
                     plugin.getPlayerManager().addResidence(residence.getOwnerUUID(), residence);
 
                     residences.put(resName, residence);
+                    residencesByUUID.put(residence.getUniqueId(), residence);
                 } catch (Exception ex) {
                     lm.consoleMessage(CMIChatColor.RED + "Failed to load residence (" + currentEntry.getKey() + ")! Reason:" + ex.getMessage() + " Error Log:");
                     Logger.getLogger(ResidenceManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -1465,6 +1482,7 @@ public class ResidenceManager implements ResidenceInterface {
                 plugin.getPlayerManager().addResidence(residence.getOwnerUUID(), residence);
 
                 residences.put(resName.toLowerCase(), residence);
+                residencesByUUID.put(residence.getUniqueId(), residence);
 
             } catch (Exception ex) {
                 lm.consoleMessage(CMIChatColor.RED + "Failed to load residence (" + res.getKey() + ")! Reason:" + ex.getMessage() + " Error Log:");
@@ -1653,6 +1671,7 @@ public class ResidenceManager implements ResidenceInterface {
             cleanResidenceRecords(next, false);
 
             it.remove();
+            residencesByUUID.remove(next.getUniqueId());
             count++;
         }
         chunkResidences.remove(world);

@@ -14,6 +14,8 @@ import com.bekvon.bukkit.residence.protection.ResidenceManager.ChunkRef;
 import com.bekvon.bukkit.residence.selection.SelectionManager;
 
 import net.Zrips.CMILib.Container.CMINumber;
+import net.Zrips.CMILib.Container.CMIVectorInt3D;
+import net.Zrips.CMILib.Cuboids.CMIBlockWorldArea;
 
 public class CuboidArea {
     private Vector highPoints;
@@ -113,6 +115,31 @@ public class CuboidArea {
         return true;
     }
 
+    public boolean containsPoint(CMIVectorInt3D point) {
+        if (point == null)
+            return false;
+
+        if (lowPoints.getBlockX() > point.getX())
+            return false;
+
+        if (highPoints.getBlockX() < point.getX())
+            return false;
+
+        if (lowPoints.getBlockZ() > point.getZ())
+            return false;
+
+        if (highPoints.getBlockZ() < point.getZ())
+            return false;
+
+        if (lowPoints.getBlockY() > point.getY())
+            return false;
+
+        if (highPoints.getBlockY() < point.getY())
+            return false;
+
+        return true;
+    }
+
     public boolean checkCollision(CuboidArea area) {
         if (!area.getWorld().equals(this.getWorld())) {
             return false;
@@ -122,6 +149,16 @@ public class CuboidArea {
             return true;
         }
         return advCuboidCheckCollision(highPoints, lowPoints, area.highPoints, area.lowPoints);
+    }
+
+    public boolean checkCollision(CMIBlockWorldArea area) {
+        if (!area.getWorld().getWorld().equals(this.getWorld()))
+            return false;
+
+        if (area.containsLoc(lowPoints) || area.containsLoc(highPoints) || this.containsPoint(area.getHighPoint()) || this.containsPoint(area.getLowPoint())) {
+            return true;
+        }
+        return advCuboidCheckCollision(area);
     }
 
     private static boolean advCuboidCheckCollision(Vector A1High, Vector A1Low, Vector A2High, Vector A2Low) {
@@ -139,6 +176,33 @@ public class CuboidArea {
                 int A1LZ = A1Low.getBlockZ();
                 int A2HZ = A2High.getBlockZ();
                 int A2LZ = A2Low.getBlockZ();
+                if ((A1HZ >= A2LZ && A1HZ <= A2HZ) || (A1LZ >= A2LZ && A1LZ <= A2HZ) || (A2HZ >= A1LZ && A2HZ <= A1HZ) || (A2LZ >= A1LZ && A2LZ <= A1HZ)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean advCuboidCheckCollision(CMIBlockWorldArea area) {
+        CMIVectorInt3D A2High = area.getHighPoint();
+        CMIVectorInt3D A2Low = area.getLowPoint();
+
+        int A1HX = highPoints.getBlockX();
+        int A1LX = lowPoints.getBlockX();
+        int A2HX = A2High.getX();
+        int A2LX = A2Low.getX();
+        if ((A1HX >= A2LX && A1HX <= A2HX) || (A1LX >= A2LX && A1LX <= A2HX) || (A2HX >= A1LX && A2HX <= A1HX) || (A2LX >= A1LX && A2LX <= A1HX)) {
+            int A1HY = highPoints.getBlockY();
+            int A1LY = lowPoints.getBlockY();
+            int A2HY = A2High.getY();
+            int A2LY = A2Low.getY();
+            if ((A1HY >= A2LY && A1HY <= A2HY) || (A1LY >= A2LY && A1LY <= A2HY) || (A2HY >= A1LY && A2HY <= A1HY) || (A2LY >= A1LY && A2LY <= A1HY)) {
+                int A1HZ = highPoints.getBlockZ();
+                int A1LZ = lowPoints.getBlockZ();
+                int A2HZ = A2High.getZ();
+                int A2LZ = A2Low.getZ();
                 if ((A1HZ >= A2LZ && A1HZ <= A2HZ) || (A1LZ >= A2LZ && A1LZ <= A2HZ) || (A2HZ >= A1LZ && A2HZ <= A1HZ) || (A2LZ >= A1LZ && A2LZ <= A1HZ)) {
                     return true;
                 }

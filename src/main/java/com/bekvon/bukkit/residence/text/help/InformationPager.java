@@ -104,6 +104,7 @@ public class InformationPager {
         int y = -1;
 
         for (Entry<String, ClaimedResidence> resT : ownedResidences.entrySet()) {
+
             y++;
             if (y > pi.getEnd())
                 break;

@@ -26,8 +26,8 @@ import net.Zrips.CMILib.Version.Schedulers.CMITask;
 public class ResidenceRaid {
 
     private ClaimedResidence res;
-    private Long startsAt = 0L;
-    private Long endsAt = 0L;
+    private long startsAt = 0L;
+    private long endsAt = 0L;
     private Long immunityUntil = null;
 //    private Long lastSiegeEnded = 0L;
     private HashMap<UUID, RaidAttacker> attackers = new HashMap<UUID, RaidAttacker>();

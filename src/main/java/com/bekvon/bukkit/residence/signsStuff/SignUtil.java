@@ -5,10 +5,13 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -20,6 +23,8 @@ import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.bekvon.bukkit.residence.CommentedYamlConfiguration;
 import com.bekvon.bukkit.residence.Residence;
@@ -35,6 +40,26 @@ public class SignUtil {
 
     private Residence plugin;
     public SignInfo Signs = new SignInfo();
+
+    private static ConcurrentHashMap<UUID, Set<Signs>> signUtils = new ConcurrentHashMap<UUID, Set<Signs>>();
+
+    public static @NotNull Set<Signs> getSignsForResidence(ClaimedResidence res) {
+        if (res == null)
+            return Collections.emptySet();
+        return signUtils.computeIfAbsent(res.getUniqueId(), k -> new HashSet<Signs>());
+    }
+
+    public static @Nullable Set<Signs> getSignsForResidenceOrNull(ClaimedResidence res) {
+        if (res == null)
+            return null;
+        return signUtils.get(res.getUniqueId());
+    }
+
+    public static void setSignsForResidence(ClaimedResidence res, Set<Signs> signs) {
+        if (res == null)
+            return;
+        signUtils.put(res.getUniqueId(), signs);
+    }
 
     public SignUtil(Residence plugin) {
         this.plugin = plugin;

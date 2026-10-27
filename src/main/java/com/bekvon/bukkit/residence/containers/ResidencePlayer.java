@@ -14,14 +14,12 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.listeners.ResidenceBlockListener;
-import com.bekvon.bukkit.residence.listeners.ResidenceEntityListener;
 import com.bekvon.bukkit.residence.permissions.PermissionGroup;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -573,10 +571,10 @@ public class ResidencePlayer {
             data = new ResidencePlayerData();
         return data;
     }
-    
+
     public void updateResidenceLocation() {
-		if (this.getPlayer() != null)
-	        Residence.getInstance().getPlayerListener().handleNewLocation(this.getPlayer(), this.getPlayer().getLocation(), true);
-	}
-    
+        if (this.getPlayer() != null)
+            Residence.getInstance().getPlayerListener().handleNewLocation(this.getPlayer(), this.getPlayer().getLocation(), true);
+    }
+
 }
