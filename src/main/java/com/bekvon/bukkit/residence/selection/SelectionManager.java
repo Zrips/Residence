@@ -816,7 +816,7 @@ public class SelectionManager {
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
         if (plugin.getConfigManager().enableEconomy())
-            message += " " + lm.General_LandCost.getMessage(plugin.getEconomyManager().format(group.getCost(cuboidArea.getSize())));
+            message += " " + lm.General_LandCost.getMessage(plugin.getEconomyManager().format(this.getSelectionCuboid(player).getCost(group)));
         CMIActionBar.send(player, message);
     }
 
@@ -830,7 +830,7 @@ public class SelectionManager {
             PermissionGroup group = rPlayer.getGroup();
 
             if (plugin.getConfigManager().enableEconomy())
-                lm.General_LandCost.sendMessage(player, plugin.getEconomyManager().format(group.getCost(cuboidArea.getSize())));
+                lm.General_LandCost.sendMessage(player, plugin.getEconomyManager().format(this.getSelectionCuboid(player).getCost(group)));
             lm.showMessage(player, CMIChatColor.YELLOW + "X" + lm.General_Size.getMessage(cuboidArea.getXSize()));
             lm.showMessage(player, CMIChatColor.YELLOW + "Y" + lm.General_Size.getMessage(cuboidArea.getYSize()));
             lm.showMessage(player, CMIChatColor.YELLOW + "Z" + lm.General_Size.getMessage(cuboidArea.getZSize()));
