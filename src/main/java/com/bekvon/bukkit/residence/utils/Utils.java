@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import com.bekvon.bukkit.residence.listeners.ResidenceListener1_14;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -42,6 +40,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.BlockProjectileSource;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.BlockIterator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,6 +49,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
+import com.bekvon.bukkit.residence.listeners.ResidenceListener1_14;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 
@@ -122,43 +122,34 @@ public class Utils {
         return name.length() <= Residence.getInstance().getConfigManager().getResidenceNameLength();
     }
 
-    public static Player potentialProjectileToPlayer(Entity entity) {
-        entity = potentialProjectileToEntity(entity);
-        if (entity instanceof Player)
+    public static @Nullable Player getPlayerSource(Entity entity) {
+        if (entity instanceof Player) {
             return (Player) entity;
-        return null;
-    }
-
-    public static boolean isSourceBlockInsideSameResidence(@NotNull Entity potentialProjecticle, @Nullable ClaimedResidence targetResidence) {
-        // Check potential block as a shooter which should be allowed if its inside same
-        // residence
-        if (!(potentialProjecticle instanceof Projectile))
-            return false;
-
-        @NotNull
-        Projectile projectile = (Projectile) potentialProjecticle;
-        if (!(projectile.getShooter() instanceof BlockProjectileSource))
-            return false;
-
-        BlockProjectileSource bps = (BlockProjectileSource) projectile.getShooter();
-        ClaimedResidence bres = ClaimedResidence.getByLoc(bps.getBlock().getLocation());
-        ClaimedResidence res = targetResidence == null ? ClaimedResidence.getByLoc(potentialProjecticle.getLocation()) : targetResidence;
-        return Objects.equals(res, bres);
-    }
-
-    public static Entity potentialProjectileToEntity(Entity entity) {
+        }
         if (entity instanceof Projectile) {
-            Projectile projectile = (Projectile) entity;
-            Object shooter = projectile.getShooter();
+            ProjectileSource shooter = ((Projectile) entity).getShooter();
             if (shooter instanceof Player) {
                 return (Player) shooter;
             }
-            if (shooter instanceof Entity) {
-                return potentialProjectileToEntity((Entity) shooter);
-            }
         }
+        return null;
+    }
 
-        return entity;
+    // Check if the projectile-hit Residence and the dispenser's Residence share an owner
+    public static boolean isSameResidenceOwner(@NotNull Projectile projectileToTrace, @Nullable ClaimedResidence targetRes) {
+        if (targetRes == null) {
+            return false;
+        }
+        ProjectileSource shooter = projectileToTrace.getShooter();
+
+        if (!(shooter instanceof BlockProjectileSource)) {
+            return false;
+        }
+        Location dispenserLoc = ((BlockProjectileSource) shooter).getBlock().getLocation();
+
+        ClaimedResidence dispenserRes = ClaimedResidence.getByLoc(dispenserLoc);
+
+        return dispenserRes != null && (dispenserRes == targetRes || dispenserRes.isOwner(targetRes.getOwner()));
     }
 
     public static Block getTargetBlock(Player player, int distance, boolean ignoreNoneSolids) {
@@ -446,11 +437,11 @@ public class Utils {
             return false;
         }
         switch (cType) {
-            case SKELETON_HORSE:
-            case ZOMBIE_HORSE:
-                return true;
-            default:
-                return false;
+        case SKELETON_HORSE:
+        case ZOMBIE_HORSE:
+            return true;
+        default:
+            return false;
         }
     }
 }

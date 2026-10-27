@@ -41,8 +41,7 @@ public class ResidenceListener1_21_8_Paper implements Listener {
     }
 
     public static boolean shouldCancelKnockBack(Entity victim, Entity pushedBy) {
-
-        Player attackerPlayer = Utils.potentialProjectileToPlayer(pushedBy);
+        Player attackerPlayer = Utils.getPlayerSource(pushedBy);
 
         if (victim instanceof ArmorStand) {
             return shouldDeny(victim, attackerPlayer, Flags.destroy, null);

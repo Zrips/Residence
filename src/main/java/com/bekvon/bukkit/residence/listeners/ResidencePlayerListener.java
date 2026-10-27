@@ -1028,6 +1028,10 @@ public class ResidencePlayerListener implements Listener {
         switch (block) {
         case CAULDRON:
             return !player.isSneaking() && isLegacyCauldronInteraction(held);
+        case END_PORTAL_FRAME:
+            // Fix upstream dupe
+            // bug(https://github.com/PaperMC/Paper/issues/13586)
+            return held == CMIMaterial.ENDER_EYE;
         case PUMPKIN:
             return held == CMIMaterial.SHEARS;
         case REDSTONE_WIRE:
@@ -1070,7 +1074,7 @@ public class ResidencePlayerListener implements Listener {
     // still exist
     private void handlePlayerInteractBuild(PlayerInteractEvent event, Player player, Block block) {
 
-        if (!Flags.build.isGlobalyEnabled()) {
+        if (!Flags.place.isGlobalyEnabled()) {
             return;
         }
         if (event.useInteractedBlock() == Result.DENY) {
@@ -2484,10 +2488,25 @@ public class ResidencePlayerListener implements Listener {
 
     public static void processEntities(Set<Entity> entities, ClaimedResidence res) {
         for (Entity ent : entities) {
-            if (!Utils.isMonster(ent))
+            if (!Utils.isMonster(ent)) {
                 continue;
-            if (!res.containsLoc(ent.getLocation()))
+            }
+            if (Residence.getInstance().getConfigManager().getAutoMobRemovalIgnoreNamedMobs()) {
+                String entName = ent.getCustomName();
+                if (entName != null && !entName.isEmpty()) {
+                    continue;
+                }
+            }
+            Location loc = ent.getLocation();
+            if (!res.containsLoc(loc)) {
                 continue;
+            }
+            ClaimedResidence subRes = res.getSubzoneByLoc(loc);
+            // Skip only if the subzone explicitly sets noMobs: false;
+            // otherwise, follow the parent residence's setting
+            if (subRes != null && subRes.getPermissions().has(Flags.nomobs, FlagCombo.OnlyFalse)) {
+                continue;
+            }
             ent.remove();
         }
     }

@@ -95,7 +95,7 @@ public class ResidenceListener1_13 implements Listener {
         if (flag == null || !flag.isGlobalyEnabled()) {
             return;
         }
-        Player player = Utils.potentialProjectileToPlayer(event.getEntity());
+        Player player = Utils.getPlayerSource(event.getEntity());
         if (player == null)
             return;
 

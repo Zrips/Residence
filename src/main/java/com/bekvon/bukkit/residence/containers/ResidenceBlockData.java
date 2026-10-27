@@ -3,7 +3,6 @@ package com.bekvon.bukkit.residence.containers;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
@@ -11,7 +10,6 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.Dispenser;
 import org.bukkit.block.data.type.Farmland;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import net.Zrips.CMILib.Items.CMIMaterial;
 
@@ -56,10 +54,8 @@ public class ResidenceBlockData {
         block.setBlockData(directional);
     }
 
-    public static @Nullable Location getRelative(@NotNull Block block) {
-        if (block == null)
-            return null;
-        return block.getRelative(((Dispenser) block.getBlockData()).getFacing()).getLocation();
+    public static BlockFace getDispenserFace(@NotNull Block block) {
+        return ((Dispenser) block.getBlockData()).getFacing();
     }
 
     public static void updateFarmLand(@NotNull Block block) {

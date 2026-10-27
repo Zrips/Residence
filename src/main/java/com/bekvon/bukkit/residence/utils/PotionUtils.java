@@ -4,12 +4,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.bukkit.entity.DragonFireball;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Witch;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.projectiles.ProjectileSource;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -22,6 +19,7 @@ import net.Zrips.CMILib.ActionBar.CMIActionBar;
 import net.Zrips.CMILib.Version.Version;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class PotionUtils {
 
@@ -42,6 +40,7 @@ public class PotionUtils {
 
     private static final List<String> LEGACY_NEUTRAL_EFFECTS = Collections.singletonList("GLOWING");
 
+    @SuppressWarnings("deprecation")
     private static boolean containsIgnoreCase(@NotNull List<String> list, @NotNull PotionEffectType type) {
         String name = type.getName();
         for (String one : list) {
@@ -73,6 +72,7 @@ public class PotionUtils {
         return containsIgnoreCase(LEGACY_NEUTRAL_EFFECTS, type);
     }
 
+    @SuppressWarnings("deprecation")
     public static boolean isHealingEffect(@NotNull PotionEffectType type) {
         if (Version.isCurrentEqualOrHigher(Version.v1_20_5)) {
             return type == PotionEffectType.INSTANT_HEALTH;
@@ -80,6 +80,7 @@ public class PotionUtils {
         return type.getName().equalsIgnoreCase("HEAL");
     }
 
+    @SuppressWarnings("deprecation")
     public static boolean isDamageEffect(@NotNull PotionEffectType type) {
         if (Version.isCurrentEqualOrHigher(Version.v1_20_5)) {
             return type == PotionEffectType.INSTANT_DAMAGE;
@@ -87,11 +88,11 @@ public class PotionUtils {
         return type.getName().equalsIgnoreCase("HARM");
     }
 
-    public static boolean shouldDenyHealingEffect(@NotNull LivingEntity victim, ProjectileSource attacker, boolean isPlayerAttacker) {
+    public static boolean shouldDenyHealingEffect(@NotNull LivingEntity victim, @Nullable Player attackerPlayer) {
         // Healing effect damages undead mobs
-        if (isPlayerAttacker) {
+        if (attackerPlayer != null) {
             if (Utils.isUndead(victim)) {
-                return FlagPermissions.shouldDenyAndNotify((Player) attacker, victim, Flags.mobkilling, null);
+                return FlagPermissions.shouldDenyAndNotify(attackerPlayer, victim, Flags.mobkilling);
             }
         } else {
             if (Utils.isUndead(victim)) {
@@ -101,60 +102,53 @@ public class PotionUtils {
         return false;
     }
 
-    public static boolean shouldDenyDamageEffect(@NotNull LivingEntity victim, ProjectileSource attacker, ClaimedResidence attackerRes, boolean isPlayerAttacker) {
+    public static boolean shouldDenyDamageEffect(@NotNull LivingEntity victim, @Nullable Player attackerPlayer, @Nullable ClaimedResidence attackerRes) {
         // Damage effect heals undead instead of harming them
         if (Utils.isUndead(victim)) {
             return false;
         }
-        return shouldDenyHarmfulEffect(victim, attacker, attackerRes, isPlayerAttacker);
+        return shouldDenyHarmfulEffect(victim, attackerPlayer, attackerRes);
     }
 
-    public static boolean shouldDenyHarmfulEffect(@NotNull LivingEntity victim, ProjectileSource attacker, ClaimedResidence attackerRes, boolean isPlayerAttacker) {
-        if (isPlayerAttacker) {
-            Player player = (Player) attacker;
+    public static boolean shouldDenyHarmfulEffect(@NotNull LivingEntity victim, @Nullable Player attackerPlayer, @Nullable ClaimedResidence attackerRes) {
+        if (attackerPlayer != null) {
             if (Flags.pvp.isGlobalyEnabled() && victim instanceof Player) {
                 // Skip the PvP check when players apply negative effects to themselves
-                if (attacker == victim) {
+                if (attackerPlayer == victim) {
                     return false;
                 }
                 FlagPermissions attackerPerms = (attackerRes != null)
                         ? attackerRes.getPermissions()
-                        : Residence.getInstance().getWorldFlags().getPerms(player.getWorld());
+                        : Residence.getInstance().getWorldFlags().getPerms(attackerPlayer.getWorld());
                 // if PVP disabled at attacker location, deny the effect
                 if (attackerPerms.has(Flags.pvp, FlagCombo.OnlyFalse)) {
-                    lm.Flag_Deny.sendMessage(player, Flags.pvp);
+                    lm.Flag_Deny.sendMessage(attackerPlayer, Flags.pvp);
                     return true;
                 }
                 ClaimedResidence victimRes = ClaimedResidence.getByLoc(victim.getLocation());
-                FlagPermissions victimPerms = victimRes != null
+                FlagPermissions victimPerms = (victimRes != null)
                         ? victimRes.getPermissions()
                         : Residence.getInstance().getWorldFlags().getPerms(victim.getWorld());
                 // if PVP disabled at victim location, deny the effect
                 if (victimPerms.has(Flags.pvp, FlagCombo.OnlyFalse)) {
-                    lm.Flag_Deny.sendMessage(player, Flags.pvp);
+                    lm.Flag_Deny.sendMessage(attackerPlayer, Flags.pvp);
                     return true;
                 }
                 if (attackerRes != null && attackerRes == victimRes
-                        && attackerPerms.playerHas(player, Flags.friendlyfire, FlagCombo.OnlyFalse)
+                        && attackerPerms.playerHas(attackerPlayer, Flags.friendlyfire, FlagCombo.OnlyFalse)
                         && attackerPerms.playerHas((Player) victim, Flags.friendlyfire, FlagCombo.OnlyFalse)) {
-                    CMIActionBar.send(player, Residence.getInstance().getLM().getMessage(lm.General_NoFriendlyFire));
+                    CMIActionBar.send(attackerPlayer, Residence.getInstance().getLM().getMessage(lm.General_NoFriendlyFire));
                     return true;
                 }
             } else if (Flags.animalkilling.isGlobalyEnabled() && Utils.isAnimal(victim)) {
-                return FlagPermissions.shouldDenyAndNotify(player, victim, Flags.animalkilling, null);
+                return FlagPermissions.shouldDenyAndNotify(attackerPlayer, victim, Flags.animalkilling);
 
             } else if (Flags.mobkilling.isGlobalyEnabled() && Utils.isMonster(victim)) {
-                return FlagPermissions.shouldDenyAndNotify(player, victim, Flags.mobkilling, null);
+                return FlagPermissions.shouldDenyAndNotify(attackerPlayer, victim, Flags.mobkilling);
 
             }
         } else {
-            if (Flags.pvp.isGlobalyEnabled() && victim instanceof Player) {
-                if (attacker instanceof Witch || attacker instanceof DragonFireball) {
-                    return false;
-                }
-                return FlagPermissions.has(victim.getLocation(), Flags.pvp, FlagCombo.OnlyFalse);
-
-            } else if (Flags.animalkilling.isGlobalyEnabled() && Utils.isAnimal(victim)) {
+            if (Flags.animalkilling.isGlobalyEnabled() && Utils.isAnimal(victim)) {
                 return FlagPermissions.has(victim.getLocation(), Flags.animalkilling, FlagCombo.OnlyFalse);
 
             } else if (Flags.mobkilling.isGlobalyEnabled() && Utils.isMonster(victim)) {

@@ -30,6 +30,7 @@ import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
+import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
@@ -66,9 +67,7 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagCombo;
 import com.bekvon.bukkit.residence.utils.Utils;
 
 import net.Zrips.CMILib.ActionBar.CMIActionBar;
-import net.Zrips.CMILib.Container.CMIBlock;
 import net.Zrips.CMILib.Container.CMIVectorInt3D;
-import net.Zrips.CMILib.Container.CMIWorld;
 import net.Zrips.CMILib.Items.CMIMC;
 import net.Zrips.CMILib.Items.CMIMaterial;
 import net.Zrips.CMILib.Version.Version;
@@ -338,10 +337,10 @@ public class ResidenceBlockListener implements Listener {
         }
         Entity entity = event.getEntity();
 
-        if (Flags.build.isGlobalyEnabled() && entity instanceof Player) {
+        if (Flags.place.isGlobalyEnabled() && entity instanceof Player) {
             Player player = (Player) entity;
             // Prevent Frosted Ice generation from Frost Walker without notifying players
-            if (FlagPermissions.shouldDenyAndNotify(player, block, Flags.build, null, false)) {
+            if (FlagPermissions.shouldDenyAndNotify(player, block, Flags.place, Flags.build, false)) {
                 event.setCancelled(true);
             }
 
@@ -616,8 +615,34 @@ public class ResidenceBlockListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onBlockPlace(BlockPlaceEvent event) {
+    public void onBlockMultiPlace(BlockMultiPlaceEvent event) {
+        if (!Flags.place.isGlobalyEnabled()) {
+            return;
+        }
+        CMIMaterial mat = CMIMaterial.get(event.getBlockPlaced().getType());
+        // Avoid upstream dupe bug(https://github.com/PaperMC/Paper/issues/13586)
+        if (mat == CMIMaterial.BEDROCK || mat == CMIMaterial.END_PORTAL_FRAME) {
+            return;
+        }
+        // Multi-block placements: for safety, explicitly specify which types enter the check
+        if (!mat.containsCriteria(CMIMC.BED) && !mat.containsCriteria(CMIMC.DOOR) && !mat.containsCriteria(CMIMC.DOUBLEPLANT)) {
+            return;
+        }
+        Player player = event.getPlayer();
+        for (BlockState one : event.getReplacedBlockStates()) {
+            if (!canPlaceBlock(player, one.getBlock(), true)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
 
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        // BlockMultiPlaceEvent uses separate check logic
+        if (event instanceof BlockMultiPlaceEvent) {
+            return;
+        }
         if (!Flags.place.isGlobalyEnabled()) {
             return;
         }
@@ -644,7 +669,6 @@ public class ResidenceBlockListener implements Listener {
             return true;
         }
         ClaimedResidence res = ClaimedResidence.getByLoc(block.getLocation());
-        CMIMaterial type = null;
         Material mat = block.getType();
         FlagPermissions perms;
 
@@ -657,9 +681,8 @@ public class ResidenceBlockListener implements Listener {
                 }
                 return false;
             }
-            type = CMIMaterial.get(mat);
             // Residence item blacklist
-            if (!type.isNone() && !res.getItemBlacklist().isAllowed(mat)) {
+            if (!CMIMaterial.get(mat).isNone() && !res.getItemBlacklist().isAllowed(mat)) {
                 if (informPlayer) {
                     lm.General_ItemBlacklisted.sendMessage(player);
                 }
@@ -680,12 +703,6 @@ public class ResidenceBlockListener implements Listener {
             }
         }
         if (canPlace) {
-            if (type == null) {
-                type = CMIMaterial.get(mat);
-            }
-            if (type.containsCriteria(CMIMC.BED) && !ResPerm.bypass_build.hasPermission(player, 10000L)) {
-                return canPlaceBedOtherHalf(block, player);
-            }
             return true;
         }
         if (Residence.getInstance().getItemManager().isIgnored(player, mat, block.getWorld())) {
@@ -700,26 +717,20 @@ public class ResidenceBlockListener implements Listener {
         return false;
     }
 
-    private static boolean canPlaceBedOtherHalf(Block block, Player player) {
-        Block bed = new CMIBlock(block).getSecondaryBedBlock();
-        if (bed == null) {
-            return true;
-        }
-        FlagPermissions perms = FlagPermissions.getPerms(bed.getLocation(), player);
-        return perms.playerHas(player, Flags.place, perms.playerHas(player, Flags.build, true));
-    }
-
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockPistonRetract(BlockPistonRetractEvent event) {
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock()))
-            return;
 
-        // Disabling listener if flag disabled globally
-        if (!Flags.piston.isGlobalyEnabled())
-            return;
+        Block piston = event.getBlock();
 
-        FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
+        if (FlagPermissions.shouldIgnoreCheck(Flags.piston, piston)) {
+            return;
+        }
+        ClaimedResidence pistonRes = ClaimedResidence.getByLoc(piston.getLocation());
+
+        FlagPermissions perms = (pistonRes != null)
+                ? pistonRes.getPermissions()
+                : Residence.getInstance().getWorldFlags().getPerms(piston.getWorld());
+
         if (!perms.has(Flags.piston, true)) {
             event.setCancelled(true);
             return;
@@ -729,40 +740,40 @@ public class ResidenceBlockListener implements Listener {
         if (!Flags.pistonprotection.isGlobalyEnabled())
             return;
 
-        List<Block> blocks = Utils.getPistonRetractBlocks(event);
-
         if (!event.isSticky())
             return;
 
-        ClaimedResidence pistonRes = plugin.getResidenceManager().getByLoc(event.getBlock().getLocation());
+        List<Block> blocks = Utils.getPistonRetractBlocks(event);
 
         for (Block block : blocks) {
-            Location locFrom = block.getLocation();
-            ClaimedResidence blockFrom = plugin.getResidenceManager().getByLoc(locFrom);
-            if (blockFrom == null)
+            ClaimedResidence blockRes = ClaimedResidence.getByLoc(block.getLocation());
+            if (blockRes == null) {
                 continue;
-            if (blockFrom == pistonRes)
+            }
+            if (pistonRes != null && (pistonRes == blockRes || pistonRes.isOwner(blockRes.getOwner()))) {
                 continue;
-            if (pistonRes != null && blockFrom.isOwner(pistonRes.getOwner()))
-                continue;
-            if (!blockFrom.getPermissions().has(Flags.pistonprotection, FlagCombo.OnlyTrue))
-                continue;
-            event.setCancelled(true);
-            break;
+            }
+            if (blockRes.getPermissions().has(Flags.pistonprotection, FlagCombo.OnlyTrue)) {
+                event.setCancelled(true);
+                return;
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockPistonExtend(BlockPistonExtendEvent event) {
 
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock()))
-            return;
+        Block piston = event.getBlock();
 
-        // Disabling listener if flag disabled globally
-        if (!Flags.piston.isGlobalyEnabled())
+        if (FlagPermissions.shouldIgnoreCheck(Flags.piston, piston)) {
             return;
-        FlagPermissions perms = FlagPermissions.getPerms(event.getBlock().getLocation());
+        }
+        ClaimedResidence pistonRes = ClaimedResidence.getByLoc(piston.getLocation());
+
+        FlagPermissions perms = (pistonRes != null)
+                ? pistonRes.getPermissions()
+                : Residence.getInstance().getWorldFlags().getPerms(piston.getWorld());
+
         if (!perms.has(Flags.piston, true)) {
             event.setCancelled(true);
             return;
@@ -772,46 +783,58 @@ public class ResidenceBlockListener implements Listener {
         if (!Flags.pistonprotection.isGlobalyEnabled())
             return;
 
-        Location origins = event.getBlock().getLocation();
-
-        int lowestY = CMIWorld.getMaxHeight(origins.getWorld());
-        int bigestY = CMIWorld.getMinHeight(origins.getWorld());
-        int lowestX = Integer.MAX_VALUE;
-        int lowestZ = Integer.MAX_VALUE;
-        int bigestX = -Integer.MAX_VALUE;
-        int bigestZ = -Integer.MAX_VALUE;
-
-        BlockFace dir = event.getDirection();
-
-        for (Block block : event.getBlocks()) {
-            Location one = block.getLocation().clone().add(dir.getModX(), dir.getModY(), dir.getModZ());
-            if (one.getBlockY() < lowestY)
-                lowestY = one.getBlockY();
-            if (one.getBlockX() < lowestX)
-                lowestX = one.getBlockX();
-            if (one.getBlockZ() < lowestZ)
-                lowestZ = one.getBlockZ();
-            if (one.getBlockY() > bigestY)
-                bigestY = one.getBlockY();
-            if (one.getBlockX() > bigestX)
-                bigestX = one.getBlockX();
-            if (one.getBlockZ() > bigestZ)
-                bigestZ = one.getBlockZ();
-        }
-
-        ClaimedResidence pistonRes = plugin.getResidenceManager().getByLoc(event.getBlock().getLocation());
-
-        if (pistonRes != null && pistonRes.containsLoc(new Location(origins.getWorld(), lowestX, lowestY, lowestZ))
-                && pistonRes.containsLoc(new Location(origins.getWorld(), bigestX, bigestY, bigestZ))) {
+        List<Block> blocks = event.getBlocks();
+        if (blocks.isEmpty()) {
             return;
         }
 
-        for (int i = event.getBlocks().size() - 1; i >= 0; i--) {
-            Block block = event.getBlocks().get(i);
-            Location locTo = block.getLocation().clone().add(dir.getModX(), dir.getModY(), dir.getModZ());
-            ClaimedResidence blockTo = plugin.getResidenceManager().getByLoc(locTo);
-            boolean hasPerm = blockTo != null && blockTo.getPermissions().has(Flags.pistonprotection, FlagCombo.OnlyTrue);
-            if (pistonRes == null && hasPerm || blockTo != null && pistonRes != null && !blockTo.isOwner(pistonRes.getOwner()) && hasPerm) {
+        int minX = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        int minZ = Integer.MAX_VALUE;
+        int maxZ = Integer.MIN_VALUE;
+
+        BlockFace dir = event.getDirection();
+        int dirX = dir.getModX();
+        int dirY = dir.getModY();
+        int dirZ = dir.getModZ();
+
+        for (Block block : blocks) {
+            int targetX = block.getX() + dirX;
+            int targetY = block.getY() + dirY;
+            int targetZ = block.getZ() + dirZ;
+            minX = Math.min(minX, targetX);
+            maxX = Math.max(maxX, targetX);
+            minY = Math.min(minY, targetY);
+            maxY = Math.max(maxY, targetY);
+            minZ = Math.min(minZ, targetZ);
+            maxZ = Math.max(maxZ, targetZ);
+        }
+
+        World world = piston.getWorld();
+        // Both ends (min/max corners) are inside pistonRes, skip checks
+        if (pistonRes != null
+                && pistonRes.containsLoc(new Location(world, minX, minY, minZ))
+                && pistonRes.containsLoc(new Location(world, maxX, maxY, maxZ))) {
+            return;
+        }
+        // Farthest block first, matching the piston's push order
+        for (int i = blocks.size() - 1; i >= 0; i--) {
+            Block block = blocks.get(i);
+            Location targetLoc = new Location(world,
+                    block.getX() + dirX,
+                    block.getY() + dirY,
+                    block.getZ() + dirZ);
+
+            ClaimedResidence targetRes = ClaimedResidence.getByLoc(targetLoc);
+            if (targetRes == null) {
+                continue;
+            }
+            if (pistonRes != null && (pistonRes == targetRes || pistonRes.isOwner(targetRes.getOwner()))) {
+                continue;
+            }
+            if (targetRes.getPermissions().has(Flags.pistonprotection, FlagCombo.OnlyTrue)) {
                 event.setCancelled(true);
                 return;
             }
@@ -820,39 +843,64 @@ public class ResidenceBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockFromTo(BlockFromToEvent event) {
+
+        Block block = event.getBlock();
         // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock()))
+        if (plugin.isDisabledWorldListener(block)) {
             return;
+        }
+        Block toBlock = event.getToBlock();
 
-        ClaimedResidence fromRes = ClaimedResidence.getByLoc(event.getBlock().getLocation());
-        ClaimedResidence toRes = ClaimedResidence.getByLoc(event.getToBlock().getLocation());
+        ClaimedResidence targetRes = ClaimedResidence.getByLoc(toBlock.getLocation());
 
-        FlagPermissions perms = FlagPermissions.getPerms(event.getToBlock().getLocation());
-        boolean hasflow = perms.has(Flags.flow, FlagCombo.TrueOrNone);
-        Material mat = event.getBlock().getType();
+        FlagPermissions perms = (targetRes != null)
+                ? targetRes.getPermissions()
+                : Residence.getInstance().getWorldFlags().getPerms(toBlock.getWorld());
 
-        if (perms.has(Flags.flowinprotection, FlagCombo.TrueOrNone))
-            if (fromRes == null && toRes != null || fromRes != null && toRes != null && !fromRes.equals(toRes) && !fromRes.isOwner(toRes.getOwner())) {
+        if (targetRes != null && perms.has(Flags.flowinprotection, FlagCombo.TrueOrNone)) {
+
+            ClaimedResidence sourceRes = ClaimedResidence.getByLoc(block.getLocation());
+
+            if (sourceRes == null || (sourceRes != targetRes && !sourceRes.isOwner(targetRes.getOwner()))) {
                 event.setCancelled(true);
                 return;
             }
+        }
 
         if (perms.has(Flags.flow, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
             return;
         }
 
+        Material mat = block.getType();
+        Flags flag;
+
         if (mat == Material.LAVA) {
-            if (!perms.has(Flags.lavaflow, hasflow)) {
-                event.setCancelled(true);
-            }
+            flag = Flags.lavaflow;
+        } else if (mat == Material.WATER) {
+            flag = Flags.waterflow;
+        } else {
             return;
         }
-        if (mat == Material.WATER) {
-            if (!perms.has(Flags.waterflow, hasflow)) {
-                event.setCancelled(true);
-            }
+        if (!perms.has(flag, perms.has(Flags.flow, true))) {
+            event.setCancelled(true);
             return;
+        }
+        if (targetRes == null) {
+            ConfigManager cfg = plugin.getConfigManager();
+
+            boolean shouldDenyFlow = (cfg.isNoLava() && mat == Material.LAVA) || (cfg.isNoWater() && mat == Material.WATER);
+
+            if (!shouldDenyFlow) {
+                return;
+            }
+            if (toBlock.getY() < cfg.getFlowLevel()) {
+                return;
+            }
+            if (!cfg.getNoFlowWorlds().contains(toBlock.getWorld().getName())) {
+                return;
+            }
+            event.setCancelled(true);
         }
     }
 
@@ -925,7 +973,6 @@ public class ResidenceBlockListener implements Listener {
         }
     }
 
-    @SuppressWarnings("removal")
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onDispense(BlockDispenseEvent event) {
 
@@ -937,75 +984,42 @@ public class ResidenceBlockListener implements Listener {
         if (CMIMaterial.get(block.getType()) != CMIMaterial.DISPENSER)
             return;
 
-        // target location
-        Location targetLoc = Version.isCurrentEqualOrHigher(Version.v1_13_0)
-                ? ResidenceBlockData.getRelative(block)
-                : block.getRelative((((org.bukkit.material.Dispenser) ((org.bukkit.block.Dispenser) block).getData()).getFacing())).getLocation();
+        @SuppressWarnings("removal")
+        BlockFace blockFace = Version.isCurrentEqualOrHigher(Version.v1_13_0)
+                ? ResidenceBlockData.getDispenserFace(block)
+                : (((org.bukkit.material.Dispenser) block.getState().getData()).getFacing());
 
-        ClaimedResidence targetRes = ClaimedResidence.getByLoc(targetLoc);
+        Block target = block.getRelative(blockFace);
+        ClaimedResidence targetRes = ClaimedResidence.getByLoc(target.getLocation());
 
-        CMIMaterial cmat = CMIMaterial.get(event.getItem());
-        if (targetRes == null && targetLoc.getBlockY() >= plugin.getConfigManager().getPlaceLevel() && plugin.getConfigManager().getNoPlaceWorlds().contains(targetLoc
-                .getWorld().getName())) {
-            if (plugin.getConfigManager().isNoLavaPlace() && cmat == CMIMaterial.LAVA_BUCKET) {
-                event.setCancelled(true);
+        if (targetRes == null) {
+            ConfigManager cfg = plugin.getConfigManager();
+            CMIMaterial mat = CMIMaterial.get(event.getItem());
+
+            boolean shouldDeny = (cfg.isNoLavaPlace() && mat == CMIMaterial.LAVA_BUCKET)
+                    || (cfg.isNoWaterPlace() && (mat == CMIMaterial.WATER_BUCKET || mat.containsCriteria(CMIMC.BUCKETANIMAL)));
+
+            if (!shouldDeny) {
                 return;
             }
-
-            if (plugin.getConfigManager().isNoWaterPlace() &&
-                    (cmat == CMIMaterial.WATER_BUCKET || cmat.containsCriteria(CMIMC.BUCKETANIMAL))) {
-                event.setCancelled(true);
+            if (target.getY() < cfg.getPlaceLevel()) {
                 return;
             }
+            if (!cfg.getNoPlaceWorlds().contains(target.getWorld().getName())) {
+                return;
+            }
+            event.setCancelled(true);
+            return;
         }
-
-        if (targetRes == null)
-            return;
-
         ClaimedResidence sourceRes = ClaimedResidence.getByLoc(block.getLocation());
-
         // source & target in Same Res, or have Same Res owner
-        if (sourceRes != null && (sourceRes.equals(targetRes) || sourceRes.isOwner(targetRes.getOwner())))
+        if (sourceRes != null && (sourceRes == targetRes || sourceRes.isOwner(targetRes.getOwner()))) {
             return;
-
-        // check targetRes Flag_build
-        if (targetRes.getPermissions().has(Flags.build, true))
+        }
+        if (targetRes.getPermissions().has(Flags.build, true)) {
             return;
-
+        }
         event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onLavaWaterFlow(BlockFromToEvent event) {
-
-        // disabling event on world
-        if (plugin.isDisabledWorldListener(event.getBlock()))
-            return;
-        Material mat = event.getBlock().getType();
-
-        Location location = event.getToBlock().getLocation();
-        if (!plugin.getConfigManager().getNoFlowWorlds().contains(location.getWorld().getName()))
-            return;
-
-        if (location.getBlockY() < plugin.getConfigManager().getFlowLevel())
-            return;
-
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(location);
-
-        if (res != null)
-            return;
-
-        if (plugin.getConfigManager().isNoLava())
-            if (mat == Material.LAVA) {
-                event.setCancelled(true);
-                return;
-            }
-
-        if (plugin.getConfigManager().isNoWater())
-            if (mat == Material.WATER) {
-                event.setCancelled(true);
-                return;
-            }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1020,7 +1034,7 @@ public class ResidenceBlockListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onBlockBurn(PortalCreateEvent event) {
+    public void onNetherPortalCreate(PortalCreateEvent event) {
 
         World world = event.getWorld();
 
@@ -1038,24 +1052,35 @@ public class ResidenceBlockListener implements Listener {
                 player = (Player) event.getEntity();
         } catch (Throwable e) {
         }
-
+        if (player != null && (player.hasMetadata("NPC") || ResAdmin.isResAdmin(player))) {
+            return;
+        }
         ArrayList<Vector> corners = getNetherPortalCorners(event);
+        FlagPermissions worldPerms = null;
 
         for (Vector one : corners) {
-            boolean hasBuild = true;
+            Location loc = new Location(world, one.getX(), one.getY(), one.getZ());
+            ClaimedResidence res = ClaimedResidence.getByLoc(loc);
+            // Avoid repeatedly fetching world permissions
+            if (res == null && worldPerms == null) {
+                worldPerms = (player != null)
+                        ? Residence.getInstance().getWorldFlags().getPerms(player)
+                        : Residence.getInstance().getWorldFlags().getPerms(world);
+            }
+            FlagPermissions perms = (res != null)
+                    ? res.getPermissions()
+                    : worldPerms;
+
+            boolean canBuild;
             if (player != null) {
-                ClaimedResidence res = plugin.getResidenceManager().getByLoc(new Location(world, one.getX(), one.getY(), one.getZ()));
-                if (res != null) {
-                    hasBuild = res.getPermissions().playerHas(player, Flags.build, FlagCombo.TrueOrNone);
-                    if (!hasBuild) {
-                        lm.Invalid_PortalDestination.sendMessage(player);
-                    }
+                canBuild = perms.playerHas(player, Flags.build, true);
+                if (!canBuild) {
+                    lm.Invalid_PortalDestination.sendMessage(player);
                 }
             } else {
-                FlagPermissions perms = FlagPermissions.getPerms(new Location(world, one.getX(), one.getY(), one.getZ()));
-                hasBuild = perms.has(Flags.build, true);
+                canBuild = perms.has(Flags.build, true);
             }
-            if (!hasBuild) {
+            if (!canBuild) {
                 event.setCancelled(true);
                 return;
             }
@@ -1066,50 +1091,50 @@ public class ResidenceBlockListener implements Listener {
     private static ArrayList<Vector> getNetherPortalCorners(PortalCreateEvent e) {
         ArrayList<Vector> locs = new ArrayList<Vector>();
 
-        List<?> ls = new ArrayList<>();
+        List<?> list = new ArrayList<>();
+        boolean isModern = Version.isCurrentEqualOrHigher(Version.v1_14_0);
         try {
-            ls = Version.isCurrentEqualOrHigher(Version.v1_14_0)
+            list = isModern
                     ? (ArrayList<BlockState>) e.getClass().getMethod("getBlocks").invoke(e)
                     : (ArrayList<Block>) e.getClass().getMethod("getBlocks").invoke(e);
         } catch (Exception e1) {
             e1.printStackTrace();
         }
-
-        int lowestY = CMIWorld.getMaxHeight(e.getWorld());
-        int bigestY = -lowestY;
-        int lowestX = Integer.MAX_VALUE;
-        int lowestZ = Integer.MAX_VALUE;
-        int bigestX = -Integer.MAX_VALUE;
-        int bigestZ = -Integer.MAX_VALUE;
-
-        for (Object ob : ls) {
-            Location one = Version.isCurrentEqualOrHigher(Version.v1_14_0)
-                    ? ((BlockState) ob).getLocation()
-                    : ((Block) ob).getLocation();
-
-            if (one.getBlockY() < lowestY)
-                lowestY = one.getBlockY();
-            if (one.getBlockX() < lowestX)
-                lowestX = one.getBlockX();
-            if (one.getBlockZ() < lowestZ)
-                lowestZ = one.getBlockZ();
-
-            if (one.getBlockY() > bigestY)
-                bigestY = one.getBlockY();
-            if (one.getBlockX() > bigestX)
-                bigestX = one.getBlockX();
-            if (one.getBlockZ() > bigestZ)
-                bigestZ = one.getBlockZ();
+        if (list.isEmpty()) {
+            return locs;
         }
 
-        int height = Math.abs(bigestY - lowestY);
+        int minX = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        int minZ = Integer.MAX_VALUE;
+        int maxZ = Integer.MIN_VALUE;
+
+        for (Object target : list) {
+            Location one = isModern
+                    ? ((BlockState) target).getLocation()
+                    : ((Block) target).getLocation();
+
+            int targetX = one.getBlockX();
+            int targetY = one.getBlockY();
+            int targetZ = one.getBlockZ();
+            minX = Math.min(minX, targetX);
+            maxX = Math.max(maxX, targetX);
+            minY = Math.min(minY, targetY);
+            maxY = Math.max(maxY, targetY);
+            minZ = Math.min(minZ, targetZ);
+            maxZ = Math.max(maxZ, targetZ);
+        }
+
+        int height = Math.abs(maxY - minY);
 
         // If height is 1 then its not a nether portal
         if (height < 2)
             return locs;
 
-        locs.add(new Vector(lowestX, lowestY, lowestZ));
-        locs.add(new Vector(bigestX, bigestY, bigestZ));
+        locs.add(new Vector(minX, minY, minZ));
+        locs.add(new Vector(maxX, maxY, maxZ));
 
         return locs;
     }

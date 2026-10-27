@@ -54,8 +54,6 @@ import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -66,7 +64,6 @@ import org.bukkit.projectiles.ProjectileSource;
 import com.bekvon.bukkit.residence.ConfigManager;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
-import com.bekvon.bukkit.residence.containers.ResAdmin;
 import com.bekvon.bukkit.residence.containers.lm;
 import com.bekvon.bukkit.residence.permissions.PermissionManager.ResPerm;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
@@ -167,18 +164,16 @@ public class ResidenceEntityListener implements Listener {
     private boolean shouldDenyPlayerChangeBlock(Block block, Player player) {
         CMIMaterial mat = CMIMaterial.get(block.getType());
         Flags mainFlag = null;
-        Flags subFlag = null;
+        Flags subFlag = Flags.build;
         if (Flags.copper.isGlobalyEnabled() && mat.containsCriteria(CMIMC.COPPER)) {
             mainFlag = Flags.copper;
-            subFlag = Flags.build;
 
         } else if (Flags.brush.isGlobalyEnabled() && (mat == CMIMaterial.SUSPICIOUS_GRAVEL || mat == CMIMaterial.SUSPICIOUS_SAND)) {
             mainFlag = Flags.brush;
-            subFlag = Flags.build;
 
-        } else if (Flags.build.isGlobalyEnabled()) {
-            // by default, future player-triggered EntityChangeBlockEvent mechanisms check Flags.build
-            mainFlag = Flags.build;
+        } else if (Flags.place.isGlobalyEnabled()) {
+            // by default, future player-triggered EntityChangeBlockEvent mechanisms check Flags.place
+            mainFlag = Flags.place;
 
         }
         if (mainFlag == null) {
@@ -301,7 +296,7 @@ public class ResidenceEntityListener implements Listener {
         case button:
         // Projectile and Item press pressure_plate
         case pressure:
-            Player player = Utils.potentialProjectileToPlayer(entity);
+            Player player = Utils.getPlayerSource(entity);
             if (player != null) {
                 if (!FlagPermissions.shouldDenyAndNotify(player, block, flag, Flags.use, false)) {
                     return;
@@ -309,7 +304,7 @@ public class ResidenceEntityListener implements Listener {
             } else {
                 ClaimedResidence res = ClaimedResidence.getByLoc(block.getLocation());
                 // skip check if shooter is a dispenser in the same Residence
-                if (Utils.isSourceBlockInsideSameResidence(entity, res)) {
+                if (entity instanceof Projectile && Utils.isSameResidenceOwner((Projectile) entity, res)) {
                     return;
                 }
                 perms = (res != null)
@@ -326,10 +321,6 @@ public class ResidenceEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    private static boolean damageableProjectile(Entity ent) {
-        return ent instanceof Projectile;
-    }
-
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void AnimalKilling(EntityDamageEvent event) {
 
@@ -342,39 +333,15 @@ public class ResidenceEntityListener implements Listener {
             return;
 
         if (event.getCause() == DamageCause.LIGHTNING || event.getCause() == DamageCause.FIRE_TICK) {
-            ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
+            ClaimedResidence res = ClaimedResidence.getByLoc(entity.getLocation());
             if (res != null && res.getPermissions().has(Flags.animalkilling, FlagCombo.OnlyFalse)) {
                 event.setCancelled(true);
             }
-            return;
-        }
-
-        if (!(event instanceof EntityDamageByEntityEvent))
-            return;
-
-        EntityDamageByEntityEvent attackevent = (EntityDamageByEntityEvent) event;
-        Entity damager = attackevent.getDamager();
-
-        boolean damageable = damageableProjectile(damager);
-
-        if (!damageable && !(damager instanceof Player))
-            return;
-
-        if (damageable && !(((Projectile) damager).getShooter() instanceof Player))
-            return;
-
-        Player cause = Utils.potentialProjectileToPlayer(damager);
-
-        if (cause == null)
-            return;
-
-        if (FlagPermissions.shouldDenyAndNotify(cause, entity, Flags.animalkilling, null)) {
-            event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void AnimalKillingByFlame(EntityCombustByEntityEvent event) {
+    public void AnimalCombustByPlayer(EntityCombustByEntityEvent event) {
 
         Entity entity = event.getEntity();
 
@@ -384,35 +351,18 @@ public class ResidenceEntityListener implements Listener {
         if (!Utils.isAnimal(entity))
             return;
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
+        Player player = Utils.getPlayerSource(event.getCombuster());
 
-        if (res == null)
+        if (player == null) {
             return;
-
-        Entity damager = event.getCombuster();
-
-        if (!damageableProjectile(damager) && !(damager instanceof Player))
-            return;
-
-        if (damageableProjectile(damager) && !(((Projectile) damager).getShooter() instanceof Player))
-            return;
-
-        Player cause = Utils.potentialProjectileToPlayer(damager);
-
-        if (cause == null)
-            return;
-
-        if (ResAdmin.isResAdmin(cause))
-            return;
-
-        if (res.getPermissions().playerHas(cause, Flags.animalkilling, FlagCombo.OnlyFalse)) {
-            lm.Residence_FlagDeny.sendMessage(cause, Flags.animalkilling, res.getName());
+        }
+        if (FlagPermissions.shouldDenyAndNotify(player, entity, Flags.animalkilling)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void AnimalDamageByMobs(EntityDamageByEntityEvent event) {
+    public void AnimalDamageByEntity(EntityDamageByEntityEvent event) {
 
         Entity entity = event.getEntity();
 
@@ -422,14 +372,16 @@ public class ResidenceEntityListener implements Listener {
         if (!Utils.isAnimal(entity))
             return;
 
-        Entity damager = event.getDamager();
+        Player player = Utils.getPlayerSource(event.getDamager());
 
-        if (damager instanceof Projectile && ((Projectile) damager).getShooter() instanceof Player || damager instanceof Player)
-            return;
-
-        FlagPermissions perms = FlagPermissions.getPerms(entity.getLocation());
-        if (!perms.has(Flags.animalkilling, true)) {
-            event.setCancelled(true);
+        if (player != null) {
+            if (FlagPermissions.shouldDenyAndNotify(player, entity, Flags.animalkilling)) {
+                event.setCancelled(true);
+            }
+        } else {
+            if (FlagPermissions.has(entity.getLocation(), Flags.animalkilling, FlagCombo.OnlyFalse)) {
+                event.setCancelled(true);
+            }
         }
     }
 
@@ -469,7 +421,7 @@ public class ResidenceEntityListener implements Listener {
         if (!(attacker instanceof Player)) {
             return;
         }
-        if (FlagPermissions.shouldDenyAndNotify((Player) attacker, vehicle, Flags.vehicledestroy, null)) {
+        if (FlagPermissions.shouldDenyAndNotify((Player) attacker, vehicle, Flags.vehicledestroy)) {
             event.setCancelled(true);
         }
     }
@@ -518,18 +470,16 @@ public class ResidenceEntityListener implements Listener {
     }
 
     private boolean shouldDenyEntityDestroyVehicle(Entity attacker, Vehicle vehicle) {
-
-        Player player = Utils.potentialProjectileToPlayer(attacker);
-
+        Player player = Utils.getPlayerSource(attacker);
         if (player != null) {
-            return FlagPermissions.shouldDenyAndNotify(player, vehicle, Flags.vehicledestroy, null);
+            return FlagPermissions.shouldDenyAndNotify(player, vehicle, Flags.vehicledestroy);
         } else {
             return FlagPermissions.has(vehicle.getLocation(), Flags.vehicledestroy, FlagCombo.OnlyFalse);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void MonsterKilling(EntityDamageByEntityEvent event) {
+    public void MonsterDamageByPlayer(EntityDamageByEntityEvent event) {
 
         Entity entity = event.getEntity();
 
@@ -539,20 +489,12 @@ public class ResidenceEntityListener implements Listener {
         if (!Utils.isMonster(entity)) {
             return;
         }
-        Entity damager = event.getDamager();
+        Player player = Utils.getPlayerSource(event.getDamager());
 
-        if (!damageableProjectile(damager) && !(damager instanceof Player))
+        if (player == null) {
             return;
-
-        if (damageableProjectile(damager) && !(((Projectile) damager).getShooter() instanceof Player))
-            return;
-
-        Player cause = Utils.potentialProjectileToPlayer(damager);
-
-        if (cause == null)
-            return;
-
-        if (FlagPermissions.shouldDenyAndNotify(cause, entity, Flags.mobkilling, null)) {
+        }
+        if (FlagPermissions.shouldDenyAndNotify(player, entity, Flags.mobkilling)) {
             event.setCancelled(true);
         }
     }
@@ -565,9 +507,7 @@ public class ResidenceEntityListener implements Listener {
         if (FlagPermissions.shouldIgnoreCheck(Flags.leash, entity)) {
             return;
         }
-        Player player = event.getPlayer();
-
-        if (FlagPermissions.shouldDenyAndNotify(player, entity, Flags.leash, null)) {
+        if (FlagPermissions.shouldDenyAndNotify(event.getPlayer(), entity, Flags.leash)) {
             event.setCancelled(true);
         }
     }
@@ -811,8 +751,7 @@ public class ResidenceEntityListener implements Listener {
     }
 
     public static boolean shouldDenyEntityHit(@NotNull Entity source, @NotNull Location targetLoc, @NotNull Flags mainFlag, @Nullable Flags subFlag) {
-
-        Player player = Utils.potentialProjectileToPlayer(source);
+        Player player = Utils.getPlayerSource(source);
         if (player != null) {
 
             return FlagPermissions.shouldDenyAndNotify(player, targetLoc, mainFlag, subFlag);
@@ -820,7 +759,7 @@ public class ResidenceEntityListener implements Listener {
         } else {
             ClaimedResidence res = ClaimedResidence.getByLoc(targetLoc);
             // skip check if shooter is a dispenser in the same Residence
-            if (Utils.isSourceBlockInsideSameResidence(source, res)) {
+            if (source instanceof Projectile && Utils.isSameResidenceOwner((Projectile) source, res)) {
                 return false;
             }
             FlagPermissions perms = (res != null)
@@ -1168,23 +1107,13 @@ public class ResidenceEntityListener implements Listener {
             return;
         }
         ProjectileSource attacker = potion.getShooter();
-        boolean isPlayerAttacker = attacker instanceof Player;
-        ClaimedResidence attackerRes = null;
+        Player attackerPlayer = (attacker instanceof Player)
+                ? (Player) attacker
+                : null;
 
-        if (isPlayerAttacker) {
-            if (!Flags.potionthrowing.isGlobalyEnabled()) {
-                return;
-            }
-            Player player = (Player) attacker;
-            if (player.hasMetadata("NPC")) {
-                return;
-            }
-            attackerRes = ClaimedResidence.getByLoc(player.getLocation());
-            FlagPermissions attackerPerms = (attackerRes != null)
-                    ? attackerRes.getPermissions()
-                    : Residence.getInstance().getWorldFlags().getPerms(player.getWorld());
-            if (attackerPerms.playerHas(player, Flags.potionthrowing, FlagCombo.OnlyFalse) && !ResAdmin.isResAdmin(player)) {
-                lm.Flag_Deny.sendMessage(player, Flags.potionthrowing);
+        if (attackerPlayer != null) {
+            if (Flags.potionthrowing.isGlobalyEnabled()
+                    && FlagPermissions.shouldDenyAndNotify(attackerPlayer, potion, Flags.potionthrowing)) {
                 event.setCancelled(true);
                 return;
             }
@@ -1194,10 +1123,10 @@ public class ResidenceEntityListener implements Listener {
             if (potionHitRes == null) {
                 return;
             }
-            Location shooterLoc = ((BlockProjectileSource) attacker).getBlock().getLocation();
-            ClaimedResidence shooterRes = ClaimedResidence.getByLoc(shooterLoc);
-            // Non-player shooter and hit location in same Residence or same owner; skip check
-            if (potionHitRes == shooterRes || (shooterRes != null && shooterRes.isOwner(potionHitRes.getOwner()))) {
+            Location dispenserLoc = ((BlockProjectileSource) attacker).getBlock().getLocation();
+            ClaimedResidence dispenserRes = ClaimedResidence.getByLoc(dispenserLoc);
+            // skip check if shooter is a dispenser in the same Residence
+            if (dispenserRes != null && (dispenserRes == potionHitRes || dispenserRes.isOwner(potionHitRes.getOwner()))) {
                 return;
             }
             // Prevent Potion from being spawned into a Residence from outside
@@ -1211,10 +1140,6 @@ public class ResidenceEntityListener implements Listener {
         boolean isDamageEffect = false;
         boolean isHarmfulEffect = false;
 
-        ItemMeta itemMeta = potion.getItem().getItemMeta();
-        if (!(itemMeta instanceof PotionMeta)) {
-            return;
-        }
         // Start - Get the potion effect type
         for (PotionEffect effect : potion.getEffects()) {
             PotionEffectType type = effect.getType();
@@ -1230,23 +1155,33 @@ public class ResidenceEntityListener implements Listener {
             }
         }
         // End - Get the potion effect type
-        if (isHealingEffect && Flags.mobkilling.isGlobalyEnabled()) {
+        if (isHealingEffect) {
+            // Healing effect damages undead mobs
+            if (!Flags.mobkilling.isGlobalyEnabled()) {
+                return;
+            }
             for (LivingEntity victim : event.getAffectedEntities()) {
-                if (PotionUtils.shouldDenyHealingEffect(victim, attacker, isPlayerAttacker)) {
+                if (PotionUtils.shouldDenyHealingEffect(victim, attackerPlayer)) {
                     event.setIntensity(victim, 0);
                 }
             }
 
         } else if (isDamageEffect) {
+            ClaimedResidence attackerRes = (attackerPlayer != null)
+                    ? ClaimedResidence.getByLoc(attackerPlayer.getLocation())
+                    : null;
             for (LivingEntity victim : event.getAffectedEntities()) {
-                if (PotionUtils.shouldDenyDamageEffect(victim, attacker, attackerRes, isPlayerAttacker)) {
+                if (PotionUtils.shouldDenyDamageEffect(victim, attackerPlayer, attackerRes)) {
                     event.setIntensity(victim, 0);
                 }
             }
 
         } else if (isHarmfulEffect) {
+            ClaimedResidence attackerRes = (attackerPlayer != null)
+                    ? ClaimedResidence.getByLoc(attackerPlayer.getLocation())
+                    : null;
             for (LivingEntity victim : event.getAffectedEntities()) {
-                if (PotionUtils.shouldDenyHarmfulEffect(victim, attacker, attackerRes, isPlayerAttacker)) {
+                if (PotionUtils.shouldDenyHarmfulEffect(victim, attackerPlayer, attackerRes)) {
                     event.setIntensity(victim, 0);
                 }
             }
@@ -1255,38 +1190,25 @@ public class ResidenceEntityListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void PlayerKillingByFlame(EntityCombustByEntityEvent event) {
+    public void PlayerCombustByPlayer(EntityCombustByEntityEvent event) {
 
-        Entity entity = event.getEntity();
+        Entity victim = event.getEntity();
 
-        if (FlagPermissions.shouldIgnoreCheck(Flags.pvp, entity)) {
+        if (FlagPermissions.shouldIgnoreCheck(Flags.pvp, victim)) {
             return;
         }
-        if (!(entity instanceof Player))
+        if (!(victim instanceof Player)) {
             return;
+        }
+        Player attackerPlayer = Utils.getPlayerSource(event.getCombuster());
 
-        ClaimedResidence res = plugin.getResidenceManager().getByLoc(entity.getLocation());
-
-        if (res == null)
+        if (attackerPlayer == null || attackerPlayer == victim) {
             return;
-
-        Entity damager = event.getCombuster();
-
-        if (!damageableProjectile(damager) && !(damager instanceof Player))
-            return;
-
-        if (damageableProjectile(damager) && !(((Projectile) damager).getShooter() instanceof Player))
-            return;
-
-        Player cause = Utils.potentialProjectileToPlayer(damager);
-
-        if (cause == null)
-            return;
-
-        boolean srcpvp = FlagPermissions.has(cause.getLocation(), Flags.pvp, FlagCombo.TrueOrNone);
-        boolean tgtpvp = FlagPermissions.has(entity.getLocation(), Flags.pvp, FlagCombo.TrueOrNone);
-        if (!srcpvp || !tgtpvp)
+        }
+        if (FlagPermissions.has(attackerPlayer.getLocation(), Flags.pvp, FlagCombo.OnlyFalse)
+                || FlagPermissions.has(victim.getLocation(), Flags.pvp, FlagCombo.OnlyFalse)) {
             event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -1486,7 +1408,7 @@ public class ResidenceEntityListener implements Listener {
     private void handleDecorativeEntityDamage(EntityDamageByEntityEvent event) {
         Entity attacker = event.getDamager();
         Entity victim = event.getEntity();
-        Player player = Utils.potentialProjectileToPlayer(attacker);
+        Player player = Utils.getPlayerSource(attacker);
         // if player damages ItemFrame with items inside, check Flags.container
         // this corresponds to taking the item out of the ItemFrame
         if (Flags.container.isGlobalyEnabled() && player != null && victim instanceof ItemFrame
@@ -1508,7 +1430,7 @@ public class ResidenceEntityListener implements Listener {
             if (attacker instanceof Projectile) {
                 res = ClaimedResidence.getByLoc(victim.getLocation());
                 // skip check if shooter is a dispenser in the same Residence
-                if (Utils.isSourceBlockInsideSameResidence(attacker, res)) {
+                if (Utils.isSameResidenceOwner((Projectile) attacker, res)) {
                     return;
                 }
             }
