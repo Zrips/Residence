@@ -150,7 +150,7 @@ public class CMIBlockDisplay {
 
         visible = true;
 
-        CMIScheduler.runAtLocation(Residence.getInstance(), current.getLocation(), () -> {
+        CMIScheduler.runAtEntity(Residence.getInstance(), current, () -> {
             if (display != current || removed || !visible)
                 return;
 
@@ -166,7 +166,7 @@ public class CMIBlockDisplay {
 
         visible = false;
 
-        CMIScheduler.runAtLocation(Residence.getInstance(), current.getLocation(), () -> {
+        CMIScheduler.runAtEntity(Residence.getInstance(), current, () -> {
             if (display != current || visible)
                 return;
 

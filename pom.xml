@@ -172,7 +172,7 @@
 		<dependency>
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-bukkit</artifactId>
-			<version>7.3.10</version>
+			<version>7.4.4</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>bukkit-classloader-check</artifactId>
