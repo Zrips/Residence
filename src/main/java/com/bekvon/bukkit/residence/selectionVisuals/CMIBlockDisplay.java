@@ -99,6 +99,7 @@ public class CMIBlockDisplay {
 
             applyVisual(state);
         });
+
         return true;
     }
 
@@ -116,12 +117,8 @@ public class CMIBlockDisplay {
             return;
         }
 
-        CMIScheduler.runAtEntity(Residence.getInstance(), current, () -> {
-            if (display != current || current.isDead() || removed || visualState != state)
-                return;
-
+        if (!current.isDead() && !removed && visualState == state)
             updateTransformation(current, state);
-        });
 
         current.teleportAsync(location);
     }
@@ -150,7 +147,7 @@ public class CMIBlockDisplay {
 
         visible = true;
 
-        CMIScheduler.runAtEntity(Residence.getInstance(), current, () -> {
+        CMIScheduler.runAtEntity(Residence.getInstance(), player, () -> {
             if (display != current || removed || !visible)
                 return;
 
@@ -166,10 +163,9 @@ public class CMIBlockDisplay {
 
         visible = false;
 
-        CMIScheduler.runAtEntity(Residence.getInstance(), current, () -> {
+        CMIScheduler.runAtEntity(Residence.getInstance(), player, () -> {
             if (display != current || visible)
                 return;
-
             player.hideEntity(Residence.getInstance(), current);
         });
     }
