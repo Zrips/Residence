@@ -23,7 +23,9 @@ import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.bekvon.bukkit.residence.protection.FlagPermissions.FlagState;
 import com.bekvon.bukkit.residence.selection.SelectionManager;
 
+import net.Zrips.CMILib.Container.CMINumber;
 import net.Zrips.CMILib.Container.CMIWorld;
+import net.Zrips.CMILib.Cuboids.CMIBlockWorldArea;
 
 public class PermissionGroup {
 
@@ -652,6 +654,25 @@ public class PermissionGroup {
     }
 
     public double getCost(long size) {
-        return (long) (size * getCostPerBlock() * 100L) / 100D;
+        double cost = size * getCostPerBlock();
+        return Math.floor(cost * 100D) / 100D;
+    }
+
+    public double getCost(@NotNull CMIBlockWorldArea area) {
+
+        long total = 0;
+
+        if (area == null)
+            return 0D;
+
+        long xsize = area.getXSize() + 1;
+        long zsize = area.getZSize() + 1;
+        if (!SelectionManager.isNoCostForYBlocks()) {
+            long ysize = area.getYSize() + 1;
+            total = CMINumber.abs(xsize * ysize * zsize);
+        } else
+            total = CMINumber.abs(xsize * zsize);
+
+        return getCost(total);
     }
 }

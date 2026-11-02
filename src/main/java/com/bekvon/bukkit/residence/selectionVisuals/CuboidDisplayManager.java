@@ -23,6 +23,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.selection.VisualizerConfig;
 
 import net.Zrips.CMILib.Cuboids.CMIBlockWorldArea;
+import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Version;
 
 public class CuboidDisplayManager implements Listener {
@@ -53,9 +54,9 @@ public class CuboidDisplayManager implements Listener {
 
     public static void add(Player player, List<CMIBlockWorldArea> areas, CuboidDisplayType type, double hideInSeconds, int range, double gridSize) {
 
-        List<CuboidDisplay> ls = getAreas(player, areas, type);
-
         PlayerData data = getPlayerData(player);
+
+        List<CuboidDisplay> ls = getAreas(player, areas, type);
 
         for (CuboidDisplay display : ls) {
 
@@ -67,13 +68,13 @@ public class CuboidDisplayManager implements Listener {
             display.setRange(range);
             display.setGridSize(gridSize);
             display.recalculate(false);
-
             display.show();
             data.displays.add(display);
         }
     }
 
     public static void add(Player player, CMIBlockWorldArea area, CuboidDisplayType type, double hideInSeconds) {
+
         PlayerData data = getPlayerData(player);
 
         for (CuboidDisplay display : data.displays) {
@@ -81,6 +82,7 @@ public class CuboidDisplayManager implements Listener {
                 return;
         }
         CuboidDisplay display = new CuboidDisplay(player, area);
+        display.setType(type);
         display.setEdgeMaterial(type.getEdgeMaterial());
         display.setSideMaterial(type.getSideMaterial());
         display.removeAfter(hideInSeconds);
@@ -255,25 +257,29 @@ public class CuboidDisplayManager implements Listener {
         List<CuboidDisplay> existing = new ArrayList<>(playerData.displays);
 
         for (CuboidDisplay one : existing) {
-            if (areas.contains(one.getArea())) {
-                areas.remove(one.getArea());
-                one.recalculate(true);
-                one.removeAfter(type == null ? 5 : type.getHideInSeconds());
-                cd.add(one);
-            } else {
-                one.clear();
-                playerData.displays.remove(one);
-            }
+            if (!areas.contains(one.getArea()))
+                continue;
+
+            areas.remove(one.getArea());
+            one.recalculate(true);
+            one.removeAfter(type == null ? 5 : type.getHideInSeconds());
+            cd.add(one);
         }
 
         for (CMIBlockWorldArea area : areas) {
             CuboidDisplay display = new CuboidDisplay(player, area);
-            display.setEdgeMaterial(type == null ? CuboidDisplayType.SELECTION.getEdgeMaterial() : type.getEdgeMaterial());
-            display.setSideMaterial(type == null ? CuboidDisplayType.SELECTION.getSideMaterial() : type.getSideMaterial());
-            display.removeAfter(type == null ? 5 : type.getHideInSeconds());
-            display.setLineThickness(type == null ? 0.05 : type.getLineThickness());
-            display.setGridSize(type == null ? 8 : type.getGridSize());
-            display.setRange(type == null ? 32 : type.getRange());
+
+            type = type == null ? CuboidDisplayType.SELECTION : type;
+
+            display.setType(type);
+
+            display.setEdgeMaterial(type.getEdgeMaterial());
+            display.setSideMaterial(type.getSideMaterial());
+
+            display.removeAfter(type.getHideInSeconds());
+            display.setLineThickness(type.getLineThickness());
+            display.setGridSize(type.getGridSize());
+            display.setRange(type.getRange());
             cd.add(display);
         }
 
@@ -382,17 +388,7 @@ public class CuboidDisplayManager implements Listener {
     }
 
     private static PlayerData getPlayerData(Player player) {
-        UUID uuid = player.getUniqueId();
-
-        PlayerData data = players.get(uuid);
-
-        if (data == null) {
-            data = new PlayerData(player.getLocation());
-
-            players.put(uuid, data);
-        }
-
-        return data;
+        return players.computeIfAbsent(player.getUniqueId(), k -> new PlayerData(player.getLocation()));
     }
 
     private static void removeEmptyPlayer(Player player) {

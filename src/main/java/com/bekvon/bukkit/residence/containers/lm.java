@@ -576,7 +576,7 @@ public enum lm {
     General_Cost("&eCost: &6%1 &eper &6%2 &edays"),
     General_Status("&eStatus: %1"),
     General_Available("&2Available"),
-    General_Size(" &eSize: &6%1"),
+    General_SizeInfo("&6%1&e Size: &6%2"),
     General_ResidenceFlags("&eResidence flags: &6%1"),
     General_PlayersFlags("&ePlayers flags: &6%1"),
     General_GroupFlags("&eGroup flags: &6%1"),

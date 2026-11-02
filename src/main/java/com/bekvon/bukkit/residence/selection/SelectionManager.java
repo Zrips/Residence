@@ -816,7 +816,7 @@ public class SelectionManager {
         ResidencePlayer rPlayer = plugin.getPlayerManager().getResidencePlayer(player);
         PermissionGroup group = rPlayer.getGroup();
         if (plugin.getConfigManager().enableEconomy())
-            message += " " + lm.General_LandCost.getMessage(plugin.getEconomyManager().format(this.getSelectionCuboid(player).getCost(group)));
+            message += " " + lm.General_LandCost.getMessage(plugin.getEconomyManager().format(group.getCost(getSelectionArea(player))));
         CMIActionBar.send(player, message);
     }
 
@@ -830,10 +830,12 @@ public class SelectionManager {
             PermissionGroup group = rPlayer.getGroup();
 
             if (plugin.getConfigManager().enableEconomy())
-                lm.General_LandCost.sendMessage(player, plugin.getEconomyManager().format(this.getSelectionCuboid(player).getCost(group)));
-            lm.showMessage(player, CMIChatColor.YELLOW + "X" + lm.General_Size.getMessage(cuboidArea.getXSize()));
-            lm.showMessage(player, CMIChatColor.YELLOW + "Y" + lm.General_Size.getMessage(cuboidArea.getYSize()));
-            lm.showMessage(player, CMIChatColor.YELLOW + "Z" + lm.General_Size.getMessage(cuboidArea.getZSize()));
+                lm.General_LandCost.sendMessage(player, plugin.getEconomyManager().format(group.getCost(getSelectionArea(player))));
+
+            lm.showMessage(player, lm.General_SizeInfo.getMessage("X", cuboidArea.getXSize()));
+            lm.showMessage(player, lm.General_SizeInfo.getMessage("Y", cuboidArea.getYSize()));
+            lm.showMessage(player, lm.General_SizeInfo.getMessage("Z", cuboidArea.getZSize()));
+
             lm.General_Separator.sendMessage(player);
             Visualizer v = new Visualizer(player);
             v.setAreas(CuboidDisplayType.SELECTION, this.getSelectionArea(player));
@@ -853,7 +855,7 @@ public class SelectionManager {
             // can be removed on later builds and plugins can check if this is short
             // visualization
             if (!v.isOnce()) {
-                ResidenceSelectionVisualizationEvent ev = new ResidenceSelectionVisualizationEvent(player, v.getAreas(), v.getErrorAreas(), v.isOnce());
+                ResidenceSelectionVisualizationEvent ev = new ResidenceSelectionVisualizationEvent(player, v.getAreasMap(), v.isOnce());
                 Bukkit.getPluginManager().callEvent(ev);
 
                 if (ev.isCancelled()) {
@@ -866,9 +868,7 @@ public class SelectionManager {
 
                     List<CMIBlockWorldArea> selection = v.getAreas(CuboidDisplayType.SELECTION);
 
-                    CuboidDisplayManager.add(player,
-                            new ArrayList<>(selection.isEmpty() ? v.getAreas(CuboidDisplayType.ERROR) : selection),
-                            selection.isEmpty() ? CuboidDisplayType.BOUNCE : CuboidDisplayType.ENTER_EXIT);
+                    CuboidDisplayManager.add(player, new ArrayList<>(selection.isEmpty() ? v.getAreas(CuboidDisplayType.ERROR) : selection), selection.isEmpty() ? CuboidDisplayType.BOUNCE : CuboidDisplayType.ENTER_EXIT);
                 } else {
                     CuboidDisplayManager.show(player, v.getAreas(CuboidDisplayType.SELECTION), v.getAreas(CuboidDisplayType.ERROR));
                 }

@@ -9,14 +9,11 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.CuboidArea;
-import com.bekvon.bukkit.residence.selectionVisuals.CuboidDisplayManager;
 import com.bekvon.bukkit.residence.selectionVisuals.CuboidDisplayType;
 
 import net.Zrips.CMILib.Cuboids.CMIBlockWorldArea;
-import net.Zrips.CMILib.Logs.CMIDebug;
 import net.Zrips.CMILib.Version.Schedulers.CMITask;
 
 public class Visualizer {
@@ -48,7 +45,7 @@ public class Visualizer {
 
     public void clearRecords() {
         cancelAll();
-        
+
         areas.clear();
         locationsPrimary.clear();
         locationsSecondary.clear();
@@ -99,6 +96,10 @@ public class Visualizer {
         }
 
         return areas;
+    }
+
+    public HashMap<CuboidDisplayType, List<CMIBlockWorldArea>> getAreasMap() {
+        return this.areas;
     }
 
     public List<CMIBlockWorldArea> getAreas(CuboidDisplayType type) {

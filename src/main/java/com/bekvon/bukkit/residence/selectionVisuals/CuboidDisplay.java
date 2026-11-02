@@ -31,6 +31,8 @@ public class CuboidDisplay {
     private final CMIBlockWorldArea area;
     private final Player player;
 
+    private CuboidDisplayType type = null;
+    
     private CMIMaterial edgeMaterial = CMIMaterial.BLUE_WOOL;
     private CMIMaterial sideMaterial = CMIMaterial.GREEN_WOOL;
 
@@ -837,5 +839,13 @@ public class CuboidDisplay {
         calculationCenter = null;
         calculationWorld = null;
         calculationBoundsInitialized = false;
+    }
+
+    public CuboidDisplayType getType() {
+        return type;
+    }
+
+    public void setType(CuboidDisplayType type) {
+        this.type = type;
     }
 }
