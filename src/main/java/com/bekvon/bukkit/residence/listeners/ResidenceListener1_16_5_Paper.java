@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.AnvilInventory;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.containers.Flags;
@@ -78,10 +77,7 @@ public class ResidenceListener1_16_5_Paper implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onAnvilDamaged(AnvilDamagedEvent event) {
-
-        AnvilInventory anvilInv = event.getInventory();
-
-        Location loc = anvilInv.getLocation();
+        Location loc = event.getInventory().getLocation();
         if (loc == null) {
             return;
         }
