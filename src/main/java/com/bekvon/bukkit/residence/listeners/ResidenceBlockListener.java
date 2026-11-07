@@ -232,7 +232,7 @@ public class ResidenceBlockListener implements Listener {
         return false;
     }
 
-    private static boolean shouldDenySpread(@NotNull BlockState spread, @Nullable ClaimedResidence sourceRes, @Nullable Player player) {
+    public static boolean shouldDenySpread(@NotNull BlockState spread, @Nullable ClaimedResidence sourceRes, @Nullable Player player) {
 
         ClaimedResidence spreadRes = ClaimedResidence.getByLoc(spread.getLocation());
         // spread-block not in Res, skip check

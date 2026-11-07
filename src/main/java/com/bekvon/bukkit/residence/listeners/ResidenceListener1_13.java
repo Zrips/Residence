@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.SpongeAbsorbEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.util.BoundingBox;
@@ -34,7 +35,7 @@ import net.Zrips.CMILib.Version.Schedulers.CMIScheduler;
 
 public class ResidenceListener1_13 implements Listener {
 
-    private Residence plugin;
+    private final Residence plugin;
 
     public ResidenceListener1_13(Residence plugin) {
         this.plugin = plugin;
@@ -136,5 +137,17 @@ public class ResidenceListener1_13 implements Listener {
         if (FlagPermissions.shouldDenyAndNotify(player, ent, Flags.animalkilling)) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onSpongeAbsorb(SpongeAbsorbEvent event) {
+
+        Block sponge = event.getBlock();
+
+        if (FlagPermissions.shouldIgnoreCheck(Flags.build, sponge)) {
+            return;
+        }
+        ClaimedResidence spongeRes = ClaimedResidence.getByLoc(sponge.getLocation());
+        event.getBlocks().removeIf(block -> ResidenceBlockListener.shouldDenySpread(block, spongeRes, null));
     }
 }
